@@ -15,6 +15,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="elements/ht-admin/ht-admin-account.html">
 <link rel="import" href="elements/ht-admin/ht-admin-reports.html">
 <link rel="import" href="elements/ht-admin/ht-admin-menu.html">
+<link rel="import" href="elements/ht-admin/ht-admin-tools.html">
 
 
 <link rel="import" href="./shared-styles.html">
@@ -180,6 +181,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <ht-admin-reports id="admin-reports" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]" selected-sub-menu="[[selectedSubMenu]]"></ht-admin-reports>
             </template>
 
+            <template is="dom-if" if="[[toolsLayout]]">
+                <ht-admin-tools id="admin-tools" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]" selected-sub-menu="[[selectedSubMenu]]"></ht-admin-tools>
+            </template>
         </div>
     </template>
 
@@ -218,6 +222,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Boolean,
                         value: false
                     },
+                    toolsLayout:{
+                        type: Boolean,
+                        value: false
+                    },
                     selectedSubMenu:{
                         type: String,
                         value: null
@@ -244,14 +252,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('managementLayout', true)
                     this.set('accountLayout', false)
                     this.set('reportsLayout', false)
+                    this.set('toolsLayout', false)
                 }else if (e.detail && e.detail.selection.item === 'account'){
                     this.set('managementLayout', false)
                     this.set('accountLayout', true)
                     this.set('reportsLayout', false)
+                    this.set('toolsLayout', false)
                 }else if(e.detail && e.detail.selection.item === 'reports'){
                     this.set('managementLayout', false)
                     this.set('accountLayout', false)
                     this.set('reportsLayout', true)
+                    this.set('toolsLayout', false)
+                }else if(e.detail && e.detail.selection.item === 'tools'){
+                    this.set('managementLayout', false)
+                    this.set('accountLayout', false)
+                    this.set('reportsLayout', false)
+                    this.set('toolsLayout', true)
                 }
 
                 this.set('selectedSubMenu', e.detail.selection.submenu)

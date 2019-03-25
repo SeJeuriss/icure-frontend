@@ -1,0 +1,397 @@
+
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/iron-meta/iron-meta.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="../../../../bower_components/iron-iconset/iron-iconset.html">
+
+<link rel="import" href="../../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/device-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../../bower_components/iron-collapse-button/iron-collapse-button.html">
+<link rel="import" href="../../../../bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-column.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../dialog-style.html">
+
+<link rel="import" href="../../../shared-styles.html">
+
+
+<dom-module id="ht-admin-tools-share-messages">
+
+    <template>
+
+        <style include="shared-styles">
+
+            .share-messages{
+                height: calc(100vh - 84px);
+                width: 100%;
+                padding: 0 20px 24px 20px;
+                box-sizing: border-box;
+                position: relative;
+            }
+
+                #shareMessageDialog {
+                    width: 1000px;
+                    height: 60vh;
+                }
+
+                #shareMessageDialog .content{
+                    padding-bottom: 24px;
+                }
+
+                #shareMessageDialog vaadin-grid{
+                    min-height: 400px;
+                    margin-top: 24px;
+                }
+
+                #shareMessageDialog #hcpFilter, #hcp-list {
+                    margin: 0;
+                }
+                #shareMessageDialog #hcpFilter {
+                    max-height: 62px;
+                }
+                #shareMessageDialog #hcp-list {
+                    height: calc(100% - 24px - 64px);
+                }
+
+                #shareMessageDialog .buttons paper-checkbox{
+                    --paper-checkbox-checked-color: var(--app-secondary-color);
+                }
+            }
+
+        </style>
+
+        <div class="share-messages flex col">
+
+            <h4>[[localize('rap_att_list', 'Partager des messages', language)]]</h4>
+
+            <paper-dialog id="shareMessageDialog">
+                <h2 class="modal-title">[[localize('share_message_to_what_hcp','With which provider do you want to share these messages',language)]] ?</h2>
+                <div class="content">
+                    <paper-input id="hcpFilter" label="[[localize('fil','Filter',language)]]" value="{{hcpFilterValue}}"></paper-input>
+                    <vaadin-grid id="hcp-list" class="material" multi-sort="[[multiSort]]" items="[[hcp]]" active-item="{{activeHcp}}">
+                        <vaadin-grid-column width="40px">
+                            <template class="header">
+                                <vaadin-checkbox on-checked-changed="_toggleBoxes"></vaadin-checkbox>
+                            </template>
+                            <template>
+                                <vaadin-checkbox class="checkbox" id="[[item.id]]" checked="[[_sharingHcp(item, hcp.*)]]" on-checked-changed="_checkHcp" disabled="[[shareAll]]"></vaadin-checkbox>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="100px">
+                            <template class="header">
+                                <vaadin-grid-sorter path="lastName">[[localize('las_nam','Last name',language)]]
+                                </vaadin-grid-sorter>
+                            </template>
+                            <template>
+                                <div class="cell frozen">[[_any(item.lastName, item.name, item)]]</div>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="100px">
+                            <template class="header">
+                                <vaadin-grid-sorter path="firstName">[[localize('fir_nam','First name',language)]]
+                                </vaadin-grid-sorter>
+                            </template>
+                            <template>
+                                <div class="cell frozen">[[item.firstName]]</div>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="100px">
+                            <template class="header">
+                                <vaadin-grid-sorter path="speciality">[[localize('spe','Speciality',language)]]
+                                </vaadin-grid-sorter>
+                            </template>
+                            <template>
+                                <div class="cell frozen">[[item.speciality]]</div>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="100px">
+                            <template class="header">
+                                <vaadin-grid-sorter path="email">[[localize('ema','Email',language)]]
+                                </vaadin-grid-sorter>
+                            </template>
+                            <template>
+                                <div class="cell frozen">[[item.email]]</div>
+                            </template>
+                        </vaadin-grid-column>
+                    </vaadin-grid>
+                </div>
+                <div class="buttons">
+                    <paper-checkbox on-checked-changed="displayAllHcps">[[localize('disp_all_hcps','Display all HCPs', language)]]</paper-checkbox>
+                    <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
+                    <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmSharingNextStep">[[localize('share_pat','Share
+                        patients',language)]]
+                    </paper-button>
+                </div>
+            </paper-dialog>
+
+            <paper-dialog id="sharingMessageStatus">
+                <h2 class="modal-title">[[localize("pat_sha_sta","Patient sharing status",language)]]</h2>
+                <div class="content">
+                    <ht-spinner class="sharePatSpinner" active="[[isSharingMessage]]"></ht-spinner>
+                    <vaadin-grid items="[[messageShareStatuses]]">
+                        <vaadin-grid-column width="150px">
+                            <template class="header">
+                                [[localize('pati','Patient',language)]]
+                            </template>
+                            <template>
+                                [[item.patient.firstName]] [[item.patient.lastName]]
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="70px">
+                            <template class="header">
+                                [[localize('pati','Patient',language)]]
+                            </template>
+                            <template>
+                                <span class$="[[_statusDetailClass(item.statuses.patient)]]">[[_statusDetail(item.statuses.patient)]]</span>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="70px">
+                            <template class="header">
+                                [[localize('contacts','Contacts',language)]]
+                            </template>
+                            <template>
+                                <span class$="[[_statusDetailClass(item.statuses.contacts)]]">[[_statusDetail(item.statuses.contacts)]]</span>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="70px">
+                            <template class="header">
+                                Health elements
+                            </template>
+                            <template>
+                                <span class$="[[_statusDetailClass(item.statuses.healthElements)]]">[[_statusDetail(item.statuses.healthElements)]]</span>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="70px">
+                            <template class="header">
+                                Invoices
+                            </template>
+                            <template>
+                                <span class$="[[_statusDetailClass(item.statuses.invoices)]]">[[_statusDetail(item.statuses.invoices)]]</span>
+                            </template>
+                        </vaadin-grid-column>
+                        <vaadin-grid-column width="70px">
+                            <template class="header">
+                                [[localize('files','Files',language)]]
+                            </template>
+                            <template>
+                                <span class$="[[_statusDetailClass(item.statuses.documents)]]">[[_statusDetail(item.statuses.documents)]]</span>
+                            </template>
+                        </vaadin-grid-column>
+                    </vaadin-grid>
+                </div>
+                <div class="buttons">
+                    <paper-button class="modal-button modal-button--save" dialog-dismiss>[[localize('done','Done',language)]]</paper-button>
+                </div>
+            </paper-dialog>
+
+
+
+            <vaadin-grid id="messageGrid" class="material grow-1" items="[[messagesItems]]" active-item="{{selectedMessage}}">
+                <vaadin-grid-column flex-grow="0" width="48px">
+                    <template class="header">
+                        <vaadin-checkbox checked$="[[allSelected]]" on-tap="_toggleSelectAll"></vaadin-checkbox>
+                    </template>
+                    <template>
+                        <vaadin-checkbox data-item$="[[item]]" on-checked-changed="_itemSelected" class="list-checkbox"></vaadin-checkbox>
+                    </template>
+                </vaadin-grid-column>
+                <vaadin-grid-column>
+                    <template class="header">
+                        messages
+                    </template>
+                    <template>
+                        <div>[[item.id]]</div>
+                    </template>
+                </vaadin-grid-column>
+            </vaadin-grid>
+            <div class="flex space-between">
+                <paper-button class="modal-button modal-button--save export-btn" on-tap="confirmSharing">[[localize('share_messages','Partager les messages',language)]] </paper-button>
+                <paper-button class="modal-button modal-button--save export-btn" on-tap="debugRefresh">debug refresh</paper-button>
+                <paper-button class="modal-button modal-button--save export-btn" on-tap="debugShare">debug share</paper-button>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        class HtAdminToolsShareMessages extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'ht-admin-tools-share-messages'
+            }
+
+            static get properties() {
+                return {
+                    api: {
+                        type: Object,
+                        noReset: true
+                    },
+                    user: {
+                        type: Object,
+                        noReset: true
+                    },
+                    credentials:{
+                        type: Object,
+                        noReset: true
+                    },
+                }
+            }
+
+            constructor() {
+                super()
+            }
+
+            ready() {
+                super.ready()
+                this.set('currentHcps', _.values(this.api.hcParties))
+                this.refreshMessageList()
+            }
+
+            refreshMessageList() {
+                return this.api.getRowsUsingPagination(
+                    (key,docId) =>
+                        this.api.message().findMessagesByTransportGuid("EFACT:*", null, key, docId, 1000)
+                            .then(pl => {
+                                console.log("my rows", pl.rows)
+                                return {
+                                    rows: pl.rows,
+                                    nextKey: pl.nextKeyPair && pl.nextKeyPair.startKey,
+                                    nextDocId: pl.nextKeyPair && pl.nextKeyPair.startKeyDocId,
+                                    done: !pl.nextKeyPair
+                                }
+                            })
+                            .catch(error=>{
+                                console.log("error", error)
+                                return Promise.resolve();
+                            })
+                ).then(messages=> {
+                    console.log("messages", messages)
+                    this.set('messagesItems', messages)
+                    this.set('selectedMessagesForSharing', messages.slice(0,10))
+                })
+
+            }
+
+            _openPatientActionDialog() {
+                this.set('hcp', _.orderBy(_.values(this.api.hcParties), ['lastName'], ['asc']))
+
+
+                this.$['shareMessageDialog'].open()
+            }
+
+            debugRefresh() {
+                this.refreshMessageList()
+
+            }
+            debugShare() {
+                const hcpId = this.user.healthcarePartyId
+                const delegatesIds = ["568f84aa-5586-4394-87d8-9cf6919b6d09"]
+                this.selectedMessagesForSharing.map(mes => {
+                    this.api_message_share(this.user, mes, hcpId, delegatesIds, {})
+                })
+            }
+
+            confirmSharing() {
+                //this.updateDelegation()
+
+                this.$['shareMessageDialog'].close()
+                this.$['sharingMessageStatus'].open()
+
+                this._shareMessages(this.selectedMessagesForSharing)
+            }
+
+            _shareMessages(messages) {
+                this.set('messageShareStatuses', [])
+                this.set('isSharingMessage',true)
+
+                const hcpId = this.user.healthcarePartyId
+                const delegates = this.hcpSelectedForSharing.filter(hcp => hcp.check && hcp.id)
+                const delegationTags = _.fromPairs(delegates.map(hcp => [hcp.id, _.sortBy(hcp.delegation)]))
+                const sig = this._hashCode(JSON.stringify(_.sortBy(delegationTags, x => x[0])))
+                const locStoTag = `org.taktik.icure.${this.user.id}.shareMessages.${sig}.progress`
+
+                const prevRunIds = JSON.parse(localStorage.getItem(locStoTag) || '[]')
+
+                this.messageSharePromise = Promise.resolve([[], prevRunIds])
+
+                _.chunk(messages.filter(p => !prevRunIds.includes(p.id)), 16).forEach(chunk => {
+                    this.messageSharePromise = this.messageSharePromise.then(([prevStatuses, treatedIds]) => Promise.all(chunk.map(mes =>
+                            this.api_message_share(this.user, mes, hcpId, delegates.map(hcp => hcp.id), delegationTags)
+                                .catch(e => {
+                                    console.log(e)
+                                    return {
+                                        patient: mes, statuses: {
+                                            contacts: {success: null, error: null},
+                                            healthElements: {success: null, error: null},
+                                            invoices: {success: null, error: null},
+                                            documents: {success: null, error: null},
+                                            patient: {success: false, error: e}
+                                        }
+                                    }
+                                })
+                        )).then(statuses => {
+                            const newStatuses = prevStatuses.concat(statuses)
+                            const newTreatedIds = treatedIds.concat(statuses.filter(s => !_.values(s.statuses).some(s => !s.success)).map(s => s.patient.id))
+                            localStorage.setItem(locStoTag, JSON.stringify(newTreatedIds))
+                            this.push('messageShareStatuses', ...statuses)
+
+                            this.dispatchEvent(new CustomEvent('idle', {bubbles: true, composed: true}))
+
+                            return [newStatuses, newTreatedIds]
+                        })
+                    )
+                });
+                this.messageSharePromise.then(()=>this.set('isSharingMessage',false))
+            }
+
+            api_message_share(
+                user,
+                mes,
+                ownerId,
+                delegateIds,
+                delegationTags
+            ) {
+                return this.api.hcparty().getHealthcareParty(ownerId).then(hcp => {
+                    const parentId = hcp.parentId
+                    const allTags = _.uniq(_.flatMap(Object.values(delegationTags)))
+                    this.api.document().findByMessage(hcp.id, mes).then(docs => {
+                        docs.map(doc => {
+                            console.log("doc found:", mes.id, doc.id, mes, doc)
+                        })
+                    })
+                })
+            }
+
+
+            extractDelegationsSFKsAndEncryptionSKs( ety, ownerId) {
+                const delegationsSfksOwnerPromise = this.api.crypto().extractDelegationsSFKs(ety, ownerId)
+                    .then(xks => xks.extractedKeys) //Will climb up hierarchy
+                const encryptionKeysOwnerPromise = this.api.crypto().extractEncryptionsSKs(ety, ownerId)
+                    .then(xks => xks.extractedKeys) //Will climb up hierarchy
+
+                return Promise.all([delegationsSfksOwnerPromise, encryptionKeysOwnerPromise])
+            }
+        }
+
+        customElements.define(HtAdminToolsShareMessages.is, HtAdminToolsShareMessages)
+    </script>
+</dom-module>
