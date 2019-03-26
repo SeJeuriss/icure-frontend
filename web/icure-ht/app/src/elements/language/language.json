@@ -186,6 +186,7 @@
     "civility": "Civility",
     "clinic": "Clinic",
     "clo": "Close",
+    "clo2": "Close",
     "closure":"Closure",
     "clos_agr": "Close agreement",
     "co": "Code",
@@ -678,7 +679,7 @@
     "oth_for": "Other form",
     "oth_opt": "Other options",
     "oth_orgs":"Other organisms",
-    "oth_svcs": "Other services",
+    "oth_svcs": "Other services/changes",
     "page": "Page",
     "pages": "Pages",
     "page_prev":"Previous page",
@@ -719,6 +720,7 @@
     "pho": "Phone",
     "phone": "Phone",
     "pre_chk_bef_inv" : "Pre check before invoice'",
+    "print-window" : "Display printers dialog",
     "pr_ctr_block_inv": "Prior control(s) blocking(s)",
     "pr_nihii_inv" : "- Nihii invalid",
     "pr_ssin_inv" : "- Ssin invalid",
@@ -1185,7 +1187,11 @@
     "missingMhBankAccount": "Please provide with a valid bank account",
     "flatRateInvoicingAlreadyRan": "You already exported your flat rates invoicing this month",
     "getInTouchWithUsToUnlock": "Please get in touch with us to unlock the situation",
-    "groupGrandTotal": "Group total"
+    "groupGrandTotal": "Group total",
+    "invoiceGotCorrected": "Mark as corrected",
+    "invoiceIsUnrecoverable": "Invoice is unrecoverable",
+    "unrecoverableAction": "This action is unrecoverable",
+    "areYouSureFlagInvoiceAsLost": "Are you sure you wish to flag invoice as permanently lost?"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -1386,6 +1392,7 @@
     "civility": "Etat civil",
     "clinic": "Clinique",
     "clo": "Fermer",
+    "clo2": "Clôturer",
     "closure":"Clotûre",
     "clos_agr": "Clôturer l'accord du médecin conseil",
     "closedBefore": "Couverture clôturée avant les dates fournies",
@@ -1927,7 +1934,7 @@
     "oth_for": "Autre formulaire",
     "oth_opt": "Autre options",
     "oth_orgs":"Autres organismes",
-    "oth_svcs": "Autres services",
+    "oth_svcs": "Autres services/Modifications",
     "page": "Page",
     "pages": "Pages",
     "page_prev":"Page précédente",
@@ -1993,6 +2000,7 @@
     "poss_matches": "Correspondances possibles",
     "postalCode": "Code postal",
     "pre_chk_bef_inv" : "Contrôles préalables avant envoi'",
+    "print-window" : "Afficher la fenêtre d'impression",
     "pr_ctr_block_inv": "Contrôle(s) préalable(s) bloquant(s)",
     "pr_nihii_inv" : "- Inami invalide",
     "pr_ssin_inv" : "- Niss invalide",
@@ -2460,7 +2468,11 @@
     "flatRateInvoicingAlreadyRan": "Vous avez déjà exporté votre facturation ce mois-ci",
     "getInTouchWithUsToUnlock": "Veuillez svp prendre contact avec nous afin de débloquer la situation",
     "groupGrandTotal": "Grand total du Groupement",
-    "unknown": "inconnu"
+    "unknown": "inconnu",
+    "invoiceGotCorrected": "Facture corrigé",
+    "invoiceIsUnrecoverable": "Facture perdue",
+    "unrecoverableAction": "Cette opération est irréversible",
+    "areYouSureFlagInvoiceAsLost": "Etes-vous sûr de vouloir marquer cette facture comme étant perdue ?"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -2665,6 +2677,7 @@
     "civility": "Civility",
     "clinic": "Clinic",
     "clo": "Sluiten",
+    "clo2": "Afsluiten",
     "closure":"Sluiting",
     "clos_agr": "De overeenkomst van de medisch adviseur sluiten",
     "closedBefore": "Periode afgesloten voor datum raadpleging",
@@ -3202,7 +3215,7 @@
     "oth_for": "Other form",
     "oth_opt": "Andere opties",
     "oth_org":"Andere organisaties",
-    "oth_svcs": "Other services",
+    "oth_svcs": "Andere diensten/Wijzigingen",
     "page": "Pagina",
     "pages": "Pagina's",
     "page_prev":"Vorige pagina",
@@ -3254,6 +3267,7 @@
     "pho": "Telefoon",
     "phone": "Phone",
     "pre_chk_bef_inv" : "Pre check before invoice'",
+    "print-window" : "Display printers dialog",
     "pr_ctr_block_inv": "Prior control(s) blocking(s)",
     "pr_nihii_inv" : "- Nihii invalid",
     "pr_ssin_inv" : "- Ssin invalid",
@@ -3738,6 +3752,10 @@
     "missingMhBankAccount": "Please provide with a valid bank account",
     "flatRateInvoicingAlreadyRan": "You already exported your flat rates invoicing this month",
     "getInTouchWithUsToUnlock": "Please get in touch with us to unlock the situation",
-    "groupGrandTotal": "Grand total du Groupement"
+    "groupGrandTotal": "Grand total du Groupement",
+    "invoiceGotCorrected": "Invoice corrected",
+    "invoiceIsUnrecoverable": "Invoice is unrecoverable",
+    "unrecoverableAction": "This action is unrecoverable",
+    "areYouSureFlagInvoiceAsLost": "Are you sure you wish to flag invoice as permanently lost?"
   }
 }
