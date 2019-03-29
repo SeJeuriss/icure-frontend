@@ -1925,12 +1925,60 @@
                 }
 
                 this.api.invoice().listToInsurancesUnsent(this.user.id)
-                    .then(invoices => Promise.all(invoices.filter(i => i.sentMediumType === "efact").map(inv => this.api.crypto().extractCryptedFKs(inv, this.user.healthcarePartyId).then(ids => [inv, ids.extractedKeys[0]]))))
-                    .then(invAndIdsPat =>
-                        this.api.patient().getPatientsWithUser(this.user, new models.ListOfIdsDto({ids: _.uniq(invAndIdsPat.map(x => x[1]))})).then(pats => invAndIdsPat.map(it => [it[0], pats.find(p => p.id === it[1])]))
-                    ).then(invAndPats =>
-                        this.api.insurance().getInsurances(new models.ListOfIdsDto({ids : _.uniq(_.flatten(invAndPats).filter(i => i.insurabilities).map(i => i && i.insurabilities && i.insurabilities[0] && i.insurabilities[0].insuranceId))})).then(ins => invAndPats.map(it=>[it[0], it[1], ins.find(i=>it && (it[0] && it[0].insurabilities && it[0].insurabilities[0] && i.id === it[1].insurabilities[0].insuranceId) || (it[1] && it[1].insurabilities && it[1].insurabilities.find(patIns => (it[0] && it[0].invoiceDate && patIns.startDate && patIns.endDate && it[0].invoiceDate>=patIns.startDate && it[0].invoiceDate<=patIns.endDate && patIns.insuranceId===i.id) || (!(it[0] && it[0].invoiceDate && patIns.startDate && patIns.endDate) && patIns.insuranceId===i.id))))]))
-                    ).then(invAndPatsAndInsurances => _.flatMap(invAndPatsAndInsurances, ([inv, pat, ins]) => {
+                    .then(invoices =>
+                        Promise.all(
+                            invoices.filter(i => i.sentMediumType === "efact")
+                            // .filter(i => i.id =="a31c3928-330f-4015-b5bc-82f60f7a8e57")
+
+                                .map(inv => {
+                                        console.log("before extractCryptedFKs", inv, this.user.healthcarePartyId)
+                                        if(inv.id =="a31c3928-330f-4015-b5bc-82f60f7a8e57" ) {
+                                            console.log("breakkkkkk")
+                                         //   debugger
+                                        }
+                                        return this.api.crypto().extractCryptedFKs(inv, this.user.healthcarePartyId).then(ids => [inv, ids.extractedKeys[0]])
+                                            .catch(err=>{ console.log("eeerrror", err, inv); return null});
+                                    }
+                                )
+                        ).then(all=> all.filter(v=>v !== null))
+                    )
+                    .then(invAndIdsPat => {
+                        const patdata = _.uniq(invAndIdsPat.map(x => x[1]))
+                        console.log("patdata", patdata, invAndIdsPat)
+                        return Promise.all(patdata.map(patid =>
+                            this.api.patient()
+                                .getPatientsWithUser(this.user, new models.ListOfIdsDto({ids: [patid]}))
+                                .catch(err => {
+                                    console.log("error pat", patid)
+                                    return null
+                                })
+                        ))
+                            .then(all => all.map(p=>p && p.length && p[0]))
+                            .then(all => {
+                                console.log("all", all)
+                                return all
+                            })
+                            .then(all => all.filter(v => v !== null))
+                            .then(all => {
+                                console.log("all2", all)
+                                return all
+                            })
+                            .then(pats => {
+                                return invAndIdsPat.map(it => [it[0], pats.find(p => p.id === it[1])]);
+                            })
+                            .then(all => {
+                                console.log("all3", all)
+                                return all
+                            })
+                            .then(invap => invap.filter(v => v[1] !== null && v[1] !== undefined))
+                            .then(all => {
+                                console.log("all4", all)
+                                return all
+                            })
+                    }).then(invAndPats => {
+                        console.log("invAndPats 2", invAndPats)
+                        return this.api.insurance().getInsurances(new models.ListOfIdsDto({ids: _.uniq(_.flatten(invAndPats).filter(i => i.insurabilities).map(i => i && i.insurabilities && i.insurabilities[0] && i.insurabilities[0].insuranceId))})).then(ins => invAndPats.map(it => [it[0], it[1], ins.find(i => it && (it[0] && it[0].insurabilities && it[0].insurabilities[0] && i.id === it[1].insurabilities[0].insuranceId) || (it[1] && it[1].insurabilities && it[1].insurabilities.find(patIns => (it[0] && it[0].invoiceDate && patIns.startDate && patIns.endDate && it[0].invoiceDate >= patIns.startDate && it[0].invoiceDate <= patIns.endDate && patIns.insuranceId === i.id) || (!(it[0] && it[0].invoiceDate && patIns.startDate && patIns.endDate) && patIns.insuranceId === i.id))))]));
+                    }).then(invAndPatsAndInsurances => _.flatMap(invAndPatsAndInsurances, ([inv, pat, ins]) => {
                     let insurabilityComplete = false
                     pat && pat.insurabilities ? pat.insurabilities = pat.insurabilities.filter(ins => ins.insuranceId && ins.insuranceId.length && ins.parameters && ins.parameters.tc1 && ins.parameters.tc1.length && ins.parameters.tc2 && ins.parameters.tc2.length) : []
                     pat.insurabilities.length > 0 ? insurabilityComplete = true : insurabilityComplete = false
@@ -2027,7 +2075,8 @@
                                                                     !!(st & (1 << 11)) ? this.localize('inv_tre','Treated',this.language):
                                                                         !!(st & (1 << 10)) ? this.localize('inv_acc_tre','Accepted for treatment',this.language):
                                                                             !!(st & (1 << 9))  ? this.localize('inv_succ_tra_oa','Successfully transmitted to OA',this.language):
-                                                                                !!(st & (1 << 8))  ? this.localize('inv_pen','Pending',this.language): ""
+                                                                                !!(st & (1 << 8))  ? this.localize('inv_pen','Pending',this.language):
+                                                                                    !!(st & (1 << 7))  ? this.localize('inv_pen','Pending',this.language): ""
 
 
                                             const rejectionReason = !!(st & (1 << 17)) ? this.localize('inv_rej_5%','More than 5% error',this.language) :
@@ -2056,8 +2105,8 @@
                                                         paid: false,
                                                         allInvoicesIsCorrected : allInvoicesIsCorrected
                                                     }
-                                                }) : mm
-                                        }) : mm
+                                                }) : {}
+                                        }) : Promise.resolve({})
                                     })
 
                             }))).then(msgsStructs => {
@@ -2076,12 +2125,12 @@
             }
 
             dispatchMessages() {
-                !!this.set("messagesArchived", this.allMessages.filter( m => (m.message.status & (1 << 21)) !== 0))
-                this.set("messagesProcessed", this.allMessages.filter(m => (m.message.status & (1 << 15 | 1 << 16 | 1 << 17)) === 0 && !(m.message.status & (1<<21))))
-                !!this.set("messagesAccepted", this.allMessages.filter( m => (m.message.status & (1 << 15 | 1 << 16 )) !== 0 && !(m.message.status & (1<<21))))
-                !!this.set("messagesRejected", this.allMessages.filter( m => (m.message.status & (1 << 17)) !== 0 && !(m.message.status & (1<<21))))
+                !!this.set("messagesArchived", this.allMessages.filter( m => m.message && m.message.status && (m.message.status & (1 << 21)) !== 0))
+                this.set("messagesProcessed", this.allMessages.filter(m => m.message && m.message.status && (m.message.status & (1 << 15 | 1 << 16 | 1 << 17)) === 0 && !(m.message.status & (1<<21))))
+                !!this.set("messagesAccepted", this.allMessages.filter( m => m.message && m.message.status && (m.message.status & (1 << 15 | 1 << 16 )) !== 0 && !(m.message.status & (1<<21))))
+                !!this.set("messagesRejected", this.allMessages.filter( m => m.message && m.message.status && (m.message.status & (1 << 17)) !== 0 && !(m.message.status & (1<<21))))
 
-                !!this.initializeBatchCounter(this.selectedInvoicesToBeSend.length ? this.selectedInvoicesToBeSend.length : 0, this.messagesToBeCorrected.length ? this.messagesToBeCorrected.length : 0 , this.allMessages.filter(m => (m.message.status & (1 << 15 | 1 << 16 | 1 << 17)) === 0 && !(m.message.status & (1<<21))).length, this.allMessages.filter( m => (m.message.status & (1 << 15 | 1 << 16 )) !== 0 && !(m.message.status & (1<<21))).length, this.allMessages.filter( m => (m.message.status & (1 << 17)) !== 0 && !(m.message.status & (1<<21))).length, this.allMessages.filter( m => (m.message.status & (1 << 21)) !== 0).length)
+                !!this.initializeBatchCounter(this.selectedInvoicesToBeSend.length ? this.selectedInvoicesToBeSend.length : 0, this.messagesToBeCorrected.length ? this.messagesToBeCorrected.length : 0 , this.allMessages.filter(m => m.message && m.message.status && (m.message.status & (1 << 15 | 1 << 16 | 1 << 17)) === 0 && !(m.message.status & (1<<21))).length, this.allMessages.filter( m => m.message && m.message.status && (m.message.status & (1 << 15 | 1 << 16 )) !== 0 && !(m.message.status & (1<<21))).length, this.allMessages.filter( m => m.message && m.message.status && (m.message.status & (1 << 17)) !== 0 && !(m.message.status & (1<<21))).length, this.allMessages.filter( m => m.message && m.message.status && (m.message.status & (1 << 21)) !== 0).length)
             }
 
             _toggleDataProvider(input) {
