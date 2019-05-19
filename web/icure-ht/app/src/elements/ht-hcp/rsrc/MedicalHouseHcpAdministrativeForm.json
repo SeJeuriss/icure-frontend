@@ -5,179 +5,174 @@
         {
           "formDataList": [
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 498,
-                "multiline" : false,
-                "left" : 664,
-                "top" : 61,
-                "key" : "TokenFieldEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 498,
+                "multiline": false,
+                "left": 664,
+                "top": 61,
+                "key": "TokenFieldEditor"
               },
-              "sortOrder" : 1463236407,
-              "codeTypes" : [
-                {"type":"ISO-639-1"}
+              "sortOrder": 1463236407,
+              "codeTypes": [
+                {
+                  "type": "ISO-639-1"
+                }
               ],
-              "label" : "languages",
-              "subForm" : false,
-              "type" : "TKStringTable",
-              "name" : "languages"
+              "label": "languages",
+              "subForm": false,
+              "type": "TKStringTable",
+              "name": "languages"
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 330,
-                "multiline" : false,
-                "left" : 95,
-                "top" : 8,
-                "key" : "StringEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 330,
+                "multiline": false,
+                "left": 95,
+                "top": 8,
+                "key": "StringEditor"
               },
-              "sortOrder" : 1465341759,
-              "codeTypes" : [
-
+              "sortOrder": 1465341759,
+              "codeTypes": [
               ],
-              "label" : "name",
-              "type" : "TKString",
-              "subForm" : false,
-              "name" : "name",
-              "irrelevant" : true
+              "label": "name",
+              "type": "TKString",
+              "subForm": false,
+              "name": "name",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 325,
-                "multiline" : false,
-                "left" : 500,
-                "top" : 50,
-                "key" : "StringEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 325,
+                "multiline": false,
+                "left": 500,
+                "top": 50,
+                "key": "StringEditor"
               },
-              "sortOrder" : 1465341751,
-              "codeTypes" : [
-
+              "sortOrder": 1465341751,
+              "codeTypes": [
               ],
-              "label" : "contact_person",
-              "type" : "TKString",
-              "subForm" : false,
-              "name" : "contactPerson",
-              "irrelevant" : true
+              "label": "contact_person",
+              "type": "TKString",
+              "subForm": false,
+              "name": "contactPerson",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 250,
-                "multiline" : false,
-                "left" : 0,
-                "top" : 34,
-                "key" : "StringEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 250,
+                "multiline": false,
+                "left": 0,
+                "top": 34,
+                "key": "StringEditor"
               },
-              "sortOrder" : 1465341751,
-              "codeTypes" : [
-
+              "sortOrder": 1465341751,
+              "codeTypes": [
               ],
-              "label" : "inami",
-              "type" : "TKString",
-              "subForm" : false,
-              "name" : "nihii",
-              "irrelevant" : true
+              "label": "inami",
+              "type": "TKString",
+              "subForm": false,
+              "name": "nihii",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 250,
-                "multiline" : false,
-                "left" : 597,
-                "top" : 34,
-                "key" : "StringEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 250,
+                "multiline": false,
+                "left": 597,
+                "top": 34,
+                "key": "StringEditor"
               },
-              "sortOrder" : 1465341751,
-              "codeTypes" : [
-
+              "sortOrder": 1465341751,
+              "codeTypes": [
               ],
-              "label" : "company_name",
-              "type" : "TKString",
-              "subForm" : false,
-              "name" : "companyName",
-              "irrelevant" : true
+              "label": "company_name",
+              "type": "TKString",
+              "subForm": false,
+              "name": "companyName",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "menuOptions" : [
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "menuOptions": [
                   "serviceFee",
                   "flatRate"
                 ],
-                "labelPosition" : "Left",
-                "width" : 250,
-                "multiline" : false,
-                "left" : 597,
-                "top" : 34,
-                "key" : "PopupMenuEditor"
+                "labelPosition": "Left",
+                "width": 250,
+                "multiline": false,
+                "left": 597,
+                "top": 34,
+                "key": "PopupMenuEditor"
               },
-              "sortOrder" : 1465341751,
-              "codeTypes" : [
+              "sortOrder": 1465341751,
+              "codeTypes": [
               ],
-              "label" : "inv_type",
-              "type" : "TKString",
-              "subForm" : false,
-              "name" : "billingType",
-              "irrelevant" : true
+              "label": "inv_type",
+              "type": "TKString",
+              "subForm": false,
+              "name": "billingType",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 400,
-                "multiline" : true,
-                "left" : 597,
-                "top" : 100,
-                "key" : "StringEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 400,
+                "multiline": true,
+                "left": 597,
+                "top": 100,
+                "key": "StringEditor"
               },
-              "sortOrder" : 1465341751,
-              "codeTypes" : [
-
+              "sortOrder": 1465341751,
+              "codeTypes": [
               ],
-              "label" : "notes",
-              "type" : "TKString",
-              "subForm" : false,
-              "name" : "notes",
-              "irrelevant" : true
+              "label": "notes",
+              "type": "TKString",
+              "subForm": false,
+              "name": "notes",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 48,
-                "compulsoryFormGuids" : [
-
+              "editor": {
+                "readOnly": false,
+                "height": 48,
+                "compulsoryFormGuids": [
                 ],
-                "labelPosition" : "Left",
-                "width" : 1162,
-                "multiline" : false,
-                "left" : 5,
-                "top" : 262,
-                "key" : "SubFormEditor",
-                "optionalFormGuids" : [
+                "labelPosition": "Left",
+                "width": 1162,
+                "multiline": false,
+                "left": 5,
+                "top": 262,
+                "key": "SubFormEditor",
+                "optionalFormGuids": [
                   "2d6620d1-7ac6-4627-973c-cf06f361c569"
                 ]
               },
-              "sortOrder" : 1465341751,
-              "codeTypes" : [
-
+              "sortOrder": 1465341751,
+              "codeTypes": [
               ],
-              "label" : "addresses",
-              "type" : "TKSubConsult",
-              "subForm" : true,
-              "name" : "addresses"
+              "label": "addresses",
+              "type": "TKSubConsult",
+              "subForm": true,
+              "name": "addresses"
             }
           ]
         }

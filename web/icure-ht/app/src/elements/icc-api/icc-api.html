@@ -138,7 +138,7 @@
             return this.accesslogicc
         }
 
-        entityRef(){
+        entityRef() {
             return this.entityreficc
         }
 
@@ -194,7 +194,7 @@
             return this.bemikronoicc
         }
 
-        onlinebemikrono(){
+        onlinebemikrono() {
             return this.onlineBeMikronoicc
         }
 
@@ -310,11 +310,11 @@
             return this.$['fhc-api'];
         }
 
-        calendaritem(){
+        calendaritem() {
             return this.calendaritemicc
         }
 
-        calendaritemtype(){
+        calendaritemtype() {
             return this.calendaritemtypeicc
         }
 
@@ -368,7 +368,7 @@
 
         getCurrentAgeFromBirthDate(date, localizer) {
 
-            if(!date) {
+            if (!date) {
                 return;
             }
 
@@ -377,7 +377,7 @@
             let ageString = ""
             const age = moment.duration(now.diff(birthDate))
 
-            const o = localizer('old','old')
+            const o = localizer('old', 'old')
             const ys = localizer('years', 'years')
             const y = localizer('year', 'year')
             const ms = localizer('months', 'months')
@@ -386,12 +386,12 @@
             const w = localizer('week', 'week')
             const a = localizer('and', 'and')
 
-            if(age.years() < 1) {
-                if( (age.years() == 0) && (age.months() + (age.weeks() / 4) <= 1)) {
+            if (age.years() < 1) {
+                if ((age.years() == 0) && (age.months() + (age.weeks() / 4) <= 1)) {
                     return `${age.weeks()} ${age.weeks() == 1 ? w : ws} ${o}`
                 }
                 return `${age.months()} ${age.months() == 1 ? m : ms} ${a} ${age.weeks()} ${age.weeks() == 1 ? w : ws} ${o}`
-            }else if (age.years() + (age.months() / 12) <= 16) {
+            } else if (age.years() + (age.months() / 12) <= 16) {
                 return `${age.years()} ${age.years() == 1 ? y : ys} ${a} ${age.months()} ${age.months() == 1 ? m : ms} ${o}`
             }
             return `${age.years()} ${age.years() == 1 ? y : ys} ${o}`
@@ -407,14 +407,20 @@
         cacheRowsUsingPagination(key, paginator) {
             const cache = this.cache || ((this.cache = {}))
             const promise = cache[key]
-            if (promise) { return promise }
+            if (promise) {
+                return promise
+            }
 
             return (cache[key] = this.getRowsUsingPagination(paginator))
         }
 
         shortLivedCache(key, loader) {
             const cache = this.slCache || ((this.slCache = {}))
-            const clean = () => { const now = +new Date(); Object.keys(cache).filter(k =>  cache[k].ttl < now ).forEach(k => delete cache[k]); console.log(`slc: ${cache.length} items`) }
+            const clean = () => {
+                const now = +new Date();
+                Object.keys(cache).filter(k => cache[k].ttl < now).forEach(k => delete cache[k]);
+                console.log(`slc: ${cache.length} items`)
+            }
             const wrapper = cache[key]
             if (wrapper) {
                 this.cleaner && clearTimeout(this.cleaner)
@@ -425,7 +431,7 @@
 
             this.cleaner && clearTimeout(this.cleaner)
             this.cleaner = setTimeout(() => clean(), 35000)
-            return (cache[key] = {ttl:+new Date() + 30000, promise:loader()}).promise
+            return (cache[key] = {ttl: +new Date() + 30000, promise: loader()}).promise
         }
 
         getRowsUsingPagination(paginator, filter, startIdx, endIdx, cache) {
@@ -433,12 +439,16 @@
                 paginator(latestResult.nextKey, latestResult.nextDocId, endIdx ? endIdx - startIdx : undefined).then((newResult) => {
                     const rows = filter ? newResult.rows.filter(filter) : newResult.rows
                     acc.push(...rows)
-                    return newResult.done || (limit && (acc.length >= limit)) ? ({rows: acc, nextKey: newResult.nextKey, nextDocId: newResult.nextDocId}) : executePaginator(newResult, acc, limit)
+                    return newResult.done || (limit && (acc.length >= limit)) ? ({
+                        rows: acc,
+                        nextKey: newResult.nextKey,
+                        nextDocId: newResult.nextDocId
+                    }) : executePaginator(newResult, acc, limit)
                 })
 
 
             if (cache) {
-                const [rows, lastKey, lastDocId, lastEndIdx, lastTreatedIdx] = cache.reduce(([rows, lastKey, lastDocId, lastEndIdx, lastTreatedIdx], chunk)  => {
+                const [rows, lastKey, lastDocId, lastEndIdx, lastTreatedIdx] = cache.reduce(([rows, lastKey, lastDocId, lastEndIdx, lastTreatedIdx], chunk) => {
                     if (chunk.endIdx <= lastTreatedIdx) {
                         //               [--zoi--]
                         // [-chunk-]
@@ -446,8 +456,8 @@
                     } else if (chunk.startIdx >= endIdx) {
                         // [--zoi--]
                         //               [-chunk-]
-                        if(lastTreatedIdx<endIdx){
-                            rows.push({missing:[lastTreatedIdx, endIdx], lastEndIdx, lastKey, lastDocId})
+                        if (lastTreatedIdx < endIdx) {
+                            rows.push({missing: [lastTreatedIdx, endIdx], lastEndIdx, lastKey, lastDocId})
                             lastTreatedIdx = endIdx
                         }
                     } else {
@@ -455,46 +465,71 @@
                             if (chunk.endIdx <= endIdx) {
                                 //       [--zoi--]
                                 // [-chunk-]
-                                rows.push({startIdx:lastTreatedIdx, rows:chunk.rows.slice(lastTreatedIdx - chunk.startIdx, chunk.endIdx - chunk.startIdx)})
+                                rows.push({
+                                    startIdx: lastTreatedIdx,
+                                    rows: chunk.rows.slice(lastTreatedIdx - chunk.startIdx, chunk.endIdx - chunk.startIdx)
+                                })
                                 lastTreatedIdx = chunk.endIdx
                             } else {
                                 //       [--zoi--]
                                 // [------chunk------]
-                                rows.push({startIdx:lastTreatedIdx, rows:chunk.rows.slice(lastTreatedIdx - chunk.startIdx, endIdx - chunk.startIdx)})
+                                rows.push({
+                                    startIdx: lastTreatedIdx,
+                                    rows: chunk.rows.slice(lastTreatedIdx - chunk.startIdx, endIdx - chunk.startIdx)
+                                })
                                 lastTreatedIdx = endIdx
                             }
                         } else {
                             if (chunk.endIdx >= endIdx) {
                                 //  [--zoi--]
                                 //        [-chunk-]
-                                rows.push({missing:[lastTreatedIdx, chunk.startIdx], lastEndIdx, lastKey, lastDocId})
-                                rows.push({startIdx:chunk.startIdx, rows:chunk.rows.slice(0, endIdx - chunk.startIdx)})
+                                rows.push({missing: [lastTreatedIdx, chunk.startIdx], lastEndIdx, lastKey, lastDocId})
+                                rows.push({
+                                    startIdx: chunk.startIdx,
+                                    rows: chunk.rows.slice(0, endIdx - chunk.startIdx)
+                                })
                                 lastTreatedIdx = endIdx
                             } else {
                                 //  [-------zoi-------]
                                 //        [-chunk-]
-                                rows.push({missing:[lastTreatedIdx, chunk.startIdx], lastEndIdx, lastKey, lastDocId})
-                                rows.push({startIdx:chunk.startIdx, rows:chunk.rows.slice(0, chunk.endIdx - chunk.startIdx)})
+                                rows.push({missing: [lastTreatedIdx, chunk.startIdx], lastEndIdx, lastKey, lastDocId})
+                                rows.push({
+                                    startIdx: chunk.startIdx,
+                                    rows: chunk.rows.slice(0, chunk.endIdx - chunk.startIdx)
+                                })
                                 lastTreatedIdx = chunk.endIdx
                             }
                         }
                     }
                     return [rows, chunk.nextKey, chunk.nextDocId, chunk.endIdx, lastTreatedIdx]
-                } , [[], null, null, 0, startIdx])
+                }, [[], null, null, 0, startIdx])
 
 
                 if (!rows.length) {
-                    rows.push({missing:[startIdx,endIdx], lastKey: lastKey, lastDocId: lastDocId, lastEndIdx:lastEndIdx})
+                    rows.push({
+                        missing: [startIdx, endIdx],
+                        lastKey: lastKey,
+                        lastDocId: lastDocId,
+                        lastEndIdx: lastEndIdx
+                    })
                 } else {
                     const lastRow = _.last(rows)
-                    if (lastRow.rows && lastRow.startIdx+lastRow.rows.length < endIdx) {
-                        rows.push({missing:[lastRow.startIdx+lastRow.rows.length, endIdx], lastKey: lastKey, lastDocId: lastDocId, lastEndIdx:lastEndIdx})
+                    if (lastRow.rows && lastRow.startIdx + lastRow.rows.length < endIdx) {
+                        rows.push({
+                            missing: [lastRow.startIdx + lastRow.rows.length, endIdx],
+                            lastKey: lastKey,
+                            lastDocId: lastDocId,
+                            lastEndIdx: lastEndIdx
+                        })
                     }
                 }
 
-                return Promise.all(rows.filter(r => r.missing).map(r => executePaginator({nextKey: r.lastKey, nextDocId: r.lastDocId}, [], r.missing[1] - r.lastEndIdx).then(({rows, nextKey, nextDocId}) => {
+                return Promise.all(rows.filter(r => r.missing).map(r => executePaginator({
+                    nextKey: r.lastKey,
+                    nextDocId: r.lastDocId
+                }, [], r.missing[1] - r.lastEndIdx).then(({rows, nextKey, nextDocId}) => {
                     r.rows = rows.slice(r.missing[0] - r.lastEndIdx, r.missing[1] - r.lastEndIdx)
-                    cache[r.lastEndIdx] = {rows, startIdx:r.missing[0], endIdx:r.missing[1], nextKey, nextDocId}
+                    cache[r.lastEndIdx] = {rows, startIdx: r.missing[0], endIdx: r.missing[1], nextKey, nextDocId}
                 }))).then(() => _.flatMap(rows, r => r.rows))
             } else {
                 return executePaginator({nextKey: null, nextDocId: null}, []).then(({rows}) => rows)
@@ -507,7 +542,7 @@
                     acc[u.id] = u
                     return acc
                 }, {}))
-                return Promise.all(_.chunk(users.rows,100).map(uChunk => this.hcparty().getHealthcareParties(uChunk.map(u => u.healthcarePartyId).filter(id => !!id).join(','))))
+                return Promise.all(_.chunk(users.rows, 100).map(uChunk => this.hcparty().getHealthcareParties(uChunk.map(u => u.healthcarePartyId).filter(id => !!id).join(','))))
             }).then(hcps => this.set('hcParties', _.flatMap(hcps).map(hcp => this.register(hcp, 'hcp')).reduce((acc, hcp) => {
                     acc[hcp.id] = hcp
                     return acc
@@ -516,7 +551,7 @@
         }
 
         unregisterAll(domain) {
-            this.registry[domain] = {listeners:{}, entities:{}, queues: {}}
+            this.registry[domain] = {listeners: {}, entities: {}, queues: {}}
         }
 
         getRegistry(domain) {
@@ -532,7 +567,9 @@
             if (!promise) {
                 promise = fn()
                 domainCache[key] = promise
-                setTimeout(() => {delete domainCache[key]}, time)
+                setTimeout(() => {
+                    delete domainCache[key]
+                }, time)
             }
 
             return promise
@@ -548,32 +585,44 @@
          * @returns {*}
          */
         queue(entity, domain) {
-            if (!entity || !entity.id) { return Promise.resolve([entity, undefined]) }
+            if (!entity || !entity.id) {
+                return Promise.resolve([entity, undefined])
+            }
             const reg = this.getRegistry(domain)
 
             let res = null
-            const defer = new Promise((resolve) => { res = resolve })
+            const defer = new Promise((resolve) => {
+                res = resolve
+            })
             defer.resolve = res
 
             const thisPromise = reg.queues[entity.id]
-            const timeout =  thisPromise ? setTimeout(()=>{ thisPromise.resolve(entity) }, 10000) : null
+            const timeout = thisPromise ? setTimeout(() => {
+                thisPromise.resolve(entity)
+            }, 10000) : null
             reg.queues[entity.id] = defer
 
-            return (thisPromise || Promise.resolve(entity)).then(e =>{ timeout && clearTimeout(timeout); return [e, defer] })
+            return (thisPromise || Promise.resolve(entity)).then(e => {
+                timeout && clearTimeout(timeout);
+                return [e, defer]
+            })
         }
 
         register(entity, domain, defer, doNotOverride = false) {
-            if (!entity || !entity.id) { defer && defer.resolve(entity); return entity }
+            if (!entity || !entity.id) {
+                defer && defer.resolve(entity);
+                return entity
+            }
 
             const reg = this.getRegistry(domain)
             let current = reg.entities[entity.id]
             if (current && (!current.rev || Number(current.rev.split('-')[0])) <= Number(entity.rev.split('-')[0])) {
 
-                if( !doNotOverride || Number(current.rev.split('-')[0]) < Number(entity.rev.split('-')[0]) ){
+                if (!doNotOverride || Number(current.rev.split('-')[0]) < Number(entity.rev.split('-')[0])) {
                     _.difference(_.keys(current), _.keys(entity)).forEach(k => delete current[k])
                     _.assign(current, entity)
 
-                    Object.values(reg.listeners).forEach(l=>{
+                    Object.values(reg.listeners).forEach(l => {
                         if (!l.pool || l.pool.some(x => x === entity.id)) {
                             l.paths && l.paths.forEach(path => l.target.notifyPath(path))
                             l.callbacks && l.callbacks.forEach(cb => cb())
@@ -595,9 +644,9 @@
             return this.isElectronAvailable().then(elect => {
                 electron = elect
                 return this.user().getCurrentUser()
-            }).then(user =>{
+            }).then(user => {
                 const optionsString = _.toPairs(options).map(([k, v]) => `${k}=${v}`).join('&')
-                if(!optionsString.length) option.type="doc-big-format"
+                if (!optionsString.length) option.type = "doc-big-format"
 
                 return (!electron || !options.type ? Promise.resolve(electron) : fetch('http://localhost:16042/getPrinterSetting', {
                     method: "POST",
@@ -608,13 +657,13 @@
                         userId: user.id
                     })
                 }))
-                    .then(response => response && response.status===200 ? response.json() : Promise.resolve({}))
-                    .then( data => {
+                    .then(response => response && response.status === 200 ? response.json() : Promise.resolve({}))
+                    .then(data => {
                         const printersPrefs = electron && data && data.ok ? JSON.parse(data.data) : JSON.parse(localStorage.getItem('selectedPrinter') || '{}')
-                        const stickersPrefs = electron && data && data.ok ? printersPrefs.find( pref => pref.type === "sticker-mut") || {} : printersPrefs.stickers
-                        const typePreference = electron && data && options.type ? printersPrefs.find(pref => pref.type===options.type) || null : null
-                        const paperSize = typePreference ?  typePreference.type==="sticker-mut" ? "stickers" : typePreference.format==="A4" ? "a4" : typePreference.format ==="A5" ? "a5" : typePreference.format==="DL" ? "presc" : "a4"
-                            :  options.paperWidth === 105 ? 'presc' : options.paperHeight === 210 ? 'a5' : (stickersPrefs && options.paperWidth === stickersPrefs.w && options.paperHeight === stickersPrefs.h) ? 'stickers' : 'a4'
+                        const stickersPrefs = electron && data && data.ok ? printersPrefs.find(pref => pref.type === "sticker-mut") || {} : printersPrefs.stickers
+                        const typePreference = electron && data && options.type ? printersPrefs.find(pref => pref.type === options.type) || null : null
+                        const paperSize = typePreference ? typePreference.type === "sticker-mut" ? "stickers" : typePreference.format === "A4" ? "a4" : typePreference.format === "A5" ? "a5" : typePreference.format === "DL" ? "presc" : "a4"
+                            : options.paperWidth === 105 ? 'presc' : options.paperHeight === 210 ? 'a5' : (stickersPrefs && options.paperWidth === stickersPrefs.w && options.paperHeight === stickersPrefs.h) ? 'stickers' : 'a4'
                         const printerName = typePreference ? typePreference.printer : options.printer ? printersPrefs[options.printer] && printersPrefs[options.printer].bw || "" : (printersPrefs[paperSize] && (printersPrefs[paperSize].bw && printersPrefs[paperSize].bw.length ? printersPrefs[paperSize].bw : printersPrefs[paperSize].color && printersPrefs[paperSize].color.length ? printersPrefs[paperSize].color : null)) || null
 
                         //if(paperSize==="stickers"){
@@ -642,34 +691,34 @@
 
         printers() {
             return this.isElectronAvailable().then(electron =>
-                electron && fetch('http://127.0.0.1:16042/printers', { method: "GET" })
+                electron && fetch('http://127.0.0.1:16042/printers', {method: "GET"})
                     .then(response => response.json()) || []
             )
         }
 
         loadBicData() {
             // Already existing, take no action
-            if( typeof this.bicsData !== 'undefined' ) return;
+            if (typeof this.bicsData !== 'undefined') return;
 
             // Doesn't exist yet, require it
             this.bicsData = require('../bic/bics-list.json') || {};
         }
 
-        getBicByIban( inputString ){
+        getBicByIban(inputString) {
             // Get from json file -> casted in this.bicsData
             this.loadBicData();
 
             // Make sure we've got a string
-            inputString = ( inputString || '' ) + '';
+            inputString = (inputString || '') + '';
 
             // No Iban ?
-            if(!inputString.length) return;
+            if (!inputString.length) return;
 
             // First four digits = country code | 3 digits for bic (starting at pos 4) | rest of iban
-            var bicCodeToMatchOn = ( inputString.substr( 4, 3 ) );
+            var bicCodeToMatchOn = (inputString.substr(4, 3));
 
             // Do we have a candidate ? (3 digits are to be between start & end values)
-            var foundResult = _.filter( this.bicsData, o => parseInt( o.startValue ) <= parseInt( bicCodeToMatchOn ) && parseInt( o.endValue ) >= parseInt( bicCodeToMatchOn ) );
+            var foundResult = _.filter(this.bicsData, o => parseInt(o.startValue) <= parseInt(bicCodeToMatchOn) && parseInt(o.endValue) >= parseInt(bicCodeToMatchOn));
 
             // Up with results, if any
             return foundResult.length ? foundResult[0].bicCode : '';
@@ -680,8 +729,8 @@
             return obj
         }
 
-        getUpdatedEdmgStatus( user, patient, requestDate, edmgNiss, edmgOA, genInsOA, genInsAFF, byPassCache=false ){
-            if(!user||!patient) return Promise.resolve(null);
+        getUpdatedEdmgStatus(user, patient, requestDate, edmgNiss, edmgOA, genInsOA, genInsAFF, byPassCache = false) {
+            if (!user || !patient) return Promise.resolve(null);
 
             // Everything that isn't today
             this.flushObsoleteEdmgStatusCache();
@@ -689,10 +738,12 @@
             const cachedEdmgRespStorageName = 'org.taktik.icure.edmgStatus.' + moment().format('YYYYMMDD') + '.' + user.healthcarePartyId + '.' + patient.ssin;
 
             // Try to get data from cache
-            const cachedEdmgResp = localStorage.getItem( cachedEdmgRespStorageName ) || null;
-            if( cachedEdmgResp && !byPassCache ) { return Promise.resolve(JSON.parse(cachedEdmgResp)); }
+            const cachedEdmgResp = localStorage.getItem(cachedEdmgRespStorageName) || null;
+            if (cachedEdmgResp && !byPassCache) {
+                return Promise.resolve(JSON.parse(cachedEdmgResp));
+            }
 
-            if(((edmgNiss && edmgNiss !=='') || (patient.ssin && patient.ssin !== '')) && !(edmgOA && edmgOA !=='')){
+            if (((edmgNiss && edmgNiss !== '') || (patient.ssin && patient.ssin !== '')) && !(edmgOA && edmgOA !== '')) {
                 return this.hcparty().getHealthcareParty(user.healthcarePartyId)
                     .then(hcp => {
                         return this.fhc().Dmgcontroller().consultDmgUsingGET(
@@ -708,12 +759,14 @@
                             null,
                             null,
                             requestDate
-                        ).then( dmgConsult => this.logMcn(dmgConsult, user, patient.id, 'dmg', 'consult'))
+                        ).then(dmgConsult => this.logMcn(dmgConsult, user, patient.id, 'dmg', 'consult'))
                     }).then(edmgResp => {
-                        localStorage.setItem( cachedEdmgRespStorageName, JSON.stringify(edmgResp) );
-                        return edmgResp||Promise.resolve(null);
-                    }).catch(() => { return Promise.resolve(null)});
-            }else{
+                        localStorage.setItem(cachedEdmgRespStorageName, JSON.stringify(edmgResp));
+                        return edmgResp || Promise.resolve(null);
+                    }).catch(() => {
+                        return Promise.resolve(null)
+                    });
+            } else {
                 //there is no niss
                 const pi = patient.insurabilities && _.assign({}, patient.insurabilities[0] || {});
                 this.insurance().getInsurance(pi.insuranceId).then(insu => {
@@ -735,10 +788,14 @@
                                 ).then(dmgConsult => this.logMcn(dmgConsult, user, patient.id, 'dmg', 'consult'))
                             }
                         ).then(edmgResp => {
-                            localStorage.setItem( cachedEdmgRespStorageName, JSON.stringify(edmgResp) );
-                            return edmgResp||Promise.resolve(null);
-                        }).catch(() => { return Promise.resolve(null)});
-                }).catch(() => { return Promise.resolve(null)});
+                            localStorage.setItem(cachedEdmgRespStorageName, JSON.stringify(edmgResp));
+                            return edmgResp || Promise.resolve(null);
+                        }).catch(() => {
+                            return Promise.resolve(null)
+                        });
+                }).catch(() => {
+                    return Promise.resolve(null)
+                });
             }
 
         }
@@ -746,27 +803,29 @@
         flushObsoleteEdmgStatusCache() {
 
             // Target what's for us
-            const patternToLookFor= 'org.taktik.icure.edmgStatus.';
+            const patternToLookFor = 'org.taktik.icure.edmgStatus.';
 
             // Loop and drop old ones
             Object.keys(localStorage).filter(k => k.startsWith(patternToLookFor)).forEach(k => {
                 // patternToLookFor . YYYYMMDD . userHcpId. patientSsin
-                const [dateFormCache] = k.replace(patternToLookFor,'').split('.');
+                const [dateFormCache] = k.replace(patternToLookFor, '').split('.');
 
                 // Drop if older than today
-                if(moment(dateFormCache).isBefore(moment(), 'day')) { localStorage.removeItem(k) }
+                if (moment(dateFormCache).isBefore(moment(), 'day')) {
+                    localStorage.removeItem(k)
+                }
             });
 
         }
 
-        triggerFileDownload(fileRawContent, mimeType, downloadFileName, appendTarget = false ) {
+        triggerFileDownload(fileRawContent, mimeType, downloadFileName, appendTarget = false) {
 
-            if(!fileRawContent || !_.trim(mimeType) || !_.trim(downloadFileName) ) return;
+            if (!fileRawContent || !_.trim(mimeType) || !_.trim(downloadFileName)) return;
 
             let aObject = document.createElement("a");
-            let urlObject = window.URL.createObjectURL( new Blob([fileRawContent],{type :mimeType}) )
+            let urlObject = window.URL.createObjectURL(new Blob([fileRawContent], {type: mimeType}))
 
-            ;(appendTarget?appendTarget:document.body).appendChild( aObject );
+            ;(appendTarget ? appendTarget : document.body).appendChild(aObject);
 
             aObject.style = "display: none";
             aObject.href = urlObject;
@@ -779,9 +838,9 @@
 
         }
 
-        encryptDecryptFileContentByUserHcpIdAndDocumentObject( encryptOrDecryptMethod, user, documentObject, rawFileContent  ) {
+        encryptDecryptFileContentByUserHcpIdAndDocumentObject(encryptOrDecryptMethod, user, documentObject, rawFileContent) {
             const edf = this.crypto().AES[_.trim(encryptOrDecryptMethod).toLocaleLowerCase()].bind(this.crypto().AES)
-            if( !_.trim(encryptOrDecryptMethod) || !_.trim(user.healthcarePartyId) || !documentObject || !rawFileContent || typeof edf !== "function" ) return Promise.resolve(rawFileContent);
+            if (!_.trim(encryptOrDecryptMethod) || !_.trim(user.healthcarePartyId) || !documentObject || !rawFileContent || typeof edf !== "function") return Promise.resolve(rawFileContent);
 
             return (documentObject.encryptionKeys && Object.keys(documentObject.encryptionKeys || {}).length ? Promise.resolve(documentObject) : this.document().initEncryptionKeys(user, documentObject))
                 .then(doc => this.crypto().extractKeysFromDelegationsForHcpHierarchy(user.healthcarePartyId, doc.id, doc.encryptionKeys))
@@ -793,20 +852,27 @@
                 )
         }
 
-        findJsonObjectPathByPropNameAndPropValue( inputData, propName, propValue ) {
-            this.variablesPath = []; this.propName = propName; this.propValue = propValue;
+        findJsonObjectPathByPropNameAndPropValue(inputData, propName, propValue) {
+            this.variablesPath = [];
+            this.propName = propName;
+            this.propValue = propValue;
             this.browseObject(inputData);
             return this.variablesPath;
         }
 
-        browseObject(inputData, sub="") {
+        browseObject(inputData, sub = "") {
             if (inputData && typeof inputData === "object") {
-                if (Array.isArray(inputData)) { for (let i = 0; i < inputData.length; i++) { this.browseObject(inputData[i], sub + "[" + i + "]"); }
+                if (Array.isArray(inputData)) {
+                    for (let i = 0; i < inputData.length; i++) {
+                        this.browseObject(inputData[i], sub + "[" + i + "]");
+                    }
                 } else {
                     for (let p in inputData) {
                         if ((/^[a-z_$][a-z0-9_$]*$/i).test(p)) {
                             this.browseObject(inputData[p], sub + "." + p);
-                            if(p===this.propName && inputData[p] === this.propValue ) { this.variablesPath.push(sub.substr(1)); }
+                            if (p === this.propName && inputData[p] === this.propValue) {
+                                this.variablesPath.push(sub.substr(1));
+                            }
                         } else {
                             this.browseObject(inputData[p], sub + "[\"" + p + "\"]");
                         }
@@ -819,10 +885,12 @@
             // Ratio between prose editor doc width and A4 pdf impression
             const ratioFactor = 1.39;
             // Col group has column width definitions, in relative pxs
-            (inputContent.match(/<col style="([^"]*)">/gi)||[]).map(tagMatch=>{
-                (tagMatch.match(/(width:)(\s*)([\d]*)(px)/gi)||[]).map(widthMatch=>{
-                    (widthMatch.match(/(\d*)/gi)||[]).map(widthValue=>{
-                        if(parseInt(widthValue)) { inputContent = inputContent.replace( tagMatch, tagMatch.replace(widthMatch, widthMatch.replace(widthValue, Math.floor(widthValue*ratioFactor) ) ) ); }
+            (inputContent.match(/<col style="([^"]*)">/gi) || []).map(tagMatch => {
+                (tagMatch.match(/(width:)(\s*)([\d]*)(px)/gi) || []).map(widthMatch => {
+                    (widthMatch.match(/(\d*)/gi) || []).map(widthValue => {
+                        if (parseInt(widthValue)) {
+                            inputContent = inputContent.replace(tagMatch, tagMatch.replace(widthMatch, widthMatch.replace(widthValue, Math.floor(widthValue * ratioFactor))));
+                        }
                     });
                 });
             })
@@ -831,16 +899,16 @@
 
         formatInamiNumber(inputContent) {
             // Split with hyphens (1,6,2,3) unless already has some or is empty
-            return inputContent.indexOf("-")>-1 || !_.trim(inputContent) ? inputContent : _.trim([inputContent.slice(0,1),inputContent.slice(1,6),inputContent.slice(6,8),inputContent.slice(8,11)].join("-"));
+            return inputContent.indexOf("-") > -1 || !_.trim(inputContent) ? inputContent : _.trim([inputContent.slice(0, 1), inputContent.slice(1, 6), inputContent.slice(6, 8), inputContent.slice(8, 11)].join("-"));
         }
 
         formatBankAccount(inputContent) {
-            return _.trim([inputContent.slice(0,4),inputContent.slice(4,8),inputContent.slice(8,12),inputContent.slice(12,16)].join(" "));
+            return _.trim([inputContent.slice(0, 4), inputContent.slice(4, 8), inputContent.slice(8, 12), inputContent.slice(12, 16)].join(" "));
         }
 
         formatSsinNumber(inputContent) {
             inputContent = _.trim(inputContent).replace(/[^0-9]+/g, '')
-            return _.trim([inputContent.slice(0,2),inputContent.slice(2,4),inputContent.slice(4,6)].join(".")) + "-" + _.trim([inputContent.slice(6,9),inputContent.slice(9,11)].join("."));
+            return _.trim([inputContent.slice(0, 2), inputContent.slice(2, 4), inputContent.slice(4, 6)].join(".")) + "-" + _.trim([inputContent.slice(6, 9), inputContent.slice(9, 11)].join("."));
         }
 
         isElectronAvailable() {
@@ -851,13 +919,16 @@
                 .catch(() => false)
         }
 
-        _powRoundFloatByPrecision(inputNumber,decimalPlaces=2){
-            return parseFloat(Math.round(parseFloat( _.trim(inputNumber).replace(',','.') ) * Math.pow(10, decimalPlaces)) / Math.pow(10,decimalPlaces)).toFixed(decimalPlaces);
+        _powRoundFloatByPrecision(inputNumber, decimalPlaces = 2) {
+            return parseFloat(Math.round(parseFloat(_.trim(inputNumber).replace(',', '.')) * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces)).toFixed(decimalPlaces);
         }
 
 
         hrFormatNumber(inputNumber) {
-            return parseFloat( _.trim(inputNumber).replace(',','.') ).toLocaleString("de-DE", {maximumFractionDigits:2, minimumFractionDigits:2})
+            return parseFloat(_.trim(inputNumber).replace(',', '.')).toLocaleString("de-DE", {
+                maximumFractionDigits: 2,
+                minimumFractionDigits: 2
+            })
         }
 
     }

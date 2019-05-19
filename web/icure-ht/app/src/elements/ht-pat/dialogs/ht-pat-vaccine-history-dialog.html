@@ -7,22 +7,24 @@
 <dom-module id="ht-pat-vaccine-history-dialog">
     <template>
         <style include="dialog-style">
-            #dialog{
+            #dialog {
                 height: 60vh;
                 width: 90vw;
                 overflow: hidden;
                 margin: 0;
             }
+
             h2 {
                 min-height: 24px;
             }
+
             h3.err {
                 text-align: center;
                 margin-top: 10%;
                 color: var(--app-error-color);
             }
 
-            .content{
+            .content {
                 margin-top: 0;
             }
 
@@ -35,12 +37,14 @@
                 border-bottom: 1px solid var(--app-background-color-darker);
                 padding: 0;
             }
+
             .view .item {
                 display: flex;
                 flex-direction: row;
                 justify-content: flex-start;
                 border-bottom: 1px solid var(--app-background-color-dark);
             }
+
             .view .item.title {
                 font-weight: 600;
                 text-align: left;
@@ -54,9 +58,11 @@
                 padding-right: 24px;
                 box-sizing: border-box;
             }
+
             .view .item.title div.time, .view .item.title div.name {
                 padding-top: 120px;
             }
+
             .view .item.title > .vacc {
                 height: 160px;
                 width: 48px;
@@ -70,12 +76,13 @@
                 border: 0;
                 cursor: help;
             }
+
             .view .item.title > .vacc > div {
                 position: relative;
                 top: 0px;
                 left: -80px; /* 80 * tan(45) / 2 = 40 where 80 is the height on the cell and 45 is the transform angle*/
                 height: 100%;
-                transform:skew(45deg,0deg);
+                transform: skew(45deg, 0deg);
                 overflow: hidden;
                 text-overflow: ellipsis;
                 padding-right: 12px;
@@ -83,19 +90,23 @@
                 border-left: 1px solid var(--app-background-color-dark);
                 border-right: 1px solid var(--app-background-color-dark);
             }
+
             .view .item.title > .vacc:nth-child(odd) > div,
-            .view .item.entry > .vacc:nth-child(odd){
+            .view .item.entry > .vacc:nth-child(odd) {
                 background: var(--app-background-color);
             }
+
             .view .item.title > .vacc:nth-child(even) > div,
-            .view .item.entry > .vacc:nth-child(even){
+            .view .item.entry > .vacc:nth-child(even) {
                 background: white;
             }
-            .view .item.title > .vacc:hover > div, .vacc:hover ~ .item-entry .vacc{
+
+            .view .item.title > .vacc:hover > div, .vacc:hover ~ .item-entry .vacc {
                 background-color: var(--app-background-color-dark);
             }
+
             .view .item.title > .vacc > div > span {
-                transform: skew(-45deg,0deg) rotate(45deg);
+                transform: skew(-45deg, 0deg) rotate(45deg);
                 position: absolute;
                 bottom: 70px;
                 left: -84px;
@@ -109,37 +120,46 @@
                 display: block;
                 overflow: hidden;
             }
+
             .view .item .vacc {
                 width: 48px;
             }
+
             .view .item:last-child {
                 border-bottom: 0;
             }
+
             .view .item div {
                 border-right: 1px solid var(--app-background-color-dark);
                 padding: 0 12px;
                 box-sizing: border-box;
             }
+
             .view .item.title div {
                 border: 0;
             }
+
             .view .item.entry {
                 height: 48px;
                 line-height: 48px;
                 padding-right: 24px;
             }
+
             div.time {
                 width: 15%;
             }
+
             div.name {
                 width: 50%;
             }
+
             div.time, div.name {
                 font-weight: bold;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
+
             paper-button {
                 color: #000;
             }
@@ -152,16 +172,16 @@
 
             @media screen and (max-width: 936px) {
                 paper-dialog#dialog {
-                    min-height: 0!important;
-                    min-width: 0!important;
+                    min-height: 0 !important;
+                    min-width: 0 !important;
                     max-height: none !important;
                     max-width: none !important;
-                    height: calc(100vh - 84px)!important;
+                    height: calc(100vh - 84px) !important;
                     width: 100%;
                     margin: 0;
-                    top: 64px!important;
+                    top: 64px !important;
                     left: 0 !important;
-                    transform: none!important;
+                    transform: none !important;
                 }
             }
         </style>
@@ -180,7 +200,10 @@
                     </template>
                 </div>
                 <template is="dom-if" if="[[!vaccines.length]]">
-                    <h3 class="err"><iron-icon icon="warning"></iron-icon> [[localize('no_hist','No history',language)]] !</h3>
+                    <h3 class="err">
+                        <iron-icon icon="warning"></iron-icon>
+                        [[localize('no_hist','No history',language)]] !
+                    </h3>
                 </template>
                 <template is="dom-repeat" items="[[vaccines]]">
                     <div class="item entry">
@@ -188,14 +211,16 @@
                         <div class="name">[[item.name]] ([[item.code]])</div>
                         <template is="dom-repeat" items="[[allVaccines]]" as="allvac">
                             <div class="vacc">
-                                <vaadin-checkbox checked="[[isMatching(item.code,allvac.code)]]" disabled></vaadin-checkbox>
+                                <vaadin-checkbox checked="[[isMatching(item.code,allvac.code)]]"
+                                                 disabled></vaadin-checkbox>
                             </div>
                         </template>
                     </div>
                 </template>
             </div>
             <div class="buttons">
-                <paper-button class="modal-button--cancel" dialog-dismiss>[[localize('clo','Close',language)]]</paper-button>
+                <paper-button class="modal-button--cancel" dialog-dismiss>[[localize('clo','Close',language)]]
+                </paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -232,27 +257,85 @@
                     },
                     comboStatus: {
                         type: Array,
-                        value : () => [
-                            {"id" : "aborted","label": {"fr": "Abandonné / Contre-indiqué", "nl": "Verlaten / Niet aangegeven", "en": "Abandoned / Against indicated"}},
-                            {"id" : "aborted","label": {"fr": "Abandonné / Décès", "nl": "Verlaten / ", "en": "Abandoned / Death"}},
-                            {"id" : "aborted","label": {"fr": "Abandonné / Désabonné", "nl": "Verlaten / Afgemeld", "en": "Abandoned / Unsubscribed"}},
-                            {"id" : "error","label": {"fr": "Abandonné / Erreur", "nl": "Verlaten /", "en": "Abandoned / Error"}},
-                            {"id" : "aborted","label": {"fr": "Abandonné / Non pertient", "nl": "Verlaten / Irrelevant", "en": "Abandoned / Not relevant"}},
-                            {"id" : "refused","label": {"fr": "Abandonné / Refus patient", "nl": "Verlaten / Weigering van de patiënt", "en": "Abandoned / Patient refusal"}},
-                            {"id" : "aborted","label": {"fr": "Abandonné / Trop tard", "nl": "Verlaten / ", "en": "Abandoned / Too late"}},
-                            {"id" : "aborted","label": {"fr": "Abandonné par le patient", "nl": "Verlaten / erwachting", "en": "Abandoned by patient"}},
-                            {"id" : "pending","label": {"fr": "En attente", "nl": "Verwachting", "en": "Waiting"}},
-                            {"id" : "planned","label": {"fr": "En attente planifié", "nl": "Gepland wachten", "en": "Scheduled waiting"}},
-                            {"id" : "completed","label": {"fr": "Fait", "nl": "Geëxecuteerd", "en": "Done"}},
-                            {"id" : "proposed","label": {"fr": "Rappel envoyé", "nl": "Herinnering verzonden", "en": "Reminder sent"}},
-                            {"id" : "cancelled","label": {"fr": "Annulé", "nl": "cancelled", "en": "cancelled"}}
+                        value: () => [
+                            {
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné / Contre-indiqué",
+                                    "nl": "Verlaten / Niet aangegeven",
+                                    "en": "Abandoned / Against indicated"
+                                }
+                            },
+                            {
+                                "id": "aborted",
+                                "label": {"fr": "Abandonné / Décès", "nl": "Verlaten / ", "en": "Abandoned / Death"}
+                            },
+                            {
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné / Désabonné",
+                                    "nl": "Verlaten / Afgemeld",
+                                    "en": "Abandoned / Unsubscribed"
+                                }
+                            },
+                            {
+                                "id": "error",
+                                "label": {"fr": "Abandonné / Erreur", "nl": "Verlaten /", "en": "Abandoned / Error"}
+                            },
+                            {
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné / Non pertient",
+                                    "nl": "Verlaten / Irrelevant",
+                                    "en": "Abandoned / Not relevant"
+                                }
+                            },
+                            {
+                                "id": "refused",
+                                "label": {
+                                    "fr": "Abandonné / Refus patient",
+                                    "nl": "Verlaten / Weigering van de patiënt",
+                                    "en": "Abandoned / Patient refusal"
+                                }
+                            },
+                            {
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné / Trop tard",
+                                    "nl": "Verlaten / ",
+                                    "en": "Abandoned / Too late"
+                                }
+                            },
+                            {
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné par le patient",
+                                    "nl": "Verlaten / erwachting",
+                                    "en": "Abandoned by patient"
+                                }
+                            },
+                            {"id": "pending", "label": {"fr": "En attente", "nl": "Verwachting", "en": "Waiting"}},
+                            {
+                                "id": "planned",
+                                "label": {
+                                    "fr": "En attente planifié",
+                                    "nl": "Gepland wachten",
+                                    "en": "Scheduled waiting"
+                                }
+                            },
+                            {"id": "completed", "label": {"fr": "Fait", "nl": "Geëxecuteerd", "en": "Done"}},
+                            {
+                                "id": "proposed",
+                                "label": {"fr": "Rappel envoyé", "nl": "Herinnering verzonden", "en": "Reminder sent"}
+                            },
+                            {"id": "cancelled", "label": {"fr": "Annulé", "nl": "cancelled", "en": "cancelled"}}
                         ]
                     },
                 }
             }
 
             static get observers() {
-                return ['setList(contacts)','getAllVaccFromThesaurus(vaccines)']
+                return ['setList(contacts)', 'getAllVaccFromThesaurus(vaccines)']
             }
 
             constructor() {
@@ -263,47 +346,65 @@
                 super.ready();
             }
 
-            setList(){
-                if(!(this.contacts && this.contacts.length)) return;
-                this.api.contact().filterServices(this.contacts,s => s.label==='Actes').then(services =>{
+            setList() {
+                if (!(this.contacts && this.contacts.length)) return;
+                this.api.contact().filterServices(this.contacts, s => s.label === 'Actes').then(services => {
                     let vaccines = []
-                    services.forEach(svc=>{
-                        Object.keys(svc.tags).forEach(k=>{
+                    services.forEach(svc => {
+                        Object.keys(svc.tags).forEach(k => {
                             if (svc.tags[k].code == 'vaccine') {
                                 let thesCode = '0'
-                                Object.keys(svc.codes).forEach(c=>{if(svc.codes[c].type == "BE-THESAURUS-PROCEDURES") {thesCode = svc.codes[c].code}})
-                                const vacc = {name: this._getName(svc),intDate:svc.valueDate, date: this._timeFormat(svc.valueDate),status: this._getStatut(svc),code: thesCode}
+                                Object.keys(svc.codes).forEach(c => {
+                                    if (svc.codes[c].type == "BE-THESAURUS-PROCEDURES") {
+                                        thesCode = svc.codes[c].code
+                                    }
+                                })
+                                const vacc = {
+                                    name: this._getName(svc),
+                                    intDate: svc.valueDate,
+                                    date: this._timeFormat(svc.valueDate),
+                                    status: this._getStatut(svc),
+                                    code: thesCode
+                                }
                                 if (vacc.status == 'Fait' || vacc.status == 'Geëxecuteerd' || vacc.status == 'Done') vaccines.push(vacc)
                             }
                         })
                     })
-                    this.set("vaccines",_.orderBy(vaccines,'intDate','desc'))
+                    this.set("vaccines", _.orderBy(vaccines, 'intDate', 'desc'))
                 })
             }
 
-            _getName(svc){
+            _getName(svc) {
                 const content = svc && this.api.contact().preferredContent(svc, this.language) || svc.content[this.language]
-                return (content && content.medicationValue && content.medicationValue.medicinalProduct && content.medicationValue.medicinalProduct.intendedname) || this.localize('obs_val','obsolete value',this.language)
+                return (content && content.medicationValue && content.medicationValue.medicinalProduct && content.medicationValue.medicinalProduct.intendedname) || this.localize('obs_val', 'obsolete value', this.language)
             }
+
             _timeFormat(date) {
                 return date && this.api.moment(date).format(date > 99991231 ? 'DD/MM/YYYY' : 'DD/MM/YYYY') || '';
             }
-            _getStatut(svc){
-                return this.comboStatus.find(statut => statut.id===svc.tags.find(tag => tag.type==="CD-LIFECYCLE").code) ? this.comboStatus.find(statut => statut.id===svc.tags.find(tag => tag.type==="CD-LIFECYCLE").code).label[this.language] : svc.tags.find(tag => tag.type==="CD-LIFECYCLE").code
+
+            _getStatut(svc) {
+                return this.comboStatus.find(statut => statut.id === svc.tags.find(tag => tag.type === "CD-LIFECYCLE").code) ? this.comboStatus.find(statut => statut.id === svc.tags.find(tag => tag.type === "CD-LIFECYCLE").code).label[this.language] : svc.tags.find(tag => tag.type === "CD-LIFECYCLE").code
             }
 
             getAllVaccFromThesaurus() {
                 let allVacc = []
                 this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS-PROCEDURES', this.language || 'en', 'vaccin', null, null, 100).then(results => {
                     let tempVacc = []
-                    results.rows.map(th=>{this.vaccines.forEach(v=>{if (v.code == th.code && (tempVacc.indexOf(th) < 0)) tempVacc.push(th)})})
-                    this.set('allVaccines', _.sortBy(tempVacc,'code'))
+                    results.rows.map(th => {
+                        this.vaccines.forEach(v => {
+                            if (v.code == th.code && (tempVacc.indexOf(th) < 0)) tempVacc.push(th)
+                        })
+                    })
+                    this.set('allVaccines', _.sortBy(tempVacc, 'code'))
                 })
             }
+
             _getVaccNameFromThes(vac) {
-                return vac.label[this.language] ? vac.label[this.language]+` (${vac.code})` : vac.label[0] ? vac.label[0]+` (${vac.code})` : 'no name'
+                return vac.label[this.language] ? vac.label[this.language] + ` (${vac.code})` : vac.label[0] ? vac.label[0] + ` (${vac.code})` : 'no name'
             }
-            isMatching(a,b) {
+
+            isMatching(a, b) {
                 return a == b
             }
 

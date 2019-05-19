@@ -10,26 +10,30 @@ import './heading-picker.html'
 @customElement('heading-picker')
 export class HeadingPicker extends Polymer.mixinBehaviors([], Polymer.Element) {
 
-  $: { editor: HTMLElement, content: HTMLElement } | any
+    $: { editor: HTMLElement, content: HTMLElement } | any
 
-  @property({type: String, notify: true})
-  heading?: string = ""
+    @property({type: String, notify: true})
+    heading?: string = ""
 
-  @property({type: Array})
-  headingList = ["Normal", "Heading 1", "Heading 2", "Heading 3", "Heading 4", "Heading 5"]
+    @property({type: Array})
+    headingList = ["Normal", "Heading 1", "Heading 2", "Heading 3", "Heading 4", "Heading 5"]
 
-  constructor() {
-    super()
-  }
+    constructor() {
+        super()
+    }
 
-  _onTap(event : any) {
-    this.set('heading', event.target.id)
-    this.dispatchEvent(new CustomEvent('heading-picker-selected', {detail: {value: this.heading}, bubbles:true, composed:true} as EventInit) )
+    _onTap(event: any) {
+        this.set('heading', event.target.id)
+        this.dispatchEvent(new CustomEvent('heading-picker-selected', {
+            detail: {value: this.heading},
+            bubbles: true,
+            composed: true
+        } as EventInit))
 
-    this.$.headingMenuButton.opened = false
-  }
+        this.$.headingMenuButton.opened = false
+    }
 
-  _heading(heading? : string) {
-    return heading && heading.length ? heading : "Normal"
-  }
+    _heading(heading?: string) {
+        return heading && heading.length ? heading : "Normal"
+    }
 }

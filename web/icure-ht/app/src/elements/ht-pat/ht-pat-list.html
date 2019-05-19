@@ -172,6 +172,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     bottom: 20px;
                     width: 24px;
                 }
+
                 span.show-all-patients-txt {
                     max-width: 70%;
                     white-space: nowrap;
@@ -209,6 +210,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     justify-content: space-between;
                     margin: 8px 0;
                 }
+
                 .line.bottom-line {
                     justify-content: flex-start;
                 }
@@ -402,8 +404,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     transition: background .15s;
                     z-index: 2;
                     display: flex;
-                    border-left: 1px solid rgba(0,0,0,.05);
-                    border-right: 1px solid rgba(0,0,0,.05);
+                    border-left: 1px solid rgba(0, 0, 0, .05);
+                    border-right: 1px solid rgba(0, 0, 0, .05);
                     display: flex;
                     flex-flow: row wrap;
                     align-items: center;
@@ -432,11 +434,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     height: 60vh;
                 }
 
-                #sharePatientDialog .content{
+                #sharePatientDialog .content {
                     padding-bottom: 24px;
                 }
 
-                #sharePatientDialog vaadin-grid{
+                #sharePatientDialog vaadin-grid {
                     min-height: 400px;
                     margin-top: 24px;
                 }
@@ -444,14 +446,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 #sharePatientDialog #hcpFilter, #hcp-list {
                     margin: 0;
                 }
+
                 #sharePatientDialog #hcpFilter {
                     max-height: 62px;
                 }
+
                 #sharePatientDialog #hcp-list {
                     height: calc(100% - 24px - 64px);
                 }
 
-                #sharePatientDialog .buttons paper-checkbox{
+                #sharePatientDialog .buttons paper-checkbox {
                     --paper-checkbox-checked-color: var(--app-secondary-color);
                 }
 
@@ -475,12 +479,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     width: 50%;
                 }
 
-                #fusionDialog .content{
+                #fusionDialog .content {
                     padding-top: 24px;
                     padding-bottom: calc(24px + 52px);
                 }
 
-                #fusionDialog .content paper-input-container{
+                #fusionDialog .content paper-input-container {
                     --paper-input-container-focus-color: var(--app-primary-color);
                 }
 
@@ -492,7 +496,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     width: 50%;
                 }
 
-                #sharePatientDelegationDialog .content{
+                #sharePatientDelegationDialog .content {
                     padding-bottom: calc(52px + 24px);
                     padding-top: 24px;
                 }
@@ -743,6 +747,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         justify-content: space-between;
                         align-items: flex-start;
                     }
+
                     .add-pat-dialog {
                         display: initial;
                     }
@@ -784,25 +789,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     padding: 0 24px;
                 }
 
-                #add-patient-dialog .administrative-panel .horizontal{
+                #add-patient-dialog .administrative-panel .horizontal {
                     justify-content: space-between;
                 }
 
-                #add-patient-dialog .administrative-panel .horizontal paper-input{
+                #add-patient-dialog .administrative-panel .horizontal paper-input {
                     flex-grow: 1;
                 }
 
-                #add-patient-dialog .administrative-panel .horizontal paper-icon-button{
+                #add-patient-dialog .administrative-panel .horizontal paper-icon-button {
                     margin-top: 8px;
                 }
 
-                .extra-info{
-                    color:var(--app-text-color-disabled);
+                .extra-info {
+                    color: var(--app-text-color-disabled);
                     font-style: italic;
                     font-size: 80%;
                 }
 
-                .close-button-icon{
+                .close-button-icon {
                     position: absolute;
                     top: 0;
                     right: 0;
@@ -839,7 +844,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     display: none;
                 }
 
-                .eid-notification-panel{
+                .eid-notification-panel {
                     display: none;
                     flex-direction: column;
                     position: fixed;
@@ -875,27 +880,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     padding: 8px 16px;
                     box-sizing: border-box;
                 }
+
                 vaadin-grid.eid-patients-list {
                     width: 448px;
                     max-height: 256px;
                     overflow-y: auto;
                     margin: 0 8px;
                 }
+
                 div.panel-bottom-btns {
                     display: flex;
                     flex-direction: row;
                     width: 100%;
                     justify-content: flex-end;
                 }
+
                 div.panel-bottom-btns > paper-button {
                     margin: 4px;
                     transition: .25s ease;
                 }
+
                 div.panel-bottom-btns > paper-button > iron-icon {
                     padding: 4px;
                     box-sizing: border-box;
                     opacity: .7;
                 }
+
                 div.panel-bottom-btns > paper-button:hover {
                     box-shadow: var(--app-shadow-elevation-2);
                 }
@@ -926,7 +936,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <paper-item id="eidOpenPatientMessage" class="eid-notification-panel">
                 <div class="panel-header">
-                    <iron-icon icon="vaadin:health-card"></iron-icon> [[localize('inv_pat','Patient',language)]]
+                    <iron-icon icon="vaadin:health-card"></iron-icon>
+                    [[localize('inv_pat','Patient',language)]]
                 </div>
                 <vaadin-grid id="eid-patients-list" class="material eid-patients-list" items="[[eidPatientsList]]"
                              on-tap="openWithEid" active-item="{{activeItem}}">
@@ -958,15 +969,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </vaadin-grid-column>
                 </vaadin-grid>
                 <div class="panel-bottom-btns">
-                    <paper-button on-tap="confirm"><iron-icon icon="add-circle"></iron-icon> [[localize('create_new_pat','Create New Patient',language)]]</paper-button>
-                    <paper-button on-tap="closeEidPanel" panel="eidOpenPatientMessage"><iron-icon icon="cancel" panel="eidOpenPatientMessage"></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+                    <paper-button on-tap="confirm">
+                        <iron-icon icon="add-circle"></iron-icon>
+                        [[localize('create_new_pat','Create New Patient',language)]]
+                    </paper-button>
+                    <paper-button on-tap="closeEidPanel" panel="eidOpenPatientMessage">
+                        <iron-icon icon="cancel" panel="eidOpenPatientMessage"></iron-icon>
+                        [[localize('clo','Close',language)]]
+                    </paper-button>
                 </div>
             </paper-item>
             <paper-item id="eidFound" class="notification-container">
                 <iron-icon class="notification-icn" icon="vaadin:health-card"></iron-icon>
-                <div class="notification-msg">[[localize('eid_found','eid found',language)]], [[localize('open_pat','open patient',language)]] ?</div>
-                <paper-button class="notification-btn" on-tap="closeEidPanel" panel="eidFound"><iron-icon icon="cancel" panel="eidFound"></iron-icon>[[localize('no','No',language)]]</paper-button>
-                <paper-button class="notification-btn" on-tap="checkNiss"><iron-icon icon="check-circle"></iron-icon> [[localize('yes','Yes',language)]]</paper-button>
+                <div class="notification-msg">[[localize('eid_found','eid found',language)]],
+                    [[localize('open_pat','open patient',language)]] ?
+                </div>
+                <paper-button class="notification-btn" on-tap="closeEidPanel" panel="eidFound">
+                    <iron-icon icon="cancel" panel="eidFound"></iron-icon>
+                    [[localize('no','No',language)]]
+                </paper-button>
+                <paper-button class="notification-btn" on-tap="checkNiss">
+                    <iron-icon icon="check-circle"></iron-icon>
+                    [[localize('yes','Yes',language)]]
+                </paper-button>
             </paper-item>
 
             <div class="second-filter-panel">
@@ -978,25 +1003,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <span>[[localize('can','Cancel',language)]]</span>
                         </div>
                         <div id="selectPatientOption_text">
-                            [[nbPatientSelected]] [[localize('pat','Patients',language)]] [[localize('multiple_selected','Selected',language)]]
+                            [[nbPatientSelected]] [[localize('pat','Patients',language)]]
+                            [[localize('multiple_selected','Selected',language)]]
                         </div>
                     </div>
                 </template>
                 <template is="dom-if" if="{{!_isPatientsSelected(nbPatientSelected.*)}}">
                     <div class="search-field-container">
                         <!--paper-button class="modal-button modal-button--save" on-tap="displayAllPatients">View All Patients</paper-button-->
-                        <paper-input id="filter" label="[[localize('search','Search',language)]]" value="{{filterValue}}" autofocus>
+                        <paper-input id="filter" label="[[localize('search','Search',language)]]"
+                                     value="{{filterValue}}" autofocus>
                             <div slot="suffix">
-                                <paper-icon-button icon="star" id="save-filter" class="save-filter" on-tap="_saveFilter" disabled="[[!filterValue.length]]"></paper-icon-button>
-                                <paper-tooltip for="save-filter" position="left">[[localize('save_filter','Save filter',language)]]</paper-tooltip>
+                                <paper-icon-button icon="star" id="save-filter" class="save-filter" on-tap="_saveFilter"
+                                                   disabled="[[!filterValue.length]]"></paper-icon-button>
+                                <paper-tooltip for="save-filter" position="left">[[localize('save_filter','Save
+                                    filter',language)]]
+                                </paper-tooltip>
                             </div>
                         </paper-input>
                     </div>
                     <div id="saved-filters" class="saved-filters">
-                        <paper-listbox id="filters" selectable="paper-button" multi toggle-shift selected-values="{{selectedFilterIndexes}}">
+                        <paper-listbox id="filters" selectable="paper-button" multi toggle-shift
+                                       selected-values="{{selectedFilterIndexes}}">
                             <template is="dom-repeat" items="[[_activeFilters(user.properties.*)]]" as="filter"
                                       id="filterMenu">
-                                <paper-button class="filter-tag" id="[[filter.name]]" api="[[api]]" user="[[user]]" language="[[language]]">
+                                <paper-button class="filter-tag" id="[[filter.name]]" api="[[api]]" user="[[user]]"
+                                              language="[[language]]">
                                     <div class="one-line-menu list-title">
                                         [[filter.name]]
                                     </div>
@@ -1021,9 +1053,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             </template>
                             <template>
                                 <div class="cell frozen">
-                                    <template is="dom-if" if="[[!_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
-                                        <paper-icon-button id="new-window-[[item.id]]" icon="icons:open-in-new" on-tap="openPatientOnElectron" data-item$="[[item.id]]"></paper-icon-button>
-                                        <paper-tooltip for="new-window-[[item.id]]" position="right" style="white-space: nowrap;">[[localize('new_win','New window',language)]]</paper-tooltip>
+                                    <template is="dom-if"
+                                              if="[[!_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
+                                        <paper-icon-button id="new-window-[[item.id]]" icon="icons:open-in-new"
+                                                           on-tap="openPatientOnElectron"
+                                                           data-item$="[[item.id]]"></paper-icon-button>
+                                        <paper-tooltip for="new-window-[[item.id]]" position="right"
+                                                       style="white-space: nowrap;">[[localize('new_win','New
+                                            window',language)]]
+                                        </paper-tooltip>
                                     </template>
                                 </div>
                             </template>
@@ -1036,13 +1074,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <!-- <div class="cell frozen">[[localize('pic','Picture',language)]]</div> -->
                         </template>
                         <template>
-                            <template is="dom-if" if="[[!_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
+                            <template is="dom-if"
+                                      if="[[!_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
                                 <div class="cell frozen patient-photo">
                                     <img src$="[[picture(item)]]">
                                 </div>
                             </template>
                             <template is="dom-if" if="[[_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
-                                <vaadin-checkbox id="[[item.id]]" patient="[[item]]" checked="[[_patientSelected(item, patientSelected.*)]]"
+                                <vaadin-checkbox id="[[item.id]]" patient="[[item]]"
+                                                 checked="[[_patientSelected(item, patientSelected.*)]]"
                                                  on-checked-changed="_checkSharePatient"></vaadin-checkbox>
                             </template>
                         </template>
@@ -1119,29 +1159,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </vaadin-grid>
 
                 <div class="add-btn-mobile">
-                    <paper-fab mini icon="more-vert" id="add-btn-mobile-btn" class="toggle-btn" on-tap="toggleMobileMenu"></paper-fab>
-                    <paper-tooltip position="left" for="add-btn-mobile-btn">[[localize('more','More',language)]]</paper-tooltip>
+                    <paper-fab mini icon="more-vert" id="add-btn-mobile-btn" class="toggle-btn"
+                               on-tap="toggleMobileMenu"></paper-fab>
+                    <paper-tooltip position="left" for="add-btn-mobile-btn">[[localize('more','More',language)]]
+                    </paper-tooltip>
                     <div id="add-list-mobile" class$="add-list-mobile [[isShown]]">
                         <template is="dom-if" if="[[!_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
-                            <div class="add-elem-mobile" on-tap="_addPatient">[[localize('add_pat','Add Patient',language)]]
+                            <div class="add-elem-mobile" on-tap="_addPatient">[[localize('add_pat','Add
+                                Patient',language)]]
                             </div>
                             <template is="dom-if" if="[[btnSelectionPatient]]">
-                                <div class="add-elem-mobile" on-tap="_sharePatient">[[localize('share_pat','Share patients',language)]]</div>
-                                <div class="add-elem-mobile" on-tap="_exportPatient">[[localize('export_pat','Export patients',language)]]</div>
-                                <div class="add-elem-mobile" on-tap="_fusionPatient">[[localize('fus_pat','Fusion patients',language)]]</div>
+                                <div class="add-elem-mobile" on-tap="_sharePatient">[[localize('share_pat','Share
+                                    patients',language)]]
+                                </div>
+                                <div class="add-elem-mobile" on-tap="_exportPatient">[[localize('export_pat','Export
+                                    patients',language)]]
+                                </div>
+                                <div class="add-elem-mobile" on-tap="_fusionPatient">[[localize('fus_pat','Fusion
+                                    patients',language)]]
+                                </div>
                             </template>
-                            <div class="add-elem-mobile" on-tap="_sharePatientAll">[[localize('share_all_pat','Share all patients',language)]]</iron-icon>
+                            <div class="add-elem-mobile" on-tap="_sharePatientAll">[[localize('share_all_pat','Share all
+                                patients',language)]]</iron-icon>
                             </div>
-                            <div class="add-elem-mobile" on-tap="_exportListToXls">[[localize('export_xls','Export to XLS',language)]]
+                            <div class="add-elem-mobile" on-tap="_exportListToXls">[[localize('export_xls','Export to
+                                XLS',language)]]
                             </div>
-                            <div class="add-elem-mobile" on-tap="_openImportPatientFromMfDialog">[[localize('import_mf','Import patient from PMF/SMF',language)]]
+                            <div class="add-elem-mobile" on-tap="_openImportPatientFromMfDialog">
+                                [[localize('import_mf','Import patient from PMF/SMF',language)]]
                             </div>
                         </template>
                         <template is="dom-if" if="[[_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
-                            <div class="add-elem-mobile" on-tap="_cancelSelecting">[[localize('canc','Cancel',language)]]</div>
-                            <div class="add-elem-mobile" on-tap="_openPatientActionDialog">[[localize('sel','Select',language)]]</iron-icon></div>
+                            <div class="add-elem-mobile" on-tap="_cancelSelecting">
+                                [[localize('canc','Cancel',language)]]
+                            </div>
+                            <div class="add-elem-mobile" on-tap="_openPatientActionDialog">
+                                [[localize('sel','Select',language)]]</iron-icon></div>
                             <template is="dom-if" if="[[taskProgress]]">
-                                <vaadin-progress-bar class="progress-bar" value="[[taskProgress]]"></vaadin-progress-bar>
+                                <vaadin-progress-bar class="progress-bar"
+                                                     value="[[taskProgress]]"></vaadin-progress-bar>
                             </template>
                         </template>
                     </div>
@@ -1153,32 +1209,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <span class="show-all-patients-txt">[[localize('show_inactive_patients','Show inactive patients',language)]]</span>
                     <div class="add-btn-container">
                         <template is="dom-if" if="[[!_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
-                            <paper-button class="add-btn" on-tap="_addPatient">[[localize('add_pat','Add Patient',language)]]
+                            <paper-button class="add-btn" on-tap="_addPatient">[[localize('add_pat','Add
+                                Patient',language)]]
                             </paper-button>
 
                             <template is="dom-if" if="[[btnSelectionPatient]]">
-                                <paper-button class="add-btn" on-tap="_sharePatient">[[localize('share_pat','Share patients',language)]]
+                                <paper-button class="add-btn" on-tap="_sharePatient">[[localize('share_pat','Share
+                                    patients',language)]]
                                 </paper-button>
-                                <paper-button class="add-btn" on-tap="_exportPatient">[[localize('export_pat','Export patients',language)]]
+                                <paper-button class="add-btn" on-tap="_exportPatient">[[localize('export_pat','Export
+                                    patients',language)]]
                                 </paper-button>
-                                <paper-button class="add-btn" on-tap="_fusionPatient">[[localize('fus_pat','Fusion patients',language)]]
+                                <paper-button class="add-btn" on-tap="_fusionPatient">[[localize('fus_pat','Fusion
+                                    patients',language)]]
                                 </paper-button>
                             </template>
 
-                            <paper-button class="add-btn" on-tap="_sharePatientAll">[[localize('share_all_pat','Share all patients',language)]]</paper-button>
-                            <paper-button class="exportcsv-btn" on-tap="_exportListToXls">[[localize('export_xls','Export to XLS',language)]]
+                            <paper-button class="add-btn" on-tap="_sharePatientAll">[[localize('share_all_pat','Share
+                                all patients',language)]]
                             </paper-button>
-                            <paper-button class="exportcsv-btn" on-tap="_openImportPatientFromMfDialog">[[localize('import_mf','Import patient from PMF/SMF',language)]]
+                            <paper-button class="exportcsv-btn" on-tap="_exportListToXls">
+                                [[localize('export_xls','Export to XLS',language)]]
+                            </paper-button>
+                            <paper-button class="exportcsv-btn" on-tap="_openImportPatientFromMfDialog">
+                                [[localize('import_mf','Import patient from PMF/SMF',language)]]
                             </paper-button>
                         </template>
                         <template is="dom-if" if="[[_optionsChecked(shareOption.*,exportOption.*,fusionOption.*)]]">
-                            <paper-button class="cancel-btn" on-tap="_cancelSelecting">[[localize('canc','Cancel',language)]]</paper-button>
+                            <paper-button class="cancel-btn" on-tap="_cancelSelecting">
+                                [[localize('canc','Cancel',language)]]
+                            </paper-button>
                             <paper-button class="add-btn" on-tap="_openPatientActionDialog">
                                 <iron-icon icon="icons:check" on-tap="_openPatientActionDialog"></iron-icon>
                                 [[localize('sel','Select',language)]]
                             </paper-button>
                             <template is="dom-if" if="[[taskProgress]]">
-                                <vaadin-progress-bar class="progress-bar" value="[[taskProgress]]"></vaadin-progress-bar>
+                                <vaadin-progress-bar class="progress-bar"
+                                                     value="[[taskProgress]]"></vaadin-progress-bar>
                             </template>
                         </template>
                     </div>
@@ -1187,10 +1254,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
 
         <paper-dialog id="patient-import-dialog">
-            <h2 class="modal-title">[[localize('upl_mffil','Upload SMF/PMF files',language)]]<span class="extra-info">[[localize('xml_files', '(XML files)', language)]]</span></h2>
+            <h2 class="modal-title">[[localize('upl_mffil','Upload SMF/PMF files',language)]]<span class="extra-info">[[localize('xml_files', '(XML files)', language)]]</span>
+            </h2>
             <div class="content">
                 <vaadin-upload id="vaadin-upload" no-auto files="{{files}}" accept="text/xml,application/xml"
-                               target="[[api.host]]/document/{documentId}/attachment/multipart;jsessionid=[[api.sessionId]]" method="PUT" form-data-name="attachment"
+                               target="[[api.host]]/document/{documentId}/attachment/multipart;jsessionid=[[api.sessionId]]"
+                               method="PUT" form-data-name="attachment"
                                on-upload-success="_mfFileUploaded"></vaadin-upload>
             </div>
             <div class="buttons">
@@ -1201,7 +1270,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-dialog id="add-patient-dialog" class="dialog add-pat-dialog">
             <h2 class="modal-title">[[localize('add_pat','Add a patient',language)]]</h2>
             <div class="administrative-panel" style="width:100%">
-                <paper-tabs selected="{{tabs}}" style="background: var(--app-secondary-color); --paper-tabs-selection-bar-color: var(--app-text-color-disabled)">
+                <paper-tabs selected="{{tabs}}"
+                            style="background: var(--app-secondary-color); --paper-tabs-selection-bar-color: var(--app-text-color-disabled)">
                     <paper-tab class="adm-tab">
                         <iron-icon style="margin-right:10px" icon="icons:assignment-ind"></iron-icon>
                         [[localize('subscription_form_physical_person','Physical person',language)]]
@@ -1216,26 +1286,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <iron-pages selected="[[tabs]]">
                         <page>
                             <div class="content-block horizontal">
-                                <paper-icon-button icon="vaadin:health-card" id="read-eid" class="eid" on-tap="_readEid"></paper-icon-button>
-                                <paper-tooltip for="read-eid" position="top">[[localize('fill_with_eid','Fill with eID',language)]]</paper-tooltip>
-                                <paper-input label="[[localize('las_nam','Last name',language)]]" style="min-width:200px" value="{{lastName}}"></paper-input>
-                                <paper-input label="[[localize('fir_nam','First name',language)]]" value="{{firstName}}"></paper-input>
-                                <vaadin-date-picker label="[[localize('dat_of_bir','Date of birth',language)]]" i18n="[[i18n]]" value="{{dateAsString}}"></vaadin-date-picker>
-                                <paper-input label="[[localize('niss','Ssin',language)]]" value="{{ssin}}" on-keyup="_searchDuplicate"></paper-input>
+                                <paper-icon-button icon="vaadin:health-card" id="read-eid" class="eid"
+                                                   on-tap="_readEid"></paper-icon-button>
+                                <paper-tooltip for="read-eid" position="top">[[localize('fill_with_eid','Fill with
+                                    eID',language)]]
+                                </paper-tooltip>
+                                <paper-input label="[[localize('las_nam','Last name',language)]]"
+                                             style="min-width:200px" value="{{lastName}}"></paper-input>
+                                <paper-input label="[[localize('fir_nam','First name',language)]]"
+                                             value="{{firstName}}"></paper-input>
+                                <vaadin-date-picker label="[[localize('dat_of_bir','Date of birth',language)]]"
+                                                    i18n="[[i18n]]" value="{{dateAsString}}"></vaadin-date-picker>
+                                <paper-input label="[[localize('niss','Ssin',language)]]" value="{{ssin}}"
+                                             on-keyup="_searchDuplicate"></paper-input>
                                 <paper-input-container>
                                     <label slot="label">[[localize("gender","Gender",language)]]
                                     </label>
                                     <iron-input slot="input" bind-value="{{valueGender}}">
-                                        <input id="inputGender" readonly value="{{valueGender::input}}" on-tap="_openPopupMenu"></input>
+                                        <input id="inputGender" readonly value="{{valueGender::input}}"
+                                               on-tap="_openPopupMenu"></input>
                                     </iron-input>
-                                    <paper-menu-button id="paper-menu-button" slot="suffix" horizontal-offset="[[listBoxOffsetWidth]]">
-                                        <iron-icon icon="paper-dropdown-menu:arrow-drop-down" slot="dropdown-trigger"></iron-icon>
-                                        <paper-listbox id="dropdown-listbox" slot="dropdown-content" selected="{{selected}}" selected-item="{{selectedItem}}">
-                                            <paper-item id="unknown">[[localize('unknown','unknown',language)]]</paper-item>
+                                    <paper-menu-button id="paper-menu-button" slot="suffix"
+                                                       horizontal-offset="[[listBoxOffsetWidth]]">
+                                        <iron-icon icon="paper-dropdown-menu:arrow-drop-down"
+                                                   slot="dropdown-trigger"></iron-icon>
+                                        <paper-listbox id="dropdown-listbox" slot="dropdown-content"
+                                                       selected="{{selected}}" selected-item="{{selectedItem}}">
+                                            <paper-item id="unknown">[[localize('unknown','unknown',language)]]
+                                            </paper-item>
                                             <paper-item id="male">[[localize('male','male',language)]]</paper-item>
-                                            <paper-item id="female">[[localize('female','female',language)]]</paper-item>
-                                            <paper-item id="indeterminate">[[localize('indeterminate','indeterminate',language)]]</paper-item>
-                                            <paper-item id="changed">[[localize('changed','changed',language)]]</paper-item>
+                                            <paper-item id="female">[[localize('female','female',language)]]
+                                            </paper-item>
+                                            <paper-item id="indeterminate">
+                                                [[localize('indeterminate','indeterminate',language)]]
+                                            </paper-item>
+                                            <paper-item id="changed">[[localize('changed','changed',language)]]
+                                            </paper-item>
                                         </paper-listbox>
                                     </paper-menu-button>
                                 </paper-input-container>
@@ -1246,36 +1332,56 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <div class="content-block horizontal" style="margin-top:20px">
 
                                 <vaadin-combo-box
-                                        id="mh-search" filtered-items="[[mhListItem]]" item-label-path="hrLabel" style="width:30%"
+                                        id="mh-search" filtered-items="[[mhListItem]]" item-label-path="hrLabel"
+                                        style="width:30%"
                                         item-value-path="id" on-filter-changed="_mhSearch" on-keydown=""
                                         label="[[localize('mh','Medical house',language)]]"
                                         value="{{medicalHouseContract.hcpId}}">
                                 </vaadin-combo-box>
 
-                                <vaadin-date-picker label="[[localize('sub_dat','Subscription date',language)]]" value="{{medicalHouseContract.startOfContract}}" i18n="[[i18n]]"
+                                <vaadin-date-picker label="[[localize('sub_dat','Subscription date',language)]]"
+                                                    value="{{medicalHouseContract.startOfContract}}" i18n="[[i18n]]"
                                                     value="" id="startOfContract"
-                                                    always-float-label on-value-changed="updateStartOfCoverage" style="width:20%"></vaadin-date-picker>
-                                <paper-input label="[[localize('sub_eva_mon','Subscription evaluation months',language)]]" value="" i18n="[[i18n]]" value="0" id="evalutationMonths"
-                                             on-value-changed="updateStartOfCoverage"
-                                             type="number" always-float-label min="0" step="3" max="3" style="min-width: 20%"></paper-input>
-                                <vaadin-date-picker label="[[localize('cov_sta','Coverage start',language)]]" value="{{medicalHouseContract.startOfCoverage}}" i18n="[[i18n]]" value=""
+                                                    always-float-label on-value-changed="updateStartOfCoverage"
+                                                    style="width:20%"></vaadin-date-picker>
+                                <paper-input
+                                        label="[[localize('sub_eva_mon','Subscription evaluation months',language)]]"
+                                        value="" i18n="[[i18n]]" value="0" id="evalutationMonths"
+                                        on-value-changed="updateStartOfCoverage"
+                                        type="number" always-float-label min="0" step="3" max="3"
+                                        style="min-width: 20%"></paper-input>
+                                <vaadin-date-picker label="[[localize('cov_sta','Coverage start',language)]]"
+                                                    value="{{medicalHouseContract.startOfCoverage}}" i18n="[[i18n]]"
+                                                    value=""
                                                     id="startOfCoverage"
                                                     always-float-label readonly style="width:20%"></vaadin-date-picker>
                             </div>
                             <div class="horizontal" style="margin-top:30px">
                                 <label style="font-weight: 700; display:inline-block; margin-right:30px;">
-                                    <iron-icon icon="icons:check" style="margin-right:10px; color:var(--app-secondary-color);"></iron-icon>
+                                    <iron-icon icon="icons:check"
+                                               style="margin-right:10px; color:var(--app-secondary-color);"></iron-icon>
                                     [[localize('patient_subscriptions','Patient subscriptions',language)]]:</label>
-                                <paper-checkbox value="{{medicalHouseContract.gp}}" checked="{{medicalHouseContract.gp}}" id="medicalHouseContractGpCheckBox" label="[[localize('has_m','Has doctor subscription',language)]]"
+                                <paper-checkbox value="{{medicalHouseContract.gp}}"
+                                                checked="{{medicalHouseContract.gp}}"
+                                                id="medicalHouseContractGpCheckBox"
+                                                label="[[localize('has_m','Has doctor subscription',language)]]"
                                                 always-float-label
-                                                style="margin-right:30px">[[localize('has_m','Has doctor subscription',language)]]?
+                                                style="margin-right:30px">[[localize('has_m','Has doctor
+                                    subscription',language)]]?
                                 </paper-checkbox>
-                                <paper-checkbox value="{{medicalHouseContract.kine}}" checked="{{medicalHouseContract.kine}}" id="medicalHouseContractKineCheckBox"
-                                                label="[[localize('has_k','Has physiotherapist subscription',language)]]" always-float-label
-                                                style="margin-right:30px">[[localize('has_k','Has physiotherapist subscription',language)]]?
+                                <paper-checkbox value="{{medicalHouseContract.kine}}"
+                                                checked="{{medicalHouseContract.kine}}"
+                                                id="medicalHouseContractKineCheckBox"
+                                                label="[[localize('has_k','Has physiotherapist subscription',language)]]"
+                                                always-float-label
+                                                style="margin-right:30px">[[localize('has_k','Has physiotherapist
+                                    subscription',language)]]?
                                 </paper-checkbox>
-                                <paper-checkbox value="{{medicalHouseContract.nurse}}" checked="{{medicalHouseContract.nurse}}" id="medicalHouseContractNurseCheckBox"
-                                                label="[[localize('has_i','Has nurse subscription',language)]]" always-float-label
+                                <paper-checkbox value="{{medicalHouseContract.nurse}}"
+                                                checked="{{medicalHouseContract.nurse}}"
+                                                id="medicalHouseContractNurseCheckBox"
+                                                label="[[localize('has_i','Has nurse subscription',language)]]"
+                                                always-float-label
                                 >[[localize('has_i','Has nurse subscription',language)]]?
                                 </paper-checkbox>
                             </div>
@@ -1332,8 +1438,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
             </div>
             <div class="buttons">
-                <paper-button class="modal-button modal-button--cancel" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirm" disabled="[[!canAddPat]]">[[localize('cre','Create',language)]]</paper-button>
+                <paper-button class="modal-button modal-button--cancel" dialog-dismiss>
+                    [[localize('can','Cancel',language)]]
+                </paper-button>
+                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirm"
+                              disabled="[[!canAddPat]]">[[localize('cre','Create',language)]]
+                </paper-button>
             </div>
             </div>
         </paper-dialog>
@@ -1342,7 +1452,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-dialog id="saveFilterDialog">
             <h2 class="modal-title">[[localize('save_filter','Save Filter',language)]]</h2>
             <div>
-                <paper-input class="filterNameInput" label="[[localize('filter_name','Filter name',language)]]" value="{{filterName}}"></paper-input>
+                <paper-input class="filterNameInput" label="[[localize('filter_name','Filter name',language)]]"
+                             value="{{filterName}}"></paper-input>
             </div>
             <div class="line">
                 <span>[[localize('fil','Filter',language)]] : </span>
@@ -1350,22 +1461,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
             <div class="buttons">
                 <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmFilter">[[localize('cre','Create',language)]]
+                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmFilter">
+                    [[localize('cre','Create',language)]]
                 </paper-button>
             </div>
         </paper-dialog>
 
         <paper-dialog id="sharePatientDialog">
-            <h2 class="modal-title">[[localize('share_to_what_hcp','With which provider do you want to share these patients',language)]] ?</h2>
+            <h2 class="modal-title">[[localize('share_to_what_hcp','With which provider do you want to share these
+                patients',language)]] ?</h2>
             <div class="content">
-                <paper-input id="hcpFilter" label="[[localize('fil','Filter',language)]]" value="{{hcpFilterValue}}"></paper-input>
-                <vaadin-grid id="hcp-list" class="material" multi-sort="[[multiSort]]" items="[[hcp]]" active-item="{{activeHcp}}">
+                <paper-input id="hcpFilter" label="[[localize('fil','Filter',language)]]"
+                             value="{{hcpFilterValue}}"></paper-input>
+                <vaadin-grid id="hcp-list" class="material" multi-sort="[[multiSort]]" items="[[hcp]]"
+                             active-item="{{activeHcp}}">
                     <vaadin-grid-column width="40px">
                         <template class="header">
                             <vaadin-checkbox on-checked-changed="_toggleBoxes"></vaadin-checkbox>
                         </template>
                         <template>
-                            <vaadin-checkbox class="checkbox" id="[[item.id]]" checked="[[_sharingHcp(item, hcp.*)]]" on-checked-changed="_checkHcp" disabled="[[shareAll]]"></vaadin-checkbox>
+                            <vaadin-checkbox class="checkbox" id="[[item.id]]" checked="[[_sharingHcp(item, hcp.*)]]"
+                                             on-checked-changed="_checkHcp" disabled="[[shareAll]]"></vaadin-checkbox>
                         </template>
                     </vaadin-grid-column>
                     <vaadin-grid-column width="100px">
@@ -1407,16 +1523,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </vaadin-grid>
             </div>
             <div class="buttons">
-                <paper-checkbox on-checked-changed="displayAllHcps">[[localize('disp_all_hcps','Display all HCPs', language)]]</paper-checkbox>
+                <paper-checkbox on-checked-changed="displayAllHcps">[[localize('disp_all_hcps','Display all HCPs',
+                    language)]]
+                </paper-checkbox>
                 <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmSharingNextStep">[[localize('share_pat','Share
+                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus
+                              on-tap="confirmSharingNextStep">[[localize('share_pat','Share
                     patients',language)]]
                 </paper-button>
             </div>
         </paper-dialog>
 
         <paper-dialog id="sharePatientDelegationDialog">
-            <h2 class="modal-title">[[localize("titleSharPatDelDia","Quels sont les droits d'accès à partager ?",language)]]</h2>
+            <h2 class="modal-title">[[localize("titleSharPatDelDia","Quels sont les droits d'accès à partager
+                ?",language)]]</h2>
             <div class="content">
                 <vaadin-grid items="[[hcpSelectedForSharing]]">
                     <vaadin-grid-column width="150px">
@@ -1434,10 +1554,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <template>
                             <div>
                                 <template is="dom-repeat" items="[[delegation]]" as="delegationTag">
-                                    <template is="dom-if" if="{{_showAllDelegation(delegationTag,item.id,hcpSelectedForSharing.*)}}">
+                                    <template is="dom-if"
+                                              if="{{_showAllDelegation(delegationTag,item.id,hcpSelectedForSharing.*)}}">
                                         <vaadin-checkbox class="delegationCheckBox" id="[[item.id]][[delegationTag]]"
                                                          checked="{{checkingDelegation(delegationTag,item.delegation,hcpSelectedForSharing.*)}}"
-                                                         on-checked-changed="_checkDelegation">[[localize(delegationTag,delegationTag,language)]]
+                                                         on-checked-changed="_checkDelegation">
+                                            [[localize(delegationTag,delegationTag,language)]]
                                         </vaadin-checkbox>
                                         <template is="dom-if" if="{{_neededBr(delegationTag)}}">
                                             <br>
@@ -1451,7 +1573,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
             <div class="buttons">
                 <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmSharing">[[localize('share_pat','Share patients',language)]]
+                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmSharing">
+                    [[localize('share_pat','Share patients',language)]]
                 </paper-button>
             </div>
         </paper-dialog>
@@ -1512,13 +1635,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </vaadin-grid>
             </div>
             <div class="buttons">
-                <paper-button class="modal-button modal-button--save" dialog-dismiss>[[localize('done','Done',language)]]</paper-button>
+                <paper-button class="modal-button modal-button--save" dialog-dismiss>
+                    [[localize('done','Done',language)]]
+                </paper-button>
             </div>
         </paper-dialog>
 
         <paper-dialog id="importPatientStatus">
-            <h2 class="modal-title">[[localize("pat_import_sta","Patient import status",language)]] <span>([[remainingPatientImports.length]] [[localize("file_import_remaining", "remaining files")]])</span></h2>
-            <div  class="content">
+            <h2 class="modal-title">[[localize("pat_import_sta","Patient import status",language)]] <span>([[remainingPatientImports.length]] [[localize("file_import_remaining", "remaining files")]])</span>
+            </h2>
+            <div class="content">
                 <vaadin-grid items="[[patientImportStatuses]]">
                     <vaadin-grid-column width="150px">
                         <template class="header">
@@ -1581,8 +1707,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="buttons">
                 <ht-spinner class="import-spinner" active="[[isImportingPatients]]"></ht-spinner>
                 <paper-button dialog-dismiss>[[localize('clo','Close',language)]]</paper-button>
-                <paper-button on-click="abortImport" >[[localize('abort','Abort',language)]]</paper-button>
-                <paper-button on-click="saveImportLog" >[[localize('save_import_log','Save import log',language)]]</paper-button>
+                <paper-button on-click="abortImport">[[localize('abort','Abort',language)]]</paper-button>
+                <paper-button on-click="saveImportLog">[[localize('save_import_log','Save import log',language)]]
+                </paper-button>
             </div>
         </paper-dialog>
 
@@ -1590,9 +1717,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <h2 class="modal-title">[[localize('fus_pat','Fusion patients',language)]]</h2>
             <div class="content">
                 <paper-input-container>
-                    <label slot="label">[[localize('fir_pat_fus','Selectionner le patient qui restera',language)]]</label>
+                    <label slot="label">[[localize('fir_pat_fus','Selectionner le patient qui
+                        restera',language)]]</label>
                     <iron-input slot="input">
-                        <input id="fusionPatSelect" value="{{getNamePat(idFusionPat,idFusionPat.*)}}" readonly on-tap="_openPopupMenu"></input>
+                        <input id="fusionPatSelect" value="{{getNamePat(idFusionPat,idFusionPat.*)}}" readonly
+                               on-tap="_openPopupMenu"></input>
                     </iron-input>
                     <paper-menu-button id="paper-menu-button" slot="suffix" horizontal-offset="[[listBoxOffsetWidth]]">
                         <iron-icon icon="paper-dropdown-menu:arrow-drop-down" slot="dropdown-trigger"></iron-icon>
@@ -1606,7 +1735,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
             <div class="buttons">
                 <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmFusion">[[localize('fus_pat','Fusion patients',language)]]
+                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmFusion">
+                    [[localize('fus_pat','Fusion patients',language)]]
                 </paper-button>
             </div>
         </paper-dialog>
@@ -1879,23 +2009,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: false
                     },
                     socket: {
-                        type : Object,
-                        value : {}
+                        type: Object,
+                        value: {}
                     },
-                    eidPatientsList : {
-                        type : Array,
-                        value : []
+                    eidPatientsList: {
+                        type: Array,
+                        value: []
                     },
-                    onElectron : {
-                        type : Boolean,
-                        value : false
+                    onElectron: {
+                        type: Boolean,
+                        value: false
                     }
                 }
             }
 
             static get observers() {
                 return [
-                    '_hcpChanged(hcp)','_selectedFilterIndexesChanged(selectedFilterIndexes.splices)', '_filterValueChanged(filterValue)', '_showInactivePatientsChanged(showInactive)', '_hcpFilterChanged(hcpFilterValue, _allHcpsChecked)', '_filesChanged(files.*)','_canAddPat(lastName,firstName,dateAsString)',
+                    '_hcpChanged(hcp)', '_selectedFilterIndexesChanged(selectedFilterIndexes.splices)', '_filterValueChanged(filterValue)', '_showInactivePatientsChanged(showInactive)', '_hcpFilterChanged(hcpFilterValue, _allHcpsChecked)', '_filesChanged(files.*)', '_canAddPat(lastName,firstName,dateAsString)',
                     '_resetSearchField(selectedPatient)'
                 ]
             }
@@ -1910,14 +2040,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 grid.clearCache()
             }
 
-            _any(a,b,c) {
+            _any(a, b, c) {
                 return a || b
             }
 
             ready() {
                 super.ready()
 
-                this.api.isElectronAvailable().then(electron => this.set('onElectron',electron))
+                this.api.isElectronAvailable().then(electron => this.set('onElectron', electron))
 
                 this.medicalHouseContractShadowObject = {
                     hcpId: null,
@@ -1974,13 +2104,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         } else {
                             try {
                                 svcFilter = filterExParser.parse(latestSearchValue, {hcpId: currentHcp.parentId || this.user.healthcarePartyId})
-                            } catch (ignored) {}
+                            } catch (ignored) {
+                            }
                         }
 
                         const filter = svcFilter ? null : {
                             '$type': 'IntersectionFilter',
                             'healthcarePartyId': currentHcp.parentId || this.user.healthcarePartyId,
-                            'filters': _.compact(latestSearchValue.split(/[ ,;:]+/).filter(w => w.length >= 2).map( word => /^[0-9]{11}$/.test(word) ? {
+                            'filters': _.compact(latestSearchValue.split(/[ ,;:]+/).filter(w => w.length >= 2).map(word => /^[0-9]{11}$/.test(word) ? {
                                 '$type': 'PatientByHcPartyAndSsinFilter',
                                 'healthcarePartyId': currentHcp.parentId || this.user.healthcarePartyId,
                                 'ssin': word
@@ -1993,30 +2124,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 'healthcarePartyId': currentHcp.parentId || this.user.healthcarePartyId,
                                 'filters': [
                                     {
-                                        '$type': 'PatientByHcPartyDateOfBirthBetweenFilter', 'healthcarePartyId': currentHcp.parentId || this.user.healthcarePartyId,
-                                        'minDateOfBirth': word.length >= 8  ? Number(word.substr(0,8)) : word.length >= 6 ? Number(word.substr(0,6) + '00') : Number(word.substr(0,4) + '0000'),
-                                        'maxDateOfBirth': word.length >= 8  ? Number(word.substr(0,8)) : word.length >= 6 ? Number(word.substr(0,6) + '99') : Number(word.substr(0,4) + '9999')
+                                        '$type': 'PatientByHcPartyDateOfBirthBetweenFilter',
+                                        'healthcarePartyId': currentHcp.parentId || this.user.healthcarePartyId,
+                                        'minDateOfBirth': word.length >= 8 ? Number(word.substr(0, 8)) : word.length >= 6 ? Number(word.substr(0, 6) + '00') : Number(word.substr(0, 4) + '0000'),
+                                        'maxDateOfBirth': word.length >= 8 ? Number(word.substr(0, 8)) : word.length >= 6 ? Number(word.substr(0, 6) + '99') : Number(word.substr(0, 4) + '9999')
                                     },
                                     {
-                                        '$type': 'PatientByHcPartyAndExternalIdFilter', 'healthcarePartyId': currentHcp.parentId || this.user.healthcarePartyId,
+                                        '$type': 'PatientByHcPartyAndExternalIdFilter',
+                                        'healthcarePartyId': currentHcp.parentId || this.user.healthcarePartyId,
                                         'externalId': word
                                     }
                                 ]
-                            } : word.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z]/g,'').length >= 2 ? {
+                            } : word.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z]/g, '').length >= 2 ? {
                                 '$type': 'PatientByHcPartyNameContainsFuzzyFilter',
                                 'healthcarePartyId': currentHcp.parentId || this.user.healthcarePartyId,
                                 'searchString': word
                             } : null))
                         }
 
-                        const predicates = svcFilter ? [] : latestSearchValue.split(/[ ,;:]+/).filter(w => w.length >= 2).map( word =>
+                        const predicates = svcFilter ? [] : latestSearchValue.split(/[ ,;:]+/).filter(w => w.length >= 2).map(word =>
                             /^[0-9]{11}$/.test(word) ? (() => true) :
                                 /^[0-3]?[0-9][\/-](1[0-2]|0?[0-9])[\/-]([1-2][89012])?[0-9][0-9]$/.test(word) ? (() => true) :
                                     /^[0-9]{3}[0-9]+$/.test(word) ? ((p) => (p.dateOfBirth && (`${p.dateOfBirth}`.includes(word))) || (p.externalId && p.externalId.includes(word))) :
                                         (p => {
-                                            const w = word.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z]/g,'')
-                                            return w.length<2 ? true : (p.firstName && p.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z]/g,'').includes(w)) ||
-                                                (p.lastName && p.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z]/g,'').includes(w))
+                                            const w = word.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z]/g, '')
+                                            return w.length < 2 ? true : (p.firstName && p.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z]/g, '').includes(w)) ||
+                                                (p.lastName && p.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z]/g, '').includes(w))
                                         })
                         )
 
@@ -2109,9 +2242,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.tabs = 0
 
                 this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(myHcp => {
-                    if ( !!(myHcp && myHcp.parentId) || _.trim(_.get(myHcp,"type","")).toLowerCase() === "medicalhouse" ) {
-                        this.api.hcparty().getHealthcareParty(_.get(myHcp,"parentId", _.trim(myHcp.id) )).then(parentHcp => {
-                            const parent = _.trim(_.get(myHcp,"type","")).toLowerCase() === "medicalhouse" ? myHcp : parentHcp;
+                    if (!!(myHcp && myHcp.parentId) || _.trim(_.get(myHcp, "type", "")).toLowerCase() === "medicalhouse") {
+                        this.api.hcparty().getHealthcareParty(_.get(myHcp, "parentId", _.trim(myHcp.id))).then(parentHcp => {
+                            const parent = _.trim(_.get(myHcp, "type", "")).toLowerCase() === "medicalhouse" ? myHcp : parentHcp;
                             this.mhListItem = parent ? [{
                                 id: parent.id,
                                 name: _.upperFirst(_.lowerCase(parent.name)),
@@ -2123,9 +2256,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.set('medicalHouseContract.hcpId', parent.id)
 
                             // Pre-check vs NIHII number, last 3 digits (MKI) === 1 (Respectively for "médecin", "kiné", "infirmière"
-                            this.set('medicalHouseContract.gp', !!(parent && _.trim(_.get(parent,"nihii","")).slice(-3, -2) === '1') );
-                            this.set('medicalHouseContract.kine', !!(parent && _.trim(_.get(parent,"nihii","")).slice(-2, -1) === '1') );
-                            this.set('medicalHouseContract.nurse', !!(parent && _.trim(_.get(parent,"nihii","")).slice(-1) === '1') );
+                            this.set('medicalHouseContract.gp', !!(parent && _.trim(_.get(parent, "nihii", "")).slice(-3, -2) === '1'));
+                            this.set('medicalHouseContract.kine', !!(parent && _.trim(_.get(parent, "nihii", "")).slice(-2, -1) === '1'));
+                            this.set('medicalHouseContract.nurse', !!(parent && _.trim(_.get(parent, "nihii", "")).slice(-1) === '1'));
 
                         })
                     } else {
@@ -2219,7 +2352,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 // Must click on a row
                 if (e.path[0].nodeName === 'TABLE') return
-                if(this.activeItem) {
+                if (this.activeItem) {
                     const selected = this.activeItem
                     console.log('selected ', selected, ' - ' + this.latestSelected)
                     this.api.patient().getPatientWithUser(this.user, selected.id).then(p => this.api.register(p, 'patient')).then(p => {
@@ -2253,7 +2386,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.set('dateAsString', this.api.moment(res.cards[0].dateOfBirth * 1000).format('YYYY-MM-DD'))
                             this.set('ssin', res.cards[0].nationalNumber)
                             this.set('valueGender', res.cards[0].gender === 'M' ? 'male' : 'female')
-                            this.set('cardData',res.cards[0])
+                            this.set('cardData', res.cards[0])
                         }
                     })
             }
@@ -2422,8 +2555,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _openImportPatientFromMfDialog() {
                 const vaadinUpload = this.$['vaadin-upload']
-                vaadinUpload.set('i18n.addFiles.many', this.localize('upl_fil','Upload file',this.language))
-                vaadinUpload.set('i18n.dropFiles.many', this.localize('uplabel','Drop files here...',this.language))
+                vaadinUpload.set('i18n.addFiles.many', this.localize('upl_fil', 'Upload file', this.language))
+                vaadinUpload.set('i18n.dropFiles.many', this.localize('uplabel', 'Drop files here...', this.language))
                 if (this.remainingPatientImports === undefined || this.remainingPatientImports.length === 0) {
                     this.remainingPatientImports = []
                     this.patientImportStatuses = []
@@ -2722,7 +2855,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     filtersProperty.typedValue.stringValue = '{}'
                 }
 
-                const key = this.filterName.length ? this.filterName : this.filterValue.substring(0,5)+'...'
+                const key = this.filterName.length ? this.filterName : this.filterValue.substring(0, 5) + '...'
 
                 const filters = JSON.parse(filtersProperty.typedValue.stringValue)
                 try {
@@ -2767,7 +2900,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     })
 
                 const filters = JSON.parse(filtersProperty.typedValue.stringValue)
-                delete(filters[e.target.id])
+                delete (filters[e.target.id])
 
                 filtersProperty.typedValue.stringValue = JSON.stringify(filters)
 
@@ -2852,7 +2985,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     const mark = this.patientSelected.find(m => m.id === targetId)
                     if (!mark) {
                         this.api.patient().getPatientWithUser(this.user, targetId).then(result => {
-                            this.push('patientSelected', {id: targetId, check: true, names: result.firstName + " " + result.lastName})
+                            this.push('patientSelected', {
+                                id: targetId,
+                                check: true,
+                                names: result.firstName + " " + result.lastName
+                            })
                             this.set('nbPatientSelected', this.patientSelected.filter(patient => patient.check).length)
                         })
                     } else {
@@ -2971,14 +3108,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _toggleBoxes(e) {
-                const checked = e.target.getAttribute('checked')!= null ? true : false
-                console.log('checked ?',checked)
+                const checked = e.target.getAttribute('checked') != null ? true : false
+                console.log('checked ?', checked)
                 let boxList = this.shadowRoot.querySelector('#hcp-list');
                 let allCheckBoxes = boxList ? boxList.querySelectorAll('.checkbox') : [];
-                allCheckBoxes.forEach(box=>{
+                allCheckBoxes.forEach(box => {
                     box.checked = !box.checked;
                 })
-                this.set('shareAll',checked)
+                this.set('shareAll', checked)
             }
 
             _checkHcp(e) {
@@ -3007,7 +3144,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _sharingHcp(item) {
-                if (this.shareAll == true ) {
+                if (this.shareAll == true) {
                     return true
                 } else if (item) {
                     const mark = this.hcpSelectedForSharing.find(m => m.id === item.id)
@@ -3025,8 +3162,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$['sharePatientDialog'].close()
 
                 //erase uncheck user
-                if (this.shareAll ||(allHcp === true)) {
-                    this.set('hcpSelectedForSharing',this.hcp)
+                if (this.shareAll || (allHcp === true)) {
+                    this.set('hcpSelectedForSharing', this.hcp)
                 } else {
                     const tab = _.differenceBy(this.hcpSelectedForSharing, [{'check': false}], 'check')
                     this.set("hcpSelectedForSharing", tab)
@@ -3063,7 +3200,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _sharePatients(patients) {
                 this.set('patientShareStatuses', [])
-                this.set('isSharingPatient',true)
+                this.set('isSharingPatient', true)
 
                 const hcpId = this.user.healthcarePartyId
                 const delegates = this.hcpSelectedForSharing.filter(hcp => hcp.check && hcp.id)
@@ -3102,7 +3239,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         })
                     )
                 });
-                this.patientSharePromise.then(()=>this.set('isSharingPatient',false))
+                this.patientSharePromise.then(() => this.set('isSharingPatient', false))
             }
 
             _openPopupMenu() {
@@ -3238,12 +3375,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     if (this.hcpSelectedForSharing[index].delegation.filter(element => !(element.includes("cdItem") || element === "all")).length === 6) {
                         this.set("hcpSelectedForSharing." + index + ".delegation", ["all"])
                     }
-                }
-                else {//uncheck
+                } else {//uncheck
                     if (tag === "all") {
                         this.set("hcpSelectedForSharing." + index + ".delegation", this.delegation.filter((element, index, array) => (index <= 4 && element !== "all")))
-                    }
-                    else {
+                    } else {
                         this.set("hcpSelectedForSharing." + index + ".delegation",
                             this.hcpSelectedForSharing[index].delegation.filter(x => x !== tag))
                     }
@@ -3270,8 +3405,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             //add news delegations for this user
                             if (userDelegation.hasOwnProperty(delegationTag)) {
                                 userDelegation[delegationTag].push(userShared.id)
-                            }
-                            else {
+                            } else {
                                 userDelegation[delegationTag] = [userShared.id]
                             }
                         })
@@ -3388,9 +3522,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             checkForParentMedicalHouse() {
                 if (this.user && this.user.healthcarePartyId) {
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
-                        if ( !!(hcp && hcp.parentId) || _.trim(_.get(hcp,"type","")).toLowerCase() === "medicalhouse" ) {
-                            this.api.hcparty().getHealthcareParty(_.get(hcp,"parentId", _.trim(hcp.id) )).then(parentHcp => {
-                                if ( _.trim(_.get(parentHcp,"type","")).toLowerCase() === "medicalhouse" || _.trim(_.get(hcp,"type","")).toLowerCase() === "medicalhouse" ) {
+                        if (!!(hcp && hcp.parentId) || _.trim(_.get(hcp, "type", "")).toLowerCase() === "medicalhouse") {
+                            this.api.hcparty().getHealthcareParty(_.get(hcp, "parentId", _.trim(hcp.id))).then(parentHcp => {
+                                if (_.trim(_.get(parentHcp, "type", "")).toLowerCase() === "medicalhouse" || _.trim(_.get(hcp, "type", "")).toLowerCase() === "medicalhouse") {
                                     this.shadowRoot.getElementById("medicalHouseTabView").classList.remove("doNotDisplay")
                                     this.hcpParentMedicalHouseData = parentHcp
                                 } else {
@@ -3451,7 +3585,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             )
                                     )
 
-                                return {totalSize: dataProviderResults.length, rows: _.sortBy(dataProviderResults, 'name')}
+                                return {
+                                    totalSize: dataProviderResults.length,
+                                    rows: _.sortBy(dataProviderResults, 'name')
+                                }
                             }
                         )
 
@@ -3459,9 +3596,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            setSocket(){
-                if(!this.socket)return;
-                this.socket.on("auto-read-card-eid",cards =>{
+            setSocket() {
+                if (!this.socket) return;
+                this.socket.on("auto-read-card-eid", cards => {
                     const res = JSON.parse(cards)
                     if (res.cards[0]) {
                         this.set('firstName', res.cards[0].firstName)
@@ -3469,7 +3606,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         this.set('dateAsString', this.api.moment(res.cards[0].dateOfBirth * 1000).format('YYYY-MM-DD'))
                         this.set('ssin', res.cards[0].nationalNumber)
                         this.set('valueGender', res.cards[0].gender === 'M' ? 'male' : 'female')
-                        this.set('cardData',res.cards[0])
+                        this.set('cardData', res.cards[0])
                         this.$['eidFound'].classList.add('notification');
                     }
 
@@ -3477,7 +3614,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 })
             }
 
-            searchPatientsEid(){
+            searchPatientsEid() {
                 this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(currentHcp => {
 
                     //creation of filters
@@ -3530,7 +3667,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 })
             }
 
-            checkNiss(){
+            checkNiss() {
                 this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(currentHcp => {
                     const ssinFilter = /^[0-9]{11}$/.test(this.ssin) && ({
                         '$type': 'PatientByHcPartyAndSsinFilter',
@@ -3544,14 +3681,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 const selected = patients.rows[0]
                                 this.api.patient().getPatientWithUser(this.user, selected.id).then(p => {
                                     p.ssin = p.ssin || this.cardData.nationalNumber
-                                    if(!p.addresses.find(ad => ad.addressType==="home")){
+                                    if (!p.addresses.find(ad => ad.addressType === "home")) {
                                         let streetData = _.trim(this.cardData.street).split(" ")
                                         const number = streetData.find(str => str.match(/\d/g))
-                                        const boxNumber = streetData[streetData.length-1]!==number ? streetData[streetData.length-1] :""
-                                        const street = streetData.reduce((tot,str)=>{
-                                            if(!tot)tot="";
-                                            if(!(str===number || str===boxNumber ))
-                                                tot = tot.concat(" ",str)
+                                        const boxNumber = streetData[streetData.length - 1] !== number ? streetData[streetData.length - 1] : ""
+                                        const street = streetData.reduce((tot, str) => {
+                                            if (!tot) tot = "";
+                                            if (!(str === number || str === boxNumber))
+                                                tot = tot.concat(" ", str)
                                             return tot;
                                         })
 
@@ -3576,8 +3713,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                                     return p
                                 })
-                                    .then( p => this.api.patient().modifyPatientWithUser(this.user,p))
-                                    .then( p => this.api.register(p, 'patient'))
+                                    .then(p => this.api.patient().modifyPatientWithUser(this.user, p))
+                                    .then(p => this.api.register(p, 'patient'))
                                     .then(p => {
                                         this.set('selectedPatient', p)
                                         return this.selectedPatient
@@ -3599,26 +3736,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             closeEidPanel(e) {
                 const target = e && e.target && e.target.getAttribute('panel') || ''
-                if (this.$[target] && this.$[target].classList.contains('notification') ){
+                if (this.$[target] && this.$[target].classList.contains('notification')) {
                     this.$[target].classList.remove('notification');
                 }
             }
 
-            openWithEid(e){
+            openWithEid(e) {
                 // Must click on a row
                 if (e.path[0].nodeName === 'TABLE') return
-                if(this.activeItem) {
+                if (this.activeItem) {
                     const selected = this.activeItem
                     this.api.patient().getPatientWithUser(this.user, selected.id).then(p => {
                         p.ssin = p.ssin || this.cardData.nationalNumber
-                        if(!p.addresses.find(ad => ad.addressType==="home")){
+                        if (!p.addresses.find(ad => ad.addressType === "home")) {
                             let streetData = _.trim(this.cardData.street).split(" ")
                             const number = streetData.find(str => str.match(/\d/g))
-                            const boxNumber = streetData[streetData.length-1]!==number ? streetData[streetData.length-1] :""
-                            const street = streetData.reduce((tot,str)=>{
-                                if(!tot)tot="";
-                                if(!(str===number || str===boxNumber ))
-                                    tot = tot.concat(" ",str)
+                            const boxNumber = streetData[streetData.length - 1] !== number ? streetData[streetData.length - 1] : ""
+                            const street = streetData.reduce((tot, str) => {
+                                if (!tot) tot = "";
+                                if (!(str === number || str === boxNumber))
+                                    tot = tot.concat(" ", str)
                                 return tot;
                             })
 
@@ -3643,15 +3780,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                         return p
                     })
-                        .then( p => this.api.patient().modifyPatientWithUser(this.user,p))
-                        .then( p => this.api.register(p, 'patient'))
+                        .then(p => this.api.patient().modifyPatientWithUser(this.user, p))
+                        .then(p => this.api.register(p, 'patient'))
                         .then(p => {
                             this.set('selectedPatient', p)
                             this.set('isLoadingPatient', false)
                             this.$['eidOpenPatientMessage'].classList.remove('notification');
                             return this.selectedPatient
                         })
-                        .then(p =>{
+                        .then(p => {
                             this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
                                 this.api.fhc().Therlinkcontroller().registerTherapeuticLinkUsingPOST1(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
                                     hcp.nihii, hcp.ssin, hcp.firstName, hcp.lastName,
@@ -3662,7 +3799,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            openPatientOnElectron(e){
+            openPatientOnElectron(e) {
                 e.stopPropagation()
                 e.preventDefault();
 
@@ -3685,8 +3822,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     })
             }
 
-            cleanNiss(niss){
-                return niss.replace(/ /g, "").replace(/-/g,"").replace(/\./g,"").replace(/_/g,"").replace(/\//g,"")
+            cleanNiss(niss) {
+                return niss.replace(/ /g, "").replace(/-/g, "").replace(/\./g, "").replace(/_/g, "").replace(/\//g, "")
             }
         }
 

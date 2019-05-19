@@ -79,7 +79,7 @@
                 color: var(--app-primary-color-dark);
             }
 
-            .filters-bar--small-icon{
+            .filters-bar--small-icon {
                 color: var(--app-text-color-disabled);
             }
 
@@ -108,19 +108,22 @@
                 color: var(--app-text-color);
             }
 
-            @media screen and (max-width:1025px){
-                .filters-bar--small{
+            @media screen and (max-width: 1025px) {
+                .filters-bar--small {
                     margin: 0 16px;
                 }
             }
         </style>
 
         <div id="filtersPanel" is="dom-if" class="filters-panel filters-panel--collapsed">
-            <paper-input id="searchInput" label="[[localize('sch','Search',language)]]" class="search-input" value="{{searchString}}">
+            <paper-input id="searchInput" label="[[localize('sch','Search',language)]]" class="search-input"
+                         value="{{searchString}}">
                 <iron-icon class="search-icons" icon="icons:search" prefix></iron-icon>
-                <paper-icon-button suffix on-click="clearInput" icon="clear" alt="clear" title="clear" class="clear-search-button-icon"></paper-icon-button>
+                <paper-icon-button suffix on-click="clearInput" icon="clear" alt="clear" title="clear"
+                                   class="clear-search-button-icon"></paper-icon-button>
             </paper-input>
-            <paper-listbox selected-values="[[_selectedFilterIndexes(selectedFilters, selectedFilters.*)]]" focused on-selected-items-changed="selectMenu" multi >
+            <paper-listbox selected-values="[[_selectedFilterIndexes(selectedFilters, selectedFilters.*)]]" focused
+                           on-selected-items-changed="selectMenu" multi>
                 <template id="filterPanelMenu" is="dom-repeat" items="[[items]]" as="menu">
                     <paper-item>
                         <iron-icon class="filters-panel-icon" icon="[[menu.icon]]"></iron-icon>
@@ -130,7 +133,8 @@
             </paper-listbox>
         </div>
         <div class="filters-bar">
-            <paper-button is="dom-if" hidden$="{{!showFiltersPanel}}" class="hide-filters-btn" on-tap="toggleFiltersPanel" name="hide-filters" role="button" tabindex="0"
+            <paper-button is="dom-if" hidden$="{{!showFiltersPanel}}" class="hide-filters-btn"
+                          on-tap="toggleFiltersPanel" name="hide-filters" role="button" tabindex="0"
                           aria-disabled="false" elevation="0">
                 [[localize('hid_fil','Hide Filters',language)]]
                 <iron-icon icon="icons:expand-less"></iron-icon>
@@ -139,11 +143,14 @@
                 <div class="filters-bar--small">
                     <div>
                         <template id="filterPanelIcons" is="dom-repeat" items="[[visibleItems]]" as="menu">
-                            <paper-icon-button id="[[menu.id]]-btn" class$="filters-bar--small-icon [[_isFilterSelected(menu.filter,selectedFilters,selectedFilters.*)]]" icon="[[menu.icon]]" on-tap="_filterSelected"></paper-icon-button>
+                            <paper-icon-button id="[[menu.id]]-btn"
+                                               class$="filters-bar--small-icon [[_isFilterSelected(menu.filter,selectedFilters,selectedFilters.*)]]"
+                                               icon="[[menu.icon]]" on-tap="_filterSelected"></paper-icon-button>
                             <paper-tooltip for="[[menu.id]]-btn">[[_localize(menu.title)]]</paper-tooltip>
                         </template>
                     </div>
-                    <paper-button class="show-filters-btn" on-tap="toggleFiltersPanel" name="show-filters" role="button" tabindex="0" aria-disabled="false" elevation="0">
+                    <paper-button class="show-filters-btn" on-tap="toggleFiltersPanel" name="show-filters" role="button"
+                                  tabindex="0" aria-disabled="false" elevation="0">
                         [[localize('sho_fil','Show Filters',language)]]
                         <iron-icon icon="icons:expand-more"></iron-icon>
                     </paper-button>
@@ -228,11 +235,11 @@
                 this.root.querySelector('#filtersPanel').classList.toggle('filters-panel--collapsed');
             }
 
-            iconTitle(icon){
+            iconTitle(icon) {
                 return icon.title[this.language]
             }
 
-            itemTitle(item){
+            itemTitle(item) {
                 return item.title[this.language]
             }
 
@@ -251,23 +258,27 @@
             }
 
             selectMenu(e) {
-                if(e.detail.value.length !== 0) {
-                    this.set('selectedFilters',e.detail.value.map(
+                if (e.detail.value.length !== 0) {
+                    this.set('selectedFilters', e.detail.value.map(
                         val => this.$.filterPanelMenu.modelForElement(val).menu.filter
                     ))
                 } else {
-                    this.set('selectedFilters',[])
+                    this.set('selectedFilters', [])
                 }
             }
 
-            _selectedFilterIndexes(){
-                return this.selectedFilters ? this.selectedFilters.map(f=> this.items.map(i=>i.filter).indexOf(f)) : []
+            _selectedFilterIndexes() {
+                return this.selectedFilters ? this.selectedFilters.map(f => this.items.map(i => i.filter).indexOf(f)) : []
 
             }
 
             reset() {
                 const props = FilterPanel.properties
-                Object.keys(props).forEach(k => { if (!props[k].noReset) { this.set(k, (typeof props[k].value === 'function' ? props[k].value() : (props[k].value || null))) }})
+                Object.keys(props).forEach(k => {
+                    if (!props[k].noReset) {
+                        this.set(k, (typeof props[k].value === 'function' ? props[k].value() : (props[k].value || null)))
+                    }
+                })
                 this.root.querySelector('#filtersPanel').classList.add('filters-panel--collapsed');
 
             }

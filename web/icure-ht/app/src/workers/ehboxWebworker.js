@@ -7,60 +7,60 @@ import moment from 'moment/src/moment'
 import levenshtein from 'js-levenshtein'
 
 onmessage = e => {
-    if(e.data.action === "loadEhboxMessage"){
-        const iccHost           = e.data.iccHost
-        const iccHeaders        = JSON.parse(e.data.iccHeaders)
+    if (e.data.action === "loadEhboxMessage") {
+        const iccHost = e.data.iccHost
+        const iccHeaders = JSON.parse(e.data.iccHeaders)
 
-        const fhcHost           = e.data.fhcHost
-        const fhcHeaders        = JSON.parse(e.data.fhcHeaders)
+        const fhcHost = e.data.fhcHost
+        const fhcHeaders = JSON.parse(e.data.fhcHeaders)
 
-        const tokenId           = e.data.tokenId
-        const keystoreId        = e.data.keystoreId
-        const user              = e.data.user
-        const parentHcp         = e.data.parentHcp
-        const ehpassword        = e.data.ehpassword
-        const boxIds            = e.data.boxId
-        const alternateKeystores= e.data.alternateKeystores
-        const language          = e.data.language
+        const tokenId = e.data.tokenId
+        const keystoreId = e.data.keystoreId
+        const user = e.data.user
+        const parentHcp = e.data.parentHcp
+        const ehpassword = e.data.ehpassword
+        const boxIds = e.data.boxId
+        const alternateKeystores = e.data.alternateKeystores
+        const language = e.data.language
 
-        const ehboxApi          = new fhcApi.fhcEhboxcontrollerApi(fhcHost, fhcHeaders)
+        const ehboxApi = new fhcApi.fhcEhboxcontrollerApi(fhcHost, fhcHeaders)
 
-        const docApi            = new iccApi.iccDocumentApi(iccHost, iccHeaders)
-        const msgApi            = new iccApi.iccMessageApi(iccHost, iccHeaders)
-        const beResultApi       = new iccApi.iccBeresultimportApi(iccHost, iccHeaders)
+        const docApi = new iccApi.iccDocumentApi(iccHost, iccHeaders)
+        const msgApi = new iccApi.iccMessageApi(iccHost, iccHeaders)
+        const beResultApi = new iccApi.iccBeresultimportApi(iccHost, iccHeaders)
 
-        const iccHcpartyApi     = new iccApi.iccHcpartyApi(iccHost, iccHeaders)
-        const iccPatientApi     = new iccApi.iccPatientApi(iccHost, iccHeaders)
-        const iccContactApi		= new iccApi.iccContactApi(iccHost, iccHeaders)
-        const iccCryptoXApi     = new iccXApi.IccCryptoXApi(iccHost, iccHeaders, iccHcpartyApi)
+        const iccHcpartyApi = new iccApi.iccHcpartyApi(iccHost, iccHeaders)
+        const iccPatientApi = new iccApi.iccPatientApi(iccHost, iccHeaders)
+        const iccContactApi = new iccApi.iccContactApi(iccHost, iccHeaders)
+        const iccCryptoXApi = new iccXApi.IccCryptoXApi(iccHost, iccHeaders, iccHcpartyApi)
 
-        const iccUtils          = new UtilsClass()
+        const iccUtils = new UtilsClass()
 
         //Avoid the hit to the local storage to load the key pair
-        Object.keys(e.data.keyPairs).forEach( k => iccCryptoXApi.cacheKeyPair(e.data.keyPairs[k], k) )
+        Object.keys(e.data.keyPairs).forEach(k => iccCryptoXApi.cacheKeyPair(e.data.keyPairs[k], k))
 
-        const iccDocumentXApi   = new iccXApi.IccDocumentXApi(iccHost, iccHeaders, iccCryptoXApi)
-        const iccContactXApi	= new iccXApi.IccContactXApi(iccHost, iccHeaders,iccCryptoXApi)
-        const iccFormXApi		= new iccXApi.IccFormXApi(iccHost, iccHeaders,iccCryptoXApi)
-        const iccMessageXApi    = new iccXApi.IccMessageXApi(iccHost, iccHeaders, iccCryptoXApi)
+        const iccDocumentXApi = new iccXApi.IccDocumentXApi(iccHost, iccHeaders, iccCryptoXApi)
+        const iccContactXApi = new iccXApi.IccContactXApi(iccHost, iccHeaders, iccCryptoXApi)
+        const iccFormXApi = new iccXApi.IccFormXApi(iccHost, iccHeaders, iccCryptoXApi)
+        const iccMessageXApi = new iccXApi.IccMessageXApi(iccHost, iccHeaders, iccCryptoXApi)
 
 
-        const textType = (uti, utis) =>{
-			//return (uti && [uti] || []).concat(utis && utis.value || []).map(u => iccDocumentXApi.mimeType(u)).find(m => m === 'text/plain');
+        const textType = (uti, utis) => {
+            //return (uti && [uti] || []).concat(utis && utis.value || []).map(u => iccDocumentXApi.mimeType(u)).find(m => m === 'text/plain');
             // NOTE: mime type and extension from ehbox are not reliable, the ResultImport API can detect if it's the correct type
-			return true
-		}
+            return true
+        }
 
         const removeMsgFromEhboxServer = (msg) => {
             if (msg) {
-                const thisBox = msg.transportGuid.substring(0,msg.transportGuid.indexOf(':'))
+                const thisBox = msg.transportGuid.substring(0, msg.transportGuid.indexOf(':'))
                 const delBox = thisBox === 'INBOX' ? 'BININBOX' : thisBox === 'SENTBOX' ? 'BINSENTBOX' : null
-                const idOfMsg = msg.transportGuid.substring(msg.transportGuid.indexOf(':')+1)
+                const idOfMsg = msg.transportGuid.substring(msg.transportGuid.indexOf(':') + 1)
                 // console.log('remove from server',idOfMsg,thisBox,delBox)
                 if (thisBox.transportGuid && !thisBox.transportGuid.startsWith("BIN")) { // if it was not in bin
                     // console.log('move to bin',idOfMsg,thisBox,delBox)
                     return ehboxApi.moveMessagesUsingPOST(keystoreId, tokenId, ehpassword, [idOfMsg], thisBox, delBox)
-                        .then(()=>{
+                        .then(() => {
                             // console.log('move to bin done',idOfMsg,thisBox,delBox)
                         })
                         .catch(err => {
@@ -73,8 +73,8 @@ onmessage = e => {
             }
         }
 
-		const assignResult = (message,docInfo,document) => {
-            console.log('assignResult',message,docInfo,document)
+        const assignResult = (message, docInfo, document) => {
+            console.log('assignResult', message, docInfo, document)
             // assign to patient/contact the result matching docInfo from all the results of the document
             // return {id: contactId, protocolId: protocolIdString} if success else null (in promise)
 
@@ -94,7 +94,7 @@ onmessage = e => {
                             '$type': 'PatientByHcPartyNameContainsFuzzyFilter',
                             'healthcarePartyId': parentHcp.id,
                             'searchString': docInfo.lastName
-                        },{
+                        }, {
                             '$type': 'PatientByHcPartyNameContainsFuzzyFilter',
                             'healthcarePartyId': parentHcp.id,
                             'searchString': docInfo.firstName
@@ -110,19 +110,19 @@ onmessage = e => {
 
             return iccPatientApi.filterByWithUser(user, null, null, 20, 0, null, null, {filter: filter}).then(({rows}) => {
                 const candidates = rows.filter(p => {
-                    const pFn =  p.firstName && p.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(/\s+/)[0]
-                    const lFn =  docInfo.firstName && docInfo.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'')
-                    const pLn =  p.lastName && p.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(/\s+/)[0]
-                    const lLn =  docInfo.lastName && docInfo.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'')
+                    const pFn = p.firstName && p.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(/\s+/)[0]
+                    const lFn = docInfo.firstName && docInfo.firstName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/, '')
+                    const pLn = p.lastName && p.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").split(/\s+/)[0]
+                    const lLn = docInfo.lastName && docInfo.lastName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/, '')
 
                     return (docInfo.ssin && p.ssin && docInfo.ssin === p.ssin) ||
-                        (pFn && lFn && pLn && lLn && p.dateOfBirth && docInfo.dateOfBirth && (levenshtein(pFn,lFn) < 2 && levenshtein(pLn,lLn) < 3 && p.dateOfBirth === docInfo.dateOfBirth)) ||
+                        (pFn && lFn && pLn && lLn && p.dateOfBirth && docInfo.dateOfBirth && (levenshtein(pFn, lFn) < 2 && levenshtein(pLn, lLn) < 3 && p.dateOfBirth === docInfo.dateOfBirth)) ||
                         (pFn && lFn && p.dateOfBirth && docInfo.dateOfBirth && (pFn === lFn && p.dateOfBirth === docInfo.dateOfBirth)) ||
                         (pLn && lLn && p.dateOfBirth && docInfo.dateOfBirth && (pLn === lLn && p.dateOfBirth === docInfo.dateOfBirth)) ||
                         (pFn && lFn && pLn && lLn && (pLn === lLn && pFn === lFn))
                 })
 
-                return (candidates.length !== 1)  ?
+                return (candidates.length !== 1) ?
                     Promise.resolve(null) :
                     iccContactXApi.newInstance(user, candidates[0], {
                         groupId: message.id,
@@ -176,24 +176,24 @@ onmessage = e => {
             })
         } // assignResult end
 
-        const createDbMessageWithAppendicesAndTryToAssign =  (message,boxId) => {
+        const createDbMessageWithAppendicesAndTryToAssign = (message, boxId) => {
             return ehboxApi.getFullMessageUsingGET(keystoreId, tokenId, ehpassword, boxId, message.id)
-                .then(fullMessage => msgApi.findMessagesByTransportGuid(boxId+":"+message.id, null, null, 1).then(existingMess => [fullMessage, existingMess]))
+                .then(fullMessage => msgApi.findMessagesByTransportGuid(boxId + ":" + message.id, null, null, 1).then(existingMess => [fullMessage, existingMess]))
                 .then(([fullMessage, existingMess]) => {
                     if (existingMess.rows.length > 0) {
                         //console.log("Message already known in DB",existingMess.rows)
                         const existingMessage = existingMess.rows[0]
                         // remove messages older than 7d
-                        if(existingMessage.created !== null && existingMessage.created < (Date.now() - (7 * 24 * 3600000))) {
+                        if (existingMessage.created !== null && existingMessage.created < (Date.now() - (7 * 24 * 3600000))) {
                             return removeMsgFromEhboxServer(existingMessage)
                         }
                         return Promise.resolve()
                     } else {
-                        console.log('fullMessage',fullMessage)
-                        console.log('boxId',boxId)
+                        console.log('fullMessage', fullMessage)
+                        console.log('boxId', boxId)
                         registerNewMessage(fullMessage, boxId)
                             .then(([createdMessage, annexDocs]) => {
-                               // return tryToAssignAppendices(createdMessage, fullMessage, annexDocs, boxId)
+                                // return tryToAssignAppendices(createdMessage, fullMessage, annexDocs, boxId)
                                 return Promise.resolve()
                             })
                     }
@@ -207,7 +207,7 @@ onmessage = e => {
                 }))
 
                 return Promise.all(results)
-                    .then (reslist => {
+                    .then(reslist => {
                         let assignedMap = {}
                         let unassignedList = []
                         _.flatten(reslist).forEach(result => {
@@ -237,18 +237,18 @@ onmessage = e => {
                 )
                 .then(({extractedKeys: enckeys}) => beResultApi.getInfos(createdDocument.id, false, null, enckeys.join(',')))
                 .then(docInfos => {
-                    console.log('tryToAssignAppendix',fullMessage,createdDocument,docInfos)
+                    console.log('tryToAssignAppendix', fullMessage, createdDocument, docInfos)
                     return Promise.all(
                         docInfos.map(docInfo => {
-                           return assignResult(fullMessage, docInfo, createdDocument).then(result => {
-                               if(result != null) {
-                                   console.log('result',result)
-                                   return {assigned: true, protocolId: result.protocolId, contactId: result.id}
-                               } else {
-                                   return {assigned: false, protocolId: docInfo.protocol, contactId: null}
-                               }
-                           })
-                        } )
+                            return assignResult(fullMessage, docInfo, createdDocument).then(result => {
+                                if (result != null) {
+                                    console.log('result', result)
+                                    return {assigned: true, protocolId: result.protocolId, contactId: result.id}
+                                } else {
+                                    return {assigned: false, protocolId: docInfo.protocol, contactId: null}
+                                }
+                            })
+                        })
                     )
                 })
                 .catch(err => {
@@ -261,14 +261,14 @@ onmessage = e => {
             let createdDate = moment(fullMessage.publicationDateTime, "YYYYMMDD").valueOf()
             let receivedDate = new Date().getTime()
 
-            let tempStatus = fullMessage.status ? fullMessage.status : 0<<0 | 1<<1
-            if (!fullMessage.status ) {
-                tempStatus = fullMessage && fullMessage.important ? tempStatus|1<<2 : tempStatus
-                tempStatus = fullMessage && fullMessage.encrypted ? tempStatus|1<<3 : tempStatus
-                tempStatus = fullMessage && fullMessage.annex.length ? tempStatus|1<<4 : tempStatus
+            let tempStatus = fullMessage.status ? fullMessage.status : 0 << 0 | 1 << 1
+            if (!fullMessage.status) {
+                tempStatus = fullMessage && fullMessage.important ? tempStatus | 1 << 2 : tempStatus
+                tempStatus = fullMessage && fullMessage.encrypted ? tempStatus | 1 << 3 : tempStatus
+                tempStatus = fullMessage && fullMessage.annex.length ? tempStatus | 1 << 4 : tempStatus
             }
 
-            (fullMessage.destinations).forEach(dest=>{
+            (fullMessage.destinations).forEach(dest => {
                 //
             })
 
@@ -302,7 +302,9 @@ onmessage = e => {
                             return [createdMessage, annexDocs]
                         }).catch(e => {
                             console.log("Message annexes creation failed for ", e)
-                            iccMessageXApi.message().deleteMessages(createdMessage.id).then(() => { throw e })
+                            iccMessageXApi.message().deleteMessages(createdMessage.id).then(() => {
+                                throw e
+                            })
                         })
                 })
         }
@@ -336,14 +338,17 @@ onmessage = e => {
         }
 
 
-        boxIds && boxIds.forEach(boxId =>{
+        boxIds && boxIds.forEach(boxId => {
             ehboxApi.loadMessagesUsingPOST(keystoreId, tokenId, ehpassword, boxId, 100, alternateKeystores)
                 .then(messages => {
                     let p = Promise.resolve([])
                     messages.forEach(m => {
                         p = p.then(() => {
                             return createDbMessageWithAppendicesAndTryToAssign(m, boxId)
-                                .catch(e => {console.log("Error processing message "+m.id,e); return Promise.resolve()})
+                                .catch(e => {
+                                    console.log("Error processing message " + m.id, e);
+                                    return Promise.resolve()
+                                })
                         })
                     })
                     return p
@@ -353,11 +358,13 @@ onmessage = e => {
     }
 };
 
-function getFromAddress(sender){
-    if (!sender) { return "" }
+function getFromAddress(sender) {
+    if (!sender) {
+        return ""
+    }
     return (sender.lastName ? sender.lastName : "") +
-        (sender.firstName ? ' '+sender.firstName : "") +
-        (sender.organizationName ? ' '+sender.organizationName : "") +
+        (sender.firstName ? ' ' + sender.firstName : "") +
+        (sender.organizationName ? ' ' + sender.organizationName : "") +
         (' ' + sender.identifierType.type + ':' + sender.id)
 
 }

@@ -74,8 +74,8 @@
             paper-input {
                 --paper-input-container-focus-color: var(--app-primary-color);
                 --paper-input-container-label: {
-                    color:var(--app-text-color);
-                    opacity:1;
+                    color: var(--app-text-color);
+                    opacity: 1;
                 };
             }
 
@@ -98,7 +98,7 @@
             paper-dialog {
                 min-height: 480px;
                 min-width: 600px;
-                max-height: unset!important;
+                max-height: unset !important;
                 width: 80%;
                 top: 50%;
                 transform: translateY(-50%);
@@ -108,11 +108,11 @@
                 display: none;
             }
 
-            .no-column{
+            .no-column {
                 display: none;
             }
 
-            .column{
+            .column {
                 margin: 2px;
             }
 
@@ -132,19 +132,19 @@
                 };
             }
 
-            .modal-title{
-                background:  var(--app-background-color-dark);
+            .modal-title {
+                background: var(--app-background-color-dark);
                 margin-top: 0;
                 padding: 16px 24px;
             }
 
-            .buttons{
+            .buttons {
                 position: absolute;
                 bottom: 0;
                 right: 12px;
             }
 
-            .modal-button{
+            .modal-button {
                 --paper-button-ink-color: var(--app-secondary-color-dark);
                 color: var(--app-text-color);
                 font-weight: 400;
@@ -161,7 +161,7 @@
                 border: 1px solid var(--app-background-color-dark);
             }
 
-            .modal-button--save{
+            .modal-button--save {
                 box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
                 background: var(--app-secondary-color);
                 color: var(--app-primary-color-dark);
@@ -174,92 +174,108 @@
                 top: 50%;
                 left: 50%;
                 z-index: 150;
-                transform: translate(-50%,-50%);
+                transform: translate(-50%, -50%);
                 height: 42px;
-				width: 42px;
+                width: 42px;
             }
         </style>
 
         <paper-dialog id="medication-selection" always-on-top="true">
             <ht-spinner class="center" active="[[isLoadingEntities]]"></ht-spinner>
             <h2 class="modal-title">[[localize('sel_med','Select medication',language)]]</h2>
-                <paper-tabs selected="{{medicationType}}" attr-for-selected="name">
-                    <paper-tab name="chronical" on-tap="setMedicationType">
-                        [[localize('medication-chronical','Chronical medication',language)]]
-                    </paper-tab>
-                    <paper-tab name="medicinalProduct" on-tap="setMedicationType">
-                        [[localize('medication-by-product-name','By product name',language)]]
-                    </paper-tab>
-                    <paper-tab name="substanceProduct" on-tap="setMedicationType">
-                        [[localize('medication-by-molecule','By molecule',language)]]
-                    </paper-tab>
-                    <paper-tab name="compoundPrescription" on-tap="setMedicationType">
-                        [[localize('medication-compound','Compound prescription',language)]]
-                    </paper-tab>
-                </paper-tabs>
-                    <template is="dom-if" if="[[_isChronicalView(medicationType)]]">
-                        <vaadin-grid id="entities-list" active-item="{{selectedChronicalMedicationFromList}}" items="[[medications]]" on-tap="selectChronicalMedication">
-                            <vaadin-grid-column>
-                                <template class="header">
-                                    <vaadin-grid-sorter path="[[column.key]]">[[localize('atc-categ','Atc category',language)]]</vaadin-grid-sorter>
-                                </template>
-                                <template>
+            <paper-tabs selected="{{medicationType}}" attr-for-selected="name">
+                <paper-tab name="chronical" on-tap="setMedicationType">
+                    [[localize('medication-chronical','Chronical medication',language)]]
+                </paper-tab>
+                <paper-tab name="medicinalProduct" on-tap="setMedicationType">
+                    [[localize('medication-by-product-name','By product name',language)]]
+                </paper-tab>
+                <paper-tab name="substanceProduct" on-tap="setMedicationType">
+                    [[localize('medication-by-molecule','By molecule',language)]]
+                </paper-tab>
+                <paper-tab name="compoundPrescription" on-tap="setMedicationType">
+                    [[localize('medication-compound','Compound prescription',language)]]
+                </paper-tab>
+            </paper-tabs>
+            <template is="dom-if" if="[[_isChronicalView(medicationType)]]">
+                <vaadin-grid id="entities-list" active-item="{{selectedChronicalMedicationFromList}}"
+                             items="[[medications]]" on-tap="selectChronicalMedication">
+                    <vaadin-grid-column>
+                        <template class="header">
+                            <vaadin-grid-sorter path="[[column.key]]">[[localize('atc-categ','Atc
+                                category',language)]]
+                            </vaadin-grid-sorter>
+                        </template>
+                        <template>
                             <div>[[atcCat(item.atcCat)]]</div>
-                                </template>
-                            </vaadin-grid-column>
-                            <vaadin-grid-column>
-                                <template class="header">
-                                    <vaadin-grid-sorter path="[[column.key]]">[[localize('med','Medication',language)]]</vaadin-grid-sorter>
-                                </template>
-                                <template>
-                                    <div>[[_serviceDescription(item)]]</div>
-                                </template>
-                            </vaadin-grid-column>
-                            <vaadin-grid-column>
-                                <template class="header">
-                                    <vaadin-grid-sorter path="[[column.key]]">[[localize('pos','Posology',language)]]</vaadin-grid-sorter>
-                                </template>
-                                <template>
-                                    <div>[[_servicePosology(item)]]</div>
-                                </template>
-                            </vaadin-grid-column>
-                        </vaadin-grid>
-                    </template>
-                    <template is="dom-if" if="[[_isCompoundPrescription(medicationType)]]">
-                            <!--<vaadin-combo-box-dropdown value="{{compoundName}}" label="[[localize('compound_name','Compound name',language)]]"></vaadin-combo-box-dropdown>-->
-                            <vaadin-combo-box filtered-items="[[compoundListItems]]" item-label-path="descr" item-value-path="id" id="procedures-list" on-filter-changed="_compoundFilterChanged" on-value-changed="_compoundChanged" label="[[localize('compound_name','Compound name',language)]]" filter="{{compoundFilterString}}" value="{{compound}}" readonly="[[readonly]]"></vaadin-combo-box>
-                            <paper-input-container>
-                                <label slot="label">[[localize('medication-compound','Compound Prescription',language)]]</label>
-                                <iron-autogrow-textarea class="paper-input-input" slot="input" id="compoundPrescriptionText" value="{{compoundPrescriptionText}}"></iron-autogrow-textarea>
-                            </paper-input-container>
-                    </template>
-                    <div class$="grid-container [[_noGridClass(medicationType)]]">
-                        <paper-input id="filter" label="[[localize('search_med','Search a medicine',language)]]" autofocus value="{{filterValue}}" on-keydown="refresh"></paper-input>
-                        <vaadin-grid id="entities-list" active-item="{{selectedMedicationFromList}}" on-tap="click">
-                            <template is="dom-repeat" items="[[_getColumns(medicationType)]]" as="column">
-                                <vaadin-grid-column width="[[_columnWidth(column)]]">
-                                    <template class="header">
-                                        <vaadin-grid-sorter path="[[column.key]]">[[column.title]]</vaadin-grid-sorter>
-                                    </template>
-                                    <template>
-                                <div class$="cell frozen [[item.cheap]]">[[_cellContent(item, column)]]</div>
-                                    </template>
-                                </vaadin-grid-column>
+                        </template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column>
+                        <template class="header">
+                            <vaadin-grid-sorter path="[[column.key]]">[[localize('med','Medication',language)]]
+                            </vaadin-grid-sorter>
+                        </template>
+                        <template>
+                            <div>[[_serviceDescription(item)]]</div>
+                        </template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column>
+                        <template class="header">
+                            <vaadin-grid-sorter path="[[column.key]]">[[localize('pos','Posology',language)]]
+                            </vaadin-grid-sorter>
+                        </template>
+                        <template>
+                            <div>[[_servicePosology(item)]]</div>
+                        </template>
+                    </vaadin-grid-column>
+                </vaadin-grid>
+            </template>
+            <template is="dom-if" if="[[_isCompoundPrescription(medicationType)]]">
+                <!--<vaadin-combo-box-dropdown value="{{compoundName}}" label="[[localize('compound_name','Compound name',language)]]"></vaadin-combo-box-dropdown>-->
+                <vaadin-combo-box filtered-items="[[compoundListItems]]" item-label-path="descr" item-value-path="id"
+                                  id="procedures-list" on-filter-changed="_compoundFilterChanged"
+                                  on-value-changed="_compoundChanged"
+                                  label="[[localize('compound_name','Compound name',language)]]"
+                                  filter="{{compoundFilterString}}" value="{{compound}}"
+                                  readonly="[[readonly]]"></vaadin-combo-box>
+                <paper-input-container>
+                    <label slot="label">[[localize('medication-compound','Compound Prescription',language)]]</label>
+                    <iron-autogrow-textarea class="paper-input-input" slot="input" id="compoundPrescriptionText"
+                                            value="{{compoundPrescriptionText}}"></iron-autogrow-textarea>
+                </paper-input-container>
+            </template>
+            <div class$="grid-container [[_noGridClass(medicationType)]]">
+                <paper-input id="filter" label="[[localize('search_med','Search a medicine',language)]]" autofocus
+                             value="{{filterValue}}" on-keydown="refresh"></paper-input>
+                <vaadin-grid id="entities-list" active-item="{{selectedMedicationFromList}}" on-tap="click">
+                    <template is="dom-repeat" items="[[_getColumns(medicationType)]]" as="column">
+                        <vaadin-grid-column width="[[_columnWidth(column)]]">
+                            <template class="header">
+                                <vaadin-grid-sorter path="[[column.key]]">[[column.title]]</vaadin-grid-sorter>
                             </template>
-                            <vaadin-grid-column>
-                                <template class="header">
-                                    <div></div>
-                                </template>
-                                <template>
-                                   <div class$="cell frozen [[item.cheap]]"><img src$="[[drugPicture(item)]]"></div>
-                                </template>
-                            </vaadin-grid-column>
-                        </vaadin-grid>
-                    </div>
+                            <template>
+                                <div class$="cell frozen [[item.cheap]]">[[_cellContent(item, column)]]</div>
+                            </template>
+                        </vaadin-grid-column>
+                    </template>
+                    <vaadin-grid-column>
+                        <template class="header">
+                            <div></div>
+                        </template>
+                        <template>
+                            <div class$="cell frozen [[item.cheap]]"><img src$="[[drugPicture(item)]]"></div>
+                        </template>
+                    </vaadin-grid-column>
+                </vaadin-grid>
+            </div>
             <div class="buttons">
-                <paper-button class="modal-button modal-button--cancel" dialog-dismiss on-tap="skip">[[localize('can','Cancel',language)]]</paper-button>
+                <paper-button class="modal-button modal-button--cancel" dialog-dismiss on-tap="skip">
+                    [[localize('can','Cancel',language)]]
+                </paper-button>
                 <template is="dom-if" if="[[!_isChronicalView(medicationType)]]">
-                 <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirm">[[localize('sel','Select',language)]]</paper-button>
+                    <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirm">
+                        [[localize('sel','Select',language)]]
+                    </paper-button>
                 </template>
                 <!--<paper-button class="modal-button modal-button--save" on-tap="getAlternatives">[[localize('get-alt','Alternatives',language)]]</paper-button>-->
             </div>
@@ -306,7 +322,7 @@
                         value: null,
                         observer: "_selectedMedicationFromListChanged"
                     },
-                    selectedChronicalMedicationFromList:{
+                    selectedChronicalMedicationFromList: {
                         type: Object,
                         value: null
                     },
@@ -339,8 +355,7 @@
             }
 
             static get observers() {
-                return [
-                ];
+                return [];
             }
 
             constructor() {
@@ -351,8 +366,9 @@
                 return {
                     id: m.id,
                     codes: m.codes,
-                    medicationValue: ( this.api.contact().preferredContent(m, this.language)  || ( m.content[this.language] = { medicationValue: { regimen: [] } }) ).medicationValue,
-                    isNew: isNew || false };
+                    medicationValue: (this.api.contact().preferredContent(m, this.language) || (m.content[this.language] = {medicationValue: {regimen: []}})).medicationValue,
+                    isNew: isNew || false
+                };
             }
 
             open(medication, selectedMedicationContentWithId) {
@@ -362,13 +378,13 @@
                 }
 
                 this.set('compoundFilterString', '')
-                this.set('compound','')
+                this.set('compound', '')
                 this.set('compoundPrescriptionText', '')
 
                 this.$['medication-selection'].open()
 
                 this.medications.map(m => {
-                    const letter = ((m && m.codes && m.codes.find(c => c.type === 'CD-ATC') || {code: 'V'}).code || 'V').substr(0,1)
+                    const letter = ((m && m.codes && m.codes.find(c => c.type === 'CD-ATC') || {code: 'V'}).code || 'V').substr(0, 1)
                     m.atcCat = letter
                 })
 
@@ -410,7 +426,10 @@
                     const offset = params.index
                     if (this.medicationType === 'substanceProduct') {
                         this.api.bedrugs().getInnClusters(this.latestSearchValue, this.language, null, 0, 100).then(packs => {
-                            return {totalSize: packs.length, rows: (desc ? _.reverse(_.sortBy(packs, sort)) : _.sortBy(packs, sort)).slice(offset, limit)}
+                            return {
+                                totalSize: packs.length,
+                                rows: (desc ? _.reverse(_.sortBy(packs, sort)) : _.sortBy(packs, sort)).slice(offset, limit)
+                            }
                         }).then(function (res) {
                             if (this.filterValue !== latestSearchValue) {
                                 console.log("Cancelling obsolete search")
@@ -426,8 +445,7 @@
                             }
                             callback(grid.latestResults)
                         }.bind(this))
-                    }
-                    else {
+                    } else {
                         const fillCache = (minSize) =>
                             grid.drugsCache && grid.drugsCache.allItemsLoaded ?
                                 Promise.resolve(grid.drugsCache) :
@@ -435,18 +453,18 @@
                                     this.api.dedup(() => this.api.bedrugs().getMedecinePackages(this.latestSearchValue, this.language, null, grid.drugsCacheUpperSearchIndex || 0, 100), 'getMedecinePackages', `${this.latestSearchValue}|${this.language}|${grid.drugsCacheUpperSearchIndex}`, 5000),
                                     this.api.dedup(() => this.api.bedrugs().getMedecinePackagesFromIngredients(this.latestSearchValue, this.language, null, grid.drugsCacheUpperSearchIndex || 0, 100), 'getMedecinePackagesFromIngredients', `${this.latestSearchValue}|${this.language}|${grid.drugsCacheUpperSearchIndex}`, 5000)
                                 ])
-                            .then(([packs, packsIng]) => {
-                                const allDone = (packs||[]).length < 100 && (packsIng||[]).length
-                                const newItems = _.unionBy(packs, packsIng, 'id.id') //what to do when there are no newitems ?
-                                if (newItems.length > 0) {
-                                    grid.drugsCacheUpperSearchIndex = (grid.drugsCacheUpperSearchIndex || 0) + 100
-                                }
-                                return [(grid.drugsCache = _.sortBy(_.unionBy(grid.drugsCache || [], newItems, 'id.id'), 'name')), newItems.length, allDone]
-                            })
-                            .then(([cache, newItemsLength, allDone]) => {
-                                cache.allItemsLoaded = !newItemsLength || allDone
-                                return cache.length > minSize || !newItemsLength || allDone ? Promise.resolve(cache) : fillCache(minSize)
-                            })
+                                    .then(([packs, packsIng]) => {
+                                        const allDone = (packs || []).length < 100 && (packsIng || []).length
+                                        const newItems = _.unionBy(packs, packsIng, 'id.id') //what to do when there are no newitems ?
+                                        if (newItems.length > 0) {
+                                            grid.drugsCacheUpperSearchIndex = (grid.drugsCacheUpperSearchIndex || 0) + 100
+                                        }
+                                        return [(grid.drugsCache = _.sortBy(_.unionBy(grid.drugsCache || [], newItems, 'id.id'), 'name')), newItems.length, allDone]
+                                    })
+                                    .then(([cache, newItemsLength, allDone]) => {
+                                        cache.allItemsLoaded = !newItemsLength || allDone
+                                        return cache.length > minSize || !newItemsLength || allDone ? Promise.resolve(cache) : fillCache(minSize)
+                                    })
 
                         this.loadCheapAlternativesIfNeeded(this.selectedMedicationFromList).then(alternatives => {
                             const cheapAlternativeSearchSeedIndex = this.cheapAlternativeSearchSeed ? grid.drugsCache.findIndex(mpp => this._id(mpp) === this._id(this.cheapAlternativeSearchSeed)) : -1
@@ -475,7 +493,7 @@
             setGridSize(grid, size) {
                 console.log('setSize', size)
                 grid.set('size', size)
-                this.set('isLoadingEntities',false)
+                this.set('isLoadingEntities', false)
             }
 
             _cellContent(item, column) {
@@ -493,7 +511,7 @@
             }
 
             selectMedicationFromList(med) {
-                console.log("selectMedicationFromList",med)
+                console.log("selectMedicationFromList", med)
                 if (med.id) {
                     //by productName
                     this.api.bedrugs().getMppInfos(med.id.id, this.language === 'en' ? 'fr' : this.language || 'fr').then(mppInfos => {
@@ -502,15 +520,31 @@
                             "intendedcds": [{type: "CD-DRUG-CNK", code: med.id.id}],
                             "priority": 'low'
                         })
-                        this.set('selectedMedicationContentWithId.medicationUnit', mppInfos.gal && mppInfos.gal.name ||  this.localize('generic_unit','unit',this.language))
+                        this.set('selectedMedicationContentWithId.medicationUnit', mppInfos.gal && mppInfos.gal.name || this.localize('generic_unit', 'unit', this.language))
 
-                        med.id.id && (((this.newMedication.codes || (this.newMedication.codes = [])).find(c => c.type === 'CD-DRUG-CNK') || (this.newMedication.codes[this.newMedication.codes.length] = {type:'CD-DRUG-CNK', version:'1'})).code = med.id.id)
-                        mppInfos.atcCode && (((this.newMedication.codes || (this.newMedication.codes = [])).find(c => c.type === 'CD-ATC') || (this.newMedication.codes[this.newMedication.codes.length] = {type:'CD-ATC', version:'1'})).code = mppInfos.atcCode)
+                        med.id.id && (((this.newMedication.codes || (this.newMedication.codes = [])).find(c => c.type === 'CD-DRUG-CNK') || (this.newMedication.codes[this.newMedication.codes.length] = {
+                            type: 'CD-DRUG-CNK',
+                            version: '1'
+                        })).code = med.id.id)
+                        mppInfos.atcCode && (((this.newMedication.codes || (this.newMedication.codes = [])).find(c => c.type === 'CD-ATC') || (this.newMedication.codes[this.newMedication.codes.length] = {
+                            type: 'CD-ATC',
+                            version: '1'
+                        })).code = mppInfos.atcCode)
 
                         if (this.selectedMedicationContentWithId.isNew) {
-                            this.dispatchEvent(new CustomEvent('new-medication', {detail:{ medication: this.newMedication, isPrescription: this.selectedMedicationContentWithId.isPrescription }, bubbles: true, composed: true}))
+                            this.dispatchEvent(new CustomEvent('new-medication', {
+                                detail: {
+                                    medication: this.newMedication,
+                                    isPrescription: this.selectedMedicationContentWithId.isPrescription
+                                }, bubbles: true, composed: true
+                            }))
                         } else {
-                            this.dispatchEvent(new CustomEvent('display-medication-details', {detail:{ medication: this.newMedication, isPrescription: this.selectedMedicationContentWithId.isPrescription }, bubbles: true, composed: true}))
+                            this.dispatchEvent(new CustomEvent('display-medication-details', {
+                                detail: {
+                                    medication: this.newMedication,
+                                    isPrescription: this.selectedMedicationContentWithId.isPrescription
+                                }, bubbles: true, composed: true
+                            }))
                         }
                     })
                 } else {
@@ -520,39 +554,66 @@
                             "intendedname": med.name,
                             "intendedcds": [{type: "CD-INNCLUSTER", code: med.inncluster}]
                         })
-                        this.set('selectedMedicationContentWithId.medicationUnit', this.localize('generic_unit','unit',this.language))
+                        this.set('selectedMedicationContentWithId.medicationUnit', this.localize('generic_unit', 'unit', this.language))
 
-                        med.inncluster && (((this.newMedication.codes || (this.newMedication.codes = [])).find(c => c.type === 'CD-INNCLUSTER') || (this.newMedication.codes[this.newMedication.codes.length] = {type:'CD-INNCLUSTER', version:'1'})).code = med.inncluster)
-                        med.atcCode && (((this.newMedication.codes || (this.newMedication.codes = [])).find(c => c.type === 'CD-ATC') || (this.newMedication.codes[this.newMedication.codes.length] = {type:'CD-ATC', version:'1'})).code = med.atcCode)
+                        med.inncluster && (((this.newMedication.codes || (this.newMedication.codes = [])).find(c => c.type === 'CD-INNCLUSTER') || (this.newMedication.codes[this.newMedication.codes.length] = {
+                            type: 'CD-INNCLUSTER',
+                            version: '1'
+                        })).code = med.inncluster)
+                        med.atcCode && (((this.newMedication.codes || (this.newMedication.codes = [])).find(c => c.type === 'CD-ATC') || (this.newMedication.codes[this.newMedication.codes.length] = {
+                            type: 'CD-ATC',
+                            version: '1'
+                        })).code = med.atcCode)
 
-                        this.set('selectedMedicationContentWithId.medicationValue.regimen', [{administratedQuantity: {time:'',quantity: 1, unit: this.localize('generic_unit','unit',this.language)}}])
+                        this.set('selectedMedicationContentWithId.medicationValue.regimen', [{
+                            administratedQuantity: {
+                                time: '',
+                                quantity: 1,
+                                unit: this.localize('generic_unit', 'unit', this.language)
+                            }
+                        }])
                     } else {
                         //compound
-                        this.set('newMedication.content.'+this.language, {medicationValue: this.selectedMedicationContentWithId.medicationValue})
-                        this.set('newMedication.content.'+ this.language + '.compoundPrescription',this.compoundPrescriptionText)
+                        this.set('newMedication.content.' + this.language, {medicationValue: this.selectedMedicationContentWithId.medicationValue})
+                        this.set('newMedication.content.' + this.language + '.compoundPrescription', this.compoundPrescriptionText)
                     }
 
                     if (this.selectedMedicationContentWithId.isNew) {
-                        this.dispatchEvent(new CustomEvent('new-medication', {detail:{medication:this.newMedication, isPrescription: this.selectedMedicationContentWithId.isPrescription}, bubbles: true, composed: true}))
+                        this.dispatchEvent(new CustomEvent('new-medication', {
+                            detail: {
+                                medication: this.newMedication,
+                                isPrescription: this.selectedMedicationContentWithId.isPrescription
+                            }, bubbles: true, composed: true
+                        }))
                     } else {
-                        this.dispatchEvent(new CustomEvent('display-medication-details',{detail:{medication:this.newMedication, isPrescription: this.selectedMedicationContentWithId.isPrescription}, bubbles: true, composed: true}))
+                        this.dispatchEvent(new CustomEvent('display-medication-details', {
+                            detail: {
+                                medication: this.newMedication,
+                                isPrescription: this.selectedMedicationContentWithId.isPrescription
+                            }, bubbles: true, composed: true
+                        }))
                     }
                 }
             }
 
-            selectChronicalMedication(e){
-                if(this.selectedChronicalMedicationFromList){
+            selectChronicalMedication(e) {
+                if (this.selectedChronicalMedicationFromList) {
                     const selected = this.selectedChronicalMedicationFromList
-                    console.log('selected ',selected);
+                    console.log('selected ', selected);
                     this.$['medication-selection'].close();
-                    this.dispatchEvent(new CustomEvent('new-medication', {detail:{medication:_.cloneDeep(_.omit(selected, ['id'])), isPrescription:this.selectedMedicationContentWithId.isPrescription}, bubbles: true, composed: true}))
+                    this.dispatchEvent(new CustomEvent('new-medication', {
+                        detail: {
+                            medication: _.cloneDeep(_.omit(selected, ['id'])),
+                            isPrescription: this.selectedMedicationContentWithId.isPrescription
+                        }, bubbles: true, composed: true
+                    }))
                 }
             }
 
             click(e) {
                 const selected = this.selectedMedicationFromList;
 
-                console.log('selected ',selected,' - ',this.latestSelected);
+                console.log('selected ', selected, ' - ', this.latestSelected);
                 if (this.inDoubleClick && (this.latestSelected === selected || this.latestSelected && !selected || !this.latestSelected && selected)) {
                     this.select(this.latestSelected);
                 } else {
@@ -599,7 +660,7 @@
                     }
                     setTimeout(function () {
                         if (currentValue === this.filterValue) {
-                            this.set('isLoadingEntities',true)
+                            this.set('isLoadingEntities', true)
                             console.log("Triggering search for " + this.filterValue);
 
                             this.selectedMedicationFromList = null
@@ -611,7 +672,7 @@
                             grid.clearCache();
                         } else {
                             console.log("Skipping search for " + this.filterValue + " != " + currentValue);
-                            this.set('isLoadingEntities',false)
+                            this.set('isLoadingEntities', false)
                         }
                     }.bind(this), 500); //Wait for the user to stop typing
                 }.bind(this), 100);
@@ -626,8 +687,8 @@
             }
 
             skip() {
-                this.set('filterValue','')
-                this.set('medicationType','medicinalProduct')
+                this.set('filterValue', '')
+                this.set('medicationType', 'medicinalProduct')
                 this.$['entities-list'].clearCache();
             }
 
@@ -635,7 +696,7 @@
                 if (!this.customFrequencyTable) {
                     this._setFrequencyList()
                 }
-                this.set('filterValue','')
+                this.set('filterValue', '')
                 this.$['entities-list'].clearCache();
                 this.set('customFrequencyTable', false)
                 this.set('selectedMedicationContentWithId', null)
@@ -645,8 +706,8 @@
             select(item) {
                 if (item) {
                     this.selectMedicationFromList(item);
-                    this.set('filterValue','')
-                    this.set('medicationType','medicinalProduct')
+                    this.set('filterValue', '')
+                    this.set('medicationType', 'medicinalProduct')
                     this.$['entities-list'].clearCache();
                     this.$['medication-selection'].close();
                 }
@@ -674,7 +735,7 @@
             }
 
             _noGridClass(medicationType) {
-                return this._isCompoundPrescription(medicationType) || this._isChronicalView(medicationType) ? 'no-grid' : ''
+                return this._isCompoundPrescription(medicationType) || this._isChronicalView(medicationType) ? 'no-grid' : ''
             }
 
             _noColumnClass(medicationType) {
@@ -689,11 +750,9 @@
                     return require('../../../../images/Drug.NotReduced.gif')
                 } else if (med.rrsstate === 'B') {
                     return require('../../../../images/Drug.NoAlternative.gif')
-                }
-                else if (med.rrsstate === 'G') {
+                } else if (med.rrsstate === 'G') {
                     return require('../../../../images/Drug.Cheap.gif')
-                }
-                else {
+                } else {
                     return require('../../../../images/Drug.None.gif')
                 }
 
@@ -716,25 +775,25 @@
                 return medicationType === 'medicinalProduct';
             }
 
-            _isChronicalView(medicationType){
+            _isChronicalView(medicationType) {
                 return medicationType === "chronical"
             }
 
             atcCat(l) {
-                return  l === 'A' ? this.localize('ali_trac_meta','Alimentary tract and metabolism') :
-                        l === 'B' ? this.localize('blo_blo_for','Blood and blood forming organs') :
-                        l === 'C' ? this.localize('car_sys','Cardiovascular system') :
-                        l === 'D' ? this.localize('dermatologicals','Dermatologicals') :
-                        l === 'G' ? this.localize('gen_uri_sys','Genito-urinary system and sex hormones') :
-                        l === 'H' ? this.localize('sys_hor_pre','Systemic hormonal preparations, excluding sex hormones and insulins') :
-                        l === 'J' ? this.localize('anti_inf_sys','Antiinfectives for systemic use') :
-                        l === 'L' ? this.localize('anti_neo_imm','Antineoplastic and immunomodulating agents') :
-                        l === 'M' ? this.localize('mus_ske_sys','Musculo-skeletal system') :
-                        l === 'N' ? this.localize('ner_sys','Nervous system') :
-                        l === 'P' ? this.localize('Anti_para_pro','Antiparasitic products, insecticides and repellents') :
-                        l === 'R' ? this.localize('res_sys','Respiratory system') :
-                        l === 'S' ? this.localize('sens_org','Sensory organs') :
-                        l === 'V' ? this.localize('various','Various') : this.localize('unk','Unknown')
+                return l === 'A' ? this.localize('ali_trac_meta', 'Alimentary tract and metabolism') :
+                    l === 'B' ? this.localize('blo_blo_for', 'Blood and blood forming organs') :
+                        l === 'C' ? this.localize('car_sys', 'Cardiovascular system') :
+                            l === 'D' ? this.localize('dermatologicals', 'Dermatologicals') :
+                                l === 'G' ? this.localize('gen_uri_sys', 'Genito-urinary system and sex hormones') :
+                                    l === 'H' ? this.localize('sys_hor_pre', 'Systemic hormonal preparations, excluding sex hormones and insulins') :
+                                        l === 'J' ? this.localize('anti_inf_sys', 'Antiinfectives for systemic use') :
+                                            l === 'L' ? this.localize('anti_neo_imm', 'Antineoplastic and immunomodulating agents') :
+                                                l === 'M' ? this.localize('mus_ske_sys', 'Musculo-skeletal system') :
+                                                    l === 'N' ? this.localize('ner_sys', 'Nervous system') :
+                                                        l === 'P' ? this.localize('Anti_para_pro', 'Antiparasitic products, insecticides and repellents') :
+                                                            l === 'R' ? this.localize('res_sys', 'Respiratory system') :
+                                                                l === 'S' ? this.localize('sens_org', 'Sensory organs') :
+                                                                    l === 'V' ? this.localize('various', 'Various') : this.localize('unk', 'Unknown')
             }
 
             _serviceDescription(s) {
@@ -755,7 +814,7 @@
                     return;
                 }
 
-                this.api.entitytemplate().findAllEntityTemplates('org.taktik.icure.entities.embed.Medication',searchString,true).then(res => {
+                this.api.entitytemplate().findAllEntityTemplates('org.taktik.icure.entities.embed.Medication', searchString, true).then(res => {
                     if (searchString !== this.compoundSearchString) {
                         console.log("Cancelling obsolete search");
                         this.set('compoundListItems', []);
@@ -766,12 +825,12 @@
 
             _compoundChanged(e) {
                 const compound = this.compoundListItems.find(c => c.id === e.detail.value)
-                if(compound) {
+                if (compound) {
                     const medication = compound.entity.find(e => e.compoundPrescription)
-                    this.set('selectedMedicationContentWithId.medicationValue', medication )
-                    this.set('compoundPrescriptionText', medication.compoundPrescription )
-                }else {
-                    this.set('compoundPrescriptionText','')
+                    this.set('selectedMedicationContentWithId.medicationValue', medication)
+                    this.set('compoundPrescriptionText', medication.compoundPrescription)
+                } else {
+                    this.set('compoundPrescriptionText', '')
                 }
             }
 

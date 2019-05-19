@@ -14,47 +14,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <dom-module id="ht-pdf">
 
-	<template>
-		<style include="shared-styles">
-			:host {
-				display: block;
-			}
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
 
-			pdf-element {
-				width: 640px;
-				height: 1000px;
-				margin: auto;
-			}
-		</style>
-		<pdf-element src="src/example.pdf"
-					 elevation="5"
-					 downloadable
-					 height="900"
-					 fit-width
-					 show-file-name
-					 enable-text-selection></pdf-element>
+            pdf-element {
+                width: 640px;
+                height: 1000px;
+                margin: auto;
+            }
+        </style>
+        <pdf-element src="src/example.pdf"
+                     elevation="5"
+                     downloadable
+                     height="900"
+                     fit-width
+                     show-file-name
+                     enable-text-selection></pdf-element>
 
-	</template>
+    </template>
 
-	<script>class HtPdf extends Polymer.Element {
-	static get is() {
-		return 'ht-pdf';
-	}
+    <script>class HtPdf extends Polymer.Element {
+        static get is() {
+            return 'ht-pdf';
+        }
 
-	static get properties() {
-		return {};
-	}
+        static get properties() {
+            return {};
+        }
 
-	constructor() {
-		super();
-	}
+        constructor() {
+            super();
+        }
 
-	ready() {
-		super.ready();
-	}
+        ready() {
+            super.ready();
+        }
 
-}
+    }
 
-customElements.define(HtPdf.is, HtPdf);
-</script>
+    customElements.define(HtPdf.is, HtPdf);
+    </script>
 </dom-module>

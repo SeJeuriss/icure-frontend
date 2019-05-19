@@ -23,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <style>
             :host {
                 height: 100%;
-                padding-top:32px;
+                padding-top: 32px;
             }
 
             .container {
@@ -150,7 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 transform: scale(0.8) rotate(180deg);
             }
 
-            #members-list{
+            #members-list {
                 height: 100%;
             }
 
@@ -168,7 +168,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </vaadin-grid-column>
                     <vaadin-grid-column width="100px">
                         <template class="header">
-                            <vaadin-grid-sorter path="lastName">[[localize('las_nam','Last name',language)]]</vaadin-grid-sorter>
+                            <vaadin-grid-sorter path="lastName">[[localize('las_nam','Last name',language)]]
+                            </vaadin-grid-sorter>
                         </template>
                         <template>
                             <div class="cell frozen">[[item.lastName]]</div>
@@ -176,7 +177,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </vaadin-grid-column>
                     <vaadin-grid-column width="100px">
                         <template class="header">
-                            <vaadin-grid-sorter path="firstName">[[localize('fir_nam','First name',language)]]</vaadin-grid-sorter>
+                            <vaadin-grid-sorter path="firstName">[[localize('fir_nam','First name',language)]]
+                            </vaadin-grid-sorter>
                         </template>
                         <template>
                             <div class="cell frozen">[[item.firstName]]</div>
@@ -184,115 +186,118 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </vaadin-grid-column>
                     <vaadin-grid-column width="100px">
                         <template class="header">
-                            <vaadin-grid-sorter path="speciality">[[localize('spe','Speciality',language)]]</div>
-                        </template>
-                        <template>
-                            <div class="cell frozen">[[item.speciality]]</div>
-                        </template>
-                    </vaadin-grid-column>
-                    <vaadin-grid-column width="100px">
-                        <template class="header">
-                            <div class="cell frozen">[[localize('ema','Email',language)]]</div>
-                        </template>
-                        <template>
-                            <div class="cell frozen">[[_getEmail(item)]]</div>
-                        </template>
-                    </vaadin-grid-column>
-                    <vaadin-grid-column>
-                        <template class="header">
-                            <div class="cell numeric">[[localize('pho','Phone',language)]]</div>
-                        </template>
-                        <template>
-                            <div class="cell numeric">[[_getPhone(item)]]</div>
-                        </template>
-                    </vaadin-grid-column>
-                    <vaadin-grid-column>
-                        <template class="header">
-                            <div class="cell numeric">[[localize('mob','Mobile',language)]]</div>
-                        </template>
-                        <template>
-                            <div class="cell numeric">[[_getMobile(item)]]</div>
-                        </template>
-                    </vaadin-grid-column>
-                </vaadin-grid>
-            </template>
+                            <vaadin-grid-sorter path="speciality">[[localize('spe','Speciality',language)]]
         </div>
     </template>
+    <template>
+        <div class="cell frozen">[[item.speciality]]</div>
+    </template>
+    </vaadin-grid-column>
+    <vaadin-grid-column width="100px">
+        <template class="header">
+            <div class="cell frozen">[[localize('ema','Email',language)]]</div>
+        </template>
+        <template>
+            <div class="cell frozen">[[_getEmail(item)]]</div>
+        </template>
+    </vaadin-grid-column>
+    <vaadin-grid-column>
+        <template class="header">
+            <div class="cell numeric">[[localize('pho','Phone',language)]]</div>
+        </template>
+        <template>
+            <div class="cell numeric">[[_getPhone(item)]]</div>
+        </template>
+    </vaadin-grid-column>
+    <vaadin-grid-column>
+        <template class="header">
+            <div class="cell numeric">[[localize('mob','Mobile',language)]]</div>
+        </template>
+        <template>
+            <div class="cell numeric">[[_getMobile(item)]]</div>
+        </template>
+    </vaadin-grid-column>
+    </vaadin-grid>
+    </template>
+    </div>
+    </template>
     <script>
-    class HtHcpMemberList extends Polymer.TkLocalizerMixin(Polymer.Element) {
-        static get is() {
-            return 'ht-hcp-member-list';
-        }
+        class HtHcpMemberList extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'ht-hcp-member-list';
+            }
 
-        static get properties() {
-            return {
-                api: {
-                    type: Object
-                },
-                user: {
-                    type: Object
-                },
-                hcp: {
-                    type: Object,
-                    notify: true
-                },
-                membersList:{
-                    type: Array,
-                    value: ()=>[],
-                    notify:true
-                },
-                hasHcpMembers:{
-                    type: Boolean,
-                    value: false
+            static get properties() {
+                return {
+                    api: {
+                        type: Object
+                    },
+                    user: {
+                        type: Object
+                    },
+                    hcp: {
+                        type: Object,
+                        notify: true
+                    },
+                    membersList: {
+                        type: Array,
+                        value: () => [],
+                        notify: true
+                    },
+                    hasHcpMembers: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            static get observers() {
+                return [];
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready()
+
+                if (!this.hcp || !this.hcp.id) {
+                    this.set('membersList', [])
+                    return;
                 }
-            };
-        }
 
-        static get observers() {
-            return [];
-        }
 
-        constructor() {
-            super();
-        }
-
-        ready(){
-            super.ready()
-
-            if(!this.hcp || !this.hcp.id) {
-                this.set('membersList',[])
-                return;
+                this.api.hcparty().listHealthcareParties(null, null, 1000, "asc").then(hcps => {
+                    this.set('membersList', hcps && hcps.rows && _.uniqBy(hcps.rows, "id"))
+                    this.set("hasHcpMembers", this.membersList.length > 0)
+                })
             }
 
-
-            this.api.hcparty().listHealthcareParties( null,null, 1000,"asc").then(hcps =>{
-                this.set('membersList',hcps && hcps.rows && _.uniqBy(hcps.rows,"id"))
-                this.set("hasHcpMembers", this.membersList.length > 0)
-            })
-        }
-
-        _formatDate(date){
-            return date ? this.api.moment(date).format("DD/MM/YYYY") : ""
-        }
-
-        _getEmail(item){
-            return _.flatten(item.addresses.map(adr=>_.compact(adr.telecoms.map(tel=>tel.telecomType === "email" ? tel.telecomNumber : ""))))[0] || "";
-        }
-        _getMobile(item){
-            return _.flatten(item.addresses.map(adr=>_.compact(adr.telecoms.map(tel=>tel.telecomType === "mobile" ? tel.telecomNumber : ""))))[0] || "";
-        }
-        _getPhone(item){
-            return _.flatten(item.addresses.map(adr=>_.compact(adr.telecoms.map(tel=>tel.telecomType === "phone" ? tel.telecomNumber : ""))))[0] || "";
-        }
-
-        picture(hcp) {
-            if (!hcp) {
-                return require('../../../images/male-placeholder.png')
+            _formatDate(date) {
+                return date ? this.api.moment(date).format("DD/MM/YYYY") : ""
             }
-            return hcp.picture ? 'data:image/jpeg;base64,' + hcp.picture : hcp.gender === 'female' ? require('../../../images/female-placeholder.png') : require('../../../images/male-placeholder.png')
-        }
-    }
 
-    customElements.define(HtHcpMemberList.is, HtHcpMemberList);
+            _getEmail(item) {
+                return _.flatten(item.addresses.map(adr => _.compact(adr.telecoms.map(tel => tel.telecomType === "email" ? tel.telecomNumber : ""))))[0] || "";
+            }
+
+            _getMobile(item) {
+                return _.flatten(item.addresses.map(adr => _.compact(adr.telecoms.map(tel => tel.telecomType === "mobile" ? tel.telecomNumber : ""))))[0] || "";
+            }
+
+            _getPhone(item) {
+                return _.flatten(item.addresses.map(adr => _.compact(adr.telecoms.map(tel => tel.telecomType === "phone" ? tel.telecomNumber : ""))))[0] || "";
+            }
+
+            picture(hcp) {
+                if (!hcp) {
+                    return require('../../../images/male-placeholder.png')
+                }
+                return hcp.picture ? 'data:image/jpeg;base64,' + hcp.picture : hcp.gender === 'female' ? require('../../../images/female-placeholder.png') : require('../../../images/male-placeholder.png')
+            }
+        }
+
+        customElements.define(HtHcpMemberList.is, HtHcpMemberList);
     </script>
 </dom-module>

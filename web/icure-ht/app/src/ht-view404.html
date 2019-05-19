@@ -11,34 +11,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <dom-module id="my-view404">
-  <template>
-    <style>
-      :host {
-        display: block;
+    <template>
+        <style>
+            :host {
+                display: block;
 
-        padding: 10px 20px;
-      }
-    </style>
+                padding: 10px 20px;
+            }
+        </style>
 
-    Oops you hit a 404. <a href="/">[[localize('hea_bac_to_hom','Head back to home.',language)]]</a>
-  </template>
+        Oops you hit a 404. <a href="/">[[localize('hea_bac_to_hom','Head back to home.',language)]]</a>
+    </template>
 
-  <script>
-class MyView404 extends Polymer.TkLocalizerMixin(Polymer.Element) {
-  static get is() {
-    return 'my-view404';
-  }
+    <script>
+        class MyView404 extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'my-view404';
+            }
 
-  static get properties() {
-    return {};
-  }
+            static get properties() {
+                return {};
+            }
 
-  constructor() {
-    super();
-  }
+            constructor() {
+                super();
+            }
 
-}
+        }
 
-customElements.define(MyView404.is, MyView404);
-</script>
+        customElements.define(MyView404.is, MyView404);
+    </script>
 </dom-module>

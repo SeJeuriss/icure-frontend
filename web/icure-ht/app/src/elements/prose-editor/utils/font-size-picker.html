@@ -55,8 +55,8 @@ Custom property | Description | Default
             paper-menu-button {
                 padding: 0;
             }
-            
-            paper-button{
+
+            paper-button {
                 font-size: 14px;
                 font-weight: 400;
                 text-transform: unset;
@@ -67,14 +67,14 @@ Custom property | Description | Default
                 padding: .7em 0;
             }
 
-            paper-button span{
+            paper-button span {
                 flex-grow: 1;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
             }
 
-            iron-icon{
+            iron-icon {
                 height: 16px;
                 width: 16px;
                 min-width: 16px;
@@ -88,8 +88,8 @@ Custom property | Description | Default
                     id="fontButton"
                     slot="dropdown-trigger"
                     alt="font size picker">
-                    <span>[[_fontSize(fontSize)]]</span>
-                    <iron-icon icon="arrow-drop-down"></iron-icon>
+                <span>[[_fontSize(fontSize)]]</span>
+                <iron-icon icon="arrow-drop-down"></iron-icon>
             </paper-button>
             <div slot="dropdown-content" class="dropdown-content box" id="box">
                 <template is="dom-repeat" items="{{fontSizeList}}">

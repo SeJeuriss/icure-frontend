@@ -5,7 +5,6 @@
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 
 
-
 <dom-module id="dynamic-pills">
     <template>
         <style include="icpc-styles">
@@ -29,11 +28,21 @@
             span.he-pill-highlighted {
                 color: var(--app-text-color-light);
             }
-            .ICPC-2-fallback { color: var(--paper-blue-grey-500) !important;}
-            .ICPC-2-fallback-back { background: var(--paper-blue-grey-500) !important; color: white !important; }
-            .ICPC-2-fallback span{ background: var(--paper-blue-grey-500) !important; }
 
-            .closePillsBtn{
+            .ICPC-2-fallback {
+                color: var(--paper-blue-grey-500) !important;
+            }
+
+            .ICPC-2-fallback-back {
+                background: var(--paper-blue-grey-500) !important;
+                color: white !important;
+            }
+
+            .ICPC-2-fallback span {
+                background: var(--paper-blue-grey-500) !important;
+            }
+
+            .closePillsBtn {
                 height: 10px;
                 width: 10px;
             }
@@ -41,66 +50,74 @@
 
         <template is="dom-repeat" items="[[healthElements]]" as="he">
             <template is="dom-if" if="[[he.descr]]">
-                <span id="pill-[[he.id]]" class$="form-title-bar-btn he-pill [[_heColourStyle(he, highlightedHes.*)]]" on-tap="_highlight">[[he.descr]]  <iron-icon id="pill-[[he.id]]" class="closePillsBtn" icon="vaadin:close" on-tap="_deletePills"></iron-icon></span>
+                <span id="pill-[[he.id]]" class$="form-title-bar-btn he-pill [[_heColourStyle(he, highlightedHes.*)]]"
+                      on-tap="_highlight">[[he.descr]]  <iron-icon id="pill-[[he.id]]" class="closePillsBtn"
+                                                                   icon="vaadin:close"
+                                                                   on-tap="_deletePills"></iron-icon></span>
 
             </template>
         </template>
     </template>
     <script>
 
-class DynamicPill extends Polymer.TkLocalizerMixin(Polymer.Element) {
-    static get is() {
-        return 'dynamic-pills';
-    }
-
-    static get properties() {
-        return {
-            highlightedHes: {
-                type: Array,
-                notify: true,
-                value: () => []
-            },
-            healthElements: {
-                type: Array,
-                value: () => []
+        class DynamicPill extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'dynamic-pills';
             }
-        };
-    }
 
-    static get observers() {
-        return [];
-    }
+            static get properties() {
+                return {
+                    highlightedHes: {
+                        type: Array,
+                        notify: true,
+                        value: () => []
+                    },
+                    healthElements: {
+                        type: Array,
+                        value: () => []
+                    }
+                };
+            }
 
-    ready() {
-        super.ready();
-    }
+            static get observers() {
+                return [];
+            }
 
-    _highlight(e) {
-        const id = e.target.id.substr(5)
-        const hHe = this.highlightedHes.find(he => he.id === id)
-        if (!hHe) {
-            const newHe = this.healthElements.find(he => he.id === id)
-            newHe && this.push('highlightedHes', newHe)
-        } else {
-            this.splice('highlightedHes', this.highlightedHes.indexOf(hHe), 1)
+            ready() {
+                super.ready();
+            }
+
+            _highlight(e) {
+                const id = e.target.id.substr(5)
+                const hHe = this.highlightedHes.find(he => he.id === id)
+                if (!hHe) {
+                    const newHe = this.healthElements.find(he => he.id === id)
+                    newHe && this.push('highlightedHes', newHe)
+                } else {
+                    this.splice('highlightedHes', this.highlightedHes.indexOf(hHe), 1)
+                }
+            }
+
+            _heColourStyle(he) {
+                return this.highlightedHes.includes(he) ? "he-pill-highlighted " + (he.colour || "ICPC-2-fallback") + "-back" : (he.colour || "ICPC-2-fallback")
+            }
+
+            _deletePills(e) {
+                e.stopPropagation()
+                if (e.target.id) {
+                    const id = e.target.id.substr(5)
+                    const heIndex = _.indexOf(this.healthElements, he => he.id === id)
+                    const he = this.splice('healthElements', heIndex, 1)
+                    this.dispatchEvent(new CustomEvent('unlink-to-health-element', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {healthElement: he[0]}
+                    }));
+                }
+            }
+
         }
-    }
 
-    _heColourStyle(he) {
-        return this.highlightedHes.includes(he) ? "he-pill-highlighted " + (he.colour || "ICPC-2-fallback") + "-back" : (he.colour || "ICPC-2-fallback")
-    }
-
-    _deletePills(e){
-        e.stopPropagation()
-        if(e.target.id){
-            const id = e.target.id.substr(5)
-            const heIndex = _.indexOf(this.healthElements,he => he.id === id)
-            const he = this.splice('healthElements', heIndex, 1)
-            this.dispatchEvent(new CustomEvent('unlink-to-health-element', { bubbles: true, composed: true, detail: { healthElement: he[0] } }));
-        }
-    }
-
-}
-customElements.define(DynamicPill.is, DynamicPill);
-</script>
+        customElements.define(DynamicPill.is, DynamicPill);
+    </script>
 </dom-module>

@@ -1,4 +1,5 @@
-<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Alegreya|Barlow|Barlow+Condensed|Cardo|Crete+Round|EB+Garamond|Exo|Exo+2|Fjalla+One|Great+Vibes|Indie+Flower|Josefin+Sans|Kurale|Libre+Baskerville|Lobster|Lora|Maven+Pro|Monoton|Montserrat|Montserrat+Alternates|Nanum+Myeongjo|Neucha|Old+Standard+TT|Open+Sans|Oswald|Pathway+Gothic+One|Poiret+One|Poppins|Quattrocento|Quattrocento+Sans|Quicksand|Raleway:400,700|Roboto|Roboto+Condensed|Source+Serif+Pro|Spectral|Teko|Tinos|Vollkorn">
+<link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Alegreya|Barlow|Barlow+Condensed|Cardo|Crete+Round|EB+Garamond|Exo|Exo+2|Fjalla+One|Great+Vibes|Indie+Flower|Josefin+Sans|Kurale|Libre+Baskerville|Lobster|Lora|Maven+Pro|Monoton|Montserrat|Montserrat+Alternates|Nanum+Myeongjo|Neucha|Old+Standard+TT|Open+Sans|Oswald|Pathway+Gothic+One|Poiret+One|Poppins|Quattrocento|Quattrocento+Sans|Quicksand|Raleway:400,700|Roboto|Roboto+Condensed|Source+Serif+Pro|Spectral|Teko|Tinos|Vollkorn">
 
 <dom-module id="prose-editor">
 
@@ -15,7 +16,7 @@
 
                 }
 
-                .prose-editor-container{
+                .prose-editor-container {
                     height: 100%;
                     display: flex;
                     flex-flow: column nowrap;
@@ -103,6 +104,7 @@
                 .ProseMirror .tableWrapper {
                     overflow-x: auto;
                 }
+
                 .ProseMirror table {
                     border-collapse: collapse;
                     table-layout: fixed;
@@ -119,7 +121,9 @@
 
                 .ProseMirror .column-resize-handle {
                     position: absolute;
-                    right: -2px; top: 0; bottom: 0;
+                    right: -2px;
+                    top: 0;
+                    bottom: 0;
                     width: 4px;
                     z-index: 20;
                     background-color: #adf;
@@ -136,7 +140,10 @@
                     z-index: 2;
                     position: absolute;
                     content: "";
-                    left: 0; right: 0; top: 0; bottom: 0;
+                    left: 0;
+                    right: 0;
+                    top: 0;
+                    bottom: 0;
                     background: rgba(200, 200, 255, 0.4);
                     pointer-events: none;
                 }
@@ -211,7 +218,7 @@
                 }
 
                 paper-dropdown-menu {
-                    display:block;
+                    display: block;
                     width: 10%;
                     height: 40px;
                     margin: 0 4px;
@@ -252,7 +259,7 @@
                     overflow: auto;
                     position: relative;
                     background: var(--app-background-color);
-                    min-height:calc(100vh - 400px);
+                    min-height: calc(100vh - 400px);
                 }
 
                 .status-bar {
@@ -267,12 +274,12 @@
                     border-bottom: 1px solid #e0e0e0;
                 }
 
-                paper-icon-button:hover{
+                paper-icon-button:hover {
                     color: var(--app-text-color);
                     background: --app-background-color-dark;
                 }
 
-                paper-icon-button{
+                paper-icon-button {
                     color: var(--app-text-color-disabled);
                     border-radius: 50%;
                     transition: all .12s cubic-bezier(0.075, 0.82, 0.165, 1);
@@ -288,7 +295,7 @@
                     height: 40px;
                 }
 
-                .divider{
+                .divider {
                     display: block;
                     border-left: 1px solid #e0e0e0;
                     height: 100%;
@@ -303,41 +310,69 @@
                 .dropdown-content paper-menu-button {
                     padding: 0;
                 }
+
                 .ProseMirror table {
                     margin: 0;
                 }
+
                 .ProseMirror th, .ProseMirror td {
                     min-width: 1em;
                     border: 1px solid #ddd;
                     padding: 3px 5px;
                 }
+
                 .ProseMirror .tableWrapper {
                     margin: 1em 0;
                 }
 
-                .linkingLetter h1 { margin-bottom:5px }
-                .linkingLetter h5 { margin-top:0px; text-decoration:none; font-weight:400 }
-                .linkingLetter p { padding:0; margin:10px 0 10px 0; }
-                .linkingLetter .tableWrapper { margin:0!important; }
-                .linkingLetter table { border:0; border-collapse: collapse; }
-                .linkingLetter table tr td { border:1px solid #000; }
-                .linkingLetter table tr td p { padding:0; margin:1px 0 1px 0; }
+                .linkingLetter h1 {
+                    margin-bottom: 5px
+                }
+
+                .linkingLetter h5 {
+                    margin-top: 0px;
+                    text-decoration: none;
+                    font-weight: 400
+                }
+
+                .linkingLetter p {
+                    padding: 0;
+                    margin: 10px 0 10px 0;
+                }
+
+                .linkingLetter .tableWrapper {
+                    margin: 0 !important;
+                }
+
+                .linkingLetter table {
+                    border: 0;
+                    border-collapse: collapse;
+                }
+
+                .linkingLetter table tr td {
+                    border: 1px solid #000;
+                }
+
+                .linkingLetter table tr td p {
+                    padding: 0;
+                    margin: 1px 0 1px 0;
+                }
 
                 .variable {
                     background-color: #ffd180;
-                    border-radius:3px 3px 3px 3px;
-                    border:solid 1px #ffee33;
+                    border-radius: 3px 3px 3px 3px;
+                    border: solid 1px #ffee33;
                 }
 
                 .template-instance {
                     background-color: #00000010;
-                    border-radius:3px 3px 3px 3px;
-                    border:solid 1px #aaaaaa;
+                    border-radius: 3px 3px 3px 3px;
+                    border: solid 1px #aaaaaa;
                 }
 
                 .template {
-                    border-radius:3px 3px 3px 3px;
-                    border:solid 1px #70ddff;
+                    border-radius: 3px 3px 3px 3px;
+                    border: solid 1px #70ddff;
                 }
 
             </style>
@@ -354,21 +389,31 @@
 
                 <font-picker font="[[currentFont]]" on-font-picker-selected="doFont"></font-picker>
 
-                <font-size-picker font-size="[[currentSize]]" font-size-list="[[sizes]]" on-font-size-picker-selected="doSize"></font-size-picker>
+                <font-size-picker font-size="[[currentSize]]" font-size-list="[[sizes]]"
+                                  on-font-size-picker-selected="doSize"></font-size-picker>
 
                 <span class="divider"></span>
 
-                <paper-icon-button icon="editor:format-bold" active="[[isStrong]]" on-tap="toggleBold"></paper-icon-button>
-                <paper-icon-button icon="editor:format-italic" active="[[isEm]]" on-tap="toggleItalic"></paper-icon-button>
-                <paper-icon-button icon="editor:format-underlined" active="[[isUnderlined]]" on-tap="toggleUnderlined"></paper-icon-button>
+                <paper-icon-button icon="editor:format-bold" active="[[isStrong]]"
+                                   on-tap="toggleBold"></paper-icon-button>
+                <paper-icon-button icon="editor:format-italic" active="[[isEm]]"
+                                   on-tap="toggleItalic"></paper-icon-button>
+                <paper-icon-button icon="editor:format-underlined" active="[[isUnderlined]]"
+                                   on-tap="toggleUnderlined"></paper-icon-button>
                 <paper-icon-button icon="editor:format-clear" on-tap="doClear"></paper-icon-button>
-                <color-picker icon="editor:format-color-text" color="[[currentColor]]" on-color-picker-selected="doColor"></color-picker>
-                <color-picker icon="editor:format-color-fill" color="[[currentBgColor]]" on-color-picker-selected="doFillColor"></color-picker>
+                <color-picker icon="editor:format-color-text" color="[[currentColor]]"
+                              on-color-picker-selected="doColor"></color-picker>
+                <color-picker icon="editor:format-color-fill" color="[[currentBgColor]]"
+                              on-color-picker-selected="doFillColor"></color-picker>
 
-                <paper-icon-button icon="editor:format-align-left" active="[[isLeft]]" on-tap="doLeft"></paper-icon-button>
-                <paper-icon-button icon="editor:format-align-center" active="[[isCenter]]" on-tap="doCenter"></paper-icon-button>
-                <paper-icon-button icon="editor:format-align-right" active="[[isRight]]" on-tap="doRight"></paper-icon-button>
-                <paper-icon-button icon="editor:format-align-justify" active="[[isJustify]]" on-tap="doJustify"></paper-icon-button>
+                <paper-icon-button icon="editor:format-align-left" active="[[isLeft]]"
+                                   on-tap="doLeft"></paper-icon-button>
+                <paper-icon-button icon="editor:format-align-center" active="[[isCenter]]"
+                                   on-tap="doCenter"></paper-icon-button>
+                <paper-icon-button icon="editor:format-align-right" active="[[isRight]]"
+                                   on-tap="doRight"></paper-icon-button>
+                <paper-icon-button icon="editor:format-align-justify" active="[[isJustify]]"
+                                   on-tap="doJustify"></paper-icon-button>
 
                 <paper-menu-button id="button" vertical-offset="42" horizontal-offset="16" on-opened-changed="_layout">
                     <paper-icon-button
@@ -410,17 +455,23 @@
                                     <span class="divider"></span>
                                 </template>
                                 <template is="dom-if" if="[[!singleVar.subVars]]">
-                                <paper-item on-tap="_insertOrEditVar" data-var="[[singleVar.name]]" data-prose="[[singleVar.nodes]]">[[singleVar.name]]</paper-item>
+                                    <paper-item on-tap="_insertOrEditVar" data-var="[[singleVar.name]]"
+                                                data-prose="[[singleVar.nodes]]">[[singleVar.name]]
+                                    </paper-item>
                                 </template>
                                 <template is="dom-if" if="[[singleVar.subVars]]">
                                     <paper-menu-button horizontal-offset="120">
                                         <paper-item slot="dropdown-trigger">[[singleVar.name]]</paper-item>
                                         <div slot="dropdown-content" class="dropdown-content box">
-                                            <paper-item on-tap="_insertOrEditVar" data-var="[[singleVar.name]]" data-prose="[[singleVar.nodes]]">[[singleVar.name]]</paper-item>
+                                            <paper-item on-tap="_insertOrEditVar" data-var="[[singleVar.name]]"
+                                                        data-prose="[[singleVar.nodes]]">[[singleVar.name]]
+                                            </paper-item>
                                             <span class="divider"></span>
                                             <template is="dom-repeat" items="[[singleVar.subVars]]" as="subVar">
-                                            <paper-item on-tap="_insertOrEditVar" data-var="[[subVar.name]]" data-prose="[[subVar.nodes]]">[[subVar.name]]</paper-item>
-                                        </template>
+                                                <paper-item on-tap="_insertOrEditVar" data-var="[[subVar.name]]"
+                                                            data-prose="[[subVar.nodes]]">[[subVar.name]]
+                                                </paper-item>
+                                            </template>
                                         </div>
                                     </paper-menu-button>
                                 </template>
@@ -431,7 +482,9 @@
 
                 <span class="divider"></span>
 
-                <paper-input no-label-float class="zoom" type="number" value="{{zoomLevel}}"><div slot="suffix">&nbsp;%</div></paper-input>
+                <paper-input no-label-float class="zoom" type="number" value="{{zoomLevel}}">
+                    <div slot="suffix">&nbsp;%</div>
+                </paper-input>
             </div>
 
             <div class="scroll-area">

@@ -23,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <style>
             :host {
                 height: 100%;
-                padding-top:32px;
+                padding-top: 32px;
             }
 
             .container {
@@ -150,7 +150,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 transform: scale(0.8) rotate(180deg);
             }
 
-            #patients-list{
+            #patients-list {
                 height: 100%;
             }
 
@@ -238,12 +238,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     type: Object,
                     notify: true
                 },
-                patientsList:{
+                patientsList: {
                     type: Array,
-                    value: ()=>[],
-                    notify:true
+                    value: () => [],
+                    notify: true
                 },
-                hasHcpPatients:{
+                hasHcpPatients: {
                     type: Boolean,
                     value: false
                 }
@@ -258,38 +258,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             super();
         }
 
-        ready(){
+        ready() {
             super.ready()
 
-            if(!this.hcp || !this.hcp.id) {
-                this.set('patientList',[])
+            if (!this.hcp || !this.hcp.id) {
+                this.set('patientList', [])
                 return;
             }
-            let promises=[]
-            let list =[];
+            let promises = []
+            let list = [];
 
 
-            const promesse = this.hcp && this.hcp.type && this.hcp.type.toLowerCase()==="medicalhouse" ?
-                this.api.hcparty().listHealthcareParties( null,null, 1000,"asc") :
-                Promise.resolve({ rows : [this.hcp]})
+            const promesse = this.hcp && this.hcp.type && this.hcp.type.toLowerCase() === "medicalhouse" ?
+                this.api.hcparty().listHealthcareParties(null, null, 1000, "asc") :
+                Promise.resolve({rows: [this.hcp]})
 
-            promesse.then(hcps => hcps && hcps.rows && Promise.all(hcps.rows.map( hcp => this.api.patient().listPatientsByHcPartyWithUser(this.user, hcp.id, "name", null, null, 500, "asc"))))
-                .then(patientsArrays => patientsArrays.map(patients => this.set("patientsList",_.uniqBy(this.patientsList.concat(patients && patients.rows),"id"))))
+            promesse.then(hcps => hcps && hcps.rows && Promise.all(hcps.rows.map(hcp => this.api.patient().listPatientsByHcPartyWithUser(this.user, hcp.id, "name", null, null, 500, "asc"))))
+                .then(patientsArrays => patientsArrays.map(patients => this.set("patientsList", _.uniqBy(this.patientsList.concat(patients && patients.rows), "id"))))
         }
 
 
-        _formatDate(date){
+        _formatDate(date) {
             return date ? this.api.moment(date).format("DD/MM/YYYY") : ""
         }
 
-        _getEmail(item){
-            return _.flatten(item.addresses.map(adr=>_.compact(adr.telecoms.map(tel=>tel.telecomType === "email" ? tel.telecomNumber : ""))))[0] || "";
+        _getEmail(item) {
+            return _.flatten(item.addresses.map(adr => _.compact(adr.telecoms.map(tel => tel.telecomType === "email" ? tel.telecomNumber : ""))))[0] || "";
         }
-        _getMobile(item){
-            return _.flatten(item.addresses.map(adr=>_.compact(adr.telecoms.map(tel=>tel.telecomType === "mobile" ? tel.telecomNumber : ""))))[0] || "";
+
+        _getMobile(item) {
+            return _.flatten(item.addresses.map(adr => _.compact(adr.telecoms.map(tel => tel.telecomType === "mobile" ? tel.telecomNumber : ""))))[0] || "";
         }
-        _getPhone(item){
-            return _.flatten(item.addresses.map(adr=>_.compact(adr.telecoms.map(tel=>tel.telecomType === "phone" ? tel.telecomNumber : ""))))[0] || "";
+
+        _getPhone(item) {
+            return _.flatten(item.addresses.map(adr => _.compact(adr.telecoms.map(tel => tel.telecomType === "phone" ? tel.telecomNumber : ""))))[0] || "";
         }
 
         picture(pat) {

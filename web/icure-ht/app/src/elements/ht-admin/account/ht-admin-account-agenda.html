@@ -50,45 +50,53 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
             }
 
-            :host *:focus{
-                outline:0!important;
+            :host *:focus {
+                outline: 0 !important;
             }
 
-            .agenda-panel{
+            .agenda-panel {
                 height: 100%;
                 width: 100%;
                 padding: 0 20px;
                 box-sizing: border-box;
-                position:relative;
+                position: relative;
             }
 
 
             .line {
                 display: flex;
             }
+
             .line.p8 {
                 padding: 0 8px;
                 box-sizing: border-box;
             }
+
             .line.p16 {
                 padding: 0 16px;
                 box-sizing: border-box;
             }
+
             .line > * {
                 flex-grow: 1;
             }
+
             .line > *.no-grow {
                 flex-grow: 0;
             }
+
             .line > *.w50 {
                 width: 50px;
             }
+
             .line > *.w100 {
                 width: 100px;
             }
+
             .line > *.w150 {
                 width: 150px;
             }
+
             .line > *.grow-3 {
                 flex-grow: 3;
             }
@@ -99,13 +107,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .marginRight10 {
-                margin-right:10px;
+                margin-right: 10px;
             }
 
             @media screen and (max-width: 1024px) {
                 .nomobile {
                     display: none;
                 }
+
                 .onlymobile {
                     display: block;
                 }
@@ -136,48 +145,52 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 font-weight: bold;
             }
 
-            paper-tab.iron-selected iron-icon{
+            paper-tab.iron-selected iron-icon {
                 opacity: 1;
             }
 
-            paper-tab iron-icon{
+            paper-tab iron-icon {
                 opacity: 0.5;
                 color: var(--app-text-color);
             }
 
             :host {
-                width: 100%!important;
+                width: 100% !important;
             }
 
-            paper-input{
+            paper-input {
                 margin: 0 16px;
                 --paper-input-container-focus-color: var(--app-primary-color);
-                font-size:var(--form-font-size);
+                font-size: var(--form-font-size);
             }
 
-            iron-icon{
+            iron-icon {
                 margin-right: 8px;
             }
 
-            .textAlignCenter { text-align: center; }
+            .textAlignCenter {
+                text-align: center;
+            }
 
-            .hidden, .fii_hidden { display:none }
+            .hidden, .fii_hidden {
+                display: none
+            }
 
-            #addDisplayedAgendaDialog{
+            #addDisplayedAgendaDialog {
                 height: 400px;
                 width: 800px;
             }
 
-            .trashIcon{
+            .trashIcon {
                 height: 14px;
                 width: 14px;
             }
 
-            .btnDiv{
+            .btnDiv {
                 text-align: right;
             }
 
-            .buttons{
+            .buttons {
                 display: flex;
                 flex-grow: 1;
                 box-sizing: border-box;
@@ -185,7 +198,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 padding-top: 16px;
             }
 
-            #agendaListDialog{
+            #agendaListDialog {
                 height: 250px;
                 overflow: auto;
             }
@@ -195,9 +208,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <ht-iban-validator validator-name="ht-iban-validator"></ht-iban-validator>
 
         <div class="agenda-panel">
-            <h4>[[localize('my_pro', 'My profil', language)]] - [[localize('acc_agenda_info', 'agenda information', language)]]</h4>
+            <h4>[[localize('my_pro', 'My profil', language)]] - [[localize('acc_agenda_info', 'agenda information',
+                language)]]</h4>
             <div class="agendaContainer" id="agendaContainer">
-                <h4>[[localize('list_of_vis_dia', 'List of visible diary in Mikrono', language)]]<paper-icon-button class="add-btn" icon="icons:add-circle" on-tap="_addAgenda"></paper-icon-button></h4>
+                <h4>[[localize('list_of_vis_dia', 'List of visible diary in Mikrono', language)]]
+                    <paper-icon-button class="add-btn" icon="icons:add-circle" on-tap="_addAgenda"></paper-icon-button>
+                </h4>
                 <div>
                     <vaadin-grid id="agendaList" class="material" items="[[listOfVisibleAgendas]]">
                         <vaadin-grid-column>
@@ -213,7 +229,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             </template>
                             <template>
                                 <div class="btnDiv">
-                                    <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_hiddenAgenda" data-item$="[[item]]"></iron-icon>
+                                    <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_hiddenAgenda"
+                                               data-item$="[[item]]"></iron-icon>
                                 </div>
                             </template>
                         </vaadin-grid-column>
@@ -228,7 +245,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid-column width="4%">
                     <template class="header"></template>
                     <template>
-                        <vaadin-checkbox class="checkbox" id="[[item.id]]" checked="[[_sharingAgenda(item, listOfActivesUsersWithAgenda.*)]]" on-checked-changed="_checkAgenda"></vaadin-checkbox>
+                        <vaadin-checkbox class="checkbox" id="[[item.id]]"
+                                         checked="[[_sharingAgenda(item, listOfActivesUsersWithAgenda.*)]]"
+                                         on-checked-changed="_checkAgenda"></vaadin-checkbox>
                     </template>
                 </vaadin-grid-column>
                 <vaadin-grid-column width="85%">
@@ -242,7 +261,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </vaadin-grid>
             <div class="buttons">
                 <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="confirmSharingAgenda">[[localize('add','Add',language)]]</paper-button>
+                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus
+                              on-tap="confirmSharingAgenda">[[localize('add','Add',language)]]
+                </paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -267,11 +288,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Object,
                         noReset: true
                     },
-                    listOfActivesUsersWithAgenda:{
+                    listOfActivesUsersWithAgenda: {
                         type: Array,
                         value: () => []
                     },
-                    listOfVisibleAgendas:{
+                    listOfVisibleAgendas: {
                         type: Array,
                         value: () => []
                     },
@@ -295,7 +316,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
             }
 
-            agendaDataProvider(){
+            agendaDataProvider() {
                 this.set('listOfActivesUsersWithAgenda', [])
                 this.set('listOfVisibleAgendas', [])
 
@@ -313,24 +334,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 })
             }
 
-            _addAgenda(){
+            _addAgenda() {
                 this.$['addDisplayedAgendaDialog'].open()
             }
 
-            _sharingAgenda(item){
+            _sharingAgenda(item) {
                 if (item) {
                     const mark = this.selectedAgendasToBeVisible.find(m => m.id === item.id)
                     return mark && mark.check
-                }else {
+                } else {
                     return false
                 }
             }
 
-            _checkAgenda(e){
+            _checkAgenda(e) {
                 if (e.target.id !== "") {
                     const mark = this.selectedAgendasToBeVisible.find(m => m.id === e.target.id)
                     if (!mark) {
-                        this.push('selectedAgendasToBeVisible', {id: e.target.id,check: true})
+                        this.push('selectedAgendasToBeVisible', {id: e.target.id, check: true})
                     } else {
                         mark.check = !mark.check
                         this.notifyPath('selectedAgendasToBeVisible.*')
@@ -338,11 +359,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            confirmSharingAgenda(){
+            confirmSharingAgenda() {
 
                 const properties = this.user && this.user.properties || []
 
-                if(properties && !properties.find(prop => prop.type.identifier === "be.mikrono.displayedAgendas")){
+                if (properties && !properties.find(prop => prop.type.identifier === "be.mikrono.displayedAgendas")) {
                     this.push('user.properties', {
                         type: {
                             identifier: "be.mikrono.displayedAgendas",
@@ -367,7 +388,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 const displayedAgendasProperty = properties && properties.find(prop => prop.type.identifier === "be.mikrono.displayedAgendas") || []
                 const listOfDisplayedAgendaIds = JSON.parse(displayedAgendasProperty && displayedAgendasProperty.typedValue && displayedAgendasProperty.typedValue.stringValue || null) || []
                 const agendaToBeAdded = this.selectedAgendasToBeVisible && this.selectedAgendasToBeVisible.filter(a => a.check === true).map(a => a.id) || []
-                const newListOfDisplayedAgendaIds =  _.uniq(_.union(listOfDisplayedAgendaIds, agendaToBeAdded))
+                const newListOfDisplayedAgendaIds = _.uniq(_.union(listOfDisplayedAgendaIds, agendaToBeAdded))
 
                 displayedAgendasProperty.typedValue.stringValue = JSON.stringify(newListOfDisplayedAgendaIds)
 
@@ -385,9 +406,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     })
             }
 
-            _hiddenAgenda(e){
+            _hiddenAgenda(e) {
                 e.stopPropagation()
-                if(e.target.dataset && e.target.dataset.item){
+                if (e.target.dataset && e.target.dataset.item) {
                     const dataToBeDeleted = JSON.parse(e.target.dataset.item)
                     const properties = this.user && this.user.properties || []
                     const displayedAgendasProperty = properties && properties.find(prop => prop.type.identifier === "be.mikrono.displayedAgendas") || []

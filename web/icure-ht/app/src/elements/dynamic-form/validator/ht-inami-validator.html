@@ -12,8 +12,8 @@
 
             static get properties() {
                 return {
-                    api :{
-                        type : Object
+                    api: {
+                        type: Object
                     },
                     pattern: {
                         type: String,
@@ -27,7 +27,7 @@
             }
 
             validate(value) {
-                return !value || this.api.patient().checkInami(value+"")
+                return !value || this.api.patient().checkInami(value + "")
             }
         }
 

@@ -26,7 +26,7 @@
     <template>
         <style>
 
-            #dialog .ch4-cons{
+            #dialog .ch4-cons {
                 display: flex;
                 flex-flow: row wrap;
                 align-items: center;
@@ -46,6 +46,7 @@
                 color: var(--app-primary-color-dark);
                 justify-self: flex-end;
             }
+
             #dialog .dmg-cons paper-button.action[disabled] {
                 background-color: var(--app-secondary-color-dark);
                 color: var(--app-text-color-disabled);
@@ -63,10 +64,10 @@
 
             #dialog a {
                 text-decoration: none;
-                color:	var(--app-secondary-color);
+                color: var(--app-secondary-color);
             }
 
-            #dialog{
+            #dialog {
                 min-height: 600px;
                 min-width: 800px;
             }
@@ -82,7 +83,7 @@
 
             dynamic-link {
                 float: right;
-                top:4px;
+                top: 4px;
             }
 
             vaadin-combo-box {
@@ -102,28 +103,28 @@
                 flex: 1;
             }
 
-            #dialog .edmg-info{
-                margin-top:0;
-                display:flex;
+            #dialog .edmg-info {
+                margin-top: 0;
+                display: flex;
                 flex-flow: row nowrap;
                 justify-content: flex-start;
                 align-items: flex-start;
             }
 
-            #dialog .edmg-info div{
+            #dialog .edmg-info div {
                 margin-right: 24px;
             }
 
-            #dialog .edmg-info div p{
+            #dialog .edmg-info div p {
                 margin: 8px 0;
             }
 
-            #dialog .edmg-info div b{
+            #dialog .edmg-info div b {
                 margin-right: 8px;
             }
 
-            .modal-title{
-                background:  var(--app-background-color-dark);
+            .modal-title {
+                background: var(--app-background-color-dark);
                 margin-top: 0;
                 padding: 16px 24px;
             }
@@ -156,15 +157,18 @@
                 padding: 0;
                 display: flex;
             }
+
             .modal-button--cancel {
                 background: transparent;
                 color: black;
                 border: 1px solid var(--app-background-color-dark);
             }
+
             .modal-button--save {
                 background: var(--app-secondary-color);
                 box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
             }
+
             ht-spinner {
                 position: relative;
                 height: 42px;
@@ -174,7 +178,7 @@
 
         <paper-dialog id="dialog" opened="{{opened}}">
             <h2 class="modal-title">[[localize('e_dmg','e-Dmg',language)]]</h2>
-            <paper-tabs class="tab-selector" selected="{{tabs}}" >
+            <paper-tabs class="tab-selector" selected="{{tabs}}">
                 <paper-tab>[[localize('dmg-con','Dmg Consultation',language)]]</paper-tab>
                 <paper-tab>[[localize('dmg_not','Dmg Notification',language)]]</paper-tab>
                 <!--<paper-tab>[[localize('dmg_tst','Dmg Test',language)]]</paper-tab>-->
@@ -183,9 +187,12 @@
                 <page>
                     <div class="dmg-cons">
                         <div>
-                            <vaadin-date-picker label="[[localize('req_dat','Request date',language)]]" value="{{consultStart}}" i18n="[[i18n]]"></vaadin-date-picker>
+                            <vaadin-date-picker label="[[localize('req_dat','Request date',language)]]"
+                                                value="{{consultStart}}" i18n="[[i18n]]"></vaadin-date-picker>
                             <!--<vaadin-date-picker label="[[localize('endDate','End date',language)]]" value="{{consultEnd}}" i18n="[[i18n]]"></vaadin-date-picker>-->
-                            <paper-button class="action" on-tap="_consultDmg" disabled="[[isLoading]]">[[localize('refresh','Refresh',language)]]</paper-button>
+                            <paper-button class="action" on-tap="_consultDmg" disabled="[[isLoading]]">
+                                [[localize('refresh','Refresh',language)]]
+                            </paper-button>
                         </div>
                         <!-- Show consultation result/errors -->
                         <div class="edmg-info">
@@ -198,32 +205,47 @@
                                     </p>
                                 </template>
                                 <template is="dom-if" if="{{!_hasErrors(curGenInsResp.errors)}}">
-                                    <template is="dom-if" if="{{consultDmgResp.faultMessage}}"><p><b>[[localize('faultMessage','faultMessage',language)]]:</b>[[consultDmgResp.faultMessage]]</p></template>
-                                    <template is="dom-if" if="{{consultDmgResp.faultSource}}"><p><b>[[localize('faultSource','faultSource',language)]]:</b>[[consultDmgResp.faultSource]]</p></template>
-                                    <template is="dom-if" if="{{consultDmgResp.faultCode}}"><p><b>[[localize('faultCode','faultCode',language)]]:</b>[[consultDmgResp.faultCode]]</p></template>
+                                    <template is="dom-if" if="{{consultDmgResp.faultMessage}}"><p><b>[[localize('faultMessage','faultMessage',language)]]:</b>[[consultDmgResp.faultMessage]]
+                                    </p></template>
+                                    <template is="dom-if" if="{{consultDmgResp.faultSource}}"><p><b>[[localize('faultSource','faultSource',language)]]:</b>[[consultDmgResp.faultSource]]
+                                    </p></template>
+                                    <template is="dom-if" if="{{consultDmgResp.faultCode}}"><p><b>[[localize('faultCode','faultCode',language)]]:</b>[[consultDmgResp.faultCode]]
+                                    </p></template>
                                 </template>
                                 <template is="dom-if" if="{{_hasNoDmg(consultDmgResp)}}">
-                                    <div><p><b>[[localize('nam','Name',language)]]:</b> [[patient.firstName]] [[patient.lastName]]</p></div>
+                                    <div><p><b>[[localize('nam','Name',language)]]:</b> [[patient.firstName]]
+                                        [[patient.lastName]]</p></div>
                                     <div><p><b>[[localize('no_dmg','No Dmg',language)]]</b></p></div>
                                 </template>
                                 <template is="dom-if" if="{{_hasDmg(consultDmgResp)}}">
                                     <div>
-                                        <p><b>[[localize('nam','Name',language)]]:</b> [[consultDmgResp.firstName]] [[consultDmgResp.lastName]]</p>
-                                        <p><b>[[localize('sex','Gender',language)]]:</b> [[localize(consultDmgResp.sex,consultDmgResp.sex,language)]]</p>
-                                        <p><b>[[localize('dat_of_bir','Birthdate',language)]]:</b> [[_dateFormat(consultDmgResp.birthday,'DD/MM/YYYY')]]</p>
-                                        <template is="dom-if" if="{{consultDmgResp.deceased}}"><p><b>[[localize('deceased','Deceased',language)]]:</b>[[_dateFormat(consultDmgResp.deceased,'DD/MM/YYYY')]]</p></template>
+                                        <p><b>[[localize('nam','Name',language)]]:</b> [[consultDmgResp.firstName]]
+                                            [[consultDmgResp.lastName]]</p>
+                                        <p><b>[[localize('sex','Gender',language)]]:</b>
+                                            [[localize(consultDmgResp.sex,consultDmgResp.sex,language)]]</p>
+                                        <p><b>[[localize('dat_of_bir','Birthdate',language)]]:</b>
+                                            [[_dateFormat(consultDmgResp.birthday,'DD/MM/YYYY')]]</p>
+                                        <template is="dom-if" if="{{consultDmgResp.deceased}}"><p><b>[[localize('deceased','Deceased',language)]]:</b>[[_dateFormat(consultDmgResp.deceased,'DD/MM/YYYY')]]
+                                        </p></template>
                                         <p><b>[[localize('ssin','SSIN',language)]]:</b> [[consultDmgResp.inss]]</p>
                                         <p><b>[[localize('mut','Mut',language)]]:</b> [[consultDmgResp.mutuality]]</p>
-                                        <p><b>[[localize('regNrWithMut','Membership',language)]]:</b> [[consultDmgResp.regNrWithMut]]</p>
+                                        <p><b>[[localize('regNrWithMut','Membership',language)]]:</b>
+                                            [[consultDmgResp.regNrWithMut]]</p>
                                     </div>
                                     <div>
                                         <p><b>[[localize('dmg_holder','Dmg Holder',language)]]:</b></p>
-                                        <template is="dom-if" if="{{consultDmgResp.hcParty.familyname}}"><p><b>[[localize('nam','Name',language)]]:</b>[[consultDmgResp.hcParty.firstname]] [[consultDmgResp.hcParty.familyname]]</p></template>
-                                        <template is="dom-if" if="{{consultDmgResp.hcParty.name}}"><p><b>[[localize('nam','Name',language)]]:</b>[[consultDmgResp.hcParty.name]]</p></template>
-                                        <p><b>[[_getHcpTypeDesc(consultDmgResp)]]:</b> [[_getHcpNihii(consultDmgResp)]]</p>
-                                        <p><b>[[localize('from','From',language)]]:</b> [[_dateFormat(consultDmgResp.from, 'DD/MM/YYYY')]]
-                                            <b>[[localize('to','To',language)]]:</b> [[_dateFormat(consultDmgResp.to, 'DD/MM/YYYY')]]</p>
-                                        <p><b>[[localize('pay_dmg','Payment',language)]]:</b> [[_yesOrNo(consultDmgResp.payment)]]</p>
+                                        <template is="dom-if" if="{{consultDmgResp.hcParty.familyname}}"><p><b>[[localize('nam','Name',language)]]:</b>[[consultDmgResp.hcParty.firstname]]
+                                            [[consultDmgResp.hcParty.familyname]]</p></template>
+                                        <template is="dom-if" if="{{consultDmgResp.hcParty.name}}"><p><b>[[localize('nam','Name',language)]]:</b>[[consultDmgResp.hcParty.name]]
+                                        </p></template>
+                                        <p><b>[[_getHcpTypeDesc(consultDmgResp)]]:</b> [[_getHcpNihii(consultDmgResp)]]
+                                        </p>
+                                        <p><b>[[localize('from','From',language)]]:</b>
+                                            [[_dateFormat(consultDmgResp.from, 'DD/MM/YYYY')]]
+                                            <b>[[localize('to','To',language)]]:</b> [[_dateFormat(consultDmgResp.to,
+                                            'DD/MM/YYYY')]]</p>
+                                        <p><b>[[localize('pay_dmg','Payment',language)]]:</b>
+                                            [[_yesOrNo(consultDmgResp.payment)]]</p>
                                         <!--<p><b>[[localize('cpl','Complete',language)]]:</b> [[_yesOrNo(consultDmgResp.complete)]]</p>-->
                                     </div>
                                 </template>
@@ -238,14 +260,20 @@
                                 <p>[[localize('dmg_reg_incpl','e-Dmg registration not yet completed',language)]]</p>
                             </template>
                             <!--<template is="dom-if" if="{{_eDmgRegComplete()}}">-->
-                                <!--<p>localize('dmg_reg_cpl','e-Dmg registration completed',language)</p>-->
+                            <!--<p>localize('dmg_reg_cpl','e-Dmg registration completed',language)</p>-->
                             <!--</template>-->
                         </div>
                         <template is="dom-if" if="[[_enableNotification(allEDmgregistered, asSupervisor)]]">
-                        <paper-input label="[[localize('nomen','Prestation code',language)]]" value="{{nomenclature}}" ></paper-input>
-                        <vaadin-date-picker label="[[localize('prest-dat','Encounter date',language)]]" value="{{encounterDate}}" i18n="[[i18n]]"></vaadin-date-picker>
-                            <vaadin-checkbox checked="{{asSupervisor}}">[[localize('in_name_sup','In the name of the supervisor',language)]]</vaadin-checkbox>
-                            <paper-button class="action" on-tap="_dmgNotify" disabled="[[isLoading]]">[[localize('dmg_not','Notify',language)]]</paper-button>
+                            <paper-input label="[[localize('nomen','Prestation code',language)]]"
+                                         value="{{nomenclature}}"></paper-input>
+                            <vaadin-date-picker label="[[localize('prest-dat','Encounter date',language)]]"
+                                                value="{{encounterDate}}" i18n="[[i18n]]"></vaadin-date-picker>
+                            <vaadin-checkbox checked="{{asSupervisor}}">[[localize('in_name_sup','In the name of the
+                                supervisor',language)]]
+                            </vaadin-checkbox>
+                            <paper-button class="action" on-tap="_dmgNotify" disabled="[[isLoading]]">
+                                [[localize('dmg_not','Notify',language)]]
+                            </paper-button>
 
                             <template is="dom-if" if="{{notifyDmgResp}}">
                                 <template is="dom-if" if="{{_hasErrors(notifyDmgResp.errors)}}">
@@ -256,12 +284,16 @@
                                     </p>
                                 </template>
                                 <template is="dom-if" if="{{!_hasErrors(notifyDmgResp.errors)}}">
-                                    <template is="dom-if" if="{{notifyDmgResp.hcParty.familyname}}"><p><b>[[localize('nam','Name',language)]]:</b>[[notifyDmgResp.hcParty.firstname]] [[notifyDmgResp.hcParty.familyname]]</p></template>
-                                    <template is="dom-if" if="{{notifyDmgResp.hcParty.name}}"><p><b>[[localize('nam','Name',language)]]:</b>[[notifyDmgResp.hcParty.name]]</p></template>
+                                    <template is="dom-if" if="{{notifyDmgResp.hcParty.familyname}}"><p><b>[[localize('nam','Name',language)]]:</b>[[notifyDmgResp.hcParty.firstname]]
+                                        [[notifyDmgResp.hcParty.familyname]]</p></template>
+                                    <template is="dom-if" if="{{notifyDmgResp.hcParty.name}}"><p><b>[[localize('nam','Name',language)]]:</b>[[notifyDmgResp.hcParty.name]]
+                                    </p></template>
                                     <p><b>[[localize('ssin','SSIN',language)]]:</b> [[_getHcpSinn(notifyDmgResp)]]</p>
                                     <p><b>[[_getHcpTypeDesc(notifyDmgResp)]]:</b> [[_getHcpNihii(notifyDmgResp)]]</p>
-                                    <p><b>[[localize('from','From',language)]]:</b> [[_dateFormat(notifyDmgResp.from, 'DD/MM/YYYY')]]</p>
-                                    <p><b>[[localize('pay_dmg','Payment',language)]]:</b> [[_yesOrNo(notifyDmgResp.payment)]]</p>
+                                    <p><b>[[localize('from','From',language)]]:</b> [[_dateFormat(notifyDmgResp.from,
+                                        'DD/MM/YYYY')]]</p>
+                                    <p><b>[[localize('pay_dmg','Payment',language)]]:</b>
+                                        [[_yesOrNo(notifyDmgResp.payment)]]</p>
                                     <!--<p><b>[[localize('cpl','Complete',language)]]:</b> [[_yesOrNo(notifyDmgResp.complete)]]</p>-->
                                 </template>
                             </template>
@@ -271,7 +303,8 @@
             </iron-pages>
             <div class="end-buttons">
                 <ht-spinner active="[[isLoading]]"></ht-spinner>
-                <paper-button class="modal-button--cancel" dialog-dismiss>[[localize('clo','Close',language)]]</paper-button>
+                <paper-button class="modal-button--cancel" dialog-dismiss>[[localize('clo','Close',language)]]
+                </paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -284,9 +317,9 @@
 
             static get properties() {
                 return {
-                    dmgAction:{
-                      type: String,
-                      value: 'dmgConsultation'
+                    dmgAction: {
+                        type: String,
+                        value: 'dmgConsultation'
                     },
                     api: {
                         type: Object,
@@ -304,61 +337,89 @@
                         value: null
                     },
                     userHcp: {
-                        type:Object,
-                        value: {"supervisorId" : null}
+                        type: Object,
+                        value: {"supervisorId": null}
                     },
                     language: {
                         type: String
                     },
                     comboStatus: {
                         type: Array,
-                        value : () => [
+                        value: () => [
                             {
-                                "id"       : "aborted",
-                                "label": {"fr": "Abandonné / Contre-indiqué", "nl": "Verlaten / Niet aangegeven", "en": "Abandoned / Against indicated"}
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné / Contre-indiqué",
+                                    "nl": "Verlaten / Niet aangegeven",
+                                    "en": "Abandoned / Against indicated"
+                                }
                             },
                             {
-                                "id"       : "aborted",
+                                "id": "aborted",
                                 "label": {"fr": "Abandonné / Décès", "nl": "Verlaten / ", "en": "Abandoned / Death"}
                             },
                             {
-                                "id"       : "aborted",
-                                "label": {"fr": "Abandonné / Désabonné", "nl": "Verlaten / Afgemeld", "en": "Abandoned / Unsubscribed"}
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné / Désabonné",
+                                    "nl": "Verlaten / Afgemeld",
+                                    "en": "Abandoned / Unsubscribed"
+                                }
                             },
                             {
-                                "id"       : "error",
+                                "id": "error",
                                 "label": {"fr": "Abandonné / Erreur", "nl": "Verlaten /", "en": "Abandoned / Error"}
                             },
                             {
-                                "id"       : "aborted",
-                                "label": {"fr": "Abandonné / Non pertient", "nl": "Verlaten / Irrelevant", "en": "Abandoned / Not relevant"}
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné / Non pertient",
+                                    "nl": "Verlaten / Irrelevant",
+                                    "en": "Abandoned / Not relevant"
+                                }
                             },
                             {
-                                "id"       : "refused",
-                                "label": {"fr": "Abandonné / Refus patient", "nl": "Verlaten / Weigering van de patiënt", "en": "Abandoned / Patient refusal"}
+                                "id": "refused",
+                                "label": {
+                                    "fr": "Abandonné / Refus patient",
+                                    "nl": "Verlaten / Weigering van de patiënt",
+                                    "en": "Abandoned / Patient refusal"
+                                }
                             },
                             {
-                                "id"       : "aborted",
-                                "label": {"fr": "Abandonné / Trop tard", "nl": "Verlaten / ", "en": "Abandoned / Too late"}
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné / Trop tard",
+                                    "nl": "Verlaten / ",
+                                    "en": "Abandoned / Too late"
+                                }
                             },
                             {
-                                "id"       : "aborted",
-                                "label": {"fr": "Abandonné par le patient", "nl": "Verlaten / erwachting", "en": "Abandoned by patient"}
+                                "id": "aborted",
+                                "label": {
+                                    "fr": "Abandonné par le patient",
+                                    "nl": "Verlaten / erwachting",
+                                    "en": "Abandoned by patient"
+                                }
                             },
                             {
-                                "id"       : "pending",
+                                "id": "pending",
                                 "label": {"fr": "En attente", "nl": "Verwachting", "en": "Waiting"}
                             },
                             {
-                                "id"       : "planned",
-                                "label": {"fr": "En attente planifié", "nl": "Gepland wachten", "en": "Scheduled waiting"}
+                                "id": "planned",
+                                "label": {
+                                    "fr": "En attente planifié",
+                                    "nl": "Gepland wachten",
+                                    "en": "Scheduled waiting"
+                                }
                             },
                             {
-                                "id"       : "completed",
+                                "id": "completed",
                                 "label": {"fr": "Fait", "nl": "Geëxecuteerd", "en": "Done"}
                             },
                             {
-                                "id"       : "proposed",
+                                "id": "proposed",
                                 "label": {"fr": "Rappel envoyé", "nl": "Herinnering verzonden", "en": "Reminder sent"}
                             }
                         ]
@@ -371,61 +432,61 @@
                         type: Boolean,
                         value: false
                     },
-                    consultDmgResp:{
+                    consultDmgResp: {
                         type: Object,
                         value: null
                     },
-                    notifyDmgResp:{
+                    notifyDmgResp: {
                         type: Object,
                         value: null
                     },
-                    consultStart:{
+                    consultStart: {
                         type: Date,
                         value: null
                     },
-                    consultEnd:{
+                    consultEnd: {
                         type: Date,
                         value: null
                     },
-                    nomenclature:{
+                    nomenclature: {
                         type: String,
                         value: null
                     },
-                    encounterDate:{
+                    encounterDate: {
                         type: Date,
                         value: null
                     },
-                    edmgNiss:{
+                    edmgNiss: {
                         type: String,
                         value: null
                     },
-                    edmgOA:{
+                    edmgOA: {
                         type: String,
                         value: null
                     },
-                    edmgAFF:{
+                    edmgAFF: {
                         type: String,
                         value: null
                     },
                     listOAs: {
                         type: Array,
-                        value: ['100','200','300','400','500','600','900']
+                        value: ['100', '200', '300', '400', '500', '600', '900']
                     },
-                    regStatus:{
+                    regStatus: {
                         type: Object,
                         value: null
                     },
-                    allEDmgRegistered:{
+                    allEDmgRegistered: {
                         type: Boolean,
                         value: false
                     },
-                    asSupervisor:{
-                      type: Boolean,
-                      value: false
+                    asSupervisor: {
+                        type: Boolean,
+                        value: false
                     },
-                    currentRegs:{
+                    currentRegs: {
                         type: Object,
-                        value : null
+                        value: null
                     },
                     userIBAN: {
                         type: String,
@@ -436,22 +497,22 @@
                         value: null
                     },
                     tabs: {
-                        type:  Number,
+                        type: Number,
                         value: 0
                     },
                     listRequestDate: {
                         type: Date,
-                        value:null
+                        value: null
                     },
-                    listIO:{
+                    listIO: {
                         type: String,
                         value: null
                     },
-                    getListResp:{
+                    getListResp: {
                         type: Object,
                         value: null
                     },
-                    isLoading:{
+                    isLoading: {
                         type: Boolean,
                         value: false
                     }
@@ -480,8 +541,7 @@
                 // this.set('qrCodeWidth', Math.min(offsetWidth - 32, offsetHeight - 160));
             }
 
-            getBankInfo()
-            {
+            getBankInfo() {
                 const propBIC = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.BIC') ||
                     (this.user.properties[this.user.properties.length] = {
                         type: {identifier: 'org.taktik.icure.user.BIC'},
@@ -497,61 +557,61 @@
                 this.set('userIBAN', propIBAN.typedValue.stringValue);
             }
 
-            _showDmgAction(action){
+            _showDmgAction(action) {
                 return this.dmgAction === action;
             }
 
-            _hasErrors(errs){
+            _hasErrors(errs) {
                 return errs && errs.length > 0;
                 //return true;
             }
 
-            _formatError(error){
+            _formatError(error) {
                 return `[${this.language === 'nl' ? error.locNl : error.locFr}] - ${error.value ? error.value + ' : ' : ""} - ${this.language === 'nl' ? error.msgNl : error.msgFr}`;
             }
 
-            _hasDmg(edmgConsult){
+            _hasDmg(edmgConsult) {
                 return edmgConsult && edmgConsult.from
             }
 
-            _hasNoDmg(edmgConsult){
+            _hasNoDmg(edmgConsult) {
                 return !this._hasDmg(edmgConsult) && !this._hasErrors(edmgConsult.errors)
             }
 
 
-            _yesOrNo(b){
-                return b ? this.localize('yes','yes',this.language) : this.localize('no','no',this.language)
+            _yesOrNo(b) {
+                return b ? this.localize('yes', 'yes', this.language) : this.localize('no', 'no', this.language)
             }
 
-            _getHcpTypeDesc(edmgConsult){
-                return this.localize(this._getHcpType(edmgConsult),this._getHcpType(edmgConsult),this.language);
+            _getHcpTypeDesc(edmgConsult) {
+                return this.localize(this._getHcpType(edmgConsult), this._getHcpType(edmgConsult), this.language);
             }
 
-            _getHcpType(edmgConsult){
-                if(edmgConsult && edmgConsult.hcParty && edmgConsult.hcParty.cds && edmgConsult.hcParty.cds[0]) {
+            _getHcpType(edmgConsult) {
+                if (edmgConsult && edmgConsult.hcParty && edmgConsult.hcParty.cds && edmgConsult.hcParty.cds[0]) {
                     return edmgConsult.hcParty.cds[0].value;
                 } else {
                     return '';
                 }
             }
 
-            _getHcpNihii(edmgConsult){
-                if(edmgConsult && edmgConsult.hcParty && edmgConsult.hcParty.ids && edmgConsult.hcParty.ids[0]) {
-                    return  edmgConsult.hcParty.ids.find(id => id.s === 'ID_HCPARTY') ? edmgConsult.hcParty.ids.find(id => id.s === 'ID_HCPARTY').value : '';
+            _getHcpNihii(edmgConsult) {
+                if (edmgConsult && edmgConsult.hcParty && edmgConsult.hcParty.ids && edmgConsult.hcParty.ids[0]) {
+                    return edmgConsult.hcParty.ids.find(id => id.s === 'ID_HCPARTY') ? edmgConsult.hcParty.ids.find(id => id.s === 'ID_HCPARTY').value : '';
                 } else {
                     return '';
                 }
             }
 
-            _getHcpSinn(edmgConsult){
-                if(edmgConsult && edmgConsult.hcParty && edmgConsult.hcParty.ids && edmgConsult.hcParty.ids[0]) {
-                    return  edmgConsult.hcParty.ids.find(id => id.s === 'INSS') ? edmgConsult.hcParty.ids.find(id => id.s === 'INSS').value : '';
+            _getHcpSinn(edmgConsult) {
+                if (edmgConsult && edmgConsult.hcParty && edmgConsult.hcParty.ids && edmgConsult.hcParty.ids[0]) {
+                    return edmgConsult.hcParty.ids.find(id => id.s === 'INSS') ? edmgConsult.hcParty.ids.find(id => id.s === 'INSS').value : '';
                 } else {
                     return '';
                 }
             }
 
-            _getOARegStatus(reg){
+            _getOARegStatus(reg) {
                 if (reg) {
                     return reg.registered ? reg.OA + ':OK ' : reg.OA + ':NOK ';
                 } else {
@@ -559,25 +619,25 @@
                 }
             }
 
-            _registerToEDMG(){
+            _registerToEDMG() {
                 //100,200,300,400,500,600,900
                 let regs = this.getRegistrationStatus();
-                regs.rs.map(reg =>{
-                    if(!reg.registered) {
-                        this.registerToEDMGbyOA(reg).then(reg =>{
+                regs.rs.map(reg => {
+                    if (!reg.registered) {
+                        this.registerToEDMGbyOA(reg).then(reg => {
                             const idx = regs.rs.findIndex(r => r.OA === reg.OA);
-                            if(idx >= 0){
+                            if (idx >= 0) {
                                 regs.rs.splice(idx, 1, reg);
                             } else {
                                 regs.rs.push(reg);
                             }
-                            this.set('regStatus',JSON.stringify(regs));
+                            this.set('regStatus', JSON.stringify(regs));
                         })
                     }
                 })
             }
 
-            getRegistrationStatus(){
+            getRegistrationStatus() {
                 const propRegStatus = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.eDMG.RegistrationStatus') ||
                     (this.user.properties[this.user.properties.length] = {
                         type: {identifier: 'org.taktik.icure.user.eDMG.RegistrationStatus'},
@@ -586,14 +646,22 @@
                 //'{"rs":[{"OA":"100","Comment":"","ErrorCode":""}]}'
 
                 let OAStatus = {};
-                if(propRegStatus && propRegStatus.typedValue) {
+                if (propRegStatus && propRegStatus.typedValue) {
                     OAStatus = JSON.parse(propRegStatus.typedValue.stringValue);
                 }
-                let regs = {rs: (OAStatus.rs||[]).map(r => r)}
+                let regs = {rs: (OAStatus.rs || []).map(r => r)}
                 this.listOAs.map(itOA => {
-                    let reg = regs.rs.find(r => r.OA === itOA) || {OA : itOA, registered: false, lastExecution: null, Comment : '', ErrorCode :  '', iban :'', bic: '' };
+                    let reg = regs.rs.find(r => r.OA === itOA) || {
+                        OA: itOA,
+                        registered: false,
+                        lastExecution: null,
+                        Comment: '',
+                        ErrorCode: '',
+                        iban: '',
+                        bic: ''
+                    };
                     const idx = regs.rs.findIndex(r => r.OA === itOA);
-                    if(idx >= 0){
+                    if (idx >= 0) {
                         regs.rs.splice(idx, 1, reg);
                     } else {
                         regs.rs.push(reg);
@@ -605,11 +673,11 @@
                 return regs;
             }
 
-            _enableNotification(allReg, superv){
+            _enableNotification(allReg, superv) {
                 return allReg || superv;
             }
 
-            _eDmgRegComplete(){
+            _eDmgRegComplete() {
                 return this.allEDmgregistered;
             }
 
@@ -617,24 +685,22 @@
                 return n % 2 == 0;
             }
 
-            getGender(niss){
-                if(niss && niss.length === 11){
-                    const c9 = niss.substring(8,9);
+            getGender(niss) {
+                if (niss && niss.length === 11) {
+                    const c9 = niss.substring(8, 9);
                     const even = this.isEven(parseInt(c9));
-                    if(even){
+                    if (even) {
                         return 'female';
-                    }
-                    else{
+                    } else {
                         return 'male';
                     }
-                }
-                else{
+                } else {
                     return '';
                 }
 
             }
 
-            _dmgNotify(){
+            _dmgNotify() {
                 this.getDmgNotifyResult().then(edmgresp => this.set('notifyDmgResp', edmgresp))
             }
 
@@ -643,12 +709,12 @@
             // nomenclature: string,
             // patientSsin?: string, oa?: string, regNrWithMut?: string, patientFirstName?: string, patientLastName?: string, patientGender?:
             // string, requestDate?: number
-            getDmgNotifyResult(){
+            getDmgNotifyResult() {
                 const requestDate = Date.parse(this.encounterDate);
                 if (this.api.tokenId) {
-                    this.set('isLoading',true)
+                    this.set('isLoading', true)
                     //if(this.genInsOA && this.genInsOA !=='' && this.genInsAFF && this.genInsAFF !== ''){
-                    if(((this.edmgNiss && this.edmgNiss !=='') || (this.patient.ssin && this.patient.ssin !== '')) && !(this.edmgOA && this.edmgOA !=='')){
+                    if (((this.edmgNiss && this.edmgNiss !== '') || (this.patient.ssin && this.patient.ssin !== '')) && !(this.edmgOA && this.edmgOA !== '')) {
                         return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                             .then(hcp => {
                                     return (this.asSupervisor && hcp.supervisorId ?
@@ -671,15 +737,15 @@
                                 }
                             ).then(edmgResp => {
                                     if (edmgResp) {
-                                        this.set('isLoading',false)
+                                        this.set('isLoading', false)
                                         return edmgResp;
                                     } else {
-                                        this.set('isLoading',false)
+                                        this.set('isLoading', false)
                                         return null;
                                     }
                                 }
                             )
-                    }else{
+                    } else {
                         //return Promise.resolve(null)
                         //there is no niss
                         let oa = this.genInsOA;
@@ -697,10 +763,10 @@
                                     }
                                 ).then(edmgResp => {
                                         if (edmgResp) {
-                                            this.set('isLoading',false)
+                                            this.set('isLoading', false)
                                             return edmgResp;
                                         } else {
-                                            this.set('isLoading',false)
+                                            this.set('isLoading', false)
                                             return null;
                                         }
                                     }
@@ -708,15 +774,14 @@
                         });
                     }
                 } else {
-                    this.set('isLoading',false)
+                    this.set('isLoading', false)
                     return Promise.resolve(null)
                 }
 
             }
 
 
-
-            _consultDmg(){
+            _consultDmg() {
                 if (!this.api.tokenId || this.isLoading) return;
                 this.set('isLoading', true);
                 this.api.getUpdatedEdmgStatus(
@@ -726,21 +791,19 @@
                     this.edmgNiss,
                     this.edmgOA,
                     this.genInsOA,
-                    this.genInsAFF                    ,
+                    this.genInsAFF,
                     true    // Bypass cache, force hit on fhc().Dmgcontroller().consultDmgUsingGET()
                 ).then(edmgResp => {
-                    this.set('isLoading',false)
+                    this.set('isLoading', false)
                     this.set('consultDmgResp', edmgResp);
                 });
             }
 
 
-            hcpSupervisorChanged(supervisorId){
-                if(supervisorId && supervisorId !== '') {
+            hcpSupervisorChanged(supervisorId) {
+                if (supervisorId && supervisorId !== '') {
                     this.set('asSupervisor', true);
-                }
-                else
-                {
+                } else {
                     this.set('asSupervisor', false);
                 }
             }
@@ -784,6 +847,7 @@
 
 
         }
+
         customElements.define(HtPatEdmgDialog.is, HtPatEdmgDialog);
     </script>
 </dom-module>

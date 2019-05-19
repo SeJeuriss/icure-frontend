@@ -61,19 +61,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
             }
 
-            :host *:focus{
-                outline:0!important;
+            :host *:focus {
+                outline: 0 !important;
             }
 
-            .col-left{
+            .col-left {
                 position: relative;
                 box-sizing: border-box;
                 grid-column: 1 / 1;
                 grid-row: 1 / 1;
-                background:var(--app-background-color-dark);
+                background: var(--app-background-color-dark);
                 @apply --shadow-elevation-3dp;
                 padding: 0;
-                display:flex;
+                display: flex;
                 flex-flow: column nowrap;
                 align-items: center;
                 height: 100%;
@@ -83,74 +83,75 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 z-index: 25;
                 padding: 12px 0;
             }
-            paper-listbox{
-                background:transparent;
+
+            paper-listbox {
+                background: transparent;
                 padding: 0;
             }
 
-            paper-item{
-                background:transparent;
-                outline:0;
+            paper-item {
+                background: transparent;
+                outline: 0;
                 height: 32px;
                 align-items: center;
-                --paper-item-selected:{
+                --paper-item-selected: {
 
                 };
                 --paper-item-focused: {
-                    background:transparent;
+                    background: transparent;
                 };
                 --paper-item-focused-before: {
-                    background:transparent;
+                    background: transparent;
                 };
 
             }
 
             paper-listbox {
-                outline:0;
+                outline: 0;
                 --paper-listbox-selected-item: {
-                    color:var(--app-text-color-light);
-                    background:var(--app-primary-color);
+                    color: var(--app-text-color-light);
+                    background: var(--app-primary-color);
                 };
             }
 
 
-
             collapse-button {
-                outline:0;
+                outline: 0;
                 width: 100%;
                 user-select: none;
                 --paper-listbox-selected-item: {
-                    color:var(--app-text-color-light);
-                    background:var(--app-primary-color);
+                    color: var(--app-text-color-light);
+                    background: var(--app-primary-color);
                 };
                 transition: var(--transition_-_transition);
                 background: var(--app-background-color-dark);
             }
+
             collapse-button paper-item {
                 font-size: 13px;
                 font-weight: bold;
             }
 
             collapse-button .menu-item.iron-selected,
-            collapse-button paper-item.iron-selected{
+            collapse-button paper-item.iron-selected {
                 @apply --padding-menu-item;
-                color:var(--app-text-color-light);
-                background:var(--app-primary-color);
+                color: var(--app-text-color-light);
+                background: var(--app-primary-color);
                 @apply --text-shadow;
             }
 
-            collapse-button paper-item.iron-selected{
+            collapse-button paper-item.iron-selected {
                 background: var(--app-background-color-dark);
                 color: black;
                 text-shadow: none;
             }
 
-            collapse-button paper-item.iron-selected iron-icon{
+            collapse-button paper-item.iron-selected iron-icon {
                 color: var(--app-secondary-color) !important;
                 opacity: 1;
             }
 
-            collapse-button paper-item iron-icon, paper-item iron-icon{
+            collapse-button paper-item iron-icon, paper-item iron-icon {
                 height: 24px;
                 width: 24px;
                 padding: 4px;
@@ -159,27 +160,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 box-sizing: border-box;
             }
 
-            collapse-button paper-icon-button{
+            collapse-button paper-icon-button {
                 min-width: 40px;
                 min-height: 40px;
             }
 
 
-
-            .sublist{
-                background:var(--app-light-color);
-                margin:0 0 0 -30px;
-                padding:0;
-                border-radius:0 0 2px 2px;
+            .sublist {
+                background: var(--app-light-color);
+                margin: 0 0 0 -30px;
+                padding: 0;
+                border-radius: 0 0 2px 2px;
             }
 
             paper-item.list-info {
                 font-weight: lighter;
                 font-style: italic;
-                height:48px;
+                height: 48px;
             }
 
-            .menu-item{
+            .menu-item {
                 @apply --padding-menu-item;
                 height: 24px;
                 min-height: 24px;
@@ -192,37 +192,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             .sublist .menu-item {
                 font-size: 13px;
-                min-height:32px;
-                height:32px;
+                min-height: 32px;
+                height: 32px;
             }
+
             .sublist .menu-item.flex-start {
                 justify-content: flex-start;
             }
 
-            .menu-item:hover{
+            .menu-item:hover {
                 /*background: var(--app-dark-color-faded);*/
                 @apply --transition;
             }
 
-            .menu-item .iron-selected{
-                background:var(--app-primary-color);
+            .menu-item .iron-selected {
+                background: var(--app-primary-color);
             }
 
-            .menu-item .opened{
-                background:white!important;
-                width:80%;
-                border-radius:2px;
+            .menu-item .opened {
+                background: white !important;
+                width: 80%;
+                border-radius: 2px;
             }
 
-            .menu-item-icon--selected{
-                width:0;
+            .menu-item-icon--selected {
+                width: 0;
             }
 
-            .opened .menu-item-icon--selected{
+            .opened .menu-item-icon--selected {
                 width: 18px;
             }
 
-            .opened > .menu-item-icon{
+            .opened > .menu-item-icon {
                 transform: scaleY(-1);
             }
 
@@ -230,21 +231,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 /*@apply --padding-right-left-16;*/
             }
 
-            .submenu-item{
-                cursor:pointer;
+            .submenu-item {
+                cursor: pointer;
             }
 
-            .submenu-item.iron-selected{
-                background:var(--app-primary-color-light);
-                color:var(--app-text-color-light);
+            .submenu-item.iron-selected {
+                background: var(--app-primary-color-light);
+                color: var(--app-text-color-light);
                 @apply --text-shadow;
             }
 
-            .submenu-item-icon{
-                height:14px;
-                width:14px;
-                color:var(--app-text-color-light);
-                margin-right:10px;
+            .submenu-item-icon {
+                height: 14px;
+                width: 14px;
+                color: var(--app-text-color-light);
+                margin-right: 10px;
             }
 
             .one-line-menu.list-title {
@@ -285,7 +286,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 justify-content: space-between;
             }
 
-            .sub-menu-icon{
+            .sub-menu-icon {
                 height: 24px;
                 width: 24px;
                 margin-right: 8px;
@@ -297,16 +298,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="col-left">
             <template is="dom-if" if="[[isAdmin]]">
                 <collapse-button id="managementcollapse">
-                    <paper-item id="management" slot="sublist-collapse-item" class="menu-trigger menu-item" on-tap="toggleMenu" elevation="">
+                    <paper-item id="management" slot="sublist-collapse-item" class="menu-trigger menu-item"
+                                on-tap="toggleMenu" elevation="">
                         <div class="one-line-menu list-title management-line">
                             <div>
                                 <iron-icon icon="communication:business" class="force-left"></iron-icon>
                                 <span class="force-left force-ellipsis box-txt">[[localize('manag','Management of office / medical house',language)]]</span>
                             </div>
                         </div>
-                        <paper-icon-button class="menu-item-icon" icon="hardware:keyboard-arrow-down" hover="none" on-tap="toggleMenu"></paper-icon-button>
+                        <paper-icon-button class="menu-item-icon" icon="hardware:keyboard-arrow-down" hover="none"
+                                           on-tap="toggleMenu"></paper-icon-button>
                     </paper-item>
-                    <paper-listbox id="managementlist" class="menu-content sublist" selected="{{managementSelectionIndex}}" selected-item="{{managementSelectionItem}}" selectable="paper-item">
+                    <paper-listbox id="managementlist" class="menu-content sublist"
+                                   selected="{{managementSelectionIndex}}" selected-item="{{managementSelectionItem}}"
+                                   selectable="paper-item">
                         <!--
                         <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="parentManagementSubMenu">
                             <iron-icon class="sub-menu-icon" icon="vaadin:office"></iron-icon> [[localize('off_mh','Office / Medical house',language)]]
@@ -315,19 +320,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <iron-icon class="sub-menu-icon" icon="vaadin:invoice"></iron-icon> [[localize('fac_ser_fee','Service fee facturation',language)]]
                         </paper-item>
                         -->
-                        <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="facturationFlatRateManagementSubMenu">
-                            <iron-icon class="sub-menu-icon" icon="icons:shopping-cart"></iron-icon> [[localize('fac_fla_rat','Flat rate facturation',language)]]
+                        <paper-item class="one-line-menu menu-item flex-start" id="management"
+                                    data-submenu="facturationFlatRateManagementSubMenu">
+                            <iron-icon class="sub-menu-icon" icon="icons:shopping-cart"></iron-icon>
+                            [[localize('fac_fla_rat','Flat rate facturation',language)]]
                         </paper-item>
-                        <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="formsManagementSubMenu">
-                            <iron-icon class="sub-menu-icon" icon="av:library-books"></iron-icon> [[localize('forms','Forms',language)]]
+                        <paper-item class="one-line-menu menu-item flex-start" id="management"
+                                    data-submenu="formsManagementSubMenu">
+                            <iron-icon class="sub-menu-icon" icon="av:library-books"></iron-icon>
+                            [[localize('forms','Forms',language)]]
                         </paper-item>
                         <!--
                         <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="groupsManagementSubMenu">
                             <iron-icon class="sub-menu-icon" icon="vaadin:split"></iron-icon> [[localize('grps','Groups of users',language)]]
                         </paper-item>
                         -->
-                        <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="usersManagementSubMenu">
-                            <iron-icon class="sub-menu-icon" icon="social:group"></iron-icon> [[localize('users','Users',language)]]
+                        <paper-item class="one-line-menu menu-item flex-start" id="management"
+                                    data-submenu="usersManagementSubMenu">
+                            <iron-icon class="sub-menu-icon" icon="social:group"></iron-icon>
+                            [[localize('users','Users',language)]]
                         </paper-item>
                         <!--
                         <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="delegationsManagementSubMenu">
@@ -338,18 +349,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </collapse-button>
             </template>
             <collapse-button id="accountcollapse">
-                <paper-item id="account" slot="sublist-collapse-item" class="menu-trigger menu-item" on-tap="toggleMenu" elevation="">
+                <paper-item id="account" slot="sublist-collapse-item" class="menu-trigger menu-item" on-tap="toggleMenu"
+                            elevation="">
                     <div class="one-line-menu list-title account-line">
                         <div>
                             <iron-icon icon="icons:account-circle" class="force-left"></iron-icon>
                             <span class="force-left force-ellipsis box-txt">[[localize('my_pro','My profil',language)]]</span>
                         </div>
                     </div>
-                    <paper-icon-button class="menu-item-icon" icon="hardware:keyboard-arrow-down" hover="none" on-tap="toggleMenu"></paper-icon-button>
+                    <paper-icon-button class="menu-item-icon" icon="hardware:keyboard-arrow-down" hover="none"
+                                       on-tap="toggleMenu"></paper-icon-button>
                 </paper-item>
-                <paper-listbox id="accountlist" class="menu-content sublist" selected="{{accountSelectionIndex}}" selected-item="{{accountSelectionItem}}" selectable="paper-item">
+                <paper-listbox id="accountlist" class="menu-content sublist" selected="{{accountSelectionIndex}}"
+                               selected-item="{{accountSelectionItem}}" selectable="paper-item">
                     <paper-item class="one-line-menu menu-item flex-start" id="account" data-submenu="agendaSubMenu">
-                        <iron-icon class="sub-menu-icon" icon="icons:date-range"></iron-icon> [[localize('agenda','Agenda',language)]]
+                        <iron-icon class="sub-menu-icon" icon="icons:date-range"></iron-icon>
+                        [[localize('agenda','Agenda',language)]]
                     </paper-item>
                     <!--
                     <paper-item class="one-line-menu menu-item flex-start" id="account" data-submenu="edmgInformationSubMenu">
@@ -357,10 +372,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </paper-item>-->
 
 
-
                     <template is="dom-if" if="[[_isElectronAvailable]]">
-                        <paper-item class="one-line-menu menu-item flex-start" id="account" data-submenu="printersInformationSubMenu">
-                            <iron-icon class="sub-menu-icon" icon="icons:print"></iron-icon> [[localize('acc_print_info','Printers',language)]]
+                        <paper-item class="one-line-menu menu-item flex-start" id="account"
+                                    data-submenu="printersInformationSubMenu">
+                            <iron-icon class="sub-menu-icon" icon="icons:print"></iron-icon>
+                            [[localize('acc_print_info','Printers',language)]]
                         </paper-item>
                     </template>
 
@@ -381,18 +397,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </collapse-button>
 
             <collapse-button id="reportcollapse">
-                <paper-item id="reports" slot="sublist-collapse-item" class="menu-trigger menu-item" on-tap="toggleMenu" elevation="">
+                <paper-item id="reports" slot="sublist-collapse-item" class="menu-trigger menu-item" on-tap="toggleMenu"
+                            elevation="">
                     <div class="one-line-menu list-title reports-line">
                         <div>
                             <iron-icon icon="av:equalizer" class="force-left"></iron-icon>
                             <span class="force-left force-ellipsis box-txt">[[localize('reports','Reports',language)]]</span>
                         </div>
                     </div>
-                    <paper-icon-button class="menu-item-icon" icon="hardware:keyboard-arrow-down" hover="none" on-tap="toggleMenu"></paper-icon-button>
+                    <paper-icon-button class="menu-item-icon" icon="hardware:keyboard-arrow-down" hover="none"
+                                       on-tap="toggleMenu"></paper-icon-button>
                 </paper-item>
-                <paper-listbox id="reportlist" class="menu-content sublist" selected="{{reportSelectionIndex}}" selected-item="{{reportSelectionItem}}" selectable="paper-item">
-                    <paper-item class="one-line-menu menu-item flex-start" id="reports" data-submenu="listOfAttestationSubMenu">
-                        <iron-icon class="sub-menu-icon" icon="icons:list"></iron-icon> [[localize('lst_att','List of attestations',language)]]
+                <paper-listbox id="reportlist" class="menu-content sublist" selected="{{reportSelectionIndex}}"
+                               selected-item="{{reportSelectionItem}}" selectable="paper-item">
+                    <paper-item class="one-line-menu menu-item flex-start" id="reports"
+                                data-submenu="listOfAttestationSubMenu">
+                        <iron-icon class="sub-menu-icon" icon="icons:list"></iron-icon>
+                        [[localize('lst_att','List of attestations',language)]]
                     </paper-item>
                 </paper-listbox>
             </collapse-button>
@@ -425,7 +446,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Number,
                         value: null
                     },
-                    reportSelectionIndex:{
+                    reportSelectionIndex: {
                         type: Number,
                         value: null
                     },
@@ -433,17 +454,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Number,
                         value: null
                     },
-                    managementSelectionItem:{
+                    managementSelectionItem: {
                         type: Object,
-                        value: () => {}
+                        value: () => {
+                        }
                     },
                     accountSelectionItem: {
                         type: Object,
-                        value: () => {}
+                        value: () => {
+                        }
                     },
-                    reportSelectionItem:{
+                    reportSelectionItem: {
                         type: Object,
-                        value: () => {}
+                        value: () => {
+                        }
                     },
                     isAdmin: {
                         type: Boolean,
@@ -457,7 +481,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             static get observers() {
-                return ['apiReady(user)','_managementSelectionIndexChanged(managementSelectionIndex)', '_accountSelectionIndexChanged(accountSelectionIndex)', '_reportSelectionIndexChanged(reportSelectionIndex)'];
+                return ['apiReady(user)', '_managementSelectionIndexChanged(managementSelectionIndex)', '_accountSelectionIndexChanged(accountSelectionIndex)', '_reportSelectionIndexChanged(reportSelectionIndex)'];
             }
 
             constructor() {
@@ -468,16 +492,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
             }
 
-            apiReady(){
+            apiReady() {
                 this.user && this.user.roles && this.user.roles.find(r => r === 'ADMIN' || r === 'MS-ADMIN' || r === 'MS_ADMIN') ? this.set('isAdmin', true) : this.set('isAdmin', false)
-                this.api.isElectronAvailable().then(x=> this.set("_isElectronAvailable", !!x) ).catch(e=>{ /* False anyway */ })
+                this.api.isElectronAvailable().then(x => this.set("_isElectronAvailable", !!x)).catch(e => { /* False anyway */
+                })
             }
 
-            _management(e){
+            _management(e) {
                 e.stopPropagation()
                 e.preventDefault()
 
-                this.dispatchEvent(new CustomEvent('selection-change', {detail: {selection: {item: 'management', submenu: 'usersManagementSubMenu'}}}));
+                this.dispatchEvent(new CustomEvent('selection-change', {
+                    detail: {
+                        selection: {
+                            item: 'management',
+                            submenu: 'usersManagementSubMenu'
+                        }
+                    }
+                }));
 
                 //this.set('managementSelectionIndex', null)
                 this.set('accountSelectionIndex', null)
@@ -488,11 +520,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$.reports.classList.remove('iron-selected')
             }
 
-            _account(e){
+            _account(e) {
                 e.stopPropagation()
                 e.preventDefault()
 
-                this.dispatchEvent(new CustomEvent('selection-change', {detail: {selection: {item: 'account', submenu: 'accountSubMenu'}}}));
+                this.dispatchEvent(new CustomEvent('selection-change', {
+                    detail: {
+                        selection: {
+                            item: 'account',
+                            submenu: 'accountSubMenu'
+                        }
+                    }
+                }));
 
                 this.set('managementSelectionIndex', null)
                 //this.set('accountSelectionIndex', null)
@@ -503,11 +542,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$.reports.classList.remove('iron-selected')
             }
 
-            _report(e){
+            _report(e) {
                 e.stopPropagation()
                 e.preventDefault()
 
-                this.dispatchEvent(new CustomEvent('selection-change', {detail: {selection: {item: 'report', submenu: 'reportsSubMenu'}}}));
+                this.dispatchEvent(new CustomEvent('selection-change', {
+                    detail: {
+                        selection: {
+                            item: 'report',
+                            submenu: 'reportsSubMenu'
+                        }
+                    }
+                }));
 
                 this.set('managementSelectionIndex', null)
                 this.set('accountSelectionIndex', null)
@@ -518,9 +564,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$.reports.classList.add('iron-selected')
             }
 
-            _managementSelectionIndexChanged(){
+            _managementSelectionIndexChanged() {
                 if (this.managementSelectionIndex !== null && this.managementSelectionIndex !== undefined) {
-                    this.dispatchEvent(new CustomEvent('selection-change', { detail: { selection: { item: this.managementSelectionItem.id, submenu: this.managementSelectionItem.dataset.submenu} } }));
+                    this.dispatchEvent(new CustomEvent('selection-change', {
+                        detail: {
+                            selection: {
+                                item: this.managementSelectionItem.id,
+                                submenu: this.managementSelectionItem.dataset.submenu
+                            }
+                        }
+                    }));
 
                     //this.set('managementSelectionIndex', null)
                     this.set('accountSelectionIndex', null)
@@ -532,12 +585,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            _accountSelectionIndexChanged(){
+            _accountSelectionIndexChanged() {
                 if (this.accountSelectionIndex !== null && this.accountSelectionIndex !== undefined) {
-                    this.dispatchEvent(new CustomEvent('selection-change', { detail: { selection: { item: this.accountSelectionItem.id, submenu: this.accountSelectionItem.dataset.submenu} } }));
+                    this.dispatchEvent(new CustomEvent('selection-change', {
+                        detail: {
+                            selection: {
+                                item: this.accountSelectionItem.id,
+                                submenu: this.accountSelectionItem.dataset.submenu
+                            }
+                        }
+                    }));
 
                     this.set('managementSelectionIndex', null)
-                   //this.set('accountSelectionIndex', null)
+                    //this.set('accountSelectionIndex', null)
                     this.set('reportSelectionIndex', null)
 
                     this.shadowRoot.querySelector('#management').classList.remove('iron-selected')
@@ -546,9 +606,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            _reportSelectionIndexChanged(){
+            _reportSelectionIndexChanged() {
                 if (this.reportSelectionIndex !== null && this.reportSelectionIndex !== undefined) {
-                    this.dispatchEvent(new CustomEvent('selection-change', { detail: { selection: { item: this.reportSelectionItem.id, submenu: this.reportSelectionItem.dataset.submenu} } }));
+                    this.dispatchEvent(new CustomEvent('selection-change', {
+                        detail: {
+                            selection: {
+                                item: this.reportSelectionItem.id,
+                                submenu: this.reportSelectionItem.dataset.submenu
+                            }
+                        }
+                    }));
 
                     this.set('managementSelectionIndex', null)
                     this.set('accountSelectionIndex', null)
@@ -560,7 +627,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            toggleMenu(e){
+            toggleMenu(e) {
                 e.stopPropagation();
                 e.preventDefault();
 

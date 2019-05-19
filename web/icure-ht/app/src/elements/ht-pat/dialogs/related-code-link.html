@@ -35,27 +35,27 @@
                 min-height: 30px;
             }
 
-            .dropdown_icon{
+            .dropdown_icon {
                 height: 12px;
             }
 
-            .status_icon{
+            .status_icon {
                 height: 8px;
             }
 
-            .stat_act{
-                color: var( --paper-green-400);
+            .stat_act {
+                color: var(--paper-green-400);
             }
 
-            .stat_pass_rev{
+            .stat_pass_rev {
                 color: var(--paper-orange-400);
             }
 
-            .stat_pass_n_rev{
-                color: var( --paper-red-400);
+            .stat_pass_n_rev {
+                color: var(--paper-red-400);
             }
 
-            .stat_not_pres{
+            .stat_not_pres {
                 color: var(--paper-grey-400);
             }
 
@@ -66,7 +66,8 @@
         <template is="dom-if" if="[[linkables]]">
 
             <paper-menu-button id="mb" horizontal-align="left" dynamic-align="true" allow-outside-scroll>
-                <paper-icon-button id="hc_menu" class="form-title-bar-btn" icon="link" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
+                <paper-icon-button id="hc_menu" class="form-title-bar-btn" icon="link" slot="dropdown-trigger"
+                                   alt="menu" on-tap="_show"></paper-icon-button>
                 <paper-listbox slot="dropdown-content">
                     <template is="dom-repeat" items="[[linkables]]" as="nmcl">
                         <paper-item id="[[nmcl.id]]" class="link" on-tap="link">[[nmcl.code]]</paper-item>
@@ -91,7 +92,7 @@
                     linkables: {
                         type: Array
                     },
-                    representedObjectId:{
+                    representedObjectId: {
                         type: Object
                     }
                 };
@@ -110,9 +111,9 @@
                 e.preventDefault();
                 e.stopPropagation();
 
-                if(e.target.id === "stat_menu"){
+                if (e.target.id === "stat_menu") {
                     this.root.querySelector('#stat').open();
-                }else{
+                } else {
                     this.root.querySelector('#mb').open();
                 }
 
@@ -123,11 +124,16 @@
                 if (!nmcl) {
                     return;
                 }
-                this.dispatchEvent(new CustomEvent('link-nmcl-to-related-code', { bubbles: true, composed: true, detail: { relativeCode: nmcl.code, parentId: this.representedObjectId } }));
+                this.dispatchEvent(new CustomEvent('link-nmcl-to-related-code', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {relativeCode: nmcl.code, parentId: this.representedObjectId}
+                }));
 
             }
 
         }
+
         customElements.define(RelatedCodeLink.is, RelatedCodeLink);
     </script>
 </dom-module>

@@ -59,19 +59,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
             }
 
-            :host *:focus{
-                outline:0!important;
+            :host *:focus {
+                outline: 0 !important;
             }
 
-            .col-left{
+            .col-left {
                 position: relative;
                 box-sizing: border-box;
                 grid-column: 1 / 1;
                 grid-row: 1 / 1;
-                background:var(--app-background-color-dark);
+                background: var(--app-background-color-dark);
                 @apply --shadow-elevation-3dp;
                 padding: 24px 0;
-                display:flex;
+                display: flex;
                 flex-flow: column nowrap;
                 align-items: center;
                 height: 100%;
@@ -85,31 +85,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
 
         <template is="dom-if" if="[[preferencesLayout]]">
-            <ht-admin-account-preferences id="admin-account-preferences" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-account-preferences>
+            <ht-admin-account-preferences id="admin-account-preferences" api="[[api]]" i18n="[[i18n]]"
+                                          language="[[language]]" resources="[[resources]]"
+                                          user="[[user]]"></ht-admin-account-preferences>
         </template>
 
         <template is="dom-if" if="[[edmgInformationLayout]]">
-            <ht-admin-account-edmg id="admin-account-edmg" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-account-edmg>
+            <ht-admin-account-edmg id="admin-account-edmg" api="[[api]]" i18n="[[i18n]]" language="[[language]]"
+                                   resources="[[resources]]" user="[[user]]"></ht-admin-account-edmg>
         </template>
 
         <template is="dom-if" if="[[printersInformationLayout]]">
-            <ht-admin-account-printers id="admin-account-printers" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]" socket="[[socket]]"></ht-admin-account-printers>
+            <ht-admin-account-printers id="admin-account-printers" api="[[api]]" i18n="[[i18n]]" language="[[language]]"
+                                       resources="[[resources]]" user="[[user]]"
+                                       socket="[[socket]]"></ht-admin-account-printers>
         </template>
 
         <template is="dom-if" if="[[accountInformationsLayout]]">
-            <ht-admin-account-informations id="admin-account-informations" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-account-informations>
+            <ht-admin-account-informations id="admin-account-informations" api="[[api]]" i18n="[[i18n]]"
+                                           language="[[language]]" resources="[[resources]]"
+                                           user="[[user]]"></ht-admin-account-informations>
         </template>
 
         <template is="dom-if" if="[[bankInformationsLayout]]">
-            <ht-admin-account-bank id="admin-account-bank" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-account-bank>
+            <ht-admin-account-bank id="admin-account-bank" api="[[api]]" i18n="[[i18n]]" language="[[language]]"
+                                   resources="[[resources]]" user="[[user]]"></ht-admin-account-bank>
         </template>
 
         <template is="dom-if" if="[[delegationLayout]]">
-            <ht-admin-account-delegations id="admin-account-delegations" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-account-delegations>
+            <ht-admin-account-delegations id="admin-account-delegations" api="[[api]]" i18n="[[i18n]]"
+                                          language="[[language]]" resources="[[resources]]"
+                                          user="[[user]]"></ht-admin-account-delegations>
         </template>
 
         <template is="dom-if" if="[[agendaLayout]]">
-            <ht-admin-account-agenda id="admin-account-agenda" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-account-agenda>
+            <ht-admin-account-agenda id="admin-account-agenda" api="[[api]]" i18n="[[i18n]]" language="[[language]]"
+                                     resources="[[resources]]" user="[[user]]"></ht-admin-account-agenda>
         </template>
 
     </template>
@@ -138,32 +149,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         observer: '_selectedAccountSubMenuChanged'
                     },
-                    preferencesLayout:{
+                    preferencesLayout: {
                         type: Boolean,
                         value: false
                     },
-                    edmgInformationLayout:{
+                    edmgInformationLayout: {
                         type: Boolean,
                         value: false
                     },
-                    printersInformationLayout:{
+                    printersInformationLayout: {
                         type: Boolean,
                         value: false
                     },
-                    accountInformationsLayout:{
+                    accountInformationsLayout: {
                         type: Boolean,
                         value: false
                     },
-                    bankInformationsLayout:{
+                    bankInformationsLayout: {
                         type: Boolean,
                         value: false
                     },
-                    delegationLayout:{
+                    delegationLayout: {
                         type: Boolean,
                         value: false
                     },
-                    socket : {
-                        type : Object,
+                    socket: {
+                        type: Object,
                         value: {}
                     }
 
@@ -182,9 +193,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
             }
 
-            _selectedAccountSubMenuChanged(){
+            _selectedAccountSubMenuChanged() {
 
-                if(this.selectedSubMenu === "preferencesSubMenu"){
+                if (this.selectedSubMenu === "preferencesSubMenu") {
                     this.set('preferencesLayout', true)
                     this.set('edmgInformationLayout', false)
                     this.set('printersInformationLayout', false)
@@ -192,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('bankInformationsLayout', false)
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
-                }else if(this.selectedSubMenu === "edmgInformationSubMenu"){
+                } else if (this.selectedSubMenu === "edmgInformationSubMenu") {
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', true)
                     this.set('printersInformationLayout', false)
@@ -200,7 +211,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('bankInformationsLayout', false)
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
-                }else if (this.selectedSubMenu === "printersInformationSubMenu"){
+                } else if (this.selectedSubMenu === "printersInformationSubMenu") {
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
                     this.set('printersInformationLayout', true)
@@ -208,7 +219,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('bankInformationsLayout', false)
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
-                }else if(this.selectedSubMenu === "accountInformationSubMenu"){
+                } else if (this.selectedSubMenu === "accountInformationSubMenu") {
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
                     this.set('printersInformationLayout', false)
@@ -216,7 +227,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('bankInformationsLayout', false)
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
-                }else if(this.selectedSubMenu === "bankInformationsSubMenu"){
+                } else if (this.selectedSubMenu === "bankInformationsSubMenu") {
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
                     this.set('printersInformationLayout', false)
@@ -224,7 +235,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('bankInformationsLayout', true)
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
-                }else if(this.selectedSubMenu === "myDelegationsSubMenu"){
+                } else if (this.selectedSubMenu === "myDelegationsSubMenu") {
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
                     this.set('printersInformationLayout', false)
@@ -232,7 +243,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('bankInformationsLayout', false)
                     this.set('delegationLayout', true)
                     this.set('agendaLayout', false)
-                }else if(this.selectedSubMenu === "agendaSubMenu"){
+                } else if (this.selectedSubMenu === "agendaSubMenu") {
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
                     this.set('printersInformationLayout', false)

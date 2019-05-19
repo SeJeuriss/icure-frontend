@@ -23,7 +23,7 @@
         <!--suppress CssUnusedSymbol -->
         <style include="icpc-styles scrollbar-style dropdown-style">
 
-            #dialog .hub-cons{
+            #dialog .hub-cons {
                 display: flex;
                 flex-flow: row wrap;
                 align-items: center;
@@ -43,6 +43,7 @@
                 color: var(--app-primary-color-dark);
                 justify-self: flex-end;
             }
+
             #dialog .hub-cons paper-button.action[disabled] {
                 background-color: var(--app-secondary-color-dark);
                 color: var(--app-text-color-disabled);
@@ -60,16 +61,16 @@
 
             #dialog a {
                 text-decoration: none;
-                color:	var(--app-secondary-color);
+                color: var(--app-secondary-color);
             }
 
-            #dialog{
+            #dialog {
                 position: fixed;
                 min-height: 800px;
                 min-width: 1024px;
                 left: 50vw !important;
                 top: 50vh !important;
-                transform: translate(-50%,-50%);
+                transform: translate(-50%, -50%);
             }
 
             .links {
@@ -83,7 +84,7 @@
 
             dynamic-link {
                 float: right;
-                top:4px;
+                top: 4px;
             }
 
             vaadin-combo-box {
@@ -103,28 +104,28 @@
                 flex: 1;
             }
 
-            #dialog .hub-info{
-                margin-top:0;
-                display:flex;
+            #dialog .hub-info {
+                margin-top: 0;
+                display: flex;
                 flex-flow: row nowrap;
                 justify-content: flex-start;
                 align-items: flex-start;
             }
 
-            #dialog .hub-info div{
+            #dialog .hub-info div {
                 margin-right: 24px;
             }
 
-            #dialog .hub-info div p{
+            #dialog .hub-info div p {
                 margin: 8px 0;
             }
 
-            #dialog .hub-info div b{
+            #dialog .hub-info div b {
                 margin-right: 8px;
             }
 
-            .modal-title{
-                background:  var(--app-background-color-dark);
+            .modal-title {
+                background: var(--app-background-color-dark);
                 margin-top: 0;
                 padding: 16px 24px;
             }
@@ -155,6 +156,7 @@
                 right: 0;
                 bottom: 0;
             }
+
             .modal-button {
                 --paper-button-ink-color: var(--app-secondary-color-dark);
                 color: var(--app-text-color);
@@ -165,11 +167,13 @@
                 padding: 10px 1.2em;
                 text-transform: capitalize;
             }
+
             .modal-button--cancel {
                 background: transparent;
                 color: black;
                 border: 1px solid var(--app-background-color-dark);
             }
+
             .modal-button--save {
                 box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
                 background: var(--app-secondary-color);
@@ -183,7 +187,7 @@
                 width: 42px;
             }
 
-            #kmehr_slot{
+            #kmehr_slot {
                 overflow-y: scroll;
                 height: 90%;
             }
@@ -200,7 +204,8 @@
                     </paper-listbox>
                 </paper-dropdown-menu>
                 <template is="dom-if" if="[[hubSupportsConsent]]">
-                    <p><b>[[localize('hub_hcp_cs','Hcp hub consent',language)]] :</b> [[_getHubHcpConsentDesc(hcpHubConsent)]]</p>
+                    <p><b>[[localize('hub_hcp_cs','Hcp hub consent',language)]] :</b>
+                        [[_getHubHcpConsentDesc(hcpHubConsent)]]</p>
                 </template>
             </div>
             <template is="dom-if" if="[[!_HcpHasHubConsent(hcpHubConsent, hubSupportsConsent)]]">
@@ -209,31 +214,39 @@
             <template is="dom-if" if="[[_HcpHasHubConsent(hcpHubConsent, hubSupportsConsent)]]">
                 <template is="dom-if" if="[[hubSupportsConsent]]">
                     <div>
-                        <p><b>[[localize('pat_hub_info','Pat Hub info',language)]] : </b>[[_getHubPatientInfoDesc(patientHubInfo)]]</p>
-                        <p><b>[[localize('pat_hub_cons','Pat Hub consent',language)]] : </b>[[_getHubPatientConsentDesc(patientHubConsent)]]</p>
-                        <p><b>[[localize('hub_tl','Hub therapeutic link',language)]] : </b>[[_getHubPatientTherLinkDesc(patientHubTherLinks)]]</p>
+                        <p><b>[[localize('pat_hub_info','Pat Hub info',language)]] : </b>[[_getHubPatientInfoDesc(patientHubInfo)]]
+                        </p>
+                        <p><b>[[localize('pat_hub_cons','Pat Hub consent',language)]] : </b>[[_getHubPatientConsentDesc(patientHubConsent)]]
+                        </p>
+                        <p><b>[[localize('hub_tl','Hub therapeutic link',language)]] : </b>[[_getHubPatientTherLinkDesc(patientHubTherLinks)]]
+                        </p>
                     </div>
                 </template>
                 <template is="dom-if" if="[[supportBreakTheGlass]]">
                     <div>
-                        <paper-input id="BTG" label="[[localize('BTG_rea','Break the glass reason',language)]]" value="{{breakTheGlassReason}}"></paper-input>
-                        <paper-button on-tap="_runGetTransactionList">[[localize('get_lst','Get list',language)]]</paper-button>
+                        <paper-input id="BTG" label="[[localize('BTG_rea','Break the glass reason',language)]]"
+                                     value="{{breakTheGlassReason}}"></paper-input>
+                        <paper-button on-tap="_runGetTransactionList">[[localize('get_lst','Get list',language)]]
+                        </paper-button>
                     </div>
                 </template>
                 <template is="dom-if" if="[[_enableTransactionList(patientHubConsent, hubSupportsConsent)]]">
 
-                    <vaadin-grid id="transaction-list" class="material" overflow="bottom" on-tap="click"  items=[[hubTransactionList]] active-item="{{activeItem}}">
+                    <vaadin-grid id="transaction-list" class="material" overflow="bottom" on-tap="click"
+                                 items=[[hubTransactionList]] active-item="{{activeItem}}">
                         <!--file-remove-->
                         <vaadin-grid-column width="30px">
                             <template class="header"></template>
                             <template>
-                                <iron-icon class="icon type-icon" icon="vaadin:file-text-o" item="[[item]]" on-tap="_openTransactionViewer"></iron-icon>
+                                <iron-icon class="icon type-icon" icon="vaadin:file-text-o" item="[[item]]"
+                                           on-tap="_openTransactionViewer"></iron-icon>
                             </template>
                         </vaadin-grid-column>
                         <vaadin-grid-column width="30px">
                             <template class="header"></template>
                             <template>
-                                <iron-icon class="icon type-icon" icon="vaadin:file-remove" item="[[item]]" on-tap="_runRevokeHubTransaction"></iron-icon>
+                                <iron-icon class="icon type-icon" icon="vaadin:file-remove" item="[[item]]"
+                                           on-tap="_runRevokeHubTransaction"></iron-icon>
                             </template>
                         </vaadin-grid-column>
                         <vaadin-grid-column width="120px">
@@ -244,7 +257,8 @@
                         </vaadin-grid-column>
                         <vaadin-grid-column width="120px">
                             <template class="header">
-                                <vaadin-grid-sorter path="description">[[localize('trans_id','Id',language)]]</vaadin-grid-sorter>
+                                <vaadin-grid-sorter path="description">[[localize('trans_id','Id',language)]]
+                                </vaadin-grid-sorter>
                             </template>
                             <template>
                                 <div class="cell frozen">[[_transactionId(item)]]</div>
@@ -276,31 +290,43 @@
                     <paper-button on-tap="_runPutMedicationScheme">Put medicationscheme</paper-button>
                 </template>
                 <template is="dom-if" if="[[_enableRegisterConsent(patientHubConsent, hubSupportsConsent)]]">
-                    <paper-input id="idCardNo" label="[[localize('eid_no','eID Card Number',language)]]" value="{{eidCardNumber}}"></paper-input>
-                    <paper-input id="isiCardNo" label="[[localize('isi_no','ISI+ Card Number',language)]]" value="{{isiCardNumber}}"></paper-input>
+                    <paper-input id="idCardNo" label="[[localize('eid_no','eID Card Number',language)]]"
+                                 value="{{eidCardNumber}}"></paper-input>
+                    <paper-input id="isiCardNo" label="[[localize('isi_no','ISI+ Card Number',language)]]"
+                                 value="{{isiCardNumber}}"></paper-input>
                 </template>
 
                 <!--<paper-button on-tap="_getConsent">[[localize('get_cons','Get consent',language)]]</paper-button>-->
                 <div class="buttons">
                     <!--<paper-button on-tap="_revokeConsent" dialog-confirm>[[localize('revoke_cons','Revoke consent',language)]]</paper-button>-->
                     <template is="dom-if" if="[[_enableRegisterConsent(patientHubConsent, hubSupportsConsent)]]">
-                        <paper-button class="modal-button" on-tap="_registerHubPatientConsent" dialog-confirm>[[localize('register_cons','Register consent',language)]]</paper-button>
-                        <paper-button class="modal-button" on-tap="_registerHubPatientTherapeuticLink" dialog-confirm>[[localize('register_therlink','Register therapeutic link',language)]]</paper-button>
-                        <paper-button class="modal-button" on-tap="_runRegisterHubPatient" dialog-confirm>[[localize('register','Register',language)]]</paper-button>
+                        <paper-button class="modal-button" on-tap="_registerHubPatientConsent" dialog-confirm>
+                            [[localize('register_cons','Register consent',language)]]
+                        </paper-button>
+                        <paper-button class="modal-button" on-tap="_registerHubPatientTherapeuticLink" dialog-confirm>
+                            [[localize('register_therlink','Register therapeutic link',language)]]
+                        </paper-button>
+                        <paper-button class="modal-button" on-tap="_runRegisterHubPatient" dialog-confirm>
+                            [[localize('register','Register',language)]]
+                        </paper-button>
                     </template>
                     <!--<template is="dom-if" if="[[_enableRevokeConsent(patientHubConsent, hubSupportsConsent)]]">-->
-                        <!--<paper-button on-tap="_revokeHubPatientConsent" dialog-confirm>[[localize('revoke_cons','Revoke consent',language)]]</paper-button>-->
-                        <!--<paper-button on-tap="_revokeHubPatientTherapeuticLink" dialog-confirm>[[localize('revoke_therlink','Revoke therapeutic link',language)]]</paper-button>-->
+                    <!--<paper-button on-tap="_revokeHubPatientConsent" dialog-confirm>[[localize('revoke_cons','Revoke consent',language)]]</paper-button>-->
+                    <!--<paper-button on-tap="_revokeHubPatientTherapeuticLink" dialog-confirm>[[localize('revoke_therlink','Revoke therapeutic link',language)]]</paper-button>-->
                     <!--</template>-->
                 </div>
             </template>
             <div class="end-buttons">
                 <ht-spinner active="[[isLoading]]"></ht-spinner>
-                <paper-button class="modal-button--cancel" dialog-dismiss autofocus >[[localize('can','Cancel',language)]]</paper-button>
+                <paper-button class="modal-button--cancel" dialog-dismiss autofocus>
+                    [[localize('can','Cancel',language)]]
+                </paper-button>
             </div>
 
         </paper-dialog>
-        <ht-pat-hub-transaction-view id="transactionViewDialog" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]"></ht-pat-hub-transaction-view>
+        <ht-pat-hub-transaction-view id="transactionViewDialog" api="[[api]]" user="[[user]]" language="[[language]]"
+                                     patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]"
+                                     i18n="[[i18n]]" resources="[[resources]]"></ht-pat-hub-transaction-view>
     </template>
     <script>
         import * as models from 'icc-api/dist/icc-api/model/models';
@@ -331,10 +357,10 @@
                         value: false
                     },
                     tabs: {
-                        type:  Number,
+                        type: Number,
                         value: 0
                     },
-                    isLoading:{
+                    isLoading: {
                         type: Boolean,
                         value: false
                     },
@@ -342,78 +368,78 @@
                         type: Object,
                         observer: '_activeItemChanged'
                     },
-                    eidCardNumber:{
+                    eidCardNumber: {
                         type: String,
-                        value : '',
+                        value: '',
                     },
-                    isiCardNumber:{
+                    isiCardNumber: {
                         type: String,
-                        value : '',
+                        value: '',
                     },
-                    curHub:{
+                    curHub: {
                         type: String,
                         value: null,
                         observer: '_curHubChanged'
                     },
-                    curEnv:{
+                    curEnv: {
                         type: String,
                         value: null
                     },
-                    hubId:{
+                    hubId: {
                         type: Number,
-                        value : 0
+                        value: 0
                     }
                     ,
-                    hubEndPoint:{
+                    hubEndPoint: {
                         type: String,
-                        value:'https://acchub.reseausantewallon.be/HubServices/IntraHub/V3/IntraHub.asmx'
+                        value: 'https://acchub.reseausantewallon.be/HubServices/IntraHub/V3/IntraHub.asmx'
                     },
-                    hubPackageId:{
+                    hubPackageId: {
                         type: String,
-                        value:null
+                        value: null
                     },
-                    hubApplication : {
+                    hubApplication: {
                         type: String,
-                        value:null
+                        value: null
                     },
-                    hubSupportsConsent:{
+                    hubSupportsConsent: {
                         type: Boolean,
                         value: false
                     },
-                    hcpHubConsent:{
+                    hcpHubConsent: {
                         type: Object
                     },
-                    patientHubConsent:{
+                    patientHubConsent: {
                         type: Object
                     },
-                    patientHubTherLinks:{
+                    patientHubTherLinks: {
                         type: Object
                     },
-                    patientHubInfo:{
+                    patientHubInfo: {
                         type: Object
                     },
-                    hcpZip:{
-                        type:String,
-                        value:'1000'
+                    hcpZip: {
+                        type: String,
+                        value: '1000'
                     },
-                    hubTransactionList:{
+                    hubTransactionList: {
                         type: Array,
-                        value: function(){
+                        value: function () {
                             return [];
                         }
                     },
-                    selectedTransaction:{
+                    selectedTransaction: {
                         type: Object
                     },
-                    revokeTransactionResp:{
+                    revokeTransactionResp: {
                         type: String,
                         value: ""
                     },
-                    supportBreakTheGlass:{
+                    supportBreakTheGlass: {
                         type: Boolean,
                         value: false
                     },
-                    breakTheGlassReason:{
+                    breakTheGlassReason: {
                         type: String,
                         value: null
                     }
@@ -427,7 +453,7 @@
             ready() {
                 super.ready();
                 this.addEventListener('iron-resize', () => this.onWidthChange());
-                document.addEventListener('xmlHubUpdated', () => this.xmlHubListener() );
+                document.addEventListener('xmlHubUpdated', () => this.xmlHubListener());
             }
 
             _dateFormat(date) {
@@ -475,29 +501,29 @@
                 this._setHub();
             }
 
-            _enableBreakTheGlass(btg){
+            _enableBreakTheGlass(btg) {
                 return btg;
             }
 
-            _enableTransactionList(hubconsent, supportConsent){
-                return this._patientHasHubConsent(hubconsent)|| !supportConsent;
+            _enableTransactionList(hubconsent, supportConsent) {
+                return this._patientHasHubConsent(hubconsent) || !supportConsent;
             }
 
-            _enableRegisterConsent(hubconsent, supportConsent){
+            _enableRegisterConsent(hubconsent, supportConsent) {
                 return !this._patientHasHubConsent(hubconsent) && supportConsent;
             }
 
-            _enableRevokeConsent(hubconsent, supportConsent){
+            _enableRevokeConsent(hubconsent, supportConsent) {
                 return this._patientHasHubConsent(hubconsent) && supportConsent;
             }
 
 
-            _curHubChanged(){
+            _curHubChanged() {
                 this._setHub();
             }
 
-            _setHub(){
-                this.set('isLoading',true);
+            _setHub() {
+                this.set('isLoading', true);
                 this.set('hcpHubConsent', null);
                 this.set('patientHubConsent', null);
                 this.set('patientHubTherLinks', null);
@@ -507,10 +533,10 @@
                 switch (this.curHub) {
                     case 'rsb':
                         this.hubId = 1990000728;
-                        this.hubEndPoint = this.curEnv ===  'acc' ? 'https://acchub.abrumet.be/hubservices/intrahub/v3/intrahub.asmx' : 'https://hub.abrumet.be/hubservices/intrahub/v3/intrahub.asmx';
+                        this.hubEndPoint = this.curEnv === 'acc' ? 'https://acchub.abrumet.be/hubservices/intrahub/v3/intrahub.asmx' : 'https://hub.abrumet.be/hubservices/intrahub/v3/intrahub.asmx';
                         this.set("hubSupportsConsent", true);
                         this.hubPackageId = null;
-                        this.hubApplication = "RSB" ;//TODO: verify value
+                        this.hubApplication = "RSB";//TODO: verify value
                         this.set("supportBreakTheGlass", false);
                         break;
                     case 'rsw':
@@ -555,10 +581,14 @@
                     console.log(error);
                 });
 
-                if (this.hubSupportsConsent){
+                if (this.hubSupportsConsent) {
                     this.putHubPatient().then(putResp => {
-                        this.getHubPatient().then(hubPat => this.set('patientHubInfo', hubPat)).catch(error => {console.log(error);})
-                    }).catch(error => {console.log(error);})
+                        this.getHubPatient().then(hubPat => this.set('patientHubInfo', hubPat)).catch(error => {
+                            console.log(error);
+                        })
+                    }).catch(error => {
+                        console.log(error);
+                    })
                 }
             }
 
@@ -566,30 +596,31 @@
                 this.$.dialog.close();
             }
 
-            _activeItemChanged(item){
+            _activeItemChanged(item) {
 
             }
 
             click(e) {
                 const selected = this.activeItem;
-                if(selected) {
+                if (selected) {
                     this.set('selectedTransaction', selected);
                 }
                 //this.dispatchEvent(new CustomEvent('selection-messages-change', { detail: { selection: { item: this.selectedMessages } } }));
                 //console.log("selectedMessage",this.selectedMessages)
             }
 
-            _runGetTransactionList(){
-                this.set('isLoading',true);
+            _runGetTransactionList() {
+                this.set('isLoading', true);
                 this._getHubTransactionList().then(tranResp => {
                     this.set('isLoading', false);
-                    this.set('hubTransactionList', tranResp)}).catch(error => {
+                    this.set('hubTransactionList', tranResp)
+                }).catch(error => {
                     console.log(error);
                     this.set('isLoading', false);
                 });
             }
 
-            _runPutSumehr(){
+            _runPutSumehr() {
                 this.generateAndPutSumehr().then(putResp => {
                     this.set('putTransactionResponse', putResp);
                     this._getHubTransactionList().then(tranResp => this.set('hubTransactionList', tranResp));
@@ -598,10 +629,10 @@
                 });
             }
 
-            generateAndPutSumehr(){
+            generateAndPutSumehr() {
                 if (this.patient && this.patient.ssin && this.api.tokenId) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
-                        this.api.patient().getPatientWithUser(this.user,this.patient.id)
+                        this.api.patient().getPatientWithUser(this.user, this.patient.id)
                             .then(patientDto =>
                                 this.api.crypto().extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
                                     .then(secretForeignKeys =>
@@ -620,25 +651,25 @@
                                                     this.hubPackageId, this.hubApplication
                                                     )
                                                 ).then(putResp => {
-                                                        if (putResp) {
-                                                            return putResp;
-                                                        } else {
-                                                            return null;
-                                                        }
+                                                    if (putResp) {
+                                                        return putResp;
+                                                    } else {
+                                                        return null;
                                                     }
-                                                )
+                                                }
+                                            )
                                         )
                                     )
                             ))
-                }else{
+                } else {
                     return Promise.resolve(null)
                 }
             }
 
-            _generateSumehr(){
+            _generateSumehr() {
                 if (this.patient) {
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
-                        this.api.patient().getPatientWithUser(this.user,this.patient.id)
+                        this.api.patient().getPatientWithUser(this.user, this.patient.id)
                             .then(patientDto =>
                                 this.api.crypto()
                                     .extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
@@ -649,7 +680,7 @@
                                             comment: "mycomment"
                                         }).then(output => {
                                             //creation of the xml file
-                                            let file = typeof output === "string" ? new Blob([output] ,{type: "application/xml"}) : output
+                                            let file = typeof output === "string" ? new Blob([output], {type: "application/xml"}) : output
 
                                             //creation the downloading link
                                             let a = document.createElement("a");
@@ -659,26 +690,26 @@
                                             //download the new file
                                             let url = window.URL.createObjectURL(file);
                                             a.href = url;
-                                            a.download = (patientDto.lastName || "Doe").replace(" ","_") + "_" + (patientDto.firstName || "John").replace(" ","_") + "_" + (moment().format("x"))+"_sumehr.xml";
+                                            a.download = (patientDto.lastName || "Doe").replace(" ", "_") + "_" + (patientDto.firstName || "John").replace(" ", "_") + "_" + (moment().format("x")) + "_sumehr.xml";
                                             a.click();
                                             window.URL.revokeObjectURL(url);
 
                                             document.body.removeChild(a);
-                                        }).catch( error=> console.log(error))
+                                        }).catch(error => console.log(error))
                                     })
                             ))
                 }
             }
 
-            _runGenerateMedicationScheme(){
+            _runGenerateMedicationScheme() {
                 this._generateMedicationScheme(1)
             }
 
             //generateMedicationSchemeExport(patientId: string,language?: string,version?: number,body?: models.MedicationSchemeExportInfoDto
-            _generateMedicationScheme(versionNumber){
+            _generateMedicationScheme(versionNumber) {
                 if (this.patient) {
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
-                        this.api.patient().getPatientWithUser(this.user,this.patient.id)
+                        this.api.patient().getPatientWithUser(this.user, this.patient.id)
                             .then(patientDto =>
                                 this.api.crypto()
                                     .extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
@@ -689,7 +720,7 @@
                                             comment: "mycomment"
                                         }).then(output => {
                                             //creation of the xml file
-                                            let file = typeof output === "string" ? new Blob([output] ,{type: "application/xml"}) : output
+                                            let file = typeof output === "string" ? new Blob([output], {type: "application/xml"}) : output
 
                                             //creation the downloading link
                                             let a = document.createElement("a");
@@ -699,18 +730,18 @@
                                             //download the new file
                                             let url = window.URL.createObjectURL(file);
                                             a.href = url;
-                                            a.download = (patientDto.lastName || "Doe").replace(" ","_") + "_" + (patientDto.firstName || "John").replace(" ","_") + "_" + (moment().format("x"))+"medicationscheme.xml";
+                                            a.download = (patientDto.lastName || "Doe").replace(" ", "_") + "_" + (patientDto.firstName || "John").replace(" ", "_") + "_" + (moment().format("x")) + "medicationscheme.xml";
                                             a.click();
                                             window.URL.revokeObjectURL(url);
 
                                             document.body.removeChild(a);
-                                        }).catch( error=> console.log(error))
+                                        }).catch(error => console.log(error))
                                     })
                             ))
                 }
             }
 
-            _runPutMedicationScheme(){
+            _runPutMedicationScheme() {
                 const versionNumber = 23;
                 this.generateAndPutMedicationScheme(versionNumber).then(putResp => {
                     this.set('putTransactionSetResponse', putResp);
@@ -720,10 +751,10 @@
                 });
             }
 
-            generateAndPutMedicationScheme(versionNumber){
+            generateAndPutMedicationScheme(versionNumber) {
                 if (this.patient) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
-                        this.api.patient().getPatientWithUser(this.user,this.patient.id)
+                        this.api.patient().getPatientWithUser(this.user, this.patient.id)
                             .then(patientDto =>
                                 this.api.crypto()
                                     .extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
@@ -732,50 +763,47 @@
                                             secretForeignKeys: secretForeignKeys.extractedKeys,
                                             recipient: hcp,
                                             comment: "mycomment"
-                                        }).then(output =>{
-                                            return this.api.fhc().Hubcontroller().putTransactionSetUsingPOST(this.hubEndPoint,
+                                        }).then(output => {
+                                                return this.api.fhc().Hubcontroller().putTransactionSetUsingPOST(this.hubEndPoint,
                                                     this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
                                                     hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
                                                     this.hubId,
                                                     this.patient.ssin,
                                                     output,
                                                     this.hubPackageId, this.hubApplication
-                                                )}
+                                                )
+                                            }
                                         )
                                     })
                             ))
                 }
             }
 
-            _transactionId(tr){
+            _transactionId(tr) {
                 this.set('selectedTransaction', tr); //is this needed ?
-                if(tr) {
+                if (tr) {
                     const idLocal = tr.ids.find(id => id.s === "LOCAL");
                     if (idLocal) {
                         return idLocal.value;
-                    }
-                    else {
+                    } else {
                         return "--";
                     }
-                }
-                else
-                {
+                } else {
                     return "";
                 }
             }
 
-            _transactionType(tr){
+            _transactionType(tr) {
                 const cdTransType = tr.cds.find(cd => cd.s === "CD-TRANSACTION");
-                if(cdTransType){
+                if (cdTransType) {
                     return cdTransType.value;
-                }
-                else {
+                } else {
                     return "--";
                 }
             }
 
-            _transactionDate(tr){
-                if(tr.date) {
+            _transactionDate(tr) {
+                if (tr.date) {
                     let d = new Date(0);
                     d.setUTCMilliseconds(tr.date);
                     return d.toDateString();
@@ -784,68 +812,67 @@
                 }
             }
 
-            _transactionAuthor(tr){
+            _transactionAuthor(tr) {
                 let authorRes = "--";
                 const author = tr.author.hcparties.find(hcp => hcp.familyname);
-                if(author) {
+                if (author) {
                     authorRes = author.familyname + ' ' + author.firstname;
                 }
                 const dept = tr.author.hcparties.find(hcp => hcp.cds.find(cd => cd.s === "CD-HCPARTY"))
-                if(dept){
+                if (dept) {
                     const cd = dept.cds.find(cd => cd.s === "CD-HCPARTY")
                     authorRes += "/" + cd.value;
                 }
                 return authorRes;
             }
 
-            _patientHasHubConsent(cs){
-                if((cs && cs.author && cs.author.hcparties && cs.author.hcparties[0]) || !this.hubSupportsConsent){
+            _patientHasHubConsent(cs) {
+                if ((cs && cs.author && cs.author.hcparties && cs.author.hcparties[0]) || !this.hubSupportsConsent) {
                     return true;
-                }
-                else{
+                } else {
                     return false;
                 }
             }
 
-            _HcpHasHubConsent(cs, consentSupport){
+            _HcpHasHubConsent(cs, consentSupport) {
                 let betweendates = false;
                 const currentdate = new Date().getTime();
-                if(cs && cs.signdate) {
+                if (cs && cs.signdate) {
                     betweendates = cs.signdate <= currentdate;
                 }
-                if(betweendates && cs && cs.revokedate) {
+                if (betweendates && cs && cs.revokedate) {
                     betweendates = cs.revokedate >= currentdate;
                 }
                 return !consentSupport || betweendates;
             }
 
-            _getHubHcpConsentDesc(cs){
+            _getHubHcpConsentDesc(cs) {
                 let desc = '';
                 //hub
-                if(cs && cs.author && cs.author && cs.author.hcparties && cs.author.hcparties[0]){
+                if (cs && cs.author && cs.author && cs.author.hcparties && cs.author.hcparties[0]) {
                     desc += cs.author.hcparties[0].name + ' ';
                 }
-                if(cs && cs.hcparty && cs.hcparty.ids) {
+                if (cs && cs.hcparty && cs.hcparty.ids) {
                     //hcp
-                    desc += this.localize("hcp", "Hcp", this.language) + " : " +  "[" + cs.hcparty.ids.find(id => id.s === 'ID-HCPARTY').value + "] ";
+                    desc += this.localize("hcp", "Hcp", this.language) + " : " + "[" + cs.hcparty.ids.find(id => id.s === 'ID-HCPARTY').value + "] ";
                     desc += cs.hcparty.ids.find(id => id.s === 'INSS').value + " ";
                 }
-                if(cs && cs.signdate) {
+                if (cs && cs.signdate) {
                     //sign
                     desc += this.localize("from", "From ", this.language) + " : " + this.api.moment(cs.signdate).format('DD/MM/YYYY') + " ";
                 }
-                if(cs && cs.revokedate) {
+                if (cs && cs.revokedate) {
                     //revoke
                     desc += this.localize("to", "To", this.language) + " : " + this.api.moment(cs.revokedate).format('DD/MM/YYYY') + " ";
                 }
                 return desc;
             }
 
-            getHubEndPoint(){
+            getHubEndPoint() {
                 return this.hubEndPoint;
             }
 
-            _getHubHcpConsent(){
+            _getHubHcpConsent() {
                 //getHcpConsentUsingGET: function (endpoint, keystoreId, tokenId, passPhrase, hcpNihii, hcpSsin, hcpZip)
                 if (this.patient.ssin && this.api.tokenId) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
@@ -866,50 +893,51 @@
                 }
             }
 
-            _getHubPatientInfoDesc(pi){
-                if(pi){
+            _getHubPatientInfoDesc(pi) {
+                if (pi) {
                     return pi.firstName + " " + pi.lastName + " [" + this.localize(pi.gender, pi.gender, this.language) + "]";
-                }else{
-                    return  this.localize("pat_not_hub", "Patient does not exist on hub.", this.language);
+                } else {
+                    return this.localize("pat_not_hub", "Patient does not exist on hub.", this.language);
                 }
             }
 
-            _getHubPatientTherLinkDesc(tl){
+            _getHubPatientTherLinkDesc(tl) {
                 let desc = '';
                 desc = tl;
                 return desc;
             }
 
-            _getHubPatientConsentDesc(cs){
+            _getHubPatientConsentDesc(cs) {
                 let desc = '';
                 // author - sign date - type
                 // author - fname lname niss nihii
 
-                if(cs && cs.cds && cs.cds.find(cd => cd.s === 'CD_CONSENTTYPE')){
-                    desc += cs.cds.find(cd => cd.s === 'CD_CONSENTTYPE').value + " : " ;
+                if (cs && cs.cds && cs.cds.find(cd => cd.s === 'CD_CONSENTTYPE')) {
+                    desc += cs.cds.find(cd => cd.s === 'CD_CONSENTTYPE').value + " : ";
                 }
 
-                if(cs && cs.author && cs.author.hcparties && cs.author.hcparties[0]) {
+                if (cs && cs.author && cs.author.hcparties && cs.author.hcparties[0]) {
                     const hcp = cs.author.hcparties[0]
                     desc += hcp.familyname + ' ' + hcp.firstname;
                     desc += ' [' + hcp.ids.find(id => id.s === 'ID-HCPARTY').value + ']';
                 }
-                if(cs && cs.signdate) {
+                if (cs && cs.signdate) {
                     desc += ' ' + this.api.moment(cs.signdate).format('DD/MM/YYYY');
                 }
                 return desc;
             }
 
 
-            _runGetHubPatient(){
+            _runGetHubPatient() {
                 this.getHubPatient().then(hubPat => this.set('patientHubInfo', hubPat));
             }
+
             //getPatientUsingGET(
             // endpoint: string,
             // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
             // hcpLastName: string, hcpFirstName: string, hcpNihii: string, hcpSsin: string, hcpZip: string,
             // patientSsin: string, hubPackageId?: string): Promise<models.Patient | any>;
-            getHubPatient(){
+            getHubPatient() {
                 if (this.patient.ssin && this.api.tokenId) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                         .then(hcp =>
@@ -930,16 +958,17 @@
                 }
             }
 
-            _runPutHubPatient(){
+            _runPutHubPatient() {
                 this.putHubPatient().then(hubPat => this.set('putPatientResult', hubPat));
             }
+
             //putPatientUsingPOST(
             // endpoint: string,
             // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
             // hcpLastName: string, hcpFirstName: string, hcpNihii: string, hcpSsin: string, hcpZip: string,
             // patientSsin: string, firstName: string, lastName: string, gender: string, dateOfBirth: number,
             // hubPackageId?: string): Promise<models.Patient | any>;
-            putHubPatient(){
+            putHubPatient() {
                 if (this.patient.ssin && this.api.tokenId) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                         .then(hcp =>
@@ -960,7 +989,7 @@
                 }
             }
 
-            _getHubPatientConsent(){
+            _getHubPatientConsent() {
                 //getPatientConsentUsingGET1: function (endpoint, keystoreId, tokenId, passPhrase, hcpNihii, hcpSsin, hcpZip, patientSsin)
                 if (this.patient.ssin && this.api.tokenId) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
@@ -982,12 +1011,12 @@
                 }
             }
 
-            _runRegisterHubPatient(){
-                this._registerHubPatientConsent().then(consResp => this.set('registerConsentResp', consResp)).catch(error=> console.log(error))
-                this._registerHubPatientTherapeuticLink().then(tlResp => this.set('registerTLResp', tlResp)).catch(error=> console.log(error))
+            _runRegisterHubPatient() {
+                this._registerHubPatientConsent().then(consResp => this.set('registerConsentResp', consResp)).catch(error => console.log(error))
+                this._registerHubPatientTherapeuticLink().then(tlResp => this.set('registerTLResp', tlResp)).catch(error => console.log(error))
             }
 
-            _registerHubPatientConsent(){
+            _registerHubPatientConsent() {
                 //registerPatientConsentUsingPOST1(
                 // endpoint: string,
                 // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
@@ -1002,23 +1031,20 @@
                             hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
                             this.patient.ssin, this.hubPackageId, this.eidCardNumber)
                     ).then(consResp => {
-                            if(consResp.therapeuticLink) {
+                            if (consResp.therapeuticLink) {
                                 //this.showPatientTherLinkState()
-                                return(consResp.therapeuticLink)
-                            }
-                            else{
+                                return (consResp.therapeuticLink)
+                            } else {
                                 return Promise.resolve(null)
                             }
                         }
                     )
-                }
-                else
-                {
+                } else {
                     return Promise.resolve(null)
                 }
             }
 
-            _getHubTherapeuticLinks(){
+            _getHubTherapeuticLinks() {
                 //getTherapeuticLinksUsingGET(
                 // endpoint: string,
                 // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
@@ -1033,7 +1059,7 @@
                         .then(hcp =>
                             this.api.fhc().Hubcontroller().getTherapeuticLinksUsingGET(this.hubEndPoint,
                                 this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
-                                hcp.lastName, hcp.firstName,  hcp.nihii, hcp.ssin, this.hcpZip,
+                                hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
                                 this.patient.ssin,
                                 this.hubPackageId)
                         ).then(tlResp => {
@@ -1049,7 +1075,7 @@
                 }
             }
 
-            _registerHubPatientTherapeuticLink(){
+            _registerHubPatientTherapeuticLink() {
                 //registerTherapeuticLinkUsingPOST(
                 // endpoint: string,
                 // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
@@ -1066,27 +1092,24 @@
                             this.hubPackageId,
                             this.eidCardNumber)
                     ).then(therLinkResp => {
-                            if(therLinkResp.therapeuticLink) {
+                            if (therLinkResp.therapeuticLink) {
                                 //this.showPatientTherLinkState()
-                                return(therLinkResp.therapeuticLink)
-                            }
-                            else{
+                                return (therLinkResp.therapeuticLink)
+                            } else {
                                 return Promise.resolve(null)
                             }
                         }
                     )
-                }
-                else
-                {
+                } else {
                     return Promise.resolve(null)
                 }
             }
 
-            _revokeHubPatientTherapeuticLink(){
-               //TODO: implement, does not exist in FHC
+            _revokeHubPatientTherapeuticLink() {
+                //TODO: implement, does not exist in FHC
             }
 
-            _getHubTransactionList(){
+            _getHubTransactionList() {
                 //getTransactionsListUsingGET(
                 // endpoint: string,
                 // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
@@ -1122,39 +1145,39 @@
                 }
             }
 
-            _openTransactionViewer_old(e){
+            _openTransactionViewer_old(e) {
                 e.stopPropagation();
-                if(e && e.target && e.target.item) {
+                if (e && e.target && e.target.item) {
                     this.set("selectedTransaction", e.target.item)
-                    this.$.transactionViewDialog.open( e.target.item, this._getHubTransaction( e.target.item));
+                    this.$.transactionViewDialog.open(e.target.item, this._getHubTransaction(e.target.item));
                 }
             }
 
-            _openTransactionViewer(e){
+            _openTransactionViewer(e) {
                 e.stopPropagation();
-                if(e && e.target && e.target.item) {
+                if (e && e.target && e.target.item) {
                     this.set("selectedTransaction", e.target.item)
-                    this.$.transactionViewDialog.open( e.target.item, this._getHubTransactionMessage( e.target.item));
+                    this.$.transactionViewDialog.open(e.target.item, this._getHubTransactionMessage(e.target.item));
                 }
             }
 
-            _isTransactionSet(tr){
-                let cd = tr.cds.find(cd => cd.value.toLowerCase()==='gettransactionset');
-                if(cd){
+            _isTransactionSet(tr) {
+                let cd = tr.cds.find(cd => cd.value.toLowerCase() === 'gettransactionset');
+                if (cd) {
                     return true;
                 } else {
                     return false;
                 }
             }
 
-            _getHubTransaction(transaction){
+            _getHubTransaction(transaction) {
                 //getTransactionUsingGET(
                 // endpoint: string,
                 // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
                 // hcpLastName: string, hcpFirstName: string, hcpNihii: string, hcpSsin: string, hcpZip: string,
                 // ssin: string, sv: string, sl: string, id: string,
                 // hubPackageId?: string, breakTheGlassReason?: string): Promise<string | any>;
-                if(transaction && this._isTransactionSet(transaction)) {
+                if (transaction && this._isTransactionSet(transaction)) {
                     return this._getHubTransactionSet(transaction);
                 } else {
                     if (this.patient.ssin && this.api.tokenId && transaction) {
@@ -1181,14 +1204,14 @@
                 }
             }
 
-            _getHubTransactionMessage(transaction){
+            _getHubTransactionMessage(transaction) {
                 //getTransactionUsingGET(
                 // endpoint: string,
                 // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
                 // hcpLastName: string, hcpFirstName: string, hcpNihii: string, hcpSsin: string, hcpZip: string,
                 // ssin: string, sv: string, sl: string, id: string,
                 // hubPackageId?: string, breakTheGlassReason?: string): Promise<string | any>;
-                if(transaction && this._isTransactionSet(transaction)) {
+                if (transaction && this._isTransactionSet(transaction)) {
                     return this._getHubTransactionSetMessage(transaction);
                 } else {
                     if (this.patient.ssin && this.api.tokenId && transaction) {
@@ -1215,16 +1238,17 @@
                 }
             }
 
-            _runRevokeHubTransaction(e){
+            _runRevokeHubTransaction(e) {
                 e.stopPropagation();
-                if(e && e.target && e.target.item) {
+                if (e && e.target && e.target.item) {
                     this.set("selectedTransaction", e.target.item);
-                    this._revokeHubTransaction(e.target.item).then(tranResp =>{
+                    this._revokeHubTransaction(e.target.item).then(tranResp => {
                         this.set("revokeTransactionResp", tranResp);
                         this._getHubTransactionList().then(tranResp => this.set('hubTransactionList', tranResp));
                     })
                 }
             }
+
             //revokeTransactionUsingDELETE(
             // endpoint: string,
             // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
@@ -1232,7 +1256,7 @@
             // ssin: string,
             // sv: string, sl: string, id: string,
             // hubPackageId?: string, breakTheGlassReason?: string): Promise<string | any>;
-            _revokeHubTransaction(transaction){
+            _revokeHubTransaction(transaction) {
                 if (this.patient.ssin && this.api.tokenId && transaction) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                         .then(hcp => this.api.fhc().Hubcontroller().revokeTransactionUsingDELETE(this.hubEndPoint,
@@ -1256,7 +1280,7 @@
             }
 
             //breakTheGlassReason
-            _getHubTransactionSet(transaction){
+            _getHubTransactionSet(transaction) {
                 //getTransactionSetUsingGET(
                 // endpoint: string,
                 // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
@@ -1270,7 +1294,7 @@
                                 this.api.tokenId, this.api.credentials.ehpassword,
                                 hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
                                 this.patient.ssin,
-                                transaction.ids.find(id => id.s==='LOCAL').sv, transaction.ids.find(id => id.s==='LOCAL').sl, transaction.ids.find(id => id.s==='LOCAL').value,
+                                transaction.ids.find(id => id.s === 'LOCAL').sv, transaction.ids.find(id => id.s === 'LOCAL').sl, transaction.ids.find(id => id.s === 'LOCAL').value,
                                 this.hubPackageId, this.breakTheGlassReason
                             )
                         ).then(tranResp => {
@@ -1286,7 +1310,7 @@
                 }
             }
 
-            _getHubTransactionSetMessage(transaction){
+            _getHubTransactionSetMessage(transaction) {
                 //getTransactionSetUsingGET(
                 // endpoint: string,
                 // xFHCKeystoreId: string, xFHCTokenId: string, xFHCPassPhrase: string,
@@ -1300,7 +1324,7 @@
                                 this.api.tokenId, this.api.credentials.ehpassword,
                                 hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
                                 this.patient.ssin,
-                                transaction.ids.find(id => id.s==='LOCAL').sv, transaction.ids.find(id => id.s==='LOCAL').sl, transaction.ids.find(id => id.s==='LOCAL').value,
+                                transaction.ids.find(id => id.s === 'LOCAL').sv, transaction.ids.find(id => id.s === 'LOCAL').sl, transaction.ids.find(id => id.s === 'LOCAL').value,
                                 this.hubPackageId, this.breakTheGlassReason
                             )
                         ).then(tranResp => {
@@ -1316,7 +1340,7 @@
                 }
             }
 
-            _putHubTransactionSet(tsXML){
+            _putHubTransactionSet(tsXML) {
                 console.log('---_putHubTransactionSet---');
                 console.log(tsXML);
                 console.log(this.patient);
@@ -1351,7 +1375,7 @@
                             }
                         )
                     )
-                }else{
+                } else {
                     return Promise.resolve(null)
                 }
             }
@@ -1364,11 +1388,11 @@
                 })
             }
 
-            _getTSfromFileAndPut(){
+            _getTSfromFileAndPut() {
                 //TODO: this is testing code, not for production
                 const req = new XMLHttpRequest();
 
-                req.onreadystatechange = function(event){
+                req.onreadystatechange = function (event) {
                     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                         const msSam = this.responseXML;
                         const txtSam = new XMLSerializer().serializeToString(msSam.documentElement);
@@ -1377,7 +1401,11 @@
                         inputHidden.setAttribute('value', txtSam);
                         inputHidden.setAttribute('id', 'putHubXml');
                         document.body.appendChild(inputHidden);
-                        document.dispatchEvent( new Event("xmlHubUpdated",{bubbles:true,cancelable:false,composed: false}) )
+                        document.dispatchEvent(new Event("xmlHubUpdated", {
+                            bubbles: true,
+                            cancelable: false,
+                            composed: false
+                        }))
                     }
                 };
 
@@ -1389,6 +1417,7 @@
 
 
         }
+
         customElements.define(HtPatHubDialog.is, HtPatHubDialog);
     </script>
 </dom-module>

@@ -32,7 +32,7 @@
             }
 
             div {
-                width : 100%;
+                width: 100%;
             }
 
             div.content {
@@ -41,15 +41,15 @@
             }
 
             vadin-grid {
-                width : 100%;
+                width: 100%;
                 flex-grow: 1 !important;
                 height: auto !important;
             }
 
-            paper-input{
+            paper-input {
                 --paper-input-container-focus-color: var(--app-primary-color);
             }
-            
+
         </style>
         <paper-dialog id="dialog" opened="{{opened}}">
             <h3 class="modal-title">Access log</h3>
@@ -84,7 +84,9 @@
                 </vaadin-grid>
             </div>
             <div class="buttons">
-                <paper-button class="modal-button modal-button--save" on-tap="close">[[localize('clo','Close',language)]]</paper-button>
+                <paper-button class="modal-button modal-button--save" on-tap="close">
+                    [[localize('clo','Close',language)]]
+                </paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -109,21 +111,21 @@
                         value: false
                     },
                     logList: {
-                        type : Array,
-                        value : []
+                        type: Array,
+                        value: []
                     },
-                    listPatient :{
-                        type : Array,
-                        value : []
+                    listPatient: {
+                        type: Array,
+                        value: []
                     },
-                    filterValue : {
-                        type : String,
-                        value : "",
-                        observer : "filterValueChanged"
+                    filterValue: {
+                        type: String,
+                        value: "",
+                        observer: "filterValueChanged"
                     },
-                    latestSearchValue : {
-                        type : String,
-                        value : ""
+                    latestSearchValue: {
+                        type: String,
+                        value: ""
                     }
                 };
             }
@@ -136,11 +138,11 @@
                 this.$.dialog.close();
             }
 
-            convertDate(date){
+            convertDate(date) {
                 return this.api.moment(date).format("DD/MM/YYYY")
             }
 
-            updateList(){
+            updateList() {
                 if (!this.user) return
 
                 let latestSearchValue = this.filterValue
@@ -153,7 +155,7 @@
                 } : /^[0-3]?[0-9][\/-](1[0-2]|0?[0-9])[\/-]([1-2][89012])?[0-9][0-9]$/.test(latestSearchValue) ? {
                     '$type': 'PatientByHcPartyDateOfBirthFilter',
                     'healthcarePartyId': this.user.healthcarePartyId,
-                    'dateOfBirth': latestSearchValue.replace(/([0-3]?[0-9])[\/-](1[0-2]|0?[0-9])[\/-]((?:[1-2][89012])?[0-9][0-9])/g, (correspondance, p1, p2, p3, decalage, chaine )=>(p3.length===4 ? p3 : (p3 >20) ? "19"+p3 : "20"+p3)+(p2.length===2 ? p2 : "0"+p2)+(p1.length===2 ? p1 : "0"+p1))
+                    'dateOfBirth': latestSearchValue.replace(/([0-3]?[0-9])[\/-](1[0-2]|0?[0-9])[\/-]((?:[1-2][89012])?[0-9][0-9])/g, (correspondance, p1, p2, p3, decalage, chaine) => (p3.length === 4 ? p3 : (p3 > 20) ? "19" + p3 : "20" + p3) + (p2.length === 2 ? p2 : "0" + p2) + (p1.length === 2 ? p1 : "0" + p1))
                 } : {
                     '$type': 'PatientByHcPartyNameContainsFuzzyFilter',
                     'healthcarePartyId': this.user.healthcarePartyId,
@@ -162,48 +164,48 @@
 
                 console.log(filter)
 
-                Promise.all([this.api.patient().filterByWithUser(this.user, null, null, 1000, 0, 'lastName', true, {filter: filter}), this.api.user().listUsers()]).then(([patients,users]) => {
+                Promise.all([this.api.patient().filterByWithUser(this.user, null, null, 1000, 0, 'lastName', true, {filter: filter}), this.api.user().listUsers()]).then(([patients, users]) => {
                     let promises = [];
                     let logListTemp = [];
-                    let listIdUser =[];
-                    patients.rows.map(patient =>{
-                        Object.keys(patient.delegations).map(id =>{
-                            let temp = users.rows.find(user => user.healthcarePartyId===id)
-                            if(!listIdUser.find(userId => userId===temp.id)){
+                    let listIdUser = [];
+                    patients.rows.map(patient => {
+                        Object.keys(patient.delegations).map(id => {
+                            let temp = users.rows.find(user => user.healthcarePartyId === id)
+                            if (!listIdUser.find(userId => userId === temp.id)) {
                                 listIdUser.push(temp.id)
                             }
                         })
                     })
-                    listIdUser.map(id =>{
+                    listIdUser.map(id => {
 
                         promises.push(this.api.accesslog().findByUserAfterDate(id, 'USER_ACCESS', +new Date() - 1000 * 3600 * 24 * 7, null, null, 1000, true).then(results => {
-                                results.rows.map(result => {
-                                    let patient = patients.rows.find(pat => result.patientId===pat.id)
-                                    if(patient)
-                                        logListTemp.push({
-                                            date: result.date,
-                                            patient: patient.lastName + " " + patient.firstName,
-                                            user: users.rows.find(user => user.id===id).name
-                                        })
-                                })
-                            }))
+                            results.rows.map(result => {
+                                let patient = patients.rows.find(pat => result.patientId === pat.id)
+                                if (patient)
+                                    logListTemp.push({
+                                        date: result.date,
+                                        patient: patient.lastName + " " + patient.firstName,
+                                        user: users.rows.find(user => user.id === id).name
+                                    })
+                            })
+                        }))
                     })
 
                     Promise.all(promises).then(responses => {
-                        logListTemp.sort( (a,b) =>{
-                            return b.date -a.date;
+                        logListTemp.sort((a, b) => {
+                            return b.date - a.date;
                         })
-                        this.set("logList",logListTemp)
+                        this.set("logList", logListTemp)
                     })
                 })
             }
 
-            filterValueChanged(){
+            filterValueChanged() {
                 //Give the gui the time to update the field
                 setTimeout(function () {
                     let currentValue = this.filterValue;
 
-                    if(this.latestSearchValue===this.filterValue){
+                    if (this.latestSearchValue === this.filterValue) {
                         return;
                     }
 
@@ -218,6 +220,7 @@
                 }.bind(this), 100);
             }
         }
+
         customElements.define(HtExportKey.is, HtExportKey);
     </script>
 </dom-module>

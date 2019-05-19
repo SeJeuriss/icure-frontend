@@ -5,108 +5,106 @@
         {
           "formDataList": [
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 820,
-                "multiline" : false,
-                "left" : 340,
-                "menuOptions" : [],
-                "top" : 5,
-                "key" : "PopupMenuEditor",
-                "dataSource": {"source":"mh"}
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 820,
+                "multiline": false,
+                "left": 340,
+                "menuOptions": [],
+                "top": 5,
+                "key": "PopupMenuEditor",
+                "dataSource": {
+                  "source": "mh"
+                }
               },
-              "codeTypes" : [],
-              "sortOrder" : 1463236439,
-              "label" : "medical_house",
-              "type" : "TKString",
-              "subForm" : false,
-              "name" : "hcpId"
+              "codeTypes": [],
+              "sortOrder": 1463236439,
+              "label": "medical_house",
+              "type": "TKString",
+              "subForm": false,
+              "name": "hcpId"
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 820,
-                "multiline" : false,
-                "left" : 340,
-                "top" : 5,
-                "key" : "DateTimeEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 820,
+                "multiline": false,
+                "left": 340,
+                "top": 5,
+                "key": "DateTimeEditor"
               },
-              "sortOrder" : 1463236439,
-              "codeTypes" : [
-
+              "sortOrder": 1463236439,
+              "codeTypes": [
               ],
-              "label" : "sub_start_date",
-              "type" : "TKDate",
-              "subForm" : false,
-              "name" : "startOfContract",
-              "irrelevant" : true
+              "label": "sub_start_date",
+              "type": "TKDate",
+              "subForm": false,
+              "name": "startOfContract",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 820,
-                "multiline" : false,
-                "left" : 340,
-                "top" : 5,
-                "key" : "DateTimeEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 820,
+                "multiline": false,
+                "left": 340,
+                "top": 5,
+                "key": "DateTimeEditor"
               },
-              "sortOrder" : 1463236439,
-              "codeTypes" : [
-
+              "sortOrder": 1463236439,
+              "codeTypes": [
               ],
-              "label" : "sub_end_date",
-              "type" : "TKDate",
-              "subForm" : false,
-              "name" : "endOfContract",
-              "irrelevant" : true
+              "label": "sub_end_date",
+              "type": "TKDate",
+              "subForm": false,
+              "name": "endOfContract",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 820,
-                "multiline" : false,
-                "left" : 340,
-                "top" : 5,
-                "key" : "DateTimeEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 820,
+                "multiline": false,
+                "left": 340,
+                "top": 5,
+                "key": "DateTimeEditor"
               },
-              "sortOrder" : 1463236439,
-              "codeTypes" : [
-
+              "sortOrder": 1463236439,
+              "codeTypes": [
               ],
-              "label" : "cov_start_date",
-              "type" : "TKDate",
-              "subForm" : false,
-              "name" : "startOfCoverage",
-              "irrelevant" : true
+              "label": "cov_start_date",
+              "type": "TKDate",
+              "subForm": false,
+              "name": "startOfCoverage",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 820,
-                "multiline" : false,
-                "left" : 340,
-                "top" : 5,
-                "key" : "DateTimeEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 820,
+                "multiline": false,
+                "left": 340,
+                "top": 5,
+                "key": "DateTimeEditor"
               },
-              "sortOrder" : 1463236439,
-              "codeTypes" : [
-
+              "sortOrder": 1463236439,
+              "codeTypes": [
               ],
-              "label" : "cov_end_date",
-              "type" : "TKDate",
-              "subForm" : false,
-              "name" : "endOfCoverage",
-              "irrelevant" : true
+              "label": "cov_end_date",
+              "type": "TKDate",
+              "subForm": false,
+              "name": "endOfCoverage",
+              "irrelevant": true
             },
             {
               "editor": {
@@ -126,7 +124,7 @@
               "irrelevant": false,
               "subForm": false,
               "type": "TKBoolean",
-              "name" : "gp"
+              "name": "gp"
             },
             {
               "editor": {
@@ -146,7 +144,7 @@
               "irrelevant": false,
               "subForm": false,
               "type": "TKBoolean",
-              "name" : "kine"
+              "name": "kine"
             },
             {
               "editor": {
@@ -166,94 +164,94 @@
               "irrelevant": false,
               "subForm": false,
               "type": "TKBoolean",
-              "name" : "nurse"
+              "name": "nurse"
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 502,
-                "multiline" : false,
-                "left" : 90,
-                "top" : 88,
-                "key" : "StringEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 502,
+                "multiline": false,
+                "left": 90,
+                "top": 88,
+                "key": "StringEditor"
               },
-              "sortOrder" : 926365495,
-              "codeTypes" : [
-
+              "sortOrder": 926365495,
+              "codeTypes": [
               ],
-              "label" : "unsub_reason",
-              "irrelevant" : true,
-              "subForm" : false,
-              "type" : "TKNumber",
-              "name" : "alias"
+              "label": "unsub_reason",
+              "irrelevant": true,
+              "subForm": false,
+              "type": "TKNumber",
+              "name": "alias"
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 100,
-                "multiline" : false,
-                "left" : 100,
-                "top" : 90,
-                "key" : "DateTimeEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 100,
+                "multiline": false,
+                "left": 100,
+                "top": 90,
+                "key": "DateTimeEditor"
               },
-              "sortOrder" : 1463236439,
-              "codeTypes" : [
-
+              "sortOrder": 1463236439,
+              "codeTypes": [
               ],
-              "label" : "suspension_startdate",
-              "type" : "TKDate",
-              "subForm" : false,
-              "name" : "startOfSuspension",
-              "irrelevant" : true
+              "label": "suspension_startdate",
+              "type": "TKDate",
+              "subForm": false,
+              "name": "startOfSuspension",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 22,
-                "labelPosition" : "Left",
-                "width" : 100,
-                "multiline" : false,
-                "left" : 200,
-                "top" : 90,
-                "key" : "DateTimeEditor"
+              "editor": {
+                "readOnly": false,
+                "height": 22,
+                "labelPosition": "Left",
+                "width": 100,
+                "multiline": false,
+                "left": 200,
+                "top": 90,
+                "key": "DateTimeEditor"
               },
-              "sortOrder" : 1463236439,
-              "codeTypes" : [
-
+              "sortOrder": 1463236439,
+              "codeTypes": [
               ],
-              "label" : "suspension_enddate",
-              "type" : "TKDate",
-              "subForm" : false,
-              "name" : "endOfSuspension",
-              "irrelevant" : true
+              "label": "suspension_enddate",
+              "type": "TKDate",
+              "subForm": false,
+              "name": "endOfSuspension",
+              "irrelevant": true
             },
             {
-              "editor" : {
-                "readOnly" : false,
-                "height" : 26,
-                "menuOptions" : [
-                  "notInsured","noReasonGiven","isHospitalized","outsideOfCountry","changeOfMutuality"
+              "editor": {
+                "readOnly": false,
+                "height": 26,
+                "menuOptions": [
+                  "notInsured",
+                  "noReasonGiven",
+                  "isHospitalized",
+                  "outsideOfCountry",
+                  "changeOfMutuality"
                 ],
-                "labelPosition" : "Left",
-                "width" : 300,
-                "multiline" : false,
-                "left" : 500,
-                "top" : 90,
-                "key" : "PopupMenuEditor"
+                "labelPosition": "Left",
+                "width": 300,
+                "multiline": false,
+                "left": 500,
+                "top": 90,
+                "key": "PopupMenuEditor"
               },
-              "sortOrder" : 1463236439,
-              "codeTypes" : [
-
+              "sortOrder": 1463236439,
+              "codeTypes": [
               ],
-              "label" : "suspension_reason",
-              "type" : "TKString",
-              "subForm" : false,
-              "name" : "suspensionReason",
-              "irrelevant" : true
+              "label": "suspension_reason",
+              "type": "TKString",
+              "subForm": false,
+              "name": "suspensionReason",
+              "irrelevant": true
             }
           ]
         }

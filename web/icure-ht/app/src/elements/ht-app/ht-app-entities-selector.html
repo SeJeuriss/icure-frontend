@@ -1,4 +1,3 @@
-
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
@@ -9,29 +8,30 @@
     <template>
         <style>
 
-            paper-dialog{
-                border-radius:2px;
-            }
-            .top-gradient{
-                line-height:0;
-                font-size:0;
-                display:block;
-                background: linear-gradient(90deg, var(--app-secondary-color-dark), var(--app-secondary-color));
-                height:10px;
-                position:relative;
-                top:0;
-                left:0;
-                right:0;
-                margin:0;
-                border-radius:2px 2px 0 0;
+            paper-dialog {
+                border-radius: 2px;
             }
 
-            #accountSelectorDialog{
+            .top-gradient {
+                line-height: 0;
+                font-size: 0;
+                display: block;
+                background: linear-gradient(90deg, var(--app-secondary-color-dark), var(--app-secondary-color));
+                height: 10px;
+                position: relative;
+                top: 0;
+                left: 0;
+                right: 0;
+                margin: 0;
+                border-radius: 2px 2px 0 0;
+            }
+
+            #accountSelectorDialog {
                 height: 400px;
                 width: 800px;
             }
 
-            #entitiesGrid{
+            #entitiesGrid {
                 height: 250px;
             }
 
@@ -53,7 +53,8 @@
         </paper-dialog>
     </template>
     <script>
-        import { sha256, sha224 } from 'js-sha256/src/sha256';
+        import {sha256, sha224} from 'js-sha256/src/sha256';
+
         //noinspection JSUnusedGlobalSymbols
         class HtAppEntitiesSelector extends Polymer.TkLocalizerMixin(Polymer.Element) {
             static get is() {
@@ -73,7 +74,7 @@
                     token: {
                         type: String
                     },
-                    userId:{
+                    userId: {
                         type: String
                     },
                     user: {
@@ -88,7 +89,8 @@
                     },
                     activeEntity: {
                         type: Object,
-                        value: () => {}
+                        value: () => {
+                        }
                     }
                 };
             }
@@ -107,13 +109,13 @@
                         console.log(ent)
                         this.set("entities", ent)
                     })
-                    .finally(()=> this.entities && this.entities.length > 1 ? this.$['accountSelectorDialog'].open() : null )
+                    .finally(() => this.entities && this.entities.length > 1 ? this.$['accountSelectorDialog'].open() : null)
             }
 
-            _redirectToSelectedEntity(){
-                console.log( this.activeEntity)
-                if(this.activeEntity){
-                    this.set("credentials.username", this.activeEntity && this.activeEntity.groupId ? this.activeEntity.groupId+"/"+this.activeEntity.userId : this.activeEntity.userId)
+            _redirectToSelectedEntity() {
+                console.log(this.activeEntity)
+                if (this.activeEntity) {
+                    this.set("credentials.username", this.activeEntity && this.activeEntity.groupId ? this.activeEntity.groupId + "/" + this.activeEntity.userId : this.activeEntity.userId)
                     this.dispatchEvent(new CustomEvent('redirect-another-entity', {detail: this.credentials}));
                 }
             }

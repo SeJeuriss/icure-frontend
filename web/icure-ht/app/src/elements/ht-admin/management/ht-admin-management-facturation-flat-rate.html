@@ -50,46 +50,46 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
             }
 
-            :host *:focus{
-                outline:0!important;
+            :host *:focus {
+                outline: 0 !important;
             }
 
-            .facturation-flat-rate-panel{
+            .facturation-flat-rate-panel {
                 height: 100%;
                 width: 100%;
                 padding: 0 20px;
                 box-sizing: border-box;
-                position:relative;
+                position: relative;
             }
 
-            #addedFlatRateTarificationDialog{
+            #addedFlatRateTarificationDialog {
                 height: 280px;
                 width: 600px;
             }
 
-            .top-gradient{
-                line-height:0;
-                font-size:0;
-                display:block;
+            .top-gradient {
+                line-height: 0;
+                font-size: 0;
+                display: block;
                 background: linear-gradient(90deg, var(--app-secondary-color-dark), var(--app-secondary-color));
-                height:10px;
-                position:relative;
-                top:0;
-                left:0;
-                right:0;
-                margin:0;
-                border-radius:2px 2px 0 0;
+                height: 10px;
+                position: relative;
+                top: 0;
+                left: 0;
+                right: 0;
+                margin: 0;
+                border-radius: 2px 2px 0 0;
             }
 
             .line {
                 display: flex;
             }
 
-            .flex{
+            .flex {
                 flex: 1;
             }
 
-            .buttons{
+            .buttons {
                 display: flex;
                 flex-grow: 1;
                 box-sizing: border-box;
@@ -97,7 +97,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 padding-top: 16px;
             }
 
-            .trashIcon{
+            .trashIcon {
                 height: 14px;
                 width: 14px;
             }
@@ -108,19 +108,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .warningMessageBody {
-                padding:20px 35px;
+                padding: 20px 35px;
                 color: var(--app-status-color-nok);
                 background-color: rgba(255, 0, 0, 0.15);
                 font-weight: 700;
-                border:1px dashed var(--app-status-color-nok);
+                border: 1px dashed var(--app-status-color-nok);
                 text-transform: uppercase;
                 text-align: center;
             }
 
-            .add-btn{
+            .add-btn {
                 color: var(--app-text-color);
                 height: 24px;
-                width: 24px; 
+                width: 24px;
                 padding: 4px;
             }
 
@@ -134,9 +134,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
             </div>
             <div class="add_line">
-                <h5>[[localize('flat_rat_tar', 'Flat rate tarifications', language)]] <paper-icon-button class="add-btn" icon="icons:add-circle" on-tap="_addFlatRateTarification"></paper-icon-button></h5>
+                <h5>[[localize('flat_rat_tar', 'Flat rate tarifications', language)]]
+                    <paper-icon-button class="add-btn" icon="icons:add-circle"
+                                       on-tap="_addFlatRateTarification"></paper-icon-button>
+                </h5>
             </div>
-            <vaadin-grid id="flatRateFacturation" class="material" items="[[flatRateTarificationTab]]" active-item="{{selectedPrice}}">
+            <vaadin-grid id="flatRateFacturation" class="material" items="[[flatRateTarificationTab]]"
+                         active-item="{{selectedPrice}}">
                 <vaadin-grid-column>
                     <template class="header">
                         [[localize('startOfValidity','Start of valididy',language)]]
@@ -182,7 +186,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </template>
                     <template>
                         <div>
-                            <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_deleteFalRatePrice" data-item$="[[item]]"></iron-icon>
+                            <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_deleteFalRatePrice"
+                                       data-item$="[[item]]"></iron-icon>
                         </div>
                     </template>
                 </vaadin-grid-column>
@@ -197,7 +202,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <div class="line">
                 <paper-dropdown-menu class="flex" label="[[localize('stat','Code',language)]]">
-                    <paper-listbox slot="dropdown-content" selected="{{flatRateNmclSelectedItemIdx}}" selected-item="{{flatRateNmclSelectedItem}}" attr-for-selected="id" on-selected-changed="_fatRateNmclChanged">
+                    <paper-listbox slot="dropdown-content" selected="{{flatRateNmclSelectedItemIdx}}"
+                                   selected-item="{{flatRateNmclSelectedItem}}" attr-for-selected="id"
+                                   on-selected-changed="_fatRateNmclChanged">
                         <template is="dom-repeat" items="[[flatRateNmcl]]" as="nmcl">
                             <paper-item id="[[nmcl.code]]">[[nmcl.code]] - [[_getCodeLabel(nmcl.label)]]</paper-item>
                         </template>
@@ -206,15 +213,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
             <div class="line">
                 <div class="exportMonthPicker">
-                   <vaadin-combo-box id="tarificationMonth" filtered-items="[[_getTarificationMonthsList()]]" item-label-path="label" item-value-path="id" label="[[localize('month','Month',language)]]" value="[[_getTarificationCurrentMonth()]]" selected-item="{{selectedTarificationMonth}}"></vaadin-combo-box>
-                   <vaadin-combo-box id="tarificationYear" filtered-items="[[_getTarificationYearsList()]]" item-label-path="label" item-value-path="id" label="[[localize('year','Year',language)]]" value="[[_getTarificationCurrentYear()]]" selected-item="{{selectedTarificationYear}}"></vaadin-combo-box>
+                    <vaadin-combo-box id="tarificationMonth" filtered-items="[[_getTarificationMonthsList()]]"
+                                      item-label-path="label" item-value-path="id"
+                                      label="[[localize('month','Month',language)]]"
+                                      value="[[_getTarificationCurrentMonth()]]"
+                                      selected-item="{{selectedTarificationMonth}}"></vaadin-combo-box>
+                    <vaadin-combo-box id="tarificationYear" filtered-items="[[_getTarificationYearsList()]]"
+                                      item-label-path="label" item-value-path="id"
+                                      label="[[localize('year','Year',language)]]"
+                                      value="[[_getTarificationCurrentYear()]]"
+                                      selected-item="{{selectedTarificationYear}}"></vaadin-combo-box>
                 </div>
-                <paper-input type="number" label="[[localize('flatrate_reimb', 'Reimbursement', language)]]" class="flex" id="reimbursement" value="{{flatRateTarification.reimbursement}}"></paper-input>
+                <paper-input type="number" label="[[localize('flatrate_reimb', 'Reimbursement', language)]]"
+                             class="flex" id="reimbursement"
+                             value="{{flatRateTarification.reimbursement}}"></paper-input>
             </div>
 
             <div class="buttons">
                 <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus on-tap="_addTarification">[[localize('save','Save',language)]]</paper-button>
+                <paper-button class="modal-button modal-button--save" dialog-confirm autofocus
+                              on-tap="_addTarification">[[localize('save','Save',language)]]
+                </paper-button>
             </div>
 
         </paper-dialog>
@@ -246,70 +265,75 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: {
                             code: null,
                             label: null,
-                            reimbursement : Number(0.00),
+                            reimbursement: Number(0.00),
                             monthValidity: null,
                             yearValidity: null,
                             startOfValidity: null
                         }
                     },
-                    flatRateNmclSelectedItemIdx:{
+                    flatRateNmclSelectedItemIdx: {
                         type: Number,
                         value: 0
                     },
-                    flatRateNmclSelectedItem:{
+                    flatRateNmclSelectedItem: {
                         type: Object,
-                        value: () => {}
+                        value: () => {
+                        }
                     },
                     flatRateNmcl: {
                         type: Array,
                         value: () => [
-                        {
-                            code: '109616',
-                            label: {
-                                fr : 'Forfait soins médicaux dans les centres de santé',
-                                en: 'Medical care package in health centers',
-                                nl : 'Zorgpakket in gezondheidscentra'
-                            },
-                            flatRateType: 'physician'
-                        },{
-                            code: '409614',
-                            label: {
-                                fr : 'Forfait soins infirmiers dans les centres de santé',
-                                en: 'Nursing package at health centers',
-                                nl : 'Verpleegpakket in gezondheidscentra'
-                            },
-                            flatRateType : 'nurse'
-                        },{
-                            code: '509611',
-                            label: {
-                                fr : 'Forfait soins kiné dans les centres de santé',
-                                en: 'Physiotherapy package in health centers',
-                                nl : 'Fysiotherapie pakket in gezondheidscentra'
-                            },
-                            flatRateType: 'physiotherapist'
-                        }]
-                   },
+                            {
+                                code: '109616',
+                                label: {
+                                    fr: 'Forfait soins médicaux dans les centres de santé',
+                                    en: 'Medical care package in health centers',
+                                    nl: 'Zorgpakket in gezondheidscentra'
+                                },
+                                flatRateType: 'physician'
+                            }, {
+                                code: '409614',
+                                label: {
+                                    fr: 'Forfait soins infirmiers dans les centres de santé',
+                                    en: 'Nursing package at health centers',
+                                    nl: 'Verpleegpakket in gezondheidscentra'
+                                },
+                                flatRateType: 'nurse'
+                            }, {
+                                code: '509611',
+                                label: {
+                                    fr: 'Forfait soins kiné dans les centres de santé',
+                                    en: 'Physiotherapy package in health centers',
+                                    nl: 'Fysiotherapie pakket in gezondheidscentra'
+                                },
+                                flatRateType: 'physiotherapist'
+                            }]
+                    },
                     hcpParent: {
                         type: Object,
-                        value: () => {}
+                        value: () => {
+                        }
                     },
                     flatRateTarificationTab: {
-                        type : Array,
+                        type: Array,
                         value: () => []
                     },
-                    selectedTarificationMonth:{
+                    selectedTarificationMonth: {
                         type: Object,
-                        value: () => {},
+                        value: () => {
+                        },
                         observer: '_selectedTarificationMonthValueChanged'
                     },
-                    selectedTarificationYear:{
+                    selectedTarificationYear: {
                         type: Object,
-                        value: () => {},
+                        value: () => {
+                        },
                         observer: '_selectedTarificationYearValueChanged'
                     },
-                    selectedPrice:{
+                    selectedPrice: {
                         type: Object,
-                        value: () => {}
+                        value: () => {
+                        }
                     }
 
                 }
@@ -327,9 +351,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
             }
 
-            _flatRateTarificationDataProvider(){
+            _flatRateTarificationDataProvider() {
 
-                if(!this.user) {
+                if (!this.user) {
                     return
                 }
 
@@ -340,14 +364,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                         const flatRateTarifications = this.hcpParent && this.hcpParent.flatRateTarifications || []
 
-                        this.set('flatRateTarificationTab', _.flatten(flatRateTarifications.map(tar => tar.valorisations.map(val => ({valorisation: val, code: tar.code, label: tar.label, flatRateType: tar.flatRateType})))) )
+                        this.set('flatRateTarificationTab', _.flatten(flatRateTarifications.map(tar => tar.valorisations.map(val => ({
+                            valorisation: val,
+                            code: tar.code,
+                            label: tar.label,
+                            flatRateType: tar.flatRateType
+                        })))))
 
-                })
+                    })
             }
 
-            _addFlatRateTarification(){
-                this.set('selectedTarificationMonth', { id: parseInt(moment().format('MM')), label: this.localize('month_'+parseInt(moment().format('MM')),this.language)})
-                this.set('selectedTarificationYear', {id: parseInt(moment().format('YYYY')), label: parseInt(moment().format('YYYY'))})
+            _addFlatRateTarification() {
+                this.set('selectedTarificationMonth', {
+                    id: parseInt(moment().format('MM')),
+                    label: this.localize('month_' + parseInt(moment().format('MM')), this.language)
+                })
+                this.set('selectedTarificationYear', {
+                    id: parseInt(moment().format('YYYY')),
+                    label: parseInt(moment().format('YYYY'))
+                })
                 this.set('flatRateTarification', {})
                 this.set('flatRateNmclSelectedItemIdx', 0)
                 this.set('flatRateTarification.monthValidity', parseInt(moment().format('MM')))
@@ -356,90 +391,111 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             }
 
-            _addTarification(){
+            _addTarification() {
                 console.log(this.flatRateTarification)
 
-                const startValidityMonth = this.flatRateTarification && this.flatRateTarification.monthValidity && this.flatRateTarification.monthValidity < 10 ? '0'+this.flatRateTarification.monthValidity :
+                const startValidityMonth = this.flatRateTarification && this.flatRateTarification.monthValidity && this.flatRateTarification.monthValidity < 10 ? '0' + this.flatRateTarification.monthValidity :
                     this.flatRateTarification && this.flatRateTarification.monthValidity && this.flatRateTarification.monthValidity >= 10 ? this.flatRateTarification.monthValidity
                         : null
-                const startOfValidity = this.flatRateTarification && startValidityMonth && this.flatRateTarification.yearValidity ? moment(this.flatRateTarification.yearValidity+'-'+startValidityMonth+'-01').startOf('month').format('YYYYMMDD') : null
+                const startOfValidity = this.flatRateTarification && startValidityMonth && this.flatRateTarification.yearValidity ? moment(this.flatRateTarification.yearValidity + '-' + startValidityMonth + '-01').startOf('month').format('YYYYMMDD') : null
 
-                if(!this.hcpParent.flatRateTarifications){
-                    _.assign(this.hcpParent, {flatRateTarifications : []})
+                if (!this.hcpParent.flatRateTarifications) {
+                    _.assign(this.hcpParent, {flatRateTarifications: []})
                 }
 
                 const selectedTar = this.hcpParent.flatRateTarifications.find(t => t.code === this.flatRateTarification.code) || null
 
-                if(selectedTar){
-                    selectedTar ? selectedTar.valorisations.push({startOfValidity: parseInt(startOfValidity), reimbursement: this.flatRateTarification.reimbursement.replace(',', '.')}) : null
-                }else{
+                if (selectedTar) {
+                    selectedTar ? selectedTar.valorisations.push({
+                        startOfValidity: parseInt(startOfValidity),
+                        reimbursement: this.flatRateTarification.reimbursement.replace(',', '.')
+                    }) : null
+                } else {
                     const valorisation = []
-                    valorisation.push({startOfValidity: parseInt(startOfValidity), reimbursement: this.flatRateTarification.reimbursement.replace(',', '.')})
+                    valorisation.push({
+                        startOfValidity: parseInt(startOfValidity),
+                        reimbursement: this.flatRateTarification.reimbursement.replace(',', '.')
+                    })
 
                     this.hcpParent.flatRateTarifications.push({
                         code: this.flatRateTarification.code || null,
                         label: this.flatRateTarification.label || null,
-                        flatRateType : this.flatRateTarification.flatRateType || null,
+                        flatRateType: this.flatRateTarification.flatRateType || null,
                         valorisations: valorisation || []
-                     })
+                    })
                 }
 
                 this.api.hcparty().modifyHealthcareParty(this.hcpParent)
                     .then(hcp => this.set('hcpParent', hcp))
                     .finally(() => {
-                    const flatRateTarifications = this.hcpParent && this.hcpParent.flatRateTarifications || []
-                    this.set('flatRateTarificationTab', _.flatten(flatRateTarifications.map(tar => tar.valorisations.map(val => ({valorisation: val, code: tar.code, label: tar.label, flatRateType: tar.flatRateType})))) )
-                    this.set('flatRateTarification', { code: null, label: null, reimbursement : Number(0.00), startOfValidity: null})
-                })
+                        const flatRateTarifications = this.hcpParent && this.hcpParent.flatRateTarifications || []
+                        this.set('flatRateTarificationTab', _.flatten(flatRateTarifications.map(tar => tar.valorisations.map(val => ({
+                            valorisation: val,
+                            code: tar.code,
+                            label: tar.label,
+                            flatRateType: tar.flatRateType
+                        })))))
+                        this.set('flatRateTarification', {
+                            code: null,
+                            label: null,
+                            reimbursement: Number(0.00),
+                            startOfValidity: null
+                        })
+                    })
 
 
             }
 
-            _fatRateNmclChanged(){
-                if(this.flatRateNmclSelectedItem && this.flatRateNmclSelectedItem.id){
+            _fatRateNmclChanged() {
+                if (this.flatRateNmclSelectedItem && this.flatRateNmclSelectedItem.id) {
                     this.set('flatRateTarification.code', this.flatRateNmcl.find(cd => cd.code === this.flatRateNmclSelectedItem.id).code)
                     this.set('flatRateTarification.label', this.flatRateNmcl.find(cd => cd.code === this.flatRateNmclSelectedItem.id).label)
                     this.set('flatRateTarification.flatRateType', this.flatRateNmcl.find(cd => cd.code === this.flatRateNmclSelectedItem.id).flatRateType)
                 }
             }
 
-            _getCodeLabel(code){
+            _getCodeLabel(code) {
                 return code && code[this.language]
             }
 
             _getTarificationMonthsList() {
                 let toReturn = [];
-                for(let i=1; i<=12; i++) toReturn.push({id: i, label: this.localize('month_'+i,this.language) })
+                for (let i = 1; i <= 12; i++) toReturn.push({id: i, label: this.localize('month_' + i, this.language)})
                 return toReturn
             }
+
             _getTarificationYearsList() {
                 let toReturn = [];
-                for(let i=(parseInt(moment().format('YYYY'))+1); i>=(parseInt(moment().format('YYYY'))-2); i--) toReturn.push({id: i, label: i })
+                for (let i = (parseInt(moment().format('YYYY')) + 1); i >= (parseInt(moment().format('YYYY')) - 2); i--) toReturn.push({
+                    id: i,
+                    label: i
+                })
                 return toReturn
             }
 
             _getTarificationCurrentMonth() {
                 return parseInt(moment().format('MM'))
             }
+
             _getTarificationCurrentYear() {
                 return parseInt(moment().format('YYYY'))
             }
 
-            _selectedTarificationMonthValueChanged(selectedMonth){
+            _selectedTarificationMonthValueChanged(selectedMonth) {
                 selectedMonth ? this.set('flatRateTarification.monthValidity', parseInt(selectedMonth.id)) : null
             }
 
-            _selectedTarificationYearValueChanged(selectedYear){
+            _selectedTarificationYearValueChanged(selectedYear) {
                 selectedYear ? this.set('flatRateTarification.yearValidity', parseInt(selectedYear.id)) : null
             }
 
-            _getDateAsString(date){
+            _getDateAsString(date) {
                 return date ? this.api.moment(date).format('DD/MM/YYYY') : null
             }
 
-            _deleteFalRatePrice(e){
+            _deleteFalRatePrice(e) {
                 e.stopPropagation()
-                if(e.target.dataset && e.target.dataset.item){
+                if (e.target.dataset && e.target.dataset.item) {
                     const dataToBeDeleted = JSON.parse(e.target.dataset.item)
                     const tarification = this.hcpParent.flatRateTarifications.find(t => t.code === dataToBeDeleted.code)
                     const valorisationsOfTarification = tarification.valorisations
@@ -450,13 +506,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         .then(hcp => this.set('hcpParent', hcp))
                         .finally(() => {
                             const flatRateTarifications = this.hcpParent && this.hcpParent.flatRateTarifications || []
-                            this.set('flatRateTarificationTab', _.flatten(flatRateTarifications.map(tar => tar.valorisations.map(val => ({valorisation: val, code: tar.code, label: tar.label, flatRateType: tar.flatRateType})))) )
+                            this.set('flatRateTarificationTab', _.flatten(flatRateTarifications.map(tar => tar.valorisations.map(val => ({
+                                valorisation: val,
+                                code: tar.code,
+                                label: tar.label,
+                                flatRateType: tar.flatRateType
+                            })))))
                         })
                 }
             }
 
-            _selectedPriceChanged(e){
-               //this.$['addedFlatRateTarificationDialog'].open()
+            _selectedPriceChanged(e) {
+                //this.$['addedFlatRateTarificationDialog'].open()
             }
         }
 

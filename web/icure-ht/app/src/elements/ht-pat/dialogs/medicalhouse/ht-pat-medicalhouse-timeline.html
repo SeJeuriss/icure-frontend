@@ -22,7 +22,7 @@
         <!--suppress CssUnusedSymbol -->
         <style include="icpc-styles scrollbar-style">
 
-            #dialog .hub-cons{
+            #dialog .hub-cons {
                 display: flex;
                 flex-flow: row wrap;
                 align-items: center;
@@ -42,6 +42,7 @@
                 color: var(--app-primary-color-dark);
                 justify-self: flex-end;
             }
+
             #dialog .hub-cons paper-button.action[disabled] {
                 background-color: var(--app-secondary-color-dark);
                 color: var(--app-text-color-disabled);
@@ -59,12 +60,12 @@
 
             #dialog a {
                 text-decoration: none;
-                color:	var(--app-secondary-color);
+                color: var(--app-secondary-color);
             }
 
             /*#dialog{*/
-                /*min-height: 800px;*/
-                /*min-width: 1024px;*/
+            /*min-height: 800px;*/
+            /*min-width: 1024px;*/
             /*}*/
 
             .links {
@@ -78,7 +79,7 @@
 
             dynamic-link {
                 float: right;
-                top:4px;
+                top: 4px;
             }
 
             vaadin-combo-box {
@@ -98,28 +99,28 @@
                 flex: 1;
             }
 
-            #dialog .hub-info{
-                margin-top:0;
-                display:flex;
+            #dialog .hub-info {
+                margin-top: 0;
+                display: flex;
                 flex-flow: row nowrap;
                 justify-content: flex-start;
                 align-items: flex-start;
             }
 
-            #dialog .hub-info div{
+            #dialog .hub-info div {
                 margin-right: 24px;
             }
 
-            #dialog .hub-info div p{
+            #dialog .hub-info div p {
                 margin: 8px 0;
             }
 
-            #dialog .hub-info div b{
+            #dialog .hub-info div b {
                 margin-right: 8px;
             }
 
-            .modal-title{
-                background:  var(--app-background-color-dark);
+            .modal-title {
+                background: var(--app-background-color-dark);
                 margin-top: 0;
                 padding: 16px 24px;
             }
@@ -151,6 +152,7 @@
                 margin: 0;
                 padding: 0;
             }
+
             .modal-button {
                 --paper-button-ink-color: var(--app-secondary-color-dark);
                 color: var(--app-text-color);
@@ -176,14 +178,16 @@
                 width: 42px;
             }
 
-            #kmehr_slot{
+            #kmehr_slot {
                 overflow-y: scroll;
                 height: 90%;
             }
         </style>
 
         <div id="dialog" opened="{{opened}}">
-            <h2 class="modal-title">[[localize('mh_timeline','Medical House Timeline',language)]]<ht-spinner active="[[isLoading]]"></ht-spinner></h2>
+            <h2 class="modal-title">[[localize('mh_timeline','Medical House Timeline',language)]]
+                <ht-spinner active="[[isLoading]]"></ht-spinner>
+            </h2>
             <p>[[patient.lastName]]</p>
             <p>[[patient.medicalHouseContracts.length]]</p>
             <template is="dom-repeat" items="[[patient.medicalHouseContracts]]" as="contract">
@@ -227,10 +231,10 @@
                         value: false
                     },
                     tabs: {
-                        type:  Number,
+                        type: Number,
                         value: 0
                     },
-                    isLoading:{
+                    isLoading: {
                         type: Boolean,
                         value: false
                     }
@@ -244,7 +248,7 @@
             ready() {
                 super.ready();
                 this.addEventListener('iron-resize', () => this.onWidthChange());
-                document.addEventListener('xmlHubUpdated', () => this.xmlHubListener() );
+                document.addEventListener('xmlHubUpdated', () => this.xmlHubListener());
             }
 
             _dateFormat(date) {
@@ -273,10 +277,10 @@
                 this.async(this.notifyResize, 1);
             }
 
-            _runTest(){
+            _runTest() {
                 let mhcs = this.patient.medicalHouseContracts
                 mhcs.map(
-                    mhc =>{
+                    mhc => {
                         let tmp = mhc.suspensionSource;
                     }
                 )
@@ -286,19 +290,21 @@
                 const amount2 = this.getForfaitAmountOnDate(20181101);
             }
 
-            _generateInvoiceTest(){
+            _generateInvoiceTest() {
                 // let inv;
                 // const prefix = 'invoice:'+this.user.healthcarePartyId+':'+(parentIns && parentIns.code ? parentIns.code : '000')+':'
 
                 this.api.crypto().extractDelegationsSFKs(this.patient, this.user.healthcarePartyId).then(secretForeignKeys => {
                     const patientKeys = secretForeignKeys.extractedKeys.join(",")
-                    this.api.invoice().appendCodes(this.user.id, this.selectedInvoice.invoiceType, this.selectedMediumCodeType, (!!this.patient.insurabilities.length?this.patient.insurabilities[0].insuranceId:''), patientKeys, null, 0, [newNmcl])
-                        .then(inv => (this.patient.insurabilities && this.patient.insurabilities.length) ? this.api.insurance().getInsurance(this.patient.insurabilities[0].insuranceId).then(ins => [inv[0] || null, ins || null]) :  [inv[0] || null, null])
+                    this.api.invoice().appendCodes(this.user.id, this.selectedInvoice.invoiceType, this.selectedMediumCodeType, (!!this.patient.insurabilities.length ? this.patient.insurabilities[0].insuranceId : ''), patientKeys, null, 0, [newNmcl])
+                        .then(inv => (this.patient.insurabilities && this.patient.insurabilities.length) ? this.api.insurance().getInsurance(this.patient.insurabilities[0].insuranceId).then(ins => [inv[0] || null, ins || null]) : [inv[0] || null, null])
                         .then(([inv, ins]) => (ins && ins != null) ? this.api.insurance().getInsurance(ins.parent).then(parentIns => [inv, parentIns]) : [inv, null])
                         .then(([inv, parentIns]) => {
                             let invoice = inv
 
-                            if(!invoice){return null;}
+                            if (!invoice) {
+                                return null;
+                            }
                             if (!invoice.id) {
                                 invoice.invoiceDate = this.selectedInvoice.invoiceDate
                                 invoice.invoiceReference = this.selectedInvoice.invoiceReference
@@ -314,11 +320,11 @@
                                 invoice.encounterLocationNorm = this.selectedInvoice.encounterLocationNorm
 
                                 const icId = invoice.invoicingCodes[0] && invoice.invoicingCodes[0].id
-                                const prefix = 'invoice:'+this.user.healthcarePartyId+':'+(parentIns && parentIns.code ? parentIns.code : '000')+':'
+                                const prefix = 'invoice:' + this.user.healthcarePartyId + ':' + (parentIns && parentIns.code ? parentIns.code : '000') + ':'
 
                                 return this.api.invoice().newInstance(this.user, this.patient, invoice)
                                     .then(invoice => this.api.invoice().createInvoice(invoice, prefix))
-                                    .then(invoice => this.api.register(invoice,'invoice'))
+                                    .then(invoice => this.api.register(invoice, 'invoice'))
                                     .then(invoice => {
                                         this.$['nmclGrid'].clearCache()
                                         console.log(this.selectedInvoice)
@@ -334,16 +340,16 @@
                                     })
                             } else {
                                 this.api.tarification().getTarifications(new models.ListOfIdsDto({ids: invoice.invoicingCodes.map(tar => tar.tarificationId)})).then(nmcls =>
-                                    nmcls.map(nmcl =>{
+                                    nmcls.map(nmcl => {
                                         let sns = invoice.invoicingCodes.filter(n => n.tarificationId === nmcl.id) || null
-                                        if(sns && sns.length){
-                                            sns.map(sn =>{
+                                        if (sns && sns.length) {
+                                            sns.map(sn => {
                                                 sn.prescriberNeeded = nmcl.needsPrescriber
                                                 sn.isRelativePrestation = nmcl.hasRelatedCode
                                             })
                                         }
                                     })
-                                ).then(x =>{
+                                ).then(x => {
                                     const registered = this.api.register(invoice, 'invoice')
                                     this.$['nmclGrid'].clearCache()
                                     this.updateGui(registered)
@@ -356,21 +362,21 @@
                 })
             }
 
-            getForfaitAmountOnDate(date){
+            getForfaitAmountOnDate(date) {
                 const amounts = this.getForfaitAmounts();
-                let amount = amounts.find(am => am.startDate <= date && (!am.endDate || am.endDate >= date ));
+                let amount = amounts.find(am => am.startDate <= date && (!am.endDate || am.endDate >= date));
 
                 return amount;
             }
 
-            getForfaitAmounts(){
+            getForfaitAmounts() {
                 const propRegStatus = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.Forfait.Amounts') ||
                     (this.user.properties[this.user.properties.length] = {
                         type: {identifier: 'org.taktik.icure.user.Forfait.Amounts'},
                         typedValue: {type: 'JSON', stringValue: '{\"amounts\":[]}'}
                     });
                 let amounts = {};
-                if(propRegStatus && propRegStatus.typedValue) {
+                if (propRegStatus && propRegStatus.typedValue) {
                     amounts = JSON.parse(propRegStatus.typedValue.stringValue);
                 }
                 return amounts.amounts ? amounts.amounts : null;
@@ -400,6 +406,7 @@
             }
 
         }
+
         customElements.define(HtPatMedicalhouseTimeline.is, HtPatMedicalhouseTimeline);
     </script>
 </dom-module>

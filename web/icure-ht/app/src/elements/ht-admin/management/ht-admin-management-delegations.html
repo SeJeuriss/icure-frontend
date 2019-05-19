@@ -50,16 +50,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
             }
 
-            :host *:focus{
-                outline:0!important;
+            :host *:focus {
+                outline: 0 !important;
             }
 
-            .delegations-panel{
+            .delegations-panel {
                 height: 100%;
                 width: 100%;
                 padding: 0 20px;
                 box-sizing: border-box;
-                position:relative;
+                position: relative;
             }
 
             vaadin-grid.material {
@@ -203,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Object,
                         noReset: true
                     },
-                    listOfDelegations:{
+                    listOfDelegations: {
                         type: Object,
                         value: () => []
                     }
@@ -222,12 +222,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
             }
 
-            _getDelegationOfUser(){
+            _getDelegationOfUser() {
                 this.set('listOfDelegations', [])
 
                 const delegationsKeys = Object.keys(this.user.autoDelegations)
 
-                if(delegationsKeys && delegationsKeys.length > 0){
+                if (delegationsKeys && delegationsKeys.length > 0) {
                     this.api.hcparty().getHealthcareParties(_(_.flatten(delegationsKeys.map(key => this.user.autoDelegations[key]))).uniq().value().map(del => del).join(',')).then(delegatesHcp => {
                         delegationsKeys.forEach(key => {
                             this.user.autoDelegations[key].map(hcp => this.push('listOfDelegations', _.assign((delegatesHcp.find(dhcp => hcp === dhcp.id)), {delegationType: key})))

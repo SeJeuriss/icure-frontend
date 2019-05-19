@@ -117,7 +117,7 @@
                 flex-grow: 1;
             }
 
-            .col--noMoment{
+            .col--noMoment {
                 max-width: 168px;
                 min-width: 168px;
                 text-align: center;
@@ -184,7 +184,7 @@
                 margin-right: 24px;
             }
 
-            .infos-block > div:first-child{
+            .infos-block > div:first-child {
                 margin-bottom: 8px;
             }
 
@@ -207,14 +207,14 @@
                 flex: 1 1 auto;
             }
 
-            .table div{
+            .table div {
                 box-sizing: border-box;
             }
 
             .th {
                 display: none;
                 font-weight: 700;
-                background-color: var(--app-background-color- );
+                background-color: var(--app-background-color-);
             }
 
             .th:first-child {
@@ -232,7 +232,7 @@
                 color: var(--app-text-color);
             }
 
-            .th .td:first-child, .tr.category .td:first-child{
+            .th .td:first-child, .tr.category .td:first-child {
                 width: 24px;
                 max-width: 24px;
                 box-sizing: border-box;
@@ -279,10 +279,11 @@
             }
 
             .tr.old {
-                color: var(--app-text-color-disabled)!important;
+                color: var(--app-text-color-disabled) !important;
             }
+
             .tr.old::after {
-                background: var(--app-background-color-light)!important;
+                background: var(--app-background-color-light) !important;
             }
 
             .tr:not(.category) {
@@ -311,22 +312,22 @@
                 font-size: 13px;
             }
 
-            .td span{
+            .td span {
                 text-overflow: ellipsis;
                 width: 100%;
                 overflow: hidden;
                 text-align: center;
             }
 
-            .td span.left{
+            .td span.left {
                 text-align: left;
             }
 
-            .td-input{
+            .td-input {
                 position: relative
             }
 
-            .td iron-input > input{
+            .td iron-input > input {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -342,18 +343,22 @@
                 transition: all .24s cubic-bezier(0.075, 0.82, 0.165, 1);
             }
 
-            .td iron-input > input:focus{
+            .td iron-input > input:focus {
                 animation: .24s ease-in forwards inputShadows;
             }
 
-            .td iron-input > input:hover{
+            .td iron-input > input:hover {
                 background-color: rgba(0, 0, 0, .2);
                 box-shadow: var(--app-shadow-elevation-1);
             }
 
-            @keyframes inputShadows{
-                from{ box-shadow: inset 0 0 0 rgba(0, 0, 0, .2); }
-                to{ box-shadow: inset 0 0 50px rgba(0, 0, 0, .2); }
+            @keyframes inputShadows {
+                from {
+                    box-shadow: inset 0 0 0 rgba(0, 0, 0, .2);
+                }
+                to {
+                    box-shadow: inset 0 0 50px rgba(0, 0, 0, .2);
+                }
             }
 
             .td:first-child {
@@ -382,12 +387,12 @@
                 border-bottom: 1px solid #d0d0d0;
             }
 
-            .reimbursed{
+            .reimbursed {
                 width: 24px;
                 max-width: 24px;
                 box-sizing: border-box;
                 padding: 0;
-                border-right: none!important;
+                border-right: none !important;
             }
 
             .reimbursed .reimbursed-status {
@@ -406,13 +411,13 @@
                 box-shadow: 0 0 4px rgba(0, 0, 0, .2);
             }
 
-            .reimbursed .reimbursed-status.hidden{
+            .reimbursed .reimbursed-status.hidden {
                 display: none;
             }
 
             .reimbursed .reimbursed-status.ok {
-               color: var(--app-status-color-ok);
-               background-color: var(--app-text-color-light);
+                color: var(--app-status-color-ok);
+                background-color: var(--app-text-color-light);
             }
 
             .reimbursed .reimbursed-status.nok {
@@ -442,11 +447,11 @@
 
             /* HISTORY */
 
-            .history{
+            .history {
                 margin-top: 24px;
             }
 
-            .timeline-header{
+            .timeline-header {
                 display: flex;
                 flex-flow: row nowrap;
                 justify-content: space-between;
@@ -458,7 +463,7 @@
                 box-sizing: border-box;
             }
 
-            .years-container{
+            .years-container {
                 max-width: calc(24px * 36 + 2px);
                 width: calc(24px * 36 + 2px); /* 3 years + borders */
                 overflow-x: auto;
@@ -473,40 +478,40 @@
                 position: relative;
             }
 
-            .year-block{
+            .year-block {
                 height: 48px;
                 min-width: calc(24px * 12 + 3px); /* 3 borders */
                 text-align: center;
-                display:flex;
+                display: flex;
                 flex-flow: row wrap;
                 justify-content: space-between;
                 align-items: center;
             }
 
-            .year-block:not(:last-child){
+            .year-block:not(:last-child) {
                 border-right: 1px solid var(--app-background-color-dark);
             }
 
-            .year-block.current{
+            .year-block.current {
                 font-weight: 500;
             }
 
-            .year{
+            .year {
                 width: 100%;
                 height: 50%;
                 border-bottom: 1px solid var(--app-background-color-dark);
             }
 
-            .quarter{
+            .quarter {
                 height: 50%;
                 width: calc(24px * 3);
             }
 
-            .quarter:not(:last-child){
+            .quarter:not(:last-child) {
                 border-right: 1px solid var(--app-background-color-dark);
             }
 
-            .futur-block{
+            .futur-block {
                 min-width: calc(24px * 4);
                 width: calc(24px * 4);
                 display: flex;
@@ -515,7 +520,7 @@
                 justify-content: center;
             }
 
-            .btn-left, .btn-right{
+            .btn-left, .btn-right {
                 display: flex;
                 flex-flow: row wrap;
                 align-items: center;
@@ -524,16 +529,16 @@
                 flex-grow: 1;
             }
 
-            .btn-left{
+            .btn-left {
                 justify-content: flex-end;
             }
 
-            .btn-right{
+            .btn-right {
                 justify-content: flex-start;
             }
 
-            .medication-category{
-                display:flex;
+            .medication-category {
+                display: flex;
                 flex-flow: row nowrap;
                 align-items: center;
                 justify-content: space-between;
@@ -542,34 +547,34 @@
                 border-bottom: 1px solid var(--app-background-color-dark);
             }
 
-            .medication-category span:first-child{
+            .medication-category span:first-child {
                 width: 10%;
                 flex-grow: 1;
                 padding-left: 8px;
-                display:block;
+                display: block;
                 height: 100%;
                 box-sizing: border-box;
             }
 
-            .medication-category span:nth-child(2){
+            .medication-category span:nth-child(2) {
                 max-width: calc(24px * 36 + 2px);
                 width: calc(24px * 36 + 2px);
-                display:block;
+                display: block;
                 height: 20px;
                 box-sizing: border-box;
                 border-left: 1px solid var(--app-background-color-dark);
                 border-right: 1px solid var(--app-background-color-dark);
             }
 
-            .medication-category span:last-child{
+            .medication-category span:last-child {
                 width: 10%;
                 flex-grow: 1;
-                display:block;
+                display: block;
                 height: 100%;
                 box-sizing: border-box;
             }
 
-            .medication-line{
+            .medication-line {
                 display: flex;
                 flex-flow: row nowrap;
                 justify-content: space-between;
@@ -578,11 +583,11 @@
                 height: 24px;
             }
 
-            .medication-line:nth-child(even){
+            .medication-line:nth-child(even) {
                 background: #FAFAFA;
             }
 
-            .medication-line .type{
+            .medication-line .type {
                 width: 10%;
                 height: 100%;
                 text-align: left;
@@ -590,7 +595,7 @@
                 padding-left: 8px;
             }
 
-            .medication-line .extra-info{
+            .medication-line .extra-info {
                 width: 10%;
                 flex-grow: 1;
                 padding: 0 8px;
@@ -600,7 +605,7 @@
                 height: 100%;
             }
 
-            .medication-line .line-container{
+            .medication-line .line-container {
                 max-width: calc(24px * 36 + 2px);
                 width: calc(24px * 36 + 2px);
                 overflow: hidden;
@@ -609,7 +614,7 @@
                 border-right: 1px solid var(--app-background-color-dark);
             }
 
-            .medication-line .line{
+            .medication-line .line {
                 display: flex;
                 box-sizing: unset;
                 position: absolute;
@@ -624,25 +629,25 @@
                 margin: 1px 0;
             }
 
-            .medication-line .line::after{
+            .medication-line .line::after {
                 position: absolute;
                 height: 100%;
                 width: 100%;
                 display: block;
-                content:'';
+                content: '';
                 z-index: 0;
             }
 
-            .medication-line .line.over{
+            .medication-line .line.over {
                 opacity: 0.6;
             }
 
-            .line-total-width{
+            .line-total-width {
                 position: relative;
                 height: 100%;
             }
 
-            .medication-line .line .name{
+            .medication-line .line .name {
                 text-align: left;
                 margin-left: 4px;
                 margin-bottom: 4px;
@@ -653,14 +658,14 @@
                 padding-right: 4px;
             }
 
-            .medication-line .line .until{
+            .medication-line .line .until {
                 text-align: right;
                 margin-right: 4px;
                 margin-bottom: 4px;
                 z-index: 1;
             }
 
-            .medication-line .reimbursement-line{
+            .medication-line .reimbursement-line {
                 display: block;
                 position: absolute;
                 width: 100%;
@@ -672,11 +677,11 @@
                 overflow: visible;
             }
 
-            .medication-line .reimbursement-line:hover{
+            .medication-line .reimbursement-line:hover {
                 height: 6px;
             }
 
-            paper-tooltip{
+            paper-tooltip {
                 --paper-tooltip: {
                     position: fixed;
                     z-index: 900;
@@ -688,12 +693,12 @@
                 }
             }
 
-            .medIcon{
+            .medIcon {
                 height: 28px;
                 width: 28px;
             }
 
-            .content{
+            .content {
                 padding: 0;
             }
 
@@ -719,7 +724,7 @@
 
                                 </div>
                                 <div class="td"
-                                    style="flex-grow: 5;">
+                                     style="flex-grow: 5;">
 
                                 </div>
                                 <div class="td" style="flex-grow: 2;">
@@ -746,7 +751,7 @@
 
                                 </div>
                                 <div class="td td--medicine"
-                                    style="flex-grow: 5; justify-content: flex-start">
+                                     style="flex-grow: 5; justify-content: flex-start">
                                     <span class="left">[[localize('medic','Medicine',language)]]</span>
                                 </div>
                                 <div class="td" style="flex-grow: 2;">
@@ -784,12 +789,14 @@
                                 </div>
                                 <div class="td td-comments" style="flex-grow: 4; justify-content: space-between;">
                                     <span class="left">[[localize('com','Comments',language)]]</span>
-                                    <paper-icon-button class="add-period-btn" on-tap="" icon="add-circle"></paper-icon-button>
+                                    <paper-icon-button class="add-period-btn" on-tap=""
+                                                       icon="add-circle"></paper-icon-button>
                                 </div>
                             </div>
                             <!-- END HEADER -->
                             <!-- START BODY -->
-                            <template is="dom-repeat" items="[[medicationClassesWithPosology]]" as="medicationsWithPosology">
+                            <template is="dom-repeat" items="[[medicationClassesWithPosology]]"
+                                      as="medicationsWithPosology">
                                 <div class="tr category">
                                     <div class="td"></div>
                                     <div class="td td--category" style="flex-grow: 5;">
@@ -810,64 +817,125 @@
                                     <div class="td" style="flex-grow: 4;"></div>
                                 </div>
                                 <template is="dom-repeat" items="[[medicationsWithPosology.meds]]" as="m">
-                                <div class$="tr [[_medicationClass(m.medication)]]">
-                                    <div class="td reimbursed">
-                                        <iron-icon id="reimbursedStatus" icon="icons:euro-symbol" class$="reimbursed-status [[_hasValidChap4Class(m.medication)]]"></iron-icon>
-                                        <paper-tooltip for="reimbursedStatus">[[_chap4Status(m.medication)]]</paper-tooltip>
-                                    </div>
-                                    <div class="td td--medicine" style="flex-grow: 5;">
-                                        <span class="left">[[_serviceDescription(m.medication)]]</span>
-                                    </div>
-                                    <div class="td" style="flex-grow: 2;"><span>[[_servicePosology(m.medication)]]</span></div>
-                                    <template is="dom-repeat" items="[[combinedTableHeaders(medicationClassesWithPosology, 0, m.regimenTable.0, m.regimenTable.0.*, medicationsWithPosology.meds.*)]]" as="regimen">
-                                        <div class="td td-input bf-bef">
+                                    <div class$="tr [[_medicationClass(m.medication)]]">
+                                        <div class="td reimbursed">
+                                            <iron-icon id="reimbursedStatus" icon="icons:euro-symbol"
+                                                       class$="reimbursed-status [[_hasValidChap4Class(m.medication)]]"></iron-icon>
+                                            <paper-tooltip for="reimbursedStatus">[[_chap4Status(m.medication)]]
+                                            </paper-tooltip>
+                                        </div>
+                                        <div class="td td--medicine" style="flex-grow: 5;">
+                                            <span class="left">[[_serviceDescription(m.medication)]]</span>
+                                        </div>
+                                        <div class="td" style="flex-grow: 2;">
+                                            <span>[[_servicePosology(m.medication)]]</span></div>
+                                        <template is="dom-repeat"
+                                                  items="[[combinedTableHeaders(medicationClassesWithPosology, 0, m.regimenTable.0, m.regimenTable.0.*, medicationsWithPosology.meds.*)]]"
+                                                  as="regimen">
+                                            <div class="td td-input bf-bef">
                                             <span>
                                                 <iron-input allowed-pattern="[0-9]">
                                                     <input value="{{regimen.administratedQuantity.quantity}}">
                                                 </iron-input>
                                             </span>
-                                        </div>
-                                    </template>
-                                    <div class="td td-input bf-bef"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.1.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.1.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <div class="td td-input bf-dur"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.2.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.2.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <div class="td td-input bf-aft"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.3.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.3.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <template is="dom-repeat" items="[[combinedTable(medicationClassesWithPosology, 4, m.regimenTable.4, m.regimenTable.4.*, medicationsWithPosology.meds.*)]]" as="regimen">
+                                            </div>
+                                        </template>
                                         <div class="td td-input bf-bef">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.1.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.1.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
+                                        </div>
+                                        <div class="td td-input bf-dur">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.2.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.2.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
+                                        </div>
+                                        <div class="td td-input bf-aft">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.3.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.3.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
+                                        </div>
+                                        <template is="dom-repeat"
+                                                  items="[[combinedTable(medicationClassesWithPosology, 4, m.regimenTable.4, m.regimenTable.4.*, medicationsWithPosology.meds.*)]]"
+                                                  as="regimen">
+                                            <div class="td td-input bf-bef">
                                             <span>
-                                                <iron-input allowed-pattern="[0-9]" bind-value="{{regimen.administratedQuantity.quantity}}">
+                                                <iron-input allowed-pattern="[0-9]"
+                                                            bind-value="{{regimen.administratedQuantity.quantity}}">
                                                     <input value="{{regimen.administratedQuantity.quantity::input}}">
                                                 </iron-input>
                                             </span>
+                                            </div>
+                                        </template>
+                                        <div class="td td-input lu-bef">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.5.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.5.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
                                         </div>
-                                    </template>
-                                    <div class="td td-input lu-bef"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.5.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.5.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <div class="td td-input lu-dur"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.6.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.6.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <div class="td td-input lu-aft"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.7.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.7.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <template is="dom-repeat" items="[[combinedTable(medicationClassesWithPosology, 8, m.regimenTable.8, m.regimenTable.8.*, medicationsWithPosology.meds.*)]]" as="regimen">
-                                        <div class="td td-input bf-bef">
+                                        <div class="td td-input lu-dur">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.6.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.6.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
+                                        </div>
+                                        <div class="td td-input lu-aft">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.7.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.7.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
+                                        </div>
+                                        <template is="dom-repeat"
+                                                  items="[[combinedTable(medicationClassesWithPosology, 8, m.regimenTable.8, m.regimenTable.8.*, medicationsWithPosology.meds.*)]]"
+                                                  as="regimen">
+                                            <div class="td td-input bf-bef">
                                             <span>
-                                                <iron-input allowed-pattern="[0-9]" bind-value="{{regimen.administratedQuantity.quantity}}">
+                                                <iron-input allowed-pattern="[0-9]"
+                                                            bind-value="{{regimen.administratedQuantity.quantity}}">
                                                     <input value="{{regimen.administratedQuantity.quantity::input}}">
                                                 </iron-input>
                                             </span>
+                                            </div>
+                                        </template>
+                                        <div class="td td-input di-bef">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.9.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.9.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
                                         </div>
-                                    </template>
-                                    <div class="td td-input di-bef"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.9.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.9.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <div class="td td-input di-dur"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.10.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.10.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <div class="td td-input di-aft"><iron-input allowed-pattern="[0-9]" bind-value="{{m.regimenTable.11.0.administratedQuantity.quantity}}"><input value="{{m.regimenTable.11.0.administratedQuantity.quantity::input}}"></iron-input></div>
-                                    <template is="dom-repeat" items="[[combinedTable(medicationClassesWithPosology, 12, m.regimenTable.12, m.regimenTable.12.*, medicationsWithPosology.meds.*)]]" as="regimen">
-                                        <div class="td td-input bf-bef">
+                                        <div class="td td-input di-dur">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.10.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.10.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
+                                        </div>
+                                        <div class="td td-input di-aft">
+                                            <iron-input allowed-pattern="[0-9]"
+                                                        bind-value="{{m.regimenTable.11.0.administratedQuantity.quantity}}">
+                                                <input value="{{m.regimenTable.11.0.administratedQuantity.quantity::input}}">
+                                            </iron-input>
+                                        </div>
+                                        <template is="dom-repeat"
+                                                  items="[[combinedTable(medicationClassesWithPosology, 12, m.regimenTable.12, m.regimenTable.12.*, medicationsWithPosology.meds.*)]]"
+                                                  as="regimen">
+                                            <div class="td td-input bf-bef">
                                             <span>
-                                                <iron-input allowed-pattern="[0-9]" bind-value="{{regimen.administratedQuantity.quantity}}">
+                                                <iron-input allowed-pattern="[0-9]"
+                                                            bind-value="{{regimen.administratedQuantity.quantity}}">
                                                     <input value="{{regimen.administratedQuantity.quantity::input}}">
                                                 </iron-input>
                                             </span>
+                                            </div>
+                                        </template>
+                                        <div class="td" style="flex-grow: 2;"><span>[[_getMedicationClosingDate(m.medication)]]</span>
                                         </div>
-                                    </template>
-                                    <div class="td" style="flex-grow: 2;"><span>[[_getMedicationClosingDate(m.medication)]]</span></div>
-                                    <div class="td td--comments" style="flex-grow: 4;"><span class="left">[[m.medication.instructionForPatient]]</span></div>
-                                </div>
-                            </template>
+                                        <div class="td td--comments" style="flex-grow: 4;"><span class="left">[[m.medication.instructionForPatient]]</span>
+                                        </div>
+                                    </div>
+                                </template>
                             </template>
                         </div>
                         <!-- END BODY -->
@@ -885,7 +953,8 @@
                                 </div>
                                 <div class="years-container" id="yearsContainer" on-scroll="_scrollHandler">
                                     <template is="dom-repeat" items=[[historyYears]] as="historyYear">
-                                        <div id="[[historyYear.id]]" class$="year-block [[_isCurrentYear(historyYear.isCurrent)]]">
+                                        <div id="[[historyYear.id]]"
+                                             class$="year-block [[_isCurrentYear(historyYear.isCurrent)]]">
                                             <div class="year">[[historyYear.number]]</div>
                                             <div class="quarter">Q1</div>
                                             <div class="quarter">Q2</div>
@@ -909,19 +978,33 @@
                                         <span></span>
                                         <span></span>
                                     </div>
-                                    <template is="dom-repeat" items=[[fakePatientMedication.medications]] as="medication">
+                                    <template is="dom-repeat" items=[[fakePatientMedication.medications]]
+                                              as="medication">
                                         <div class="medication-line" id="scrollable-element">
                                             <div class="type">[[medication.type]]</div>
                                             <div class="line-container">
                                                 <div class="line-total-width" style$="width: [[totalWidth]]px;">
-                                                    <div id="[[medication.id]]" class$="line [[_medicationClass(medication)]] [[_isOver(medication.endDate)]]" style$="[[_linePosition(medication.startDate, medication.endDate)]]">
-                                                        <div class="name">[[medication.name]] - [[medication.posology]]</div>
-                                                        <template is="dom-if" if="[[_endAfterCurrent(medication.endDate)]]"><div class="until">until [[medication.endDate]]</div></template>
+                                                    <div id="[[medication.id]]"
+                                                         class$="line [[_medicationClass(medication)]] [[_isOver(medication.endDate)]]"
+                                                         style$="[[_linePosition(medication.startDate, medication.endDate)]]">
+                                                        <div class="name">[[medication.name]] -
+                                                            [[medication.posology]]
+                                                        </div>
+                                                        <template is="dom-if"
+                                                                  if="[[_endAfterCurrent(medication.endDate)]]">
+                                                            <div class="until">until [[medication.endDate]]</div>
+                                                        </template>
                                                     </div>
-                                                    <paper-tooltip position="top" for="[[medication.id]]">[[medication.name]] - [[medication.posology]]</paper-tooltip>
+                                                    <paper-tooltip position="top" for="[[medication.id]]">
+                                                        [[medication.name]] - [[medication.posology]]
+                                                    </paper-tooltip>
 
-                                                    <div id="[[medication.id]]reimbursedLine" class="reimbursement-line" style$="[[_linePosition(medication.reimmbursementDateStart, medication.reimmbursementDateEnd)]]"></div>
-                                                    <paper-tooltip position="top" for="[[medication.id]]reimbursedLine">This medication is reimbursed until [[medication.reimmbursementDateEnd]]</paper-tooltip>
+                                                    <div id="[[medication.id]]reimbursedLine" class="reimbursement-line"
+                                                         style$="[[_linePosition(medication.reimmbursementDateStart, medication.reimmbursementDateEnd)]]"></div>
+                                                    <paper-tooltip position="top" for="[[medication.id]]reimbursedLine">
+                                                        This medication is reimbursed until
+                                                        [[medication.reimmbursementDateEnd]]
+                                                    </paper-tooltip>
                                                 </div>
                                             </div>
                                             <div class="extra-info">[[medication.extraInfo]]</div>
@@ -968,17 +1051,22 @@
                                     <div class="table-body">
                                         <template is="dom-repeat" items="[[plan.meds]]" as="m">
                                             <div class="table-row">
-                                                <div class="col col--med"><span class="med--name">[[_getTimeOfDay(m.during)]] [[_serviceDescription(m.medication)]]</span></div>
-                                                <div class="col col--photo"><iron-icon class="medIcon" icon="medication-svg-icons:[[_getMedIcon(m)]]"></iron-icon></div>
-                                                <div class="col col--ed">[[_getMedicationClosingDate(m.medication)]]</div>
+                                                <div class="col col--med"><span class="med--name">[[_getTimeOfDay(m.during)]] [[_serviceDescription(m.medication)]]</span>
+                                                </div>
+                                                <div class="col col--photo">
+                                                    <iron-icon class="medIcon"
+                                                               icon="medication-svg-icons:[[_getMedIcon(m)]]"></iron-icon>
+                                                </div>
+                                                <div class="col col--ed">[[_getMedicationClosingDate(m.medication)]]
+                                                </div>
                                                 <div class="col col--freq">[[_serviceFrequency(m.medication)]]</div>
-                                                    <template is="dom-repeat" items="[[plan.cols]]" as="col">
-                                                        <div class="col col--dur">
-                                                            <template is="dom-if" if="[[_getRegimen(col, m)]]">
-                                                                <span class="dur-pill">[[_getRegimenQuantity(col, m)]]</span>
-                                                            </template>
-                                                        </div>
-                                                    </template>
+                                                <template is="dom-repeat" items="[[plan.cols]]" as="col">
+                                                    <div class="col col--dur">
+                                                        <template is="dom-if" if="[[_getRegimen(col, m)]]">
+                                                            <span class="dur-pill">[[_getRegimenQuantity(col, m)]]</span>
+                                                        </template>
+                                                    </div>
+                                                </template>
                                                 <div class="col col--com">[[m.medication.instructionForPatient]]</div>
                                             </div>
                                         </template>
@@ -989,13 +1077,19 @@
                     </div>
                 </template>
                 <template is="dom-if" if="{{_isEqual(selectedTab,2)}}">
-                    <ht-pat-mcn-chapteriv-agreement id="chapterivdialog" api="[[api]]" user="[[user]]" patient="[[patient]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" medications="[[medications]]" on-create-service="_createService" on-update-services="_updateServices"></ht-pat-mcn-chapteriv-agreement>
+                    <ht-pat-mcn-chapteriv-agreement id="chapterivdialog" api="[[api]]" user="[[user]]"
+                                                    patient="[[patient]]" i18n="[[i18n]]" language="[[language]]"
+                                                    resources="[[resources]]" medications="[[medications]]"
+                                                    on-create-service="_createService"
+                                                    on-update-services="_updateServices"></ht-pat-mcn-chapteriv-agreement>
                 </template>
             </div>
 
 
             <div class="buttons">
-                <paper-button dialog-confirm autofocus on-tap="cancel" class="modal-button modal-button--cancel">[[localize('close','Close',language)]]</paper-button>
+                <paper-button dialog-confirm autofocus on-tap="cancel" class="modal-button modal-button--cancel">
+                    [[localize('close','Close',language)]]
+                </paper-button>
 
                 <!--<paper-button dialog-confirm autofocus on-tap="" class="modal-button modal-button--save">[[localize('add_medication','Add Medication',language)]]</paper-button>-->
 
@@ -1029,14 +1123,14 @@
                         type: Array,
                         value: () => []
                     },
-                    hcp:{
+                    hcp: {
                         type: Object
                     },
                     medicationClassesWithPosology: {
                         type: Array,
                         value: () => []
                     },
-                    patientPlan:{
+                    patientPlan: {
                         type: Array,
                         value: () => []
                     },
@@ -1153,9 +1247,9 @@
                             }
                         ]
                     },
-                    patient : {
-                        type : Object,
-                        value : {}
+                    patient: {
+                        type: Object,
+                        value: {}
                     }
                 }
             }
@@ -1187,75 +1281,75 @@
                 this.set('scrollLeft', e.currentTarget.scrollLeft)
             }
 
-            _scrollLeftChanged(){
+            _scrollLeftChanged() {
                 const yearsContainer = this.shadowRoot.querySelector('.years-container')
-                if(yearsContainer) yearsContainer.scrollLeft = this.scrollLeft
+                if (yearsContainer) yearsContainer.scrollLeft = this.scrollLeft
                 const timelines = this.root.querySelectorAll('.line-container')
-                for( let line of timelines) {
+                for (let line of timelines) {
                     line.scrollLeft = this.scrollLeft
                 }
             }
 
-            _setInitialScroll(){
+            _setInitialScroll() {
                 const currentYear = this.shadowRoot.querySelector('.current')
                 this.set('scrollLeft', currentYear && currentYear.offsetLeft)
             }
 
-            _scrollBack(e){
+            _scrollBack(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 this.set('scrollLeft', this.scrollLeft -= 24)
             }
 
-            _scrollForward(e){
+            _scrollForward(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 this.set('scrollLeft', this.scrollLeft += 24)
             }
 
-            _linePosition(startDate, endDate){
-                startDate  = (startDate) ? new Date(startDate) : null
+            _linePosition(startDate, endDate) {
+                startDate = (startDate) ? new Date(startDate) : null
                 const historyYearStart = new Date("01 jan " + this.historyYears[0].number)
-                const left = Math.round((Date.parse(startDate) - Date.parse(historyYearStart))  * 3.8027E-10 * 24)
+                const left = Math.round((Date.parse(startDate) - Date.parse(historyYearStart)) * 3.8027E-10 * 24)
                 endDate = (endDate) ? new Date(endDate) : null
                 const currentYear = new Date().getFullYear()
                 let width = "0"
                 if (currentYear >= endDate.getFullYear()) {
                     width = (startDate && endDate) ? Math.round((Date.parse(endDate) - Date.parse(startDate)) * 3.8027E-10 * 24) + 'px' : 100 + '%'
-                } else{
+                } else {
                     width = this.totalWidth - left + "px"
                 }
 
                 return "left: " + left + "px; " + "width: " + width
             }
 
-            _reimbursementLinePosition(startDate, endDate){
-                startDate  = (startDate) ? new Date(startDate) : null
+            _reimbursementLinePosition(startDate, endDate) {
+                startDate = (startDate) ? new Date(startDate) : null
                 endDate = (endDate) ? new Date(endDate) : null
                 const historyYearStart = new Date("01 jan " + this.historyYears[0].number)
             }
 
-            _totalWidth(){
+            _totalWidth() {
                 const width = this.historyYears.length * 12 * 24 + 24 * 4
-                this.set('totalWidth',  width)
+                this.set('totalWidth', width)
             }
 
-            _isOver(endDate){
+            _isOver(endDate) {
                 endDate = new Date(endDate)
                 const endDateYear = endDate.getFullYear()
-                if(endDateYear) return (endDateYear < (new Date()).getFullYear()) ? 'over' : ''
+                if (endDateYear) return (endDateYear < (new Date()).getFullYear()) ? 'over' : ''
             }
 
-            _isCurrentYear(current){
+            _isCurrentYear(current) {
                 return (current) ? 'current' : ''
             }
 
-            _isEqual(a,b) {
-                console.log(a+' ?= '+b)
+            _isEqual(a, b) {
+                console.log(a + ' ?= ' + b)
                 return (a === b)
             }
 
-            _endAfterCurrent(endDate){
+            _endAfterCurrent(endDate) {
                 const endDateYear = new Date(endDate).getFullYear()
                 const currentYear = new Date().getFullYear()
                 console.log("!!!!!! current !!!!!!!!", (endDateYear > currentYear))
@@ -1295,16 +1389,19 @@
             }
 
             _regimenTableDataProvider(frequency) {
-                function getMeal(regimens, daytime, frequency="daily") {
+                function getMeal(regimens, daytime, frequency = "daily") {
                     return regimens.find(rg => rg.dayPeriod && rg.dayPeriod.code === daytime && rg.frequency === frequency) || {
-                        administratedQuantity: { quantity: 0 },
+                        administratedQuantity: {quantity: 0},
                         dayPeriod: {type: "CD-DAYPERIOD", code: daytime},
                         frequency: "daily"
                     }
                 }
 
                 return (params, callback) => {
-                    if (!this.get('selectedMedicationContentWithId.medicationValue')) { callback([], 0); return }
+                    if (!this.get('selectedMedicationContentWithId.medicationValue')) {
+                        callback([], 0);
+                        return
+                    }
 
                     const startIndex = params.page * params.pageSize
                     const regs = this.selectedMedicationContentWithId.medicationValue.regimen
@@ -1316,35 +1413,53 @@
                     const scores = this.api.contact().medication().regimenScores()
 
                     this.regimenTable = [
-                        {moment:this.localize('breakfast','breakfast'), regimens: morningRegimens, beforeMeal: getMeal(morningRegimens,'beforebreakfast', frequency)
-                            , duringMeal: getMeal(morningRegimens,'duringbreakfast', frequency), afterMeal: getMeal(morningRegimens,'afterbreakfast', frequency)},
-                        {moment:this.localize('lunch','lunch'), regimens: middayRegimens, beforeMeal: getMeal(middayRegimens,'beforelunch', frequency)
-                            , duringMeal: getMeal(middayRegimens,'duringlunch', frequency), afterMeal: getMeal(middayRegimens,'afterlunch', frequency)},
-                        {moment:this.localize('dinner','dinner'), regimens: eveningRegimens, beforeMeal: getMeal(eveningRegimens,'beforedinner', frequency)
-                            , duringMeal: getMeal(eveningRegimens, 'duringdinner', frequency), afterMeal: getMeal(eveningRegimens,'afterdinner', frequency)}
+                        {
+                            moment: this.localize('breakfast', 'breakfast'),
+                            regimens: morningRegimens,
+                            beforeMeal: getMeal(morningRegimens, 'beforebreakfast', frequency)
+                            ,
+                            duringMeal: getMeal(morningRegimens, 'duringbreakfast', frequency),
+                            afterMeal: getMeal(morningRegimens, 'afterbreakfast', frequency)
+                        },
+                        {
+                            moment: this.localize('lunch', 'lunch'),
+                            regimens: middayRegimens,
+                            beforeMeal: getMeal(middayRegimens, 'beforelunch', frequency)
+                            ,
+                            duringMeal: getMeal(middayRegimens, 'duringlunch', frequency),
+                            afterMeal: getMeal(middayRegimens, 'afterlunch', frequency)
+                        },
+                        {
+                            moment: this.localize('dinner', 'dinner'),
+                            regimens: eveningRegimens,
+                            beforeMeal: getMeal(eveningRegimens, 'beforedinner', frequency)
+                            ,
+                            duringMeal: getMeal(eveningRegimens, 'duringdinner', frequency),
+                            afterMeal: getMeal(eveningRegimens, 'afterdinner', frequency)
+                        }
                     ]
 
 
-                    ;[[0,scores.beforebreakfast-1,scores.duringbreakfast,scores.afterbreakfast+1,105959], [110000,scores.beforelunch-1,scores.duringlunch,scores.afterlunch+1,155959], [160000,scores.beforedinner-1,scores.duringdinner,scores.afterdinner+1,240000]].forEach((quad,idx) => {
-                        const l  = this.regimenTable[idx]
-                        l.extraBefore = extraColsBefore.map(() => null).concat((l.regimens || []).filter(r => this.selectRegimen(scores, r, quad[0],  quad[1]) || r.timeOfDay && r.timeOfDay < quad[2]))
+                    ;[[0, scores.beforebreakfast - 1, scores.duringbreakfast, scores.afterbreakfast + 1, 105959], [110000, scores.beforelunch - 1, scores.duringlunch, scores.afterlunch + 1, 155959], [160000, scores.beforedinner - 1, scores.duringdinner, scores.afterdinner + 1, 240000]].forEach((quad, idx) => {
+                        const l = this.regimenTable[idx]
+                        l.extraBefore = extraColsBefore.map(() => null).concat((l.regimens || []).filter(r => this.selectRegimen(scores, r, quad[0], quad[1]) || r.timeOfDay && r.timeOfDay < quad[2]))
                         extraColsBefore.push(..._.sortBy(l.extraBefore.filter(x => !!x), rg => rg.timeOfDay || rg.dayPeriod && rg.dayPeriod.code && scores[rg.dayPeriod.code] || 0))
-                        l.extraAfter = extraColsAfter.map(() => null).concat((l.regimens || []).filter(r => this.selectRegimen(scores, r, quad[3],  quad[4]) || r.timeOfDay && r.timeOfDay > quad[2]))
+                        l.extraAfter = extraColsAfter.map(() => null).concat((l.regimens || []).filter(r => this.selectRegimen(scores, r, quad[3], quad[4]) || r.timeOfDay && r.timeOfDay > quad[2]))
                         extraColsAfter.push(..._.sortBy(l.extraAfter.filter(x => !!x), rg => rg.timeOfDay || rg.dayPeriod && rg.dayPeriod.code && scores[rg.dayPeriod.code] || 0))
                     })
 
-                    this.set('extraColsBefore', extraColsBefore.map(rg =>  rg.timeOfDay ? this._formatTime(rg.timeOfDay) : rg.dayPeriod && rg.dayPeriod.code ))
-                    this.set('extraColsAfter', extraColsAfter.map(rg => rg.timeOfDay ? this._formatTime(rg.timeOfDay) : rg.dayPeriod && rg.dayPeriod.code  ))
+                    this.set('extraColsBefore', extraColsBefore.map(rg => rg.timeOfDay ? this._formatTime(rg.timeOfDay) : rg.dayPeriod && rg.dayPeriod.code))
+                    this.set('extraColsAfter', extraColsAfter.map(rg => rg.timeOfDay ? this._formatTime(rg.timeOfDay) : rg.dayPeriod && rg.dayPeriod.code))
 
 
-                    ;[0,1,2,3].forEach(idx => idx>=this.extraColsBefore.length && (this.root.querySelector(`#extracol_before_${idx}`).hidden = true))
-                    this.extraColsBefore.forEach((val,idx) => {
+                    ;[0, 1, 2, 3].forEach(idx => idx >= this.extraColsBefore.length && (this.root.querySelector(`#extracol_before_${idx}`).hidden = true))
+                    this.extraColsBefore.forEach((val, idx) => {
                         const el = this.root.querySelector(`#extracol_before_${idx}`)
                         el && (el.hidden = false)
                     })
 
-                    ;[0,1,2,3].forEach(idx => idx>=this.extraColsAfter.length && (this.root.querySelector(`#extracol_after_${idx}`).hidden = true))
-                    this.extraColsAfter.forEach((val,idx) => {
+                    ;[0, 1, 2, 3].forEach(idx => idx >= this.extraColsAfter.length && (this.root.querySelector(`#extracol_after_${idx}`).hidden = true))
+                    this.extraColsAfter.forEach((val, idx) => {
                         const el = this.root.querySelector(`#extracol_after_${idx}`)
                         el && (el.hidden = false)
                     })
@@ -1360,7 +1475,7 @@
                     if ((rg.frequency || 'daily') === frequency) {
                         const score = rg.timeOfDay || rg.dayPeriod && rg.dayPeriod.code && scores[rg.dayPeriod.code] || 0
                         const idx = _.findIndex(conditions, c => c(score))
-                        if (idx>=0) {
+                        if (idx >= 0) {
                             regsTable[idx].push(rg)
                         }
                     }
@@ -1370,8 +1485,9 @@
 
             _medicationsChanged() {
                 const scores = this.api.contact().medication().regimenScores()
-                this.medicationClassesWithPosology =  _.sortBy(Object.values(this.medications.map( m => ({
-                    medication:m, regimenTable: this.extractRegimenSlices(((this.api.contact().preferredContent(m, this.language) || {}).medicationValue || {}).regimen, 'daily', [
+                this.medicationClassesWithPosology = _.sortBy(Object.values(this.medications.map(m => ({
+                    medication: m,
+                    regimenTable: this.extractRegimenSlices(((this.api.contact().preferredContent(m, this.language) || {}).medicationValue || {}).regimen, 'daily', [
                         x => x < scores.beforebreakfast,
                         x => x === scores.beforebreakfast,
                         x => x === scores.duringbreakfast,
@@ -1386,9 +1502,9 @@
                         x => x === scores.afterdinner,
                         x => x > scores.afterdinner
                     ])
-                })).reduce((acc,m) => {
-                    const letter = ((m.medication && m.medication.codes && m.medication.codes.find(c => c.type === 'CD-ATC') || {code: 'V'}).code || 'V').substr(0,1)
-                    ;(acc[letter] || (acc[letter] = {letter:letter, meds:[]})).meds.push(m)
+                })).reduce((acc, m) => {
+                    const letter = ((m.medication && m.medication.codes && m.medication.codes.find(c => c.type === 'CD-ATC') || {code: 'V'}).code || 'V').substr(0, 1)
+                    ;(acc[letter] || (acc[letter] = {letter: letter, meds: []})).meds.push(m)
                     return acc
                 }, {})), 'letter')
             }
@@ -1397,7 +1513,7 @@
                 return this.api.contact().medication().medicationNameToString((this.api.contact().preferredContent(s, this.language) || {}).medicationValue, this.language)
             }
 
-            _getMedIcon(s){
+            _getMedIcon(s) {
                 return "cap"
             }
 
@@ -1405,7 +1521,7 @@
                 return this.api.contact().medication().posologyToString((this.api.contact().preferredContent(s, this.language) || {}).medicationValue, this.language)
             }
 
-            _serviceFrequency(s){
+            _serviceFrequency(s) {
                 return this.api.contact().medication().frequencyToString((this.api.contact().preferredContent(s, this.language) || {}).medicationValue, this.language)
             }
 
@@ -1422,7 +1538,7 @@
             }
 
             _hasValidChap4Class(s) {
-                return this._hasValidChap4(s) ? 'ok' : this._hasPendingChap4(s) ? 'pending' : this._hasChap4 (s) ? 'nok' : 'hidden'
+                return this._hasValidChap4(s) ? 'ok' : this._hasPendingChap4(s) ? 'pending' : this._hasChap4(s) ? 'nok' : 'hidden'
             }
 
             _hasChap4(s) {
@@ -1438,35 +1554,35 @@
             }
 
             atcCat(l) {
-                return l === 'A' ? this.localize('ali_trac_meta','Alimentary tract and metabolism') :
-                    l === 'B' ? this.localize('blo_blo_for','Blood and blood forming organs') :
-                    l === 'C' ? this.localize('car_sys','Cardiovascular system') :
-                    l === 'D' ? this.localize('dermatologicals','Dermatologicals') :
-                    l === 'G' ? this.localize('gen_uri_sys','Genito-urinary system and sex hormones') :
-                    l === 'H' ? this.localize('sys_hor_pre','Systemic hormonal preparations, excluding sex hormones and insulins') :
-                    l === 'J' ? this.localize('anti_inf_sys','Antiinfectives for systemic use') :
-                    l === 'L' ? this.localize('anti_neo_imm','Antineoplastic and immunomodulating agents') :
-                    l === 'M' ? this.localize('mus_ske_sys','Musculo-skeletal system') :
-                    l === 'N' ? this.localize('ner_sys','Nervous system') :
-                    l === 'P' ? this.localize('Anti_para_pro','Antiparasitic products, insecticides and repellents') :
-                    l === 'R' ? this.localize('res_sys','Respiratory system') :
-                    l === 'S' ? this.localize('sens_org','Sensory organs') :
-                    l === 'V' ? this.localize('various','Various') : this.localize('unk','Unknown')
+                return l === 'A' ? this.localize('ali_trac_meta', 'Alimentary tract and metabolism') :
+                    l === 'B' ? this.localize('blo_blo_for', 'Blood and blood forming organs') :
+                        l === 'C' ? this.localize('car_sys', 'Cardiovascular system') :
+                            l === 'D' ? this.localize('dermatologicals', 'Dermatologicals') :
+                                l === 'G' ? this.localize('gen_uri_sys', 'Genito-urinary system and sex hormones') :
+                                    l === 'H' ? this.localize('sys_hor_pre', 'Systemic hormonal preparations, excluding sex hormones and insulins') :
+                                        l === 'J' ? this.localize('anti_inf_sys', 'Antiinfectives for systemic use') :
+                                            l === 'L' ? this.localize('anti_neo_imm', 'Antineoplastic and immunomodulating agents') :
+                                                l === 'M' ? this.localize('mus_ske_sys', 'Musculo-skeletal system') :
+                                                    l === 'N' ? this.localize('ner_sys', 'Nervous system') :
+                                                        l === 'P' ? this.localize('Anti_para_pro', 'Antiparasitic products, insecticides and repellents') :
+                                                            l === 'R' ? this.localize('res_sys', 'Respiratory system') :
+                                                                l === 'S' ? this.localize('sens_org', 'Sensory organs') :
+                                                                    l === 'V' ? this.localize('various', 'Various') : this.localize('unk', 'Unknown')
             }
 
-            _getModalTitle(){
-                return this.selectedTab === 3 ? this.localize('tab_chap','Chapter IV') : this.localize('med_plan','Medication plan')
+            _getModalTitle() {
+                return this.selectedTab === 3 ? this.localize('tab_chap', 'Chapter IV') : this.localize('med_plan', 'Medication plan')
             }
 
-            _getMedicationQuantity(quantity){
+            _getMedicationQuantity(quantity) {
                 return quantity
             }
 
-            _isEmptyRegiment(regiment){
+            _isEmptyRegiment(regiment) {
                 return regiment && regiment.length !== 0 ? false : true
             }
 
-            combinedTableHeaders(medicationClassesWithPosology, index){
+            combinedTableHeaders(medicationClassesWithPosology, index) {
                 return _(medicationClassesWithPosology)
                     .flatMap(classe => classe.meds)
                     .map(med => med.regimenTable)
@@ -1485,18 +1601,18 @@
                 )
             }
 
-            _getMedicationClosingDate(medication){
+            _getMedicationClosingDate(medication) {
                 return medication && medication.closingDate ? this.api.moment(medication.closingDate).format("DD/MM/YYYY") : ""
             }
 
-            _patientPlanChanged(){
-               let medicationClass = this.medicationClassesWithPosology
+            _patientPlanChanged() {
+                let medicationClass = this.medicationClassesWithPosology
 
                 const medications = medicationClass.flatMap(classe => classe.meds)
 
                 let regimensTableByDayPeriod = {
-                    beforeBreak : [],
-                    breakfast : [],
+                    beforeBreak: [],
+                    breakfast: [],
                     betweenBAndL: [],
                     lunch: [],
                     betweenLAndD: [],
@@ -1509,80 +1625,108 @@
                     const medication = m.medication
                     const regimens = m.regimenTable
 
-                    if((regimens[0]).length > 0){
+                    if ((regimens[0]).length > 0) {
                         regimensTableByDayPeriod.beforeBreak.push({
-                            medication : medication,
+                            medication: medication,
                             regimens: _.uniq(regimens[0]),
                             before: [],
                             during: regimens[0],
                             after: [],
-                            times: regimens[0].map(r => ({tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null, pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null , oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null}))
+                            times: regimens[0].map(r => ({
+                                tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null,
+                                pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null,
+                                oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null
+                            }))
                         })
                     }
 
-                    if(_(_.concat(regimens[1], regimens[2], regimens[3])).compact().uniq().value().length > 0){
+                    if (_(_.concat(regimens[1], regimens[2], regimens[3])).compact().uniq().value().length > 0) {
                         regimensTableByDayPeriod.breakfast.push({
-                            medication : medication,
+                            medication: medication,
                             regimens: _(_.concat(regimens[1], regimens[2], regimens[3])).compact().uniq().value(),
                             before: regimens[1],
                             during: regimens[2],
                             after: regimens[3],
-                            times: _(_.concat(regimens[1], regimens[2], regimens[3])).compact().uniq().value().map(r => ({tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null, pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null , oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null}))
+                            times: _(_.concat(regimens[1], regimens[2], regimens[3])).compact().uniq().value().map(r => ({
+                                tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null,
+                                pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null,
+                                oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null
+                            }))
                         })
                     }
 
-                    if(regimens[4].length > 0){
+                    if (regimens[4].length > 0) {
                         regimensTableByDayPeriod.betweenBAndL.push({
-                            medication : medication,
+                            medication: medication,
                             regimens: _.uniq(regimens[4]),
                             before: [],
                             during: regimens[4],
                             after: [],
-                            times: regimens[4].map(r => ({tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null, pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null , oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null}))
+                            times: regimens[4].map(r => ({
+                                tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null,
+                                pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null,
+                                oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null
+                            }))
                         })
                     }
 
-                    if(_(_.concat(regimens[5], regimens[6], regimens[7])).compact().uniq().value().length > 0){
+                    if (_(_.concat(regimens[5], regimens[6], regimens[7])).compact().uniq().value().length > 0) {
                         regimensTableByDayPeriod.lunch.push({
-                            medication : medication,
+                            medication: medication,
                             regimens: _(_.concat(regimens[5], regimens[6], regimens[7])).compact().uniq().value(),
                             before: regimens[5],
                             during: regimens[6],
                             after: regimens[7],
-                            times: _(_.concat(regimens[5], regimens[6], regimens[7])).compact().uniq().value().map(r => ({tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null, pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null , oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null}))
+                            times: _(_.concat(regimens[5], regimens[6], regimens[7])).compact().uniq().value().map(r => ({
+                                tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null,
+                                pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null,
+                                oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null
+                            }))
                         })
                     }
 
-                    if(regimens[8].length > 0){
+                    if (regimens[8].length > 0) {
                         regimensTableByDayPeriod.betweenLAndD.push({
-                            medication : medication,
+                            medication: medication,
                             regimens: _.uniq(regimens[8]),
                             before: [],
                             during: regimens[8],
                             after: [],
-                            times: regimens[8].map(r => ({tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null, pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null , oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null}))
+                            times: regimens[8].map(r => ({
+                                tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null,
+                                pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null,
+                                oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null
+                            }))
                         })
                     }
 
-                    if((_(_.concat(regimens[9], regimens[10], regimens[11])).compact().uniq().value()).length > 0){
+                    if ((_(_.concat(regimens[9], regimens[10], regimens[11])).compact().uniq().value()).length > 0) {
                         regimensTableByDayPeriod.dinner.push({
-                            medication : medication,
+                            medication: medication,
                             regimens: _(_.concat(regimens[9], regimens[10], regimens[11])).compact().uniq().value(),
                             before: regimens[9],
                             during: regimens[10],
                             after: regimens[11],
-                            times: _(_.concat(regimens[9], regimens[10], regimens[11])).compact().uniq().value().map(r => ({tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null, pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null , oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null}))
+                            times: _(_.concat(regimens[9], regimens[10], regimens[11])).compact().uniq().value().map(r => ({
+                                tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null,
+                                pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null,
+                                oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null
+                            }))
                         })
                     }
 
-                    if(regimens[12].length > 0){
+                    if (regimens[12].length > 0) {
                         regimensTableByDayPeriod.night.push({
-                            medication : medication,
+                            medication: medication,
                             regimens: _.uniq(regimens[12]),
                             before: [],
                             during: regimens[12],
                             after: [],
-                            times: regimens[12].map(r => ({tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null, pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null , oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null}))
+                            times: regimens[12].map(r => ({
+                                tod: r.timeOfDay && r.timeOfDay !== "" ? r.timeOfDay : null,
+                                pc: r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code !== "" ? r.dayPeriod.code : null,
+                                oth: (!r.timeOfDay && !r.dayPeriod) ? r.administratedQuantity : null
+                            }))
                         })
                     }
 
@@ -1685,27 +1829,27 @@
                 this.set("patientPlan", patientPlan)
             }
 
-            _isRegimen(meds){
+            _isRegimen(meds) {
                 return (meds && meds.length > 0) ? true : false
             }
 
-            _getRegimen(col, m){
+            _getRegimen(col, m) {
                 const colPeriod = col.tod || col.pc || "other"
                 return m.regimens.find(r => ((r.timeOfDay && r.timeOfDay === colPeriod) || (r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code === colPeriod))) ? true : colPeriod === "other"
             }
 
-            _getRegimenQuantity(col, m){
+            _getRegimenQuantity(col, m) {
 
                 const colPeriod = col.tod || col.pc || "other"
                 const regimenTod = m.regimens.filter(r => ((r.timeOfDay && r.timeOfDay === colPeriod) || (r.dayPeriod && r.dayPeriod.code && r.dayPeriod.code === colPeriod)))
                 let qty = 0
 
-                if(regimenTod && regimenTod.length){
-                    qty = _.reduce(regimenTod, function (tot, r){
+                if (regimenTod && regimenTod.length) {
+                    qty = _.reduce(regimenTod, function (tot, r) {
                         return tot + Number(r.administratedQuantity && r.administratedQuantity.quantity)
                     }, 0)
-                }else{
-                    qty = _.reduce(m.regimens, function (tot, r){
+                } else {
+                    qty = _.reduce(m.regimens, function (tot, r) {
                         return tot + Number(r.administratedQuantity && r.administratedQuantity.quantity)
                     }, 0)
                 }
@@ -1713,11 +1857,11 @@
                 return qty
             }
 
-            _getHeaderTitle(col){
-                return col && col.pc && !col.tod ? this.localize("ms_"+col.pc, col.pc, this.language): col && col.tod ? col.tod.toString().substr(0,2)+"h"+col.tod.toString().substr(2,2) : null
+            _getHeaderTitle(col) {
+                return col && col.pc && !col.tod ? this.localize("ms_" + col.pc, col.pc, this.language) : col && col.tod ? col.tod.toString().substr(0, 2) + "h" + col.tod.toString().substr(2, 2) : null
             }
 
-            reset(){
+            reset() {
                 this.$.chapterivdialog && this.$.chapterivdialog.reset()
             }
         }

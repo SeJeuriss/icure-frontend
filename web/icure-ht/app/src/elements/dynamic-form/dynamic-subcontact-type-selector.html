@@ -43,40 +43,45 @@
                 background: var(--app-background-color-dark);
             }
 
-            .dropdown_icon{
+            .dropdown_icon {
                 height: 12px;
             }
 
-            .status_icon{
+            .status_icon {
                 height: 8px;
             }
 
-            .stat_act{
-                color: var( --paper-green-400);
+            .stat_act {
+                color: var(--paper-green-400);
             }
 
-            .stat_pass_rev{
+            .stat_pass_rev {
                 color: var(--paper-orange-400);
             }
 
-            .stat_pass_n_rev{
-                color: var( --paper-red-400);
+            .stat_pass_n_rev {
+                color: var(--paper-red-400);
             }
 
-            .stat_not_pres{
+            .stat_not_pres {
                 color: var(--paper-grey-400);
             }
 
         </style>
-            <paper-menu-button id="subType" horizontal-align="left" dynamic-align="true" opened="{{typeOpened}}" allow-outside-scroll>
-                <paper-icon-button id="hc_menu" class="form-title-bar-btn" icon="folder" slot="dropdown-trigger" alt="menu" on-tap="_showSubContactType"></paper-icon-button>
-                <paper-listbox slot="dropdown-content">
-                    <template is="dom-repeat" items="[[subcontactType]]" as="sct">
-                        <paper-item id="[[sct.id]]" class="link" on-tap="addSubcontactType">[[_getSubcontactTypeLabel(sct.label)]]</paper-item>
-                    </template>
-                </paper-listbox>
-            </paper-menu-button>
-        <paper-tooltip position="right" for="hc_menu">[[localize('contact_type','Contact type',language)]]</paper-tooltip>
+        <paper-menu-button id="subType" horizontal-align="left" dynamic-align="true" opened="{{typeOpened}}"
+                           allow-outside-scroll>
+            <paper-icon-button id="hc_menu" class="form-title-bar-btn" icon="folder" slot="dropdown-trigger" alt="menu"
+                               on-tap="_showSubContactType"></paper-icon-button>
+            <paper-listbox slot="dropdown-content">
+                <template is="dom-repeat" items="[[subcontactType]]" as="sct">
+                    <paper-item id="[[sct.id]]" class="link" on-tap="addSubcontactType">
+                        [[_getSubcontactTypeLabel(sct.label)]]
+                    </paper-item>
+                </template>
+            </paper-listbox>
+        </paper-menu-button>
+        <paper-tooltip position="right" for="hc_menu">[[localize('contact_type','Contact type',language)]]
+        </paper-tooltip>
     </template>
     <script>
 
@@ -140,7 +145,7 @@
                 e.preventDefault();
                 e.stopPropagation();
 
-                if(e.target.id) {
+                if (e.target.id) {
                     this.root.querySelector('#subType').open();
                 }
 
@@ -151,15 +156,20 @@
                 if (!type) {
                     return;
                 }
-                this.dispatchEvent(new CustomEvent('link-to-subcontact-type', {bubbles: true, composed: true, detail: { type: type} }));
+                this.dispatchEvent(new CustomEvent('link-to-subcontact-type', {
+                    bubbles: true,
+                    composed: true,
+                    detail: {type: type}
+                }));
 
             }
 
-            _getSubcontactTypeLabel(label){
+            _getSubcontactTypeLabel(label) {
                 return label[this.language]
             }
 
         }
+
         customElements.define(DynamicSubcontactTypeSelector.is, DynamicSubcontactTypeSelector);
     </script>
 </dom-module>

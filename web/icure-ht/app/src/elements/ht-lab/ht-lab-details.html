@@ -10,7 +10,6 @@
 <link rel="import" href="../../../bower_components/iron-iconset/iron-iconset.html">
 
 
-
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/image-icons.html">
@@ -39,7 +38,6 @@
 <link rel="import" href="../ht-lab/ht-lab-healthone.html">
 
 
-
 <dom-module id="ht-lab-details">
     <template>
         <style>
@@ -52,73 +50,73 @@
     </template>
     <script>
 
-		// import Encoding from 'encoding-japanese/src/index.js'
+        // import Encoding from 'encoding-japanese/src/index.js'
 
-		class HtLabDetails extends Polymer.TkLocalizerMixin(Polymer.Element) {
-			static get is() {
-				return 'ht-lab-details';
-			}
+        class HtLabDetails extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'ht-lab-details';
+            }
 
-			static get properties() {
-				return {
-					api: {
-						type: Object
-					},
-					attachment:{
-						type: String,
-						value: null
-					},
-                    document:{
-						type: Object,
+            static get properties() {
+                return {
+                    api: {
+                        type: Object
+                    },
+                    attachment: {
+                        type: String,
+                        value: null
+                    },
+                    document: {
+                        type: Object,
                         value: null
                     }
-				};
-			}
+                };
+            }
 
-			static get observers() {
-				return ['_attachementLoaded(attachment,document)'];
-			}
+            static get observers() {
+                return ['_attachementLoaded(attachment,document)'];
+            }
 
-			constructor() {
-				super();
-			}
+            constructor() {
+                super();
+            }
 
-			ready(){
-				super.ready();
-			}
+            ready() {
+                super.ready();
+            }
 
-			_attachementLoaded(){
+            _attachementLoaded() {
 
-				if(!this.attachment && this.document){
-					this.api.document().getAttachment(this.document.id, this.document.attachmentId, null)
+                if (!this.attachment && this.document) {
+                    this.api.document().getAttachment(this.document.id, this.document.attachmentId, null)
                         .then(att => {
-                        	// TODO: mandatory for annexe in no UTF-8 encoding
-							// try {
-							// 	let bytes = (a.mimeType === 'text/plain')?Encoding.convert(byteContent,'UTF-8'):byteContent;
-							// 	console.log((a.mimeType === 'text/plain')? Encoding.detect(byteContent):"Not text");
-							// }catch (e) {
-							// 	console.log("exception");
-							// 	console.log(e)
-							// }
+                            // TODO: mandatory for annexe in no UTF-8 encoding
+                            // try {
+                            // 	let bytes = (a.mimeType === 'text/plain')?Encoding.convert(byteContent,'UTF-8'):byteContent;
+                            // 	console.log((a.mimeType === 'text/plain')? Encoding.detect(byteContent):"Not text");
+                            // }catch (e) {
+                            // 	console.log("exception");
+                            // 	console.log(e)
+                            // }
 
                             this.set("attachment", att);
-					    })
+                        })
+                } else {
+                    console.log("attachment OK")
                 }
-				else{
-					console.log("attachment OK")
-                }
             }
 
-            _checkHealthone(){
-				return this.attachment.startsWith("A1");
+            _checkHealthone() {
+                return this.attachment.startsWith("A1");
             }
 
-            _checkXML(){
-				return this.attachment.startsWith("<?xml");
+            _checkXML() {
+                return this.attachment.startsWith("<?xml");
             }
 
-		}
+        }
 
-		customElements.define(HtLabDetails.is, HtLabDetails);
-    </script>
-</dom-module>
+        customElements.define(HtLabDetails.is, HtLabDetails);
+        <
+        /script>
+        < /dom-module>

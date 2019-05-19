@@ -53,19 +53,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
             }
 
-            :host *:focus{
-                outline:0!important;
+            :host *:focus {
+                outline: 0 !important;
             }
 
-            .col-left{
+            .col-left {
                 position: relative;
                 box-sizing: border-box;
                 grid-column: 1 / 1;
                 grid-row: 1 / 1;
-                background:var(--app-background-color-dark);
+                background: var(--app-background-color-dark);
                 @apply --shadow-elevation-3dp;
                 padding: 24px 0;
-                display:flex;
+                display: flex;
                 flex-flow: column nowrap;
                 align-items: center;
                 height: 100%;
@@ -79,7 +79,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
 
         <template is="dom-if" if="[[listOfAttestationLayout]]">
-            <ht-admin-reports-list-of-attestations id="admin-reports-list-of-attestations" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-reports-list-of-attestations>
+            <ht-admin-reports-list-of-attestations id="admin-reports-list-of-attestations" api="[[api]]" i18n="[[i18n]]"
+                                                   language="[[language]]" resources="[[resources]]"
+                                                   user="[[user]]"></ht-admin-reports-list-of-attestations>
         </template>
 
     </template>
@@ -108,7 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         observer: '_selectedReportsSubMenuChanged'
                     },
-                    listOfAttestationLayout:{
+                    listOfAttestationLayout: {
                         type: Boolean,
                         value: false
                     }
@@ -127,7 +129,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
             }
 
-            _selectedReportsSubMenuChanged(){
+            _selectedReportsSubMenuChanged() {
                 this.selectedSubMenu === "listOfAttestationSubMenu" ? this.set('listOfAttestationLayout', true) : null
             }
 

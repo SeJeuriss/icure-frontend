@@ -53,11 +53,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
             }
 
-            :host *:focus{
-                outline:0!important;
+            :host *:focus {
+                outline: 0 !important;
             }
 
-            .list-of-attestations{
+            .list-of-attestations {
                 height: calc(100vh - 84px);
                 width: 100%;
                 padding: 0 20px 24px 20px;
@@ -65,25 +65,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 position: relative;
             }
 
-           .form, .form-boxes{
-                display:flex;
+            .form, .form-boxes {
+                display: flex;
                 flex-flow: row wrap;
                 justify-content: space-between;
                 align-items: center;
                 margin-bottom: 24px;
             }
 
-            .form vaadin-date-picker{
+            .form vaadin-date-picker {
                 flex-grow: 1;
             }
 
-            .form vaadin-combo-box{
+            .form vaadin-combo-box {
                 flex-grow: 2;
                 padding: 0 0px 0 0;
                 box-sizing: border-box;
             }
 
-            .form-boxes{
+            .form-boxes {
                 justify-content: flex-start;
                 overflow-x: auto;
                 overflow-y: auto;
@@ -93,26 +93,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin-left: 24px;
             }
 
-            .form-boxes paper-checkbox{
+            .form-boxes paper-checkbox {
                 margin-right: 24px;
             }
 
-            vaadin-grid{
+            vaadin-grid {
                 margin-bottom: 24px;
                 border-radius: 3px;
                 min-height: 0 !important;
             }
 
-            paper-checkbox{
+            paper-checkbox {
                 --paper-checkbox-focus-color: var(--app-secondary-color);
             }
 
             .full-height {
                 height: 100%;
             }
+
             .half-width {
                 width: 50%;
             }
+
             .full-width {
                 width: 100%;
             }
@@ -124,12 +126,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             .flex {
                 display: flex;
             }
+
             .grow-1 {
                 flex-grow: 1;
             }
+
             .col {
                 flex-direction: column;
             }
+
             .space-between {
                 justify-content: space-between;
             }
@@ -137,6 +142,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             .anon-check {
                 padding-top: 12px;
             }
+
             .export-btn {
                 margin-right: 0;
             }
@@ -148,6 +154,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: flex;
                 justify-content: space-around;
             }
+
             ht-spinner {
                 position: relative;
                 top: 50%;
@@ -157,13 +164,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             @media screen and (max-width: 1304px) {
-                .form-boxes{
+                .form-boxes {
                     flex-direction: column;
                 }
             }
 
             @media screen and (max-width: 1024px) {
-                .list-of-attestations{
+                .list-of-attestations {
                     width: 100vw;
                 }
 
@@ -177,7 +184,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     display: flex;
                 }
 
-                .form vaadin-combo-box{
+                .form vaadin-combo-box {
                     padding-top: 8px;
                     padding-right: 0;
                 }
@@ -195,6 +202,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     .flex.resp {
                         min-height: 256px;
                     }
+
                     .form-boxes {
                         height: 80px;
                     }
@@ -209,49 +217,74 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="flex">
                 <div class="form flex col">
                     <div class="flex full-width">
-                        <vaadin-date-picker id="date-picker" label="[[localize('from2', 'Du', language)]]" value="{{dateFrom}}" i18n="[[i18n]]" on-value-changed="_checkIsDeadline"></vaadin-date-picker>
-                        <vaadin-date-picker id="date-picker" label="[[localize('to2', 'Au', language)]]" value="{{dateTo}}" i18n="[[i18n]]" on-value-changed="_checkIsDeadline"></vaadin-date-picker>
+                        <vaadin-date-picker id="date-picker" label="[[localize('from2', 'Du', language)]]"
+                                            value="{{dateFrom}}" i18n="[[i18n]]"
+                                            on-value-changed="_checkIsDeadline"></vaadin-date-picker>
+                        <vaadin-date-picker id="date-picker" label="[[localize('to2', 'Au', language)]]"
+                                            value="{{dateTo}}" i18n="[[i18n]]"
+                                            on-value-changed="_checkIsDeadline"></vaadin-date-picker>
                     </div>
-                    <vaadin-combo-box class="full-width" filtered-items="[[hcpListItem]]" id="hcp-list" item-label-path="name" item-value-path="id" on-filter-changed="_hcpFilterChanged" on-value-changed="filterInvoiceList" selected-item="{{selectedHcpItem}}" label="Prestataire" readonly="[[readonly]]"></vaadin-combo-box>
-                    <vaadin-combo-box class="full-width" filtered-items="[[patientListItem]]" id="pat-list" item-label-path="name" item-value-path="id" on-filter-changed="_patientFilterChanged" on-value-changed="filterInvoiceList" selected-item="{{selectedPatientItem}}" label="Patient" readonly="[[readonly]]"></vaadin-combo-box>
+                    <vaadin-combo-box class="full-width" filtered-items="[[hcpListItem]]" id="hcp-list"
+                                      item-label-path="name" item-value-path="id" on-filter-changed="_hcpFilterChanged"
+                                      on-value-changed="filterInvoiceList" selected-item="{{selectedHcpItem}}"
+                                      label="Prestataire" readonly="[[readonly]]"></vaadin-combo-box>
+                    <vaadin-combo-box class="full-width" filtered-items="[[patientListItem]]" id="pat-list"
+                                      item-label-path="name" item-value-path="id"
+                                      on-filter-changed="_patientFilterChanged" on-value-changed="filterInvoiceList"
+                                      selected-item="{{selectedPatientItem}}" label="Patient"
+                                      readonly="[[readonly]]"></vaadin-combo-box>
                 </div>
 
                 <div class="form-boxes flex grow-1 space-between">
                     <div class="flex col space-between full-height">
-                        <paper-checkbox checked="{{invoiceIsSent}}">[[localize('sent','Envoyé',language)]]</paper-checkbox>
+                        <paper-checkbox checked="{{invoiceIsSent}}">[[localize('sent','Envoyé',language)]]
+                        </paper-checkbox>
 
-                        <paper-checkbox checked="{{invoiceType_mutualfund}}">[[localize('inv_mut','Mutual',language)]]</paper-checkbox>
-                        <paper-checkbox checked="{{invoiceType_patient}}">[[localize('inv_pat','Patient',language)]]</paper-checkbox>
-                        <paper-checkbox checked="{{invoiceType_others}}">[[localize('oth_orgs','Other organisms',language)]]</paper-checkbox>
+                        <paper-checkbox checked="{{invoiceType_mutualfund}}">[[localize('inv_mut','Mutual',language)]]
+                        </paper-checkbox>
+                        <paper-checkbox checked="{{invoiceType_patient}}">[[localize('inv_pat','Patient',language)]]
+                        </paper-checkbox>
+                        <paper-checkbox checked="{{invoiceType_others}}">[[localize('oth_orgs','Other
+                            organisms',language)]]
+                        </paper-checkbox>
                     </div>
                     <div class="flex col space-between full-height">
                         <paper-checkbox checked="{{sentMediumType_eattest}}">e-Attest</paper-checkbox>
                         <paper-checkbox checked="{{sentMediumType_efact}}">e-Fact</paper-checkbox>
                         <paper-checkbox checked="{{sentMediumType_mediprima}}">Mediprima</paper-checkbox>
-                        <paper-checkbox checked="{{sentMediumType_paper}}">[[localize('paper','Papier',language)]]</paper-checkbox>
+                        <paper-checkbox checked="{{sentMediumType_paper}}">[[localize('paper','Papier',language)]]
+                        </paper-checkbox>
                     </div>
                     <div class="flex col space-between full-height">
-                        <paper-checkbox checked="{{paymentType_cash}}">[[localize('cash','Cash',language)]]</paper-checkbox>
-                        <paper-checkbox checked="{{paymentType_debitcard}}">[[localize('card_flow','Card flow',language)]]</paper-checkbox>
-                        <paper-checkbox checked="{{paymentType_creditcard}}">[[localize('card_credit','Credit card',language)]]</paper-checkbox>
-                        <paper-checkbox checked="{{paymentType_wired}}">[[localize('transfer','Transfert',language)]]</paper-checkbox>
+                        <paper-checkbox checked="{{paymentType_cash}}">[[localize('cash','Cash',language)]]
+                        </paper-checkbox>
+                        <paper-checkbox checked="{{paymentType_debitcard}}">[[localize('card_flow','Card
+                            flow',language)]]
+                        </paper-checkbox>
+                        <paper-checkbox checked="{{paymentType_creditcard}}">[[localize('card_credit','Credit
+                            card',language)]]
+                        </paper-checkbox>
+                        <paper-checkbox checked="{{paymentType_wired}}">[[localize('transfer','Transfert',language)]]
+                        </paper-checkbox>
                     </div>
                 </div>
             </div>
 
-            <vaadin-grid id="invoiceGrid" class="material grow-1" items="[[filteredInvoiceItems]]" active-item="{{selectedInvoice}}">
+            <vaadin-grid id="invoiceGrid" class="material grow-1" items="[[filteredInvoiceItems]]"
+                         active-item="{{selectedInvoice}}">
                 <vaadin-grid-column flex-grow="0" width="48px">
                     <template class="header">
                         <vaadin-checkbox checked$="[[allSelected]]" on-tap="_toggleSelectAll"></vaadin-checkbox>
                     </template>
                     <template>
-                            <vaadin-checkbox data-item$="[[item]]" on-checked-changed="_itemSelected" class="list-checkbox"></vaadin-checkbox>
+                        <vaadin-checkbox data-item$="[[item]]" on-checked-changed="_itemSelected"
+                                         class="list-checkbox"></vaadin-checkbox>
                     </template>
                 </vaadin-grid-column>
                 <vaadin-grid-column>
                     <template class="header">
                         <vaadin-grid-sorter path="authorToSort">
-                        [[localize('persphysicianRole','Persphysician',language)]]
+                            [[localize('persphysicianRole','Persphysician',language)]]
                         </vaadin-grid-sorter>
                     </template>
                     <template>
@@ -293,7 +326,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid-column flex-grow="1" width="200px">
                     <template class="header">
                         <vaadin-grid-sorter path="patientToSort">
-                        [[localize('inv_pat','Patient',language)]]
+                            [[localize('inv_pat','Patient',language)]]
                         </vaadin-grid-sorter>
                     </template>
                     <template>
@@ -303,7 +336,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid-column>
                     <template class="header">
                         <vaadin-grid-sorter path="invoiceReference">
-                        [[localize('cert_num','Certificate n°',language)]]
+                            [[localize('cert_num','Certificate n°',language)]]
                         </vaadin-grid-sorter>
                     </template>
                     <template>
@@ -313,7 +346,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid-column flex-grow="0" width="48px">
                     <template class="header">
                         <vaadin-grid-sorter path="oa">
-                        O.A.
+                            O.A.
                         </vaadin-grid-sorter>
                     </template>
                     <template>
@@ -323,7 +356,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid-column flex-grow="1" width="200px">
                     <template class="header">
                         <vaadin-grid-sorter path="insurance">
-                        [[localize('inv_mut','Mutual',language)]]
+                            [[localize('inv_mut','Mutual',language)]]
                         </vaadin-grid-sorter>
                     </template>
                     <template>
@@ -333,7 +366,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid-column>
                     <template class="header">
                         <vaadin-grid-sorter path="sentMediumType">
-                        [[localize('inv_smt','Sent medium type',language)]]
+                            [[localize('inv_smt','Sent medium type',language)]]
                         </vaadin-grid-sorter>
                     </template>
                     <template>
@@ -343,7 +376,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid-column>
                     <template class="header">
                         <vaadin-grid-sorter path="invoiceType">
-                        [[localize('fac_type','Billing type',language)]]
+                            [[localize('fac_type','Billing type',language)]]
                         </vaadin-grid-sorter>
                     </template>
                     <template>
@@ -363,7 +396,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid-column>
                     <template class="header">
                         <vaadin-grid-sorter path="paymentType">
-                        [[localize('fac_mode','Billing mode',language)]]
+                            [[localize('fac_mode','Billing mode',language)]]
                         </vaadin-grid-sorter>
                     </template>
                     <template>
@@ -453,9 +486,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </vaadin-grid>
 
             <div class="flex space-between">
-                <paper-checkbox class="anon-check" checked="{{isExportAnonyme}}">[[localize('anon_export','Anonymous export',language)]]</paper-checkbox>
-                <div>[[localize("nr_of_rows","Nombre de lignes", language)]] : [[filteredInvoiceItems.length]]/[[invoiceItems.length]]</div>
-                <paper-button on-tap="exportToCsv" class="modal-button modal-button--save export-btn">[[localize('export','Export',language)]]</paper-button>
+                <paper-checkbox class="anon-check" checked="{{isExportAnonyme}}">[[localize('anon_export','Anonymous
+                    export',language)]]
+                </paper-checkbox>
+                <div>[[localize("nr_of_rows","Nombre de lignes", language)]] :
+                    [[filteredInvoiceItems.length]]/[[invoiceItems.length]]
+                </div>
+                <paper-button on-tap="exportToCsv" class="modal-button modal-button--save export-btn">
+                    [[localize('export','Export',language)]]
+                </paper-button>
             </div>
 
             <template is="dom-if" if="[[_isLoadingList]]">
@@ -684,7 +723,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.set("dateTo", moment().endOf('month').format("YYYY-MM-DD"))
             }
 
-            _hcpFilterChanged(e){
+            _hcpFilterChanged(e) {
                 let latestSearchValue = e && e.detail.value;
                 this.latestSearchValue = latestSearchValue;
                 if (!latestSearchValue || latestSearchValue.length < 2) {
@@ -706,20 +745,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     filter: function (filterValue) {
                         const desc = 'asc';
                         let count = 50;
-                        return Promise.all([this.api.hcparty().findByName(filterValue, null,  null, count, desc)]).then(results => {
+                        return Promise.all([this.api.hcparty().findByName(filterValue, null, null, count, desc)]).then(results => {
                             const hcpList = results[0];
                             const filtered = _.flatten(
                                 hcpList.rows
                                     .filter(hcp => hcp.lastName && hcp.lastName !== "" || hcp.firstName && hcp.firstName !== "")
-                                    .map(hcp => ({id: hcp.id , name : hcp.lastName + ' ' +hcp.firstName}) )
+                                    .map(hcp => ({id: hcp.id, name: hcp.lastName + ' ' + hcp.firstName}))
                             );
                             const filteredHcp = filtered.filter(hcp => !!this.hcpCache[hcp.id]);
-                            if(filteredHcp.length > 0) {
+                            if (filteredHcp.length > 0) {
                                 console.log("filteredHcp", filteredHcp, filtered)
-                                return { totalSize: filtered.length, rows: filteredHcp };
+                                return {totalSize: filtered.length, rows: filteredHcp};
                             } else {
                                 console.log("filtered", filteredHcp, filtered)
-                                return { totalSize: filtered.length, rows: filtered };
+                                return {totalSize: filtered.length, rows: filtered};
                             }
                         });
 
@@ -727,7 +766,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 };
             }
 
-            _patientFilterChanged(e){
+            _patientFilterChanged(e) {
                 let latestSearchValue = e && e.detail.value;
                 this.latestSearchValue = latestSearchValue;
                 if (!latestSearchValue || latestSearchValue.length < 2) {
@@ -751,8 +790,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         let count = 15;
                         return Promise.all([this.api.patient().findByNameBirthSsinAutoWithUser(this.user, this.user.healthcarePartyId, filterValue, null, null, 100, "asc")]).then(results => {
                             const patList = results[0];
-                            const filtered = _.flatten(patList.rows.filter(pat => pat.lastName && pat.lastName !== "" || pat.firstName && pat.firstName !== "").map(pat => ({id: pat.id , name : pat.lastName + ' ' +pat.firstName}) ));
-                            return { totalSize: filtered.length, rows: filtered };
+                            const filtered = _.flatten(patList.rows.filter(pat => pat.lastName && pat.lastName !== "" || pat.firstName && pat.firstName !== "").map(pat => ({
+                                id: pat.id,
+                                name: pat.lastName + ' ' + pat.firstName
+                            })));
+                            return {totalSize: filtered.length, rows: filtered};
                         });
 
                     }.bind(this)
@@ -761,7 +803,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             getCachedHcpByUserId(userId) {
                 return Promise.resolve().then(() => {
-                    if(this.userCache[userId] != null) {
+                    if (this.userCache[userId] != null) {
                         return this.userCache[userId]
                     } else {
                         return this.api.user().getUser(userId).then(user => {
@@ -777,7 +819,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             getCachedHcpByHcpId(hcpId) {
                 return Promise.resolve().then(() => {
-                    if(this.hcpCache[hcpId] != null) {
+                    if (this.hcpCache[hcpId] != null) {
                         return this.hcpCache[hcpId]
                     } else {
                         return this.api.hcparty().getHealthcareParty(hcpId).then(hcp => {
@@ -789,25 +831,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             getRawInvoiceList() {
-                return this.api.user().getCurrentUser().then(user  => {
+                return this.api.user().getCurrentUser().then(user => {
                     return this.api.hcparty().getCurrentHealthcareParty().then(currentHcp => {
                         const dateFrom = this.dateFrom !== "" ? parseInt(this.dateFrom.replace("-", "").replace("-", ""), 10) : null
                         let dateTo = this.dateTo !== "" ? parseInt(this.dateTo.replace("-", "").replace("-", ""), 10) : null
-                        if(dateTo && dateFrom && dateTo < dateFrom) {
+                        if (dateTo && dateFrom && dateTo < dateFrom) {
                             dateTo = dateFrom // prevent error in API
                         }
                         //console.log("from to", dateFrom, dateTo)
 
                         return this.api.getRowsUsingPagination(
-                            (key,docId) =>
+                            (key, docId) =>
                                 this.api.invoice().findByAuthor(currentHcp.parentId || currentHcp.id, dateFrom, dateTo, key, docId, 2000)
-                                    .then(pl => { return {
-                                        rows:  pl.rows,
-                                        nextKey: pl.nextKeyPair && pl.nextKeyPair.startKey,
-                                        nextDocId: pl.nextKeyPair && pl.nextKeyPair.startKeyDocId,
-                                        done: !pl.nextKeyPair,
-                                    }})
-                        ) .catch(e=>{ console.log(e); return Promise.resolve([]); })
+                                    .then(pl => {
+                                        return {
+                                            rows: pl.rows,
+                                            nextKey: pl.nextKeyPair && pl.nextKeyPair.startKey,
+                                            nextDocId: pl.nextKeyPair && pl.nextKeyPair.startKeyDocId,
+                                            done: !pl.nextKeyPair,
+                                        }
+                                    })
+                        ).catch(e => {
+                            console.log(e);
+                            return Promise.resolve([]);
+                        })
                     })
                 })
             }
@@ -840,11 +887,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 let sentdate = ""
                                 let dateToSort = 0
                                 let sentDateToSort = 0
-                                if(invoice.invoiceDate !== null && invoice.invoiceDate !== undefined && invoice.invoiceDate !== "" ) {
+                                if (invoice.invoiceDate !== null && invoice.invoiceDate !== undefined && invoice.invoiceDate !== "") {
                                     invdate = this.api.moment(invoice.invoiceDate).format("DD-MM-YYYY")
                                     dateToSort = parseInt(this.api.moment(invoice.invoiceDate).format("YYYYMMDD"))
                                 }
-                                if(invoice.sentDate !== null && invoice.sentDate !== undefined && invoice.sentDate !== "" ) {
+                                if (invoice.sentDate !== null && invoice.sentDate !== undefined && invoice.sentDate !== "") {
                                     sentdate = this.api.moment(invoice.sentDate).format("DD-MM-YYYY")
                                     sentDateToSort = parseInt(this.api.moment(invoice.sentDate).format("YYYYMMDD"))
                                 }
@@ -872,13 +919,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 }
 
                                 const computeSum = function (paytype) {
-                                    if(invoice.paymentType == paytype) {
+                                    if (invoice.paymentType == paytype) {
                                         return item.totalPatientAmount
                                     } else {
                                         return 0
                                     }
                                 }
-                                const computeCodeSum = function(propName) {
+                                const computeCodeSum = function (propName) {
                                     return invoice.invoicingCodes.reduce((acc, code) => {
                                         return acc + code[propName]
                                     }, 0) || 0
@@ -888,7 +935,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 item.conventionAmount = computeCodeSum('conventionAmount')
                                 item.doctorSupplement = computeCodeSum('doctorSupplement')
                                 item.ticketAmount = computeCodeSum('patientIntervention')
-                                if(invoice.sentMediumType == "eattest" || invoice.invoiceType == "eattest") {
+                                if (invoice.sentMediumType == "eattest" || invoice.invoiceType == "eattest") {
                                     item.totalPatientAmount = item.totalAmount
                                 } else {
                                     item.totalPatientAmount = item.ticketAmount + item.doctorSupplement
@@ -929,13 +976,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 const invoiceTypeFilter = []
 
 
-                if(this.invoiceType_mutualfund === true) {
+                if (this.invoiceType_mutualfund === true) {
                     invoiceTypeFilter.push("mutualfund")
                 }
-                if(this.invoiceType_patient === true) {
+                if (this.invoiceType_patient === true) {
                     invoiceTypeFilter.push("patient")
                 }
-                if(this.invoiceType_others === true) {
+                if (this.invoiceType_others === true) {
                     invoiceTypeFilter.push("payingagency")
                     invoiceTypeFilter.push("other")
                     invoiceTypeFilter.push("")
@@ -943,59 +990,59 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 const sentMediumTypeFilter = []
                 const icure_invoiceTypeFilter = [] // NOTE: icure use invoiceType instead of sentMediumType which is unused
-                if(this.sentMediumType_eattest === true) {
+                if (this.sentMediumType_eattest === true) {
                     sentMediumTypeFilter.push("eattest")
                     icure_invoiceTypeFilter.push("eattest")
                 }
-                if(this.sentMediumType_efact === true) {
+                if (this.sentMediumType_efact === true) {
                     sentMediumTypeFilter.push("efact")
                     icure_invoiceTypeFilter.push("efact")
                 }
-                if(this.sentMediumType_mediprima === true) {
+                if (this.sentMediumType_mediprima === true) {
                     sentMediumTypeFilter.push("mediprima")
                     icure_invoiceTypeFilter.push("mediprima")
                 }
-                if(this.sentMediumType_paper === true) {
+                if (this.sentMediumType_paper === true) {
                     sentMediumTypeFilter.push("paper")
                     icure_invoiceTypeFilter.push("paper")
                 }
 
                 const paymentTypeFilter = []
-                if(this.paymentType_cash === true) {
+                if (this.paymentType_cash === true) {
                     paymentTypeFilter.push("cash")
                 }
-                if(this.paymentType_debitcard === true) {
+                if (this.paymentType_debitcard === true) {
                     paymentTypeFilter.push("debitcard")
                 }
-                if(this.paymentType_creditcard === true) {
+                if (this.paymentType_creditcard === true) {
                     paymentTypeFilter.push("creditcard")
                 }
-                if(this.paymentType_wired === true) {
+                if (this.paymentType_wired === true) {
                     paymentTypeFilter.push("wired")
                 }
 
                 this.set('filteredInvoiceItems', this.invoiceItems.filter(inv => {
                     let res = true
 
-                    if(this.invoiceIsSent === true) {
+                    if (this.invoiceIsSent === true) {
                         res = res && (inv.sentDate != "" && inv.sentDate != null && inv.sentDate != 0)
                     }
 
-                    if(invoiceTypeFilter.length === 0) {
+                    if (invoiceTypeFilter.length === 0) {
                         //res = true
                         // no checkbox checked, show all
                     } else {
                         res = res && invoiceTypeFilter.includes(inv.invoice.invoiceType)
                     }
 
-                    if(sentMediumTypeFilter.length === 0) {
+                    if (sentMediumTypeFilter.length === 0) {
                         //res = true
                         // no checkbox checked, show all
                     } else {
                         res = res && (sentMediumTypeFilter.includes(inv.invoice.sentMediumType) || icure_invoiceTypeFilter.includes(inv.invoice.invoiceType))
                     }
 
-                    if(paymentTypeFilter.length === 0) {
+                    if (paymentTypeFilter.length === 0) {
                         //res = true
                         // no checkbox checked, show all
                     } else {
@@ -1003,11 +1050,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }
 
 
-                    if(this.selectedHcpItem != null) {
+                    if (this.selectedHcpItem != null) {
                         res = res && inv.authorHcpId === this.selectedHcpItem.id
                     }
 
-                    if(this.selectedPatientItem != null) {
+                    if (this.selectedPatientItem != null) {
                         res = res && inv.patientId === this.selectedPatientItem.id
                     }
 
@@ -1017,14 +1064,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             exportToCsv() {
                 let items = null
-                if(this.checkedInvoices.length > 0) {
+                if (this.checkedInvoices.length > 0) {
                     items = this.checkedInvoices
                 } else {
                     items = this.filteredInvoiceItems
                 }
                 this.generateXlsFile(items.map(inv => {
                     const xlinv = JSON.parse(JSON.stringify(inv));
-                    if(this.isExportAnonyme) {
+                    if (this.isExportAnonyme) {
                         delete xlinv.patient
                     }
                     xlinv.date = xlinv.date.replace("-", "/").replace("-", "/")
@@ -1083,20 +1130,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 return
             }
 
-            getSentMediumTypeLabel(aType){
-                if(!aType) return;
+            getSentMediumTypeLabel(aType) {
+                if (!aType) return;
                 const type = this.sentMediumTypes.find(type => type.id === aType)
                 return type && type.label && type.label[this.language.toLowerCase()]
             }
 
-            getInvoiceTypeLabel(aType){
-                if(!aType) return "";
+            getInvoiceTypeLabel(aType) {
+                if (!aType) return "";
                 const type = this.invoiceTypes.find(type => type.id === aType)
                 return type && type.label && type.label[this.language.toLowerCase()] || this.getSentMediumTypeLabel(aType)
             }
 
-            getPaymentTypeLabel(aType){
-                if(!aType) return "";
+            getPaymentTypeLabel(aType) {
+                if (!aType) return "";
                 const type = this.paymentTypes.find(type => type.id === aType)
                 return type && type.label && type.label[this.language.toLowerCase()]
             }
@@ -1107,19 +1154,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     if (this.checkedInvoices.length !== this.invoiceItems.length) this.push('checkedInvoices', checked)
                 } else {
                     this.splice('checkedInvoices', this.checkedInvoices.indexOf(e.target.dataset.item))
-                    this.set('allSelected',false)
+                    this.set('allSelected', false)
                 }
-                console.log(this.checkedInvoices.length+' checked',this.checkedInvoices)
+                console.log(this.checkedInvoices.length + ' checked', this.checkedInvoices)
             }
 
 
             _toggleSelectAll() {
-                this.set('allSelected',this.allSelected != null ? !this.allSelected : true)
-                this.set('checkedInvoices',this.allSelected ? this.filteredInvoiceItems : [])
+                this.set('allSelected', this.allSelected != null ? !this.allSelected : true)
+                this.set('checkedInvoices', this.allSelected ? this.filteredInvoiceItems : [])
                 let invList = this.shadowRoot.querySelector('#invoiceGrid');
-                let allCheckboxes = invList? invList.querySelectorAll('.list-checkbox') : []
+                let allCheckboxes = invList ? invList.querySelectorAll('.list-checkbox') : []
                 const selectedState = this.allSelected
-                allCheckboxes.forEach(box=>{
+                allCheckboxes.forEach(box => {
                     box.checked = selectedState;
                 })
             }

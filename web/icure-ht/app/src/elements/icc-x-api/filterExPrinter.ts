@@ -1,26 +1,27 @@
 export class FilterExPrinter {
-    private map(ex:any):Filter {
+    private map(ex: any): Filter {
         if ((ex as Filter).$type === 'IntersectionFilter') {
-            return new IntersectionFilter((ex as IntersectionFilter).filters.map(f=>this.map(f)))
+            return new IntersectionFilter((ex as IntersectionFilter).filters.map(f => this.map(f)))
         } else if ((ex as Filter).$type === 'UnionFilter') {
-            return new UnionFilter((ex as UnionFilter).filters.map(f=>this.map(f)))
+            return new UnionFilter((ex as UnionFilter).filters.map(f => this.map(f)))
         } else if ((ex as Filter).$type === 'ServiceByHcPartyTagCodeDateFilter') {
             const f = ex as ServiceByHcPartyTagCodeDateFilter
-            return new ServiceByHcPartyTagCodeDateFilter(f.codeType,f.codeCode,f.tagType,f.tagCode)
-        }else if ((ex as Filter).$type === 'PatientByHcPartyNameContainsFuzzyFilter') {
+            return new ServiceByHcPartyTagCodeDateFilter(f.codeType, f.codeCode, f.tagType, f.tagCode)
+        } else if ((ex as Filter).$type === 'PatientByHcPartyNameContainsFuzzyFilter') {
             const f = ex as PatientByHcPartyNameContainsFuzzyFilter
             return new PatientByHcPartyNameContainsFuzzyFilter(f.searchString)
         }
-        throw 'Unmappable filter '+ex
+        throw 'Unmappable filter ' + ex
     }
 
-    print(ex:any) {
+    print(ex: any) {
         return this.map(ex).print()
     }
 }
 
 class Filter {
-    $type:string
+    $type: string
+
     constructor($type: string) {
         this.$type = $type;
     }
@@ -38,10 +39,13 @@ class IntersectionFilter extends Filter {
         this.filters = filters
     }
 
-    add(f:Filter) {this.filters.push(f); return this;}
+    add(f: Filter) {
+        this.filters.push(f);
+        return this;
+    }
 
     print() {
-        return this.filters.map(f=>`(${f.print()})`).join(' & ')
+        return this.filters.map(f => `(${f.print()})`).join(' & ')
     }
 }
 
@@ -54,14 +58,14 @@ class UnionFilter extends Filter {
     }
 
     print() {
-        return this.filters.map(f=>`(${f.print()})`).join(' | ')
+        return this.filters.map(f => `(${f.print()})`).join(' | ')
     }
 }
 
 class ComparisonFilter extends Filter {
-    leftPart:string
-    rightPart:string
-    operator:string
+    leftPart: string
+    rightPart: string
+    operator: string
 
     constructor(leftPart: string, rightPart: string, operator: string) {
         super('ComparisonFilter');
@@ -92,10 +96,10 @@ class ServiceByHcPartyTagCodeDateFilter extends Filter {
     print() {
         return ((this.codeType && this.tagType) ?
             new IntersectionFilter([
-                new ComparisonFilter(this.codeType,this.codeCode,'=='),
-                new ComparisonFilter(':'+this.tagType,this.tagCode,'==')
-            ]) : this.codeType ? new ComparisonFilter(this.codeType, this.codeCode,'==') :
-                new ComparisonFilter(':'+this.tagType, this.tagCode,'=='))
+                new ComparisonFilter(this.codeType, this.codeCode, '=='),
+                new ComparisonFilter(':' + this.tagType, this.tagCode, '==')
+            ]) : this.codeType ? new ComparisonFilter(this.codeType, this.codeCode, '==') :
+                new ComparisonFilter(':' + this.tagType, this.tagCode, '=='))
             .print()
     }
 }
