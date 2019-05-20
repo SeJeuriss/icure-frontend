@@ -9,8 +9,8 @@ flatMap.shim();
 
 document.addEventListener('WebComponentsReady', function componentsReady() {
     document.removeEventListener('WebComponentsReady', componentsReady, false);
-    import( /* webpackChunkName: "ht-app" */ "./src/ht-app-tz.html")
-    import( /* webpackChunkName: "ht-spinner" */ "./src/elements/ht-spinner/ht-spinner.html")
+    import( /* webpackChunkName: "ht-app" */ "./src/ht-app-tz.js")
+    import( /* webpackChunkName: "ht-spinner" */ "./src/elements/ht-spinner/ht-spinner.js")
 }, false);
 
 

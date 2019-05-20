@@ -1,0 +1,253 @@
+import '@polymer/iron-icon/iron-icon.js'
+import '@polymer/paper-button/paper-button.js'
+import '@polymer/paper-dialog/paper-dialog.js'
+import '@polymer/paper-input/paper-input.js'
+import _ from 'lodash/lodash';
+import {TkLocalizerMixin} from "../tk-localizer";
+
+import {PolymerElement,html} from '@polymer/polymer/polymer-element.js';
+class EntitySelector extends TkLocalizerMixin(PolymerElement) {
+  static get template() {
+    return html`
+        <style>
+            paper-dialog {
+                width: 80%;
+            }
+
+            vaadin-grid {
+                --vaadin-grid-body-row-hover-cell: {
+                    background-color: var(--app-primary-color);
+                    color: white;
+                };
+                --vaadin-grid-body-row-selected-cell: {
+                    background-color: var(--app-primary-color);
+                    color: white;
+                };
+            }
+
+            paper-input {
+                --paper-input-container-focus-color: var(--app-primary-color);
+            }
+
+            .modal-title {
+                background: var(--app-background-color-dark);
+                margin-top: 0;
+                padding: 16px 24px;
+            }
+
+            .modal-button {
+                --paper-button-ink-color: var(--app-secondary-color-dark);
+                color: var(--app-text-color);
+                font-weight: 400;
+                font-size: 14px;
+                height: 40px;
+                min-width: 100px;
+                padding: 10px 1.2em;
+                text-transform: capitalize;
+            }
+
+            .modal-button--cancel {
+                background: transparent;
+                color: black;
+                border: 1px solid var(--app-background-color-dark);
+            }
+
+            .modal-button--save {
+                box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+                background: var(--app-secondary-color);
+                color: var(--app-primary-color-dark);
+                font-weight: 700;
+            }
+
+            dom-if {
+                padding: 0;
+            }
+        </style>
+
+        <paper-dialog id="dialog">
+            <h2 class="modal-title">
+                <template is="dom-if" if="[[entityIcon]]">
+                    <iron-icon icon="[[entityIcon]]"></iron-icon> &nbsp;
+                </template>
+                [[localize('sel','Select',language)]] [[entityType]]
+            </h2>
+            <paper-input id="filter" label="[[localize('fil','Filter',language)]]" value="{{filterValue}}" autofocus="" on-keydown="refresh"></paper-input>
+            <vaadin-grid id="entities-list" class="material" active-item="{{activeItem}}" on-tap="click">
+                <template is="dom-repeat" items="[[columns]]" as="column">
+                    <vaadin-grid-column width="100px">
+                        <template class="header">
+                            <vaadin-grid-sorter path="[[_key(column)]]">[[column.title]]</vaadin-grid-sorter>
+                        </template>
+                        <template>
+                            <div class="cell frozen">[[_cellContent(item, column)]]</div>
+                        </template>
+                    </vaadin-grid-column>
+                </template>
+            </vaadin-grid>
+            <slot name="suffix"></slot>
+            <div class="buttons">
+                <paper-button class="modal-button--cancel" dialog-dismiss="">[[localize('can','Cancel',language)]]
+                </paper-button>
+                <paper-button class="modal-button--save" dialog-confirm="" on-tap="confirm">
+                    [[localize('sel','Select',language)]]
+                </paper-button>
+            </div>
+        </paper-dialog>
+`;
+  }
+
+  static get is() {
+      return 'entity-selector';
+  }
+
+  static get properties() {
+      return {
+          columns: {
+              type: Array,
+              value: function () {
+                  return [];
+              }
+          },
+
+          entityType: {
+              type: String,
+              value: 'entity'
+          },
+
+          entityIcon: {
+              type: String,
+              value: ""
+          },
+
+          entity: {
+              type: Object,
+              value: function () {
+                  return {};
+              },
+              notify: true
+          },
+
+          okLabel: {
+              type: String
+          },
+
+          filterValue: {
+              type: String
+          },
+
+          dataProvider: {
+              type: Object,
+              value: null
+          },
+
+          activeItem: {
+              type: Object,
+              value: null,
+              observer: "_activeItemChanged"
+          }
+
+      };
+  }
+
+  constructor() {
+      super();
+  }
+
+  ready() {
+      super.ready();
+
+      this.set('entityType', this.localize('entity', 'entity', this.language))
+
+      var grid = this.$['entities-list'];
+
+      grid.lastParams = null; //Used to prevent double calls
+      grid.size = 0;
+      grid.pageSize = 50;
+      grid.dataProvider = function (params, callback) {
+          const sort = params.sortOrders && params.sortOrders[0] && params.sortOrders[0].path || this.columns[0] && this._key(this.columns[0]);
+          const desc = params.sortOrders && params.sortOrders[0] && params.sortOrders[0].direction === 'desc' || false;
+
+          const pageSize = params.pageSize || grid.pageSize;
+          const startIndex = (params.page || 0) * pageSize;
+          const endIndex = ((params.page || 0) + 1) * pageSize;
+
+          const thisParams = this.filterValue + "|" + sort + "|" + (desc ? "<|" : ">|") + startIndex + ":" + pageSize + ":";
+
+          let latestSearchValue = this.filterValue;
+          this.latestSearchValue = latestSearchValue;
+          if (!latestSearchValue || latestSearchValue.length < 2) {
+              //grid.set("size", 0);
+              callback([], 0);
+              return;
+          }
+
+          grid.lastParams = thisParams;
+          this.dataProvider && this.dataProvider.filter(latestSearchValue, endIndex || grid.pageSize, params.index, sort, desc).then(function (res) {
+              if (this.filterValue !== latestSearchValue) return;
+              callback(_.slice(res.rows, startIndex, endIndex), res.totalSize);
+          }.bind(this));
+      }.bind(this);
+  }
+
+  _cellContent(item, column) {
+      return _.isFunction(column.key) ? column.key(item) : _.get(item, column.key);
+  }
+
+  _key(column) {
+      return _.isFunction(column.key) ? column.sortKey : column.key;
+  }
+
+  click(e) {
+      const selected = this.activeItem;
+      if (this.inDoubleClick && (this.latestSelected === selected || this.latestSelected && !selected || !this.latestSelected && selected)) {
+          this.select(this.latestSelected || selected);
+      } else {
+          this.latestSelected = selected;
+          this.inDoubleClick = true;
+          this.set('entity', _.assign(_.assign({}, this.entity || {}), selected));
+          setTimeout(() => {
+              delete this.inDoubleClick;
+          }, 500);
+      }
+  }
+
+  refresh() {
+      //Give the gui the time to update the field
+      setTimeout(function () {
+          let currentValue = this.filterValue;
+          if (this.latestSearchValue === currentValue) {
+              return;
+          }
+          // Imrpove with lodash _.defer
+          setTimeout(function () {
+              if (currentValue === this.filterValue) {
+                  this.$['entities-list'].clearCache();
+              }
+          }.bind(this), 500); //Wait for the user to stop typing
+      }.bind(this), 100);
+  }
+
+  confirm() {
+      if (this.entity || this.activeItem) {
+          this.select(this.entity || this.activeItem);
+      }
+  }
+
+  select(item) {
+      if (item) {
+          this.dispatchEvent(new CustomEvent('entity-selected', {detail: item, composed: true}));
+          this.$.dialog.close();
+      }
+  }
+
+  open() {
+      this.$.dialog.open();
+  }
+
+  _activeItemChanged(item) {
+      var grid = this.$['entities-list'];
+      grid.selectedItems = item ? [item] : [];
+  }
+}
+
+customElements.define(EntitySelector.is, EntitySelector);
