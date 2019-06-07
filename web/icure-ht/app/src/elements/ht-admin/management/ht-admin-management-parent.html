@@ -65,7 +65,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
 
         <div class="off-med-hou-panel">
-            <h4>[[localize('man_off_med_hou', 'Management - Office / Medical house', language)]]</h4>
+            <h4>[[localize('man_off_med_hou', 'Management - Office / Organization', language)]]</h4>
         </div>
 
     </template>
@@ -94,7 +94,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             static get observers() {
-                return [];
+                return ['_getDataProvider(user)'];
             }
 
             constructor() {
@@ -103,6 +103,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             ready() {
                 super.ready()
+            }
+
+            _getDataProvider(){
+
+                let acc = []
+                this._getAllChildren(this.user.healthcarePartyId, acc).then(rep => {
+                    console.log(rep)
+                })
+            }
+
+            _getAllChildren(parentId, acc){
+                let prom = Promise.resolve()
+                this.api.hcparty().getHealthcarePartiesByParentId(parentId).then(children => {
+                    //console.log(children)
+                    if(children){
+                        children.map(child => {
+                            prom = prom.then(childrenList => this._getAllChildren(child.id, acc).then(rep => _.concat(childrenList, rep)))
+                        })
+
+                       return prom.then(childrenList => {
+                           return childrenList
+                       })
+
+                    }
+                })
             }
 
         }
