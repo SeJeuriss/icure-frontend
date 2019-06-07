@@ -107,26 +107,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _getDataProvider(){
 
-                let acc = []
-                this._getAllChildren(this.user.healthcarePartyId, acc).then(rep => {
-                    console.log(rep)
+                this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
+                    this._getAllChildren(hcp.id, [hcp]).then(rep => {
+                        console.log(_.compact(rep))
+                    })
                 })
+
             }
 
             _getAllChildren(parentId, acc){
-                let prom = Promise.resolve()
-                this.api.hcparty().getHealthcarePartiesByParentId(parentId).then(children => {
+                let prom = Promise.resolve([])
+                return this.api.hcparty().getHealthcarePartiesByParentId(parentId).then(children => {
                     //console.log(children)
-                    if(children){
+                    if(children.length > 0){
                         children.map(child => {
-                            prom = prom.then(childrenList => this._getAllChildren(child.id, acc).then(rep => _.concat(childrenList, rep)))
+                            prom = prom.then(childrenList => this._getAllChildren(child.id, child).then(rep =>  _.concat(childrenList, rep)))
                         })
-
-                       return prom.then(childrenList => {
-                           return childrenList
-                       })
-
                     }
+
+                    return prom.then(childrenList => {
+                        return _.concat(acc, childrenList)
+                    })
+
                 })
             }
 
