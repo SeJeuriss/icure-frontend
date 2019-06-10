@@ -62,10 +62,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 box-sizing: border-box;
                 position:relative;
             }
+
+            .member{
+                height: 60px;
+                margin: 1%;
+                width: 100%;
+                display: flex;
+                border: 1px solid black;
+            }
+
+            .content{
+                heigth: 90%;
+                width: 100%;
+                display: flex;
+            }
         </style>
 
         <div class="off-med-hou-panel">
             <h4>[[localize('man_off_med_hou', 'Management - Office / Organization', language)]]</h4>
+        </div>
+
+        <div class="content">
+            <template is="dom-repeat" items="[[listOfGroups]]" as="group">
+                <div class="member">
+                    [[group.lastName]] [[group.firstName]]
+                </div>
+            </template>
         </div>
 
     </template>
@@ -89,6 +111,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     user: {
                         type: Object,
                         noReset: true
+                    },
+                    hcp:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    listOfGroups:{
+                        type: Array,
+                        value: () => []
                     }
                 }
             }
@@ -108,27 +138,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _getDataProvider(){
 
                 this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
-                    this._getAllChildren(hcp.id, [hcp]).then(rep => {
-                        console.log(_.compact(rep))
-                    })
-                })
+                    this.set('hcp', hcp)
+                    this._getChildrenTree(hcp.id).then(fullTree => {
+                        console.log([_.assign(this.hcp, {children: _.compact(fullTree)})])
+                        const listOfGroup = [_.assign(this.hcp, {children: _.compact(fullTree)})]
 
+
+
+                        listOfGroup.map(group => {
+                            console.log(this._getChildrenForDisplay(group.children))
+                        })
+
+
+                        this.set('listOfGroups', [])
+
+                    });
+                })
             }
 
-            _getAllChildren(parentId, acc){
-                let prom = Promise.resolve([])
-                return this.api.hcparty().getHealthcarePartiesByParentId(parentId).then(children => {
-                    //console.log(children)
-                    if(children.length > 0){
-                        children.map(child => {
-                            prom = prom.then(childrenList => this._getAllChildren(child.id, child).then(rep =>  _.concat(childrenList, rep)))
+            _getChildrenForDisplay(children){
+                return children.map(c => this._getChildrenForDisplay(c.children))
+            }
+
+            _getChildrenTree(hcpIdToCrawlFrom) {
+                return this.api.hcparty().getHealthcarePartiesByParentId(hcpIdToCrawlFrom).then(foundChildren =>{
+                    if(!!_.size(foundChildren)) {
+                        let prom = Promise.resolve();
+                        _.map( foundChildren, fc => {
+                            prom = prom.then(promisesCarrier => {
+                                return this._getChildrenTree(fc.id).then(sfc=>{
+                                    return _.concat(promisesCarrier, _.merge(fc, {children: _.compact(sfc)}))
+                                })
+                            })
                         })
+                        return prom.then(promisesCarrier => promisesCarrier)
                     }
-
-                    return prom.then(childrenList => {
-                        return _.concat(acc, childrenList)
-                    })
-
                 })
             }
 
