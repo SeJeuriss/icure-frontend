@@ -63,18 +63,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 position:relative;
             }
 
-            .member{
+            .member-line{
+                display: flex;
                 height: 60px;
+                width: 100%;
+            }
+
+            .member{
+                padding: 5px;
+                height: 40px;
                 margin: 1%;
                 width: 100%;
                 display: flex;
-                border: 1px solid black;
+                border: 1px solid #000;
+                text-align: center;
+                box-shadow: 1px 1px 1px 0px;
             }
 
             .content{
                 heigth: 90%;
                 width: 100%;
-                display: flex;
             }
         </style>
 
@@ -83,10 +91,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
 
         <div class="content">
-            <template is="dom-repeat" items="[[listOfGroups]]" as="group">
-                <div class="member">
-                    [[group.lastName]] [[group.firstName]]
+            <template is="dom-repeat" items="[[listOfGroups.0]]" as="groups">
+                <div class="member-line">
+                    <template is="dom-repeat" items="[[groups]]" as="group">
+                        <div class="member">
+                            [[group.lastName]] [[group.firstName]]
+                        </div>
+                    </template>
                 </div>
+
             </template>
         </div>
 
@@ -141,23 +154,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('hcp', hcp)
                     this._getChildrenTree(hcp.id).then(fullTree => {
                         console.log([_.assign(this.hcp, {children: _.compact(fullTree)})])
-                        const listOfGroup = [_.assign(this.hcp, {children: _.compact(fullTree)})]
+                        const listOfGroupWithParent = [_.assign(this.hcp, {children: _.compact(fullTree)})]
 
-
-
-                        listOfGroup.map(group => {
-                            console.log(this._getChildrenForDisplay(group.children))
-                        })
-
-
-                        this.set('listOfGroups', [])
+                        this.set('listOfGroups', listOfGroupWithParent.map(group => {
+                            const g = _.assign(group, {idx: 0})
+                            return _.values(_.groupBy(_.uniq(_.flatten(this._getChildrenForDisplay(group.children, [g], 0)), 'id'), 'idx'))
+                        }))
 
                     });
                 })
             }
 
-            _getChildrenForDisplay(children){
-                return children.map(c => this._getChildrenForDisplay(c.children))
+            _getChildrenForDisplay(children, acc, index){
+                return children.map(c => {
+                    const a = _.assign(c, {idx:index + 1})
+                    return _.flatten(_.concat(acc, this._getChildrenForDisplay(c.children, _.concat(acc, a), index + 1)))
+                })
             }
 
             _getChildrenTree(hcpIdToCrawlFrom) {
