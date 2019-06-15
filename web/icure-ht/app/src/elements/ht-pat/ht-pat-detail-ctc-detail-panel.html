@@ -1182,12 +1182,13 @@
 
 			addConsultation() {
 				this.set('showAddFormsContainer', false);
+                const specialityCode =  _.get(this.globalHcp, "specialityCodes[0].code", "deptgeneralpractice")
 				const prefForms = this.user.properties.find(p => p.type.identifier === 'org.taktik.icure.preferred.forms');
 				if (prefForms && prefForms.typedValue) {
 					const formsMap = JSON.parse(prefForms.typedValue.stringValue);
 					this.addForm(formsMap['org.taktik.icure.form.standard.consultation']);
 				} else {
-                    this.addForm("FFFFFFFF-FFFF-FFFF-FFFF-CONSULTATION");
+                    specialityCode === "deptkinesitherapy" ? this.addForm("b15efae1-b957-4430-9f24-1c3729686de0") : this.addForm("FFFFFFFF-FFFF-FFFF-FFFF-CONSULTATION")
 				}
 			}
 
