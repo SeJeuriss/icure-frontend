@@ -5190,7 +5190,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     filter: function (filterValue, limit, offset, sortKey, descending) {
                         const regExp = filterValue && new RegExp(filterValue, "i");
 
-                        const specialityCode = this.api.hcParties && this.api.hcParties[this.user.healthcarePartyId] ? _.get(this.api.hcParties[this.user.healthcarePartyId], "specialityCodes[0].code]", "deptgeneralpractice") : 'deptgeneralpractice'
+                        const specialityCode = this.api.hcParties && this.api.hcParties[this.user.healthcarePartyId] ? _.get(this.api.hcParties[this.user.healthcarePartyId], "specialityCodes[0].code", "deptgeneralpractice") : 'deptgeneralpractice'
 
                         const all = this.allTemplates || (this.allTemplates = Promise.all([
                             this.api.form().findFormTemplates(),
