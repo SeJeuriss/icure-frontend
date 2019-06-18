@@ -312,7 +312,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             #add-new-person-to-care-team{
                 height: 520px;
-                width: 500px;
+                width: 1024px;
             }
 
             #internal-care-team-list, #external-care-team-list, #dmg-owner-list{
@@ -544,12 +544,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="speciality">[[localize('speciality','Speciality',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[item.speciality]]</div>
+                                            <div class="cell frozen">[[_localizeSpeciality(item.speciality)]]</div>
                                         </template>
                                     </vaadin-grid-column>
                                 </vaadin-grid>
 
-                                <h4 class="subtitle">[[localize('ecp','External care provider',language)]]</h4>
+                                <h4 class="subtitle">[[localize('ecp','External care provider',language)]] <iron-icon id="" icon="vaadin:plus-circle" on-tap="showAddPersonToCareTeam"></iron-icon></h4>
                                 <vaadin-grid id="dmg-owner-list" class="material" overflow="bottom" multi-sort="[[multiSort]]" items="[[currentExternalPatientCareTeam]]"
                                              active-item="{{selectedCareProvider}}" on-tap="showInfoSelectedHcp">
                                     <vaadin-grid-column width="240px">
@@ -675,6 +675,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <paper-dialog id="add-new-person-to-care-team">
             <h2 class="modal-title">[[localize('add_new_per_to_car_tea','Add new person to the care team',language)]]</h2>
+
+            <template is="dom-if" if="[[_isEhealthActive]]">
+                <vaadin-combo-box id="newHcp" label="[[localize('inputYourSearchQuery','What are you looking for ?',language)]]" filter="{{recipientFilter}}" filtered-items="[[filteredRecipientsList]]" item-label-path="displayName" allow-custom-value on-change="_addRecipient"><template>[[item.displayName]]</template></vaadin-combo-box>
+                <vaadin-combo-box class="type-to m-l-20" id="type-To" items="[[recipientTypes]]" item-label-path="label" item-value-path="id" required error-message="This field is required" label="[[localize('sch_by', 'Search by', language)]]" selected-item="{{recipientType}}"></vaadin-combo-box>
+            </template>
+            <template is="dom-if" if="[[!_isEhealthActive]]">
+
+            </template>
+
+
             <div>
                 <paper-input id="" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.LastName}}"></paper-input>
                 <paper-input id="" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.FirstName}}"></paper-input>
@@ -794,6 +804,10 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
         return {
             api: {
                 type: Object
+            },
+            credentials: {
+                type: Object,
+                noReset: true
             },
             patientForm: {
                 type: Object,
@@ -925,12 +939,42 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
             cardData: {
                 type: Object,
                 value: {}
+            },
+            recipientFilter: {
+                type: String,
+                value: ''
+            },
+            recipientType: {
+                type: Object,
+                value: {}
+            },
+            recipientTypes: {
+                type: Array,
+                value: [
+                    {id: "CBE", label: "BCE"},
+                    {id: "EHP", label: "EHP (eHealth Partner)"},
+                    {id: "INSS", label: "INSS"},
+                    {id: "NIHII", label: "NIHII"},
+                    {id: "NIHII-HOSPITAL", label: "NIHII-HOSPITAL"},
+                    {id: "NIHII-PHARMACY", label: "NIHII-PHARMACY"}
+                ],
+                noReset: true
+            },
+            recipientReqIdx: {
+                type: Number,
+                value: 0
             }
         };
     }
 
     static get observers() {
-        return ['patientChanged(api,user,patient)', 'partnershipsChanged(patient.partnerships.*)', 'medicalPostitChanged(medicalPostit)', 'administrativePostitChanged(administrativePostit)'];
+        return ['patientChanged(api,user,patient)',
+            'partnershipsChanged(patient.partnerships.*)',
+            'medicalPostitChanged(medicalPostit)',
+            'administrativePostitChanged(administrativePostit)',
+            '_recipientsFilterChanged(recipientType, recipientFilter)',
+            '_loadRecipientTypesTranslations(language)'
+        ];
     }
 
     constructor() {
@@ -1846,6 +1890,106 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
         if(this.tabIndex >= 0 && this.tabs >= 0 && this.tabIndex != this.tabs){
             this.set('tabs',this.tabIndex)
         }
+    }
+
+    _localizeSpeciality(speciality){
+        return this.localize('cd-hcp-'+speciality, speciality, this.language)
+    }
+
+    _isEhealthActive(){
+        return this.api.tokenId && this.api.keystoreId && this.api.credentials.ehpassword? true : false
+    }
+
+    _recipientsFilterChanged(recipientType, recipientFilter) {
+
+        if( _.trim(recipientFilter).length < 3 || !_.get(this,"api.keystoreId",false) || !_.get(this,"api.tokenId",false) || !_.get(this,"api.credentials.ehpassword",false) ) { this.set("filteredRecipientsList",[]); return; }
+        const reqIdx = (this.recipientReqIdx = (this.recipientReqIdx || 0) + 1)
+
+        setTimeout(() => {
+            if (reqIdx !== this.recipientReqIdx) return;
+            this.set('busySpinner', true)
+
+            const newMsgTo = this.shadowRoot.querySelector('#newHcp')||false;
+            const numericSearchQuery = _.trim(_.trim(recipientFilter).replace( /([^\d]*)/gi, '' ))
+            const patternsValidation = {
+                heightDigits: /^([0-9]){8}$/i,
+                tenDigits: /^([0-9]){10}$/i,
+                elevenDigits: /^([0-9]){11}$/i
+            }
+
+            const isValidNihii = !!patternsValidation.heightDigits.test(numericSearchQuery) || !!patternsValidation.elevenDigits.test(numericSearchQuery)
+            const isValidBce = !!patternsValidation.tenDigits.test(numericSearchQuery)
+            const isValidEhp = !!patternsValidation.tenDigits.test(numericSearchQuery)
+            const isValidSsin = !!patternsValidation.elevenDigits.test(numericSearchQuery)
+
+            let searchProm = recipientType.id === 'CBE' ?
+                Promise.all([
+                    !isValidBce ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByCbeUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'cbe',false)).value()),
+                    this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
+                    this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                ]) :
+                recipientType.id === 'EHP' ? Promise.all([
+                        !isValidEhp ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByEhpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'ehp',false)).value()),
+                        this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
+                        this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                    ]) :
+                    recipientType.id === 'INSS' ? Promise.all([
+                            !isValidSsin ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getHcpBySsinUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),    // Looking for SSIN "53815994527" returns it but WITHOUT SSIN value, quite logical. Filtering on NIHII then
+                            this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
+                        ]) :
+                        (recipientType.id === 'NIHII-HOSPITAL' || recipientType.id === 'NIHII-PHARMACY')  ? Promise.all([
+                                !isValidNihii ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByNihiiUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),
+                                this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*', ( recipientType.id === 'NIHII-PHARMACY' ? "PHARMACY" : "HOSPITAL" ) ).then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                            ]) :
+                            // Default type = NIHII
+                            Promise.all([
+                                !isValidNihii ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getHcpByNihiiUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),
+                                this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
+                            ])
+
+            searchProm
+                .then(searchResults => { if (reqIdx === this.recipientReqIdx) {
+                    this.set("filteredRecipientsList", _
+                        .chain(searchResults)
+                        .map(singleRecipient => _.assign({displayName : _.compact([
+                                _.map( _.trim(_.get(singleRecipient, "lastName", "")).split(" "),i=> _.capitalize(i)).join(" "),
+                                _.map( _.trim(_.get(singleRecipient, "firstName", "")).split(" "),i=> _.capitalize(i)).join(" "),
+                                ( ( !_.trim(_.get(singleRecipient, "lastName", "")) && !_.trim(_.get(singleRecipient, "firstName", "")) ) ? _.map( _.trim(_.get(singleRecipient, "name", "")).split(" "),i=> _.capitalize(i)).join(" ") : "" ),
+                                ( !! _.trim(_.get(singleRecipient, "nihii", "")) ? "(" + this.localize('nihii', 'INAMI', this.language) + ": " + this.api.formatInamiNumber(_.trim(_.get(singleRecipient, "nihii", ""))) + ")" : "" ),
+                                ( !! _.trim(_.get(singleRecipient, "ssin", "")) ? "(" + this.localize('ssin', 'Registre national', this.language) + ": " + this.api.formatSsinNumber(_.trim(_.get(singleRecipient, "ssin", ""))) + ")" : "" ),
+                                ( !! _.trim(_.get(singleRecipient, "ehp", "")) ? "(EHP: " + _.trim(_.get(singleRecipient, "ehp", "")) + ")" : "" ),
+                                ( !! _.trim(_.get(singleRecipient, "cbe", "")) ? "(BCE: " + _.trim(_.get(singleRecipient, "cbe", "")) + ")" : "" )
+                            ]).join(" ")},singleRecipient))
+                        .orderBy(['displayName','nihii', 'ssin', 'ehp', 'cbe'],['asc','asc','asc','asc','asc'])
+                        .value()
+                    )
+
+                    console.log(this.filteredRecipientsList)
+                }})
+                .catch(e=>{console.log("ERROR with _recipientsFilterChanged: ", e);})
+                .finally(() => this.set('busySpinner', false))
+
+        }, 300)
+    }
+
+    _loadRecipientTypesTranslations() {
+
+        let cbe = this.recipientTypes.find(i=>i.id==="CBE")
+        let ehp = this.recipientTypes.find(i=>i.id==="EHP")
+        let inss = this.recipientTypes.find(i=>i.id==="INSS")
+        let nihii = this.recipientTypes.find(i=>i.id==="NIHII")
+        let nihiiHospital = this.recipientTypes.find(i=>i.id==="NIHII-HOSPITAL")
+        let nihiiPharmacy = this.recipientTypes.find(i=>i.id==="NIHII-PHARMACY")
+
+        cbe.label = this.localize('cbe', 'CBE', this.language) + " / " + this.localize('name', 'Name', this.language)
+        ehp.label = "EHP (eHealth Partner) / " + this.localize('name', 'Name', this.language)
+        inss.label = this.localize('ssin', 'Registre national', this.language) + " / " + this.localize('name', 'Name', this.language)
+        nihii.label = this.localize('nihii', 'INAMI', this.language) + " / " + this.localize('name', 'Name', this.language)
+        nihiiHospital.label = this.localize('nihii', 'INAMI', this.language) + " " + this.localize('hospital', 'Hospital', this.language) + " / " + this.localize('name', 'Name', this.language)
+        nihiiPharmacy.label = this.localize('nihii', 'INAMI', this.language) + " " + this.localize('pharmacy', 'Pharmacy', this.language) + " / " + this.localize('name', 'Name', this.language)
+
+        this.set("recipientType", nihii)
+
     }
 
 }

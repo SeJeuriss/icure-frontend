@@ -2015,7 +2015,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                                         on-medication-detail="_medicationDetail" on-medications-detail="_medicationsDetail" contact-type-list="[[contactTypeList]]" on-contact-saved="contactChanged" on-add-other="addOther" on-add-document="_openUploadDialog" on-prescribe="_prescribe" credentials="[[credentials]]" on-write-linking-letter="writeLinkingLetter" on-reset-patient="_resetPatient" linking-letter-dialog="[[linkingLetterDialog]]" on-forward-document="_forwardDocument" global-hcp="[[globalHcp]]"></ht-pat-detail-ctc-detail-panel>
                 </template>
                 <template is="dom-if" if="[[isAdminSelected(selectedAdminOrCompleteFileIndex)]]">
-                    <ht-pat-admin-card id="pat-admin-card" api="[[api]]" user="[[user]]" patient="{{patient}}" i18n="[[i18n]]" resources="[[resources]]" language="[[language]]" tab-index="[[adminTabIndex]]" cardData="[[cardData]]" on-card-changed="_cardChanged" on-patient-saved="_patientSaved"></ht-pat-admin-card>
+                    <ht-pat-admin-card id="pat-admin-card" api="[[api]]" user="[[user]]" patient="{{patient}}" i18n="[[i18n]]" resources="[[resources]]" language="[[language]]" tab-index="[[adminTabIndex]]" cardData="[[cardData]]" credentials="[[credentials]]" on-card-changed="_cardChanged" on-patient-saved="_patientSaved"></ht-pat-admin-card>
                 </template>
             </vaadin-split-layout>
         </div>
