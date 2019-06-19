@@ -20,14 +20,20 @@
 
 
         <paper-dialog id="biodigitalDialog">
-
+            <iframe id="myWidget"
+                    src="https://human.biodigital.com/widget/?m=cochlear_implant&dk=76155af1ee3500e3769fc78d3561636154723b42"
+                    width="100%"
+                    height="100%">
+            </iframe>
         </paper-dialog>
 
     </template>
+
+    <script src="https://developer.biodigital.com/builds/api/2/human-api.min.js"></script>
     <script>
 
-
         class HtPatBiodigitalDialog extends Polymer.TkLocalizerMixin(Polymer.Element) {
+
             static get is() {
                 return 'ht-pat-biodigital-dialog';
             }
