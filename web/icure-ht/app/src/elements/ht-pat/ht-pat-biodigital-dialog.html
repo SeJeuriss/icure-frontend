@@ -1,0 +1,57 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../icpc-styles.html">
+<link rel="import" href="../collapse-button/collapse-button.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="ht-pat-biodigital-dialog">
+    <template>
+        <style include="icpc-styles">
+
+            #biodigitalDialog{
+                height: 600px;
+                width: 100%;
+            }
+
+        </style>
+
+
+
+        <paper-dialog id="biodigitalDialog">
+
+        </paper-dialog>
+
+    </template>
+    <script>
+
+
+        class HtPatBiodigitalDialog extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'ht-pat-biodigital-dialog';
+            }
+
+            static get properties() {
+                return {
+
+                };
+            }
+
+            static get observers() {
+                return [];
+            }
+
+            ready() {
+                super.ready();
+            }
+
+            open(){
+                this.$['biodigitalDialog'].open()
+            }
+
+
+        }
+        customElements.define(HtPatBiodigitalDialog.is, HtPatBiodigitalDialog);
+    </script>
+</dom-module>
