@@ -10,27 +10,288 @@
     <template>
         <style include="icpc-styles">
 
-            #biodigitalDialog{
-                height: 600px;
+            .human-popup > .header:after, .human-tour > .tour-header:after {
                 width: 100%;
+                content: '';
+                clear: both;
+                display: table;
+            }
+
+            .human-popup .close-btn, .human-tour .close-btn {
+                float: right;
+                display: inline-block;
+                margin: 0 5px;
+                font-size: 1.25em;
+                cursor: pointer;
+            }
+
+            .human-popup iframe, .human-tour iframe {
+                border: none;
+            }
+
+            .human-popup {
+                display: none;
+                position: absolute;
+                background-color: #fff;
+                border: 1px solid #999;
+                padding: 0 5px 5px 5px;
+                border-radius: 3px;
+                z-index: 1000;
+                box-shadow: 1px 1px 3px rgba(100,100,100,.3);
+            }
+
+            .human-popup.popup-open {
+                display: block;
+            }
+
+            .human-popup > .arrow,
+            .human-popup > .arrow:after {
+                position: absolute;
+                display: block;
+                width: 0;
+                height: 0;
+                border-color: transparent;
+                border-style: solid;
+            }
+
+            .human-popup > .arrow {
+                border-width: 11px;
+            }
+
+            .human-popup > .arrow:after {
+                content: "";
+                border-width: 10px;
+            }
+
+            .human-popup.right > .arrow {
+                bottom: 10px;
+                left: -11px;
+                border-right-color: #999;
+                border-left-width: 0;
+            }
+
+            .human-popup.right > .arrow:after {
+                bottom: -10px;
+                left: 1px;
+                border-right-color: #fff;
+                border-left-width: 0;
+            }
+
+            .human-popup.bottom > .arrow {
+                left: 11px;
+                top: -11px;
+                border-bottom-color: #999;
+                border-top-width: 0;
+            }
+
+            .human-popup.bottom > .arrow:after {
+                left: -10px;
+                top: 1px;
+                border-bottom-color: #fff;
+                border-top-width: 0;
+            }
+
+            .human-popup.left > .arrow {
+                bottom: 10px;
+                right: -11px;
+                border-left-color: #999;
+                border-right-width: 0;
+            }
+
+            .human-popup.left > .arrow:after {
+                bottom: -10px;
+                right: 1px;
+                border-left-color: #fff;
+                border-right-width: 0;
+            }
+
+            .human-popup.top > .arrow {
+                left: 11px;
+                bottom: -11px;
+                border-top-color: #999;
+                border-bottom-width: 0;
+            }
+
+            .human-popup.top > .arrow:after {
+                left: -10px;
+                bottom: 1px;
+                border-top-color: #fff;
+                border-bottom-width: 0;
+            }
+
+            /*========
+              TOUR
+            ========*/
+
+            .tour-open {
+                overflow: hidden;
+            }
+
+            .human-tour, .human-tour-backdrop {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+
+            .human-tour {
+                display: none;
+                z-index: 1010;
+            }
+
+            .tour-open .human-tour.open {
+                display: block;
+            }
+
+            .human-tour-backdrop {
+                background-color: #000;
+                opacity: .8;
+                z-index: 1000;
+            }
+
+            .tour-dialog {
+                position: fixed;
+                box-sizing: border-box;
+                top: 7%;
+                left: 50%;
+                width: 760px;
+                margin-left: -380px;
+                background-color: #fff;
+                border: 1px solid #999;
+                border: 1px solid rgba(0,0,0,0.3);
+
+                outline: none;
+                z-index: 1020;
+
+                -webkit-border-radius: 8px;
+                -moz-border-radius: 8px;
+                border-radius: 8px;
+
+                -webkit-box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+                -moz-box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+                box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+            }
+
+            .tour-header, .tour-content {
+                padding: 0 15px;
+            }
+
+            .tour-header {
+                min-height: 45px;
+            }
+
+            .tour-header > h1 {
+                font-size: 20px;
+                padding: 10px 0;
+            }
+
+            .tour-header > .close-btn {
+                padding-top: 10px;
+            }
+
+            .tour-content {
+                position: relative;
+                padding-bottom: 15px;
+            }
+
+            .human-tour iframe {
+                width: 100%;
+                height: 500px;
+            }
+
+            .nav-container {
+                text-align: center;
+            }
+
+            .chapters-list {
+                display: inline-block;
+                padding-top: 15px;
+                list-style-type: none;
+            }
+
+            .chapters-list > li {
+                display: inherit;
+                height: 25px;
+                width: 25px;
+                margin-right: 15px;
+                border: 1px solid #666;
+                float: inherit;
+                cursor: pointer;
+                text-align: center;
+                line-height: 1.7em;
+
+                -webkit-border-radius: 50%;
+                -moz-border-radius: 50%;
+                border-radius: 50%;
+
+                -webkit-transition: background-color .2s;
+                transition: background-color .2s;
+            }
+
+            .chapters-list > li:last-child {
+                margin-right: 0;
+            }
+
+            .chapters-list > li:hover {
+                background-color: rgba(100,100,100,.5);
+                border-color: #333;
+            }
+
+            .chapters-list > li.active {
+                background-color: rgba(50,50,50,.5);
+                border-color: #333;
+            }
+
+            .tour-panel {
+                position: absolute;
+                top: 10px;
+                right: 25px;
+                width: 25%;
+                color: #fff;
+                max-height: 300px;
+                overflow: auto;
+                padding: 5px;
+            }
+
+            .tour-panel > h1 {
+                padding: 3px 0;
+                font-size: 17px;
+                border-bottom: 1px solid #fff;
+            }
+
+            .tour-panel > p {
+                font-size: 13px;
+            }
+
+            #biodigitalDialog{
+                height: calc(98% - 12vh);
+                width: 98%;
+                max-height: calc(100% - 64px - 48px - 20px); /* 100% - header - margin - footer*/
+                min-height: 400px;
+                min-width: 800px;
+                top: 64px;
+            }
+
+            #biodigitalWidget{
+                height: 90%;
+                width: 90%;
             }
 
         </style>
 
 
-
         <paper-dialog id="biodigitalDialog">
-            <iframe id="myWidget"
-                    src="https://human.biodigital.com/widget/?m=cochlear_implant&dk=76155af1ee3500e3769fc78d3561636154723b42"
-                    width="100%"
-                    height="100%">
-            </iframe>
+            <iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?s=male&b=53162&dk=76155af1ee3500e3769fc78d3561636154723b42"></iframe>
         </paper-dialog>
 
     </template>
 
-    <script src="https://developer.biodigital.com/builds/api/2/human-api.min.js"></script>
+
+
     <script>
+
+        //const HumanApi = require("biodigital-human")
 
         class HtPatBiodigitalDialog extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
@@ -54,6 +315,11 @@
 
             open(){
                 this.$['biodigitalDialog'].open()
+                this._modifyWidget()
+            }
+
+            _modifyWidget(){
+                
             }
 
 
