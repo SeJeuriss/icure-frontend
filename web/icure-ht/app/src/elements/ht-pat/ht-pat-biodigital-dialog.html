@@ -273,18 +273,69 @@
                 top: 64px;
             }
 
+            .biodigitalDialog{
+                display: flex;
+                height: calc(100% - 45px);;
+                width: auto;
+                margin: 0;
+                padding: 0;
+            }
+
             #biodigitalWidget{
-                height: 90%;
-                width: 90%;
+                height: 97%;
+                width: 98%;
+                margin: 1%;
+            }
+
+            .biodigital-menu-list{
+                height: 100%;
+                width: 30%;
+                background-color: var(--app-background-color-dark);
+                border-right: 1px solid var(--app-background-color-dark);
+                overflow: auto;
+                position: relative;
+            }
+
+            .biodigital-scene{
+                height: 100%;
+                width: 70%;
+            }
+
+            .buttons{
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                margin: 0;
             }
 
         </style>
 
 
         <paper-dialog id="biodigitalDialog">
-            <!--<iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?s=male&b=53162&dk=76155af1ee3500e3769fc78d3561636154723b42"></iframe>-->
-            <iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?o=Skeletal_System&dk=76155af1ee3500e3769fc78d3561636154723b42"></iframe>
+            <div class="biodigitalDialog">
+                <div class="biodigital-menu-list">
 
+                </div>
+                <div class="biodigital-scene">
+                    <iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?[[view]][[token]]"></iframe>
+                </div>
+                <div class="buttons">
+                    <paper-button on-tap="_showSkeletalSystem">Show skeletal</paper-button>
+                    <paper-button on-tap="_hiddeSkeletalSystem">Hidden skeletal</paper-button>
+
+                    <paper-button on-tap="_showMuscularSystem">Show muscular</paper-button>
+                    <paper-button on-tap="_hiddeMuscularSystem">Hidden muscular</paper-button>
+
+                    <paper-button on-tap="_showDigestiveSystem">Show digestive</paper-button>
+                    <paper-button on-tap="_hiddeDigestiveSystem">Hidden digestive</paper-button>
+
+                    <paper-button class="modal-button" on-tap="_closeDialogs"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+                </div>
+            </div>
+
+            <!--<iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?s=male&b=53162&dk=76155af1ee3500e3769fc78d3561636154723b42"></iframe>-->
+
+<!--
             <paper-button on-tap="_zoomIn">Zoom in</paper-button>
             <paper-button on-tap="_zoomOut">Zoom out</paper-button>
 
@@ -293,29 +344,13 @@
 
             <paper-button on-tap="_gotoHead">Go to head</paper-button>
             <paper-button on-tap="_gotoFoot">Go to foot</paper-button>
-
+-->
         </paper-dialog>
 
     </template>
 
 
-
-
-
-
-
-
     <script>
-
-        //const HumanApi = require("biodigital-human")
-
-
-
-
-
-
-
-
 
         !function() {
 
@@ -535,9 +570,6 @@
             }();
 
 
-
-
-
         class HtPatBiodigitalDialog extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
             static get is() {
@@ -550,9 +582,36 @@
                         type: Object,
                         value: {}
                     },
+                    view: {
+                      type: String,
+                      value: "o=maleAdult_standard-Skeletal_System_ID"
+                    },
+
+                    token:{
+                        type: String,
+                        value: "&dk=76155af1ee3500e3769fc78d3561636154723b42"
+                    },
                     yaw: {
                         type: Number,
                         value: 0
+                    },
+                    standardPart: {
+                        type: Array,
+                        value: () => [
+                            {type: "male" ,id: "maleAdult_standard-Skeletal_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Reproductive_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Cardiovascular_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Muscular_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Lymphatic_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Endocrine_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Digestive_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Integumentary_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Urinary_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Viscera_and_Fascia_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Respiratory_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Ligament_System_ID"},
+                            {type: "male" ,id: "maleAdult_standard-Nervous_System_ID"}
+                        ]
                     }
                 };
             }
@@ -570,15 +629,33 @@
                 this._modifyWidget()
             }
 
-
-
-
-
-
+            _closeDialogs(){
+                this.$['biodigitalDialog'].close()
+            }
 
             _modifyWidget(){
 
+                let patientProblemes = [
+                    {title : "2019 - F92 - Cataracte grise", description: "", objectId: "maleAdult_standard-Occipital_bone_52735_ID"},
+                    {title : "2018 - H82 - Aura vertigineuse", description: "", objectId: "maleAdult_standard-Right_ear_53641_ID"},
+                    {title : "1994 - L80 - Luxation d'une vertèbre", description: "", objectId: "maleAdult_standard-Left_Mandibular_Lateral_Incisor_ID"},
+                    {title : "2012 - L99 - Atteinte articulaire", description: "", objectId: "maleAdult_standard-Articular_Cartilage_of_the_Left_Shoulder_ID"},
+                    {title : "2014 - R80 - Bronchiolite", description: "", objectId: "maleAdult_standard-Left_Humerus_23130_ID"},
+                    {title : "2016 - S88 - Dermatite", description: "", objectId: "maleAdult_standard-Left_metacarpal_bones_of_hand_71898_ID"},
+                    {title : "2000 - W92 - Accouchement", description: "", objectId: "maleAdult_standard-Right_hamate_bone_24448_ID"},
+                    {title : "1999 - X91 - Verrue", description: "", objectId: "maleAdult_standard-Right_metacarpal_bones_of_hand_71898_ID"}
+                ]
+
                 this.human = new HumanAPI("biodigitalWidget", this);
+
+                this.human.send("annotations.setEnabled");
+
+                this.human.send("scene.info", function (data) {
+                    console.log(data.objects);
+                })
+
+                patientProblemes.map(prob => this.human.send("annotations.create", prob))
+
 
             }
 
@@ -605,6 +682,43 @@
             _gotoFoot() {
                 this.human.send("camera.set", { objectId: "maleAdult_standard-maleAdult_standard-Left_metatarsal_bones_ID", animate: true });
             }
+
+            _showSkeletalSystem(){
+                this.human.send("scene.showObjects", {
+                    "maleAdult_standard-Skeletal_System_ID": true
+                });
+            }
+
+            _showMuscularSystem(){
+                this.human.send("scene.showObjects", {
+                    "maleAdult_standard-Muscular_System_ID": true
+                });
+            }
+
+            _showDigestiveSystem(){
+                this.human.send("scene.showObjects", {
+                    "maleAdult_standard-Digestive_System_ID": true
+                });
+            }
+
+            _hiddeSkeletalSystem(){
+                this.human.send("scene.showObjects", {
+                    "maleAdult_standard-Skeletal_System_ID": false
+                });
+            }
+
+            _hiddeMuscularSystem(){
+                this.human.send("scene.showObjects", {
+                    "maleAdult_standard-Muscular_System_ID": false
+                });
+            }
+
+            _hiddeDigestiveSystem(){
+                this.human.send("scene.showObjects", {
+                    "maleAdult_standard-Digestive_System_ID": false
+                });
+            }
+
 
 
 
