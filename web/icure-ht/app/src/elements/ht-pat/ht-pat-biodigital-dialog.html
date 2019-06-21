@@ -5,6 +5,8 @@
 <link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../icons/medical-icon.html">
 
 <dom-module id="ht-pat-biodigital-dialog">
     <template>
@@ -282,9 +284,8 @@
             }
 
             #biodigitalWidget{
-                height: 97%;
-                width: 98%;
-                margin: 1%;
+                height: 100%;
+                width: 100%;
             }
 
             .biodigital-menu-list{
@@ -308,6 +309,31 @@
                 margin: 0;
             }
 
+            .biodigital-scene-filter{
+                background-color: var(--app-secondary-color);
+                height: 40px;
+                width: auto;
+                padding: 4px;
+            }
+
+            .biodigital-scene-iframe{
+                height: calc(98% - 9vh);
+                width: 98%;
+                margin: 1%;
+            }
+
+            #systemFilterPanel{
+                z-index: 999;
+            }
+
+            .filters-bar--small-icon.selected {
+                color: var(--app-primary-color-dark);
+            }
+
+            .filters-bar--small-icon{
+                color: var(--app-text-color-disabled);
+            }
+
         </style>
 
 
@@ -317,18 +343,22 @@
 
                 </div>
                 <div class="biodigital-scene">
-                    <iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?[[view]][[token]]"></iframe>
+                    <div class="biodigital-scene-filter">
+                        <div class="filters-bar--small">
+                            <div>
+                                <template is="dom-repeat" items="[[filtersSystem]]" as="sys">
+                                    <paper-icon-button id="[[sys.id]]" class$="filters-bar--small-icon [[_isFilterSelected(sys.id, selectedFilters, selectedFilters.*)]]" icon="[[sys.icon]]" on-tap="_selectedSystemFilter"></paper-icon-button>
+                                    <paper-tooltip for="[[sys.id]]">[[_localizeFilter(filtersSystem.title)]]</paper-tooltip>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="biodigital-scene-iframe">
+                        <iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?[[view]]&dk=[[token]]"></iframe>
+                    </div>
                 </div>
                 <div class="buttons">
-                    <paper-button on-tap="_showSkeletalSystem">Show skeletal</paper-button>
-                    <paper-button on-tap="_hiddeSkeletalSystem">Hidden skeletal</paper-button>
-
-                    <paper-button on-tap="_showMuscularSystem">Show muscular</paper-button>
-                    <paper-button on-tap="_hiddeMuscularSystem">Hidden muscular</paper-button>
-
-                    <paper-button on-tap="_showDigestiveSystem">Show digestive</paper-button>
-                    <paper-button on-tap="_hiddeDigestiveSystem">Hidden digestive</paper-button>
-
+                    <paper-button class="modal-button" on-tap="_saveModele"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
                     <paper-button class="modal-button" on-tap="_closeDialogs"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
                 </div>
             </div>
@@ -397,7 +427,7 @@
                 }
             ;
         }(),
-            function() {
+         function() {
                 "use strict";
                 HumanAPI.Map = function(a, b) {
                     this.items = a || [];
@@ -429,7 +459,7 @@
                 }
                 ;
             }(),
-            function() {
+         function() {
                 "use strict";
                 HumanAPI.WindowRPCClient = function(a) {
 
@@ -589,29 +619,19 @@
 
                     token:{
                         type: String,
-                        value: "&dk=76155af1ee3500e3769fc78d3561636154723b42"
+                        value: "76155af1ee3500e3769fc78d3561636154723b42"
                     },
                     yaw: {
                         type: Number,
                         value: 0
                     },
-                    standardPart: {
+                    selectedFilters:{
                         type: Array,
-                        value: () => [
-                            {type: "male" ,id: "maleAdult_standard-Skeletal_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Reproductive_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Cardiovascular_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Muscular_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Lymphatic_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Endocrine_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Digestive_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Integumentary_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Urinary_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Viscera_and_Fascia_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Respiratory_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Ligament_System_ID"},
-                            {type: "male" ,id: "maleAdult_standard-Nervous_System_ID"}
-                        ]
+                        value: () => []
+                    },
+                    filtersSystem:{
+                        type: Array,
+                        value: () => []
                     }
                 };
             }
@@ -626,7 +646,51 @@
 
             open(){
                 this.$['biodigitalDialog'].open()
+                this.set('selectedFilters', [])
+                this.set('filtersSystem',[])
+                this.set('bodyParts', [])
+
+                this._initialize()
                 this._modifyWidget()
+            }
+
+            _initialize(){
+                this.push('selectedFilters', "maleAdult_standard-Skeletal_System_ID")
+
+                this.set('filtersSystem', [
+                    {id: "maleAdult_standard-Skeletal_System_ID", icon: "icure-svg-icons:imaging", title: {en: "Skeletal system", fr:"Système osseux", nl:"Skeletal system"}},
+                    {id: "maleAdult_standard-Reproductive_System_ID", icon: "medical-svg-icons:reproductiveSystem", title: {en: "Reproductive system", fr:"Système reproductif", nl:"Reproductive system"}},
+                    {id: "maleAdult_standard-Cardiovascular_System_ID", icon: "medical-svg-icons:cardiovascularSystem", title: {en: "Cardiovascular system", fr:"", nl:"Cardiovascular system"}},
+                    {id: "maleAdult_standard-Muscular_System_ID", icon: "vaadin:flash", title: {en: "Muscular system", fr:"Système musculaire", nl:"Muscular system"}},
+                    {id: "maleAdult_standard-Lymphatic_System_ID", icon: "medical-svg-icons:lymphaticSystem", title: {en: "Lymphatic system", fr:"Système lymphatique", nl:"Lymphatic system"}},
+                    {id: "maleAdult_standard-Endocrine_System_ID", icon: "medical-svg-icons:endocrineSystem", title: {en: "Endocrine system", fr:"Système endocrinien", nl:"Endocrine system"}},
+                    {id: "maleAdult_standard-Digestive_System_ID", icon: "medical-svg-icons:digestiveSystem", title: {en: "Digestive system", fr:"Système digestif", nl:"Digestive system"}},
+                    {id: "maleAdult_standard-Integumentary_System_ID", icon: "vaadin:male", title: {en: "Integumentary system", fr:"Système tégumentaire", nl:"Integumentary system"}},
+                    {id: "maleAdult_standard-Urinary_System_ID", icon: "medical-svg-icons:urinarySystem", title: {en: "Urinary system", fr:"Système urinaire", nl:"Urinary system"}},
+                    {id: "maleAdult_standard-Viscera_and_Fascia_System_ID", icon: "medical-svg-icons:digestiveSystem", title: {en: "Viscera and fascia system", fr:"Viscères et fascia", nl:"Viscera and fascia system"}},
+                    {id: "maleAdult_standard-Respiratory_System_ID", icon: "medical-svg-icons:respiratorySystem", title: {en: "Respiratory system", fr:"Système respiratoire", nl:"Respiratory system"}},
+                    {id: "maleAdult_standard-Ligament_System_ID", icon: "vaadin:cluster", title: {en: "Ligament system", fr:"Système ligamentaire", nl:"Ligament system"}},
+                    {id: "maleAdult_standard-Nervous_System_ID", icon: "medical-svg-icons:nervousSystem", title: {en: "Nervous system", fr:"Système nerveux", nl:"Nervous system"}}
+                ])
+            }
+
+            _isFilterSelected(filter) {
+               return this.selectedFilters.includes(filter) ? 'selected' : ''
+            }
+
+            _selectedSystemFilter(e) {
+                console.log(e)
+                if(e && e.target && e.target.id){
+                    const filter = e.target.id
+                    const currentIndex = this.selectedFilters.indexOf(filter)
+                    if (currentIndex >= 0) {
+                        this.splice('selectedFilters', currentIndex, 1)
+                        this.human.send("scene.showObjects", {[filter]: false});
+                    } else {
+                        this.push('selectedFilters', filter)
+                        this.human.send("scene.showObjects", {[filter]: true});
+                    }
+                }
             }
 
             _closeDialogs(){
@@ -652,6 +716,7 @@
 
                 this.human.send("scene.info", function (data) {
                     console.log(data.objects);
+                    return _.values(data.objects)
                 })
 
                 patientProblemes.map(prob => this.human.send("annotations.create", prob))
@@ -683,46 +748,32 @@
                 this.human.send("camera.set", { objectId: "maleAdult_standard-maleAdult_standard-Left_metatarsal_bones_ID", animate: true });
             }
 
-            _showSkeletalSystem(){
-                this.human.send("scene.showObjects", {
-                    "maleAdult_standard-Skeletal_System_ID": true
-                });
+
+            _localizeFilter(filter){
+                return filter && filter[this.language] ? filter[this.language] : ""
             }
 
-            _showMuscularSystem(){
-                this.human.send("scene.showObjects", {
-                    "maleAdult_standard-Muscular_System_ID": true
-                });
+            _saveModele(){
+
+                let http = require('http');
+
+                let headers = {
+                    'Accept': 'application/json',
+                    "Authorization": "Bearer " + this.token,
+                    'Cache-Control': 'no-cache'
+                }
+
+                let options = {
+                    url: "https://apis.biodigital.com/services/v1/content/collections/myhuman",
+                    method: 'GET',
+                    headers: headers
+                }
+
+                http.request(options, function (error, response, body) {
+                    let result = body;
+                    console.log(result)
+                })
             }
-
-            _showDigestiveSystem(){
-                this.human.send("scene.showObjects", {
-                    "maleAdult_standard-Digestive_System_ID": true
-                });
-            }
-
-            _hiddeSkeletalSystem(){
-                this.human.send("scene.showObjects", {
-                    "maleAdult_standard-Skeletal_System_ID": false
-                });
-            }
-
-            _hiddeMuscularSystem(){
-                this.human.send("scene.showObjects", {
-                    "maleAdult_standard-Muscular_System_ID": false
-                });
-            }
-
-            _hiddeDigestiveSystem(){
-                this.human.send("scene.showObjects", {
-                    "maleAdult_standard-Digestive_System_ID": false
-                });
-            }
-
-
-
-
-
 
         }
         customElements.define(HtPatBiodigitalDialog.is, HtPatBiodigitalDialog);
