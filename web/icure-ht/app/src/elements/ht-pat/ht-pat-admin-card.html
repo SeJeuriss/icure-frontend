@@ -303,15 +303,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 height: 140px;
             }
 
-            #add-person-to-care-team{
+            #internalCareTeamDialog{
                 min-height: 554px;
                 max-height: 50%;
                 min-width: 800px;
                 max-width: 60%;
             }
 
-            #add-new-person-to-care-team{
-                height: 520px;
+            #externalCareTeamDialog{
+                height: 600px;
                 width: 1024px;
             }
 
@@ -467,6 +467,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 transform: scale(.9);
             }
 
+            #newHcp{
+                width: 740px;
+            }
+
+            .icon-title{
+                height: 12px;
+                width: 12px;
+            }
+
+
         </style>
         <div class="administrative-panel">
             <paper-tabs selected="{{tabs}}">
@@ -512,7 +522,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <page>
                     <div class="page-container">
                             <div class="not-form-page">
-                                <h4 class="subtitle">[[localize('icp','Internal care provider',language)]]</h4>
+                                <h4 class="subtitle">[[localize('icp','Internal care provider',language)]] <iron-icon class="icon-title" icon="vaadin:plus-circle" on-tap="_showInternalTeamSelector"></iron-icon></h4>
                                 <vaadin-grid id="internal-care-team-list" class="material" overflow="bottom" multi-sort="[[multiSort]]" items=[[currentInternalCareTeam]]
                                              active-item="{{selectedCareProvider}}" on-tap="showInfoSelectedHcp">
                                     <vaadin-grid-column width="120px">
@@ -549,7 +559,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     </vaadin-grid-column>
                                 </vaadin-grid>
 
-                                <h4 class="subtitle">[[localize('ecp','External care provider',language)]] <iron-icon id="" icon="vaadin:plus-circle" on-tap="showAddPersonToCareTeam"></iron-icon></h4>
+                                <h4 class="subtitle">[[localize('ecp','External care provider',language)]] <iron-icon class="icon-title" icon="vaadin:plus-circle" on-tap="_showExternalTeamSelector"></iron-icon></h4>
                                 <vaadin-grid id="dmg-owner-list" class="material" overflow="bottom" multi-sort="[[multiSort]]" items="[[currentExternalPatientCareTeam]]"
                                              active-item="{{selectedCareProvider}}" on-tap="showInfoSelectedHcp">
                                     <vaadin-grid-column width="240px">
@@ -619,7 +629,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </iron-pages>
         </div>
 
-        <paper-dialog id="add-person-to-care-team">
+        <paper-dialog id="internalCareTeamDialog">
             <h2 class="modal-title">[[localize('add_per_to_car_tea','Add person',language)]]</h2>
             <div>
                 <vaadin-grid id="hcp-list" class="material" overflow="bottom" items=[[currentHcp]] active-item="{{selectedHcp}}">
@@ -665,40 +675,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </vaadin-grid>
             </div>
             <div class="buttons">
-                    <paper-button class="modal-button modal-button--extra" on-tap="showAddNewPersonToCareTeamForm"><iron-icon icon="icons:add"></iron-icon>[[localize('new_per','New person',language)]]</paper-button>
-                <div>
-                    <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                    <paper-button class="modal-button--save" dialog-confirm autofocus on-tap="confirmSharing">[[localize('save','Save',language)]]</paper-button>
-                </div>
+                <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
+                <paper-button class="modal-button--save" dialog-confirm autofocus on-tap="_addHcpToInternalTeam">[[localize('save','Save',language)]]</paper-button>
             </div>
         </paper-dialog>
 
-        <paper-dialog id="add-new-person-to-care-team">
+        <paper-dialog id="externalCareTeamDialog">
             <h2 class="modal-title">[[localize('add_new_per_to_car_tea','Add new person to the care team',language)]]</h2>
-
             <template is="dom-if" if="[[_isEhealthActive]]">
-                <vaadin-combo-box id="newHcp" label="[[localize('inputYourSearchQuery','What are you looking for ?',language)]]" filter="{{recipientFilter}}" filtered-items="[[filteredRecipientsList]]" item-label-path="displayName" allow-custom-value on-change="_addRecipient"><template>[[item.displayName]]</template></vaadin-combo-box>
-                <vaadin-combo-box class="type-to m-l-20" id="type-To" items="[[recipientTypes]]" item-label-path="label" item-value-path="id" required error-message="This field is required" label="[[localize('sch_by', 'Search by', language)]]" selected-item="{{recipientType}}"></vaadin-combo-box>
+                <vaadin-combo-box id="newHcp" label="[[localize('inputYourSearchQuery','What are you looking for ?',language)]]" filter="{{hcpFilter}}" filtered-items="[[filteredHcpList]]" item-label-path="displayName" selected-item="{{selectedHcp}}" allow-custom-value><template>[[item.displayName]]</template></vaadin-combo-box>
+                <vaadin-combo-box class="type-to m-l-20" id="type-To" items="[[hcpTypes]]" item-label-path="label" item-value-path="id" required error-message="This field is required" label="[[localize('sch_by', 'Search by', language)]]" selected-item="{{hcpType}}"></vaadin-combo-box>
             </template>
-            <template is="dom-if" if="[[!_isEhealthActive]]">
-
-            </template>
-
-
             <div>
-                <paper-input id="" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.LastName}}"></paper-input>
-                <paper-input id="" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.FirstName}}"></paper-input>
-                <paper-input id="" label="[[localize('ema','Email',language)]]" value="{{newHcpCareTeam.Email}}"></paper-input>
-                <paper-input id="" label="[[localize('inami','Nihii',language)]]" value="{{newHcpCareTeam.Nihii}}"></paper-input>
-                <paper-input id="" label="[[localize('niss','Niss',language)]]" value="{{newHcpCareTeam.Niss}}"></paper-input>
-                <paper-input id="" label="[[localize('speciality','Speciality',language)]]" value="{{newHcpCareTeam.Speciality}}"></paper-input>
+                <paper-input id="" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.lastName}}"></paper-input>
+                <paper-input id="" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.firstName}}"></paper-input>
+                <paper-input id="" label="[[localize('ema','Email',language)]]" value="{{newHcpCareTeam.email}}"></paper-input>
+                <paper-input id="" label="[[localize('inami','Nihii',language)]]" value="{{newHcpCareTeam.nihii}}"></paper-input>
+                <paper-input id="" label="[[localize('niss','Niss',language)]]" value="{{newHcpCareTeam.niss}}"></paper-input>
+                <paper-input id="" label="[[localize('speciality','Speciality',language)]]" value="{{newHcpCareTeam.speciality}}"></paper-input>
             </div>
             <div class="buttons">
-                <paper-checkbox value="{{newHcpCareTeam.Invite}}" on-change="chckInvite">Invite care provider</paper-checkbox>
+                <paper-checkbox value="{{newHcpCareTeam.invite}}" on-change="chckInvite">Invite care provider</paper-checkbox>
 
                 <div>
                     <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                    <paper-button class="modal-button--save" dialog-confirm autofocus on-tap="addNewExternalPersonToCareTeam">[[localize('save','Save',language)]]</paper-button>
+                    <paper-button class="modal-button--save" dialog-confirm autofocus on-tap="_addHcpToExternalTeam">[[localize('save','Save',language)]]</paper-button>
                 </div>
             </div>
         </paper-dialog>
@@ -874,13 +875,13 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
             newHcpCareTeam: {
                 type: Object,
                 value: {
-                    'LastName': '',
-                    'FirstName': '',
-                    'Nihii': '',
-                    'Speciality': '',
-                    'Email': '',
-                    'Niss': '',
-                    'Invite': false
+                    'lastName': '',
+                    'firstName': '',
+                    'nihii': '',
+                    'speciality': '',
+                    'email': '',
+                    'niss': '',
+                    'invite': false
                 }
             },
 
@@ -940,15 +941,15 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
                 type: Object,
                 value: {}
             },
-            recipientFilter: {
+            hcpFilter: {
                 type: String,
                 value: ''
             },
-            recipientType: {
+            hcpType: {
                 type: Object,
                 value: {}
             },
-            recipientTypes: {
+            hcpTypes: {
                 type: Array,
                 value: [
                     {id: "CBE", label: "BCE"},
@@ -960,9 +961,13 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
                 ],
                 noReset: true
             },
-            recipientReqIdx: {
+            hcpReqIdx: {
                 type: Number,
                 value: 0
+            },
+            selectedHcp: {
+                type: Object,
+                value: () => {}
             }
         };
     }
@@ -972,8 +977,9 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
             'partnershipsChanged(patient.partnerships.*)',
             'medicalPostitChanged(medicalPostit)',
             'administrativePostitChanged(administrativePostit)',
-            '_recipientsFilterChanged(recipientType, recipientFilter)',
-            '_loadRecipientTypesTranslations(language)'
+            '_hcpFilterChanged(hcpType, hcpFilter)',
+            '_loadHcpTypesTranslations(language)',
+            '_selectedHcpChanged(selectedHcp)'
         ];
     }
 
@@ -1423,57 +1429,14 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
         return this.api && this.api.contact().localize(e, lng) || e;
     }
 
-    showAddPersonToCareTeam() {
-        this.$['add-person-to-care-team'].open()
+    _showAddPersonToCareTeam() {
+        this.$['internalCareTeamDialog'].open()
         this.set('currentHcp', _.values(this.api.hcParties))
     }
 
-    showAddNewPersonToCareTeamForm() {
-        this.$['add-person-to-care-team'].close()
-        this.$['add-new-person-to-care-team'].open()
-    }
-
-    addNewExternalPersonToCareTeam() {
-        const careProvider = this.newHcpCareTeam
-
-        this.api.hcparty().createHealthcareParty({
-            "name": careProvider.LastName + " " + careProvider.FirstName,
-            "lastName": careProvider.LastName,
-            "firstName": careProvider.FirstName,
-            "nihii": careProvider.Nihii,
-            "ssin": careProvider.Niss
-        }).then(hcp => {
-            this.api.user().createUser({
-                "healthcarePartyId": hcp.id,
-                "name": careProvider.LastName + " " + careProvider.FirstName,
-                "email": careProvider.Email,
-                "applicationTokens": {"tmpFirstLogin": this.api.crypto().randomUuid()},
-                "status": "ACTIVE",
-                "type": "database"
-            }).then(usr => {
-                this.api.queue(this.patient, 'patient').then(([patient, defer])  => {
-                    var phcp = patient.patientHealthCareParties
-                    var newPhcp = {}
-                    newPhcp.healthcarePartyId = hcp.id
-                    newPhcp.referral = false
-                    newPhcp.sendFormats = {}
-                    phcp.push(newPhcp)
-
-                    this.api.patient().modifyPatientWithUser(this.user,patient).catch(e => defer.resolve(patient))
-                        .then(p => this.api.register(p, 'patient', defer))
-                        .then(() => {
-                            this.set('patient.patientHealthCareParties', phcp)
-                            this.$['add-new-person-to-care-team'].close()
-                            this.initCurrentCareTeam()
-
-                            if (careProvider.Invite === true) {
-                                this.$['ht-invite-hcp-link'].open()
-                                this.invitedHcpLink = window.location.origin + window.location.pathname + '/?userId=' + usr.id + '&token=' + usr.applicationTokens.tmpFirstLogin
-                            }
-                        })
-                })
-            })
-        })
+    _showAddNewPersonToCareTeamForm() {
+        this.$['internalCareTeamDialog'].close()
+        this.$['externalCareTeamDialog'].open()
     }
 
     initCurrentCareTeam() {
@@ -1497,12 +1460,12 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
                 Promise.all(
                     externalHcp.map(patientHcp =>
                         this.api.hcparty().getHealthcareParty(patientHcp.healthcarePartyId).then(hcp => {
-                            patientHcp.firstName = hcp.firstName;
-                            patientHcp.lastName = hcp.lastName;
-                            patientHcp.name = hcp.name;
-                            patientHcp.nihii = hcp.nihii;
-                            patientHcp.ssin = hcp.ssin;
-                            patientHcp.isDmg = patientHcp.referral;
+                            patientHcp.firstName = _.get(hcp, "firstName", null)
+                            patientHcp.lastName = _.get(hcp, "lastName", null)
+                            patientHcp.name = _.get(hcp, "name", null)
+                            patientHcp.nihii = _.get(hcp, "nihii", null)
+                            patientHcp.ssin = _.get(hcp, "ssin", null)
+                            patientHcp.isDmg = _.get(patientHcp, "referral", false)
                             externalTeam.push(hcp);
                             externalPatientHcpTeam.push(patientHcp);
                             }
@@ -1786,21 +1749,6 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
     }
 
-    confirmSharing() {
-        let pPromise = Promise.resolve([])
-        const hcpId = this.user.healthcarePartyId
-
-        pPromise = pPromise.then(pats =>
-                this.api.patient().share(this.api.user, this.patient.id, hcpId, this.hcpSelectedForTeam.filter(hcp =>
-                    hcp.check && hcp.id).map(hcp => hcp.id))
-                    .then(pat => {
-                            _.concat(pats, pat)
-                            this.initCurrentCareTeam()
-                        }
-                    )
-            )
-        return pPromise
-    }
 
     formatNihiiNumber(nihii) {
         return nihii ? ("" + nihii).replace(/([0-9]{1})([0-9]{5})([0-9]{2})([0-9]{3})/, '$1-$2-$3-$4') : ''
@@ -1812,9 +1760,9 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
     chckInvite(e){
         if(e.target.checked){
-            this.newHcpCareTeam.Invite = true
+            this.set("newHcpCareTeam.invite", true)
         }else{
-            this.newHcpCareTeam.Invite = false
+            this.set("newHcpCareTeam.invite", false)
         }
     }
 
@@ -1892,6 +1840,13 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
         }
     }
 
+
+
+
+
+
+
+
     _localizeSpeciality(speciality){
         return this.localize('cd-hcp-'+speciality, speciality, this.language)
     }
@@ -1900,17 +1855,17 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
         return this.api.tokenId && this.api.keystoreId && this.api.credentials.ehpassword? true : false
     }
 
-    _recipientsFilterChanged(recipientType, recipientFilter) {
+    _hcpFilterChanged(hcpType, hcpFilter) {
 
-        if( _.trim(recipientFilter).length < 3 || !_.get(this,"api.keystoreId",false) || !_.get(this,"api.tokenId",false) || !_.get(this,"api.credentials.ehpassword",false) ) { this.set("filteredRecipientsList",[]); return; }
-        const reqIdx = (this.recipientReqIdx = (this.recipientReqIdx || 0) + 1)
+        if( _.trim(hcpFilter).length < 3 || !_.get(this,"api.keystoreId",false) || !_.get(this,"api.tokenId",false) || !_.get(this,"api.credentials.ehpassword",false) ) { this.set("filteredHcpList",[]); return; }
+        const reqIdx = (this.hcpReqIdx = (this.hcpReqIdx || 0) + 1)
 
         setTimeout(() => {
-            if (reqIdx !== this.recipientReqIdx) return;
+            if (reqIdx !== this.hcpReqIdx) return;
             this.set('busySpinner', true)
 
             const newMsgTo = this.shadowRoot.querySelector('#newHcp')||false;
-            const numericSearchQuery = _.trim(_.trim(recipientFilter).replace( /([^\d]*)/gi, '' ))
+            const numericSearchQuery = _.trim(_.trim(hcpFilter).replace( /([^\d]*)/gi, '' ))
             const patternsValidation = {
                 heightDigits: /^([0-9]){8}$/i,
                 tenDigits: /^([0-9]){10}$/i,
@@ -1922,35 +1877,36 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
             const isValidEhp = !!patternsValidation.tenDigits.test(numericSearchQuery)
             const isValidSsin = !!patternsValidation.elevenDigits.test(numericSearchQuery)
 
-            let searchProm = recipientType.id === 'CBE' ?
+            let searchProm = hcpType.id === 'CBE' ?
                 Promise.all([
                     !isValidBce ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByCbeUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'cbe',false)).value()),
-                    this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
-                    this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                    this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
+                    this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
                 ]) :
-                recipientType.id === 'EHP' ? Promise.all([
+                hcpType.id === 'EHP' ? Promise.all([
                         !isValidEhp ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByEhpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'ehp',false)).value()),
-                        this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
-                        this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                        this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
+                        this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
                     ]) :
-                    recipientType.id === 'INSS' ? Promise.all([
+                    hcpType.id === 'INSS' ? Promise.all([
                             !isValidSsin ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getHcpBySsinUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),    // Looking for SSIN "53815994527" returns it but WITHOUT SSIN value, quite logical. Filtering on NIHII then
-                            this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
+                            this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
                         ]) :
-                        (recipientType.id === 'NIHII-HOSPITAL' || recipientType.id === 'NIHII-PHARMACY')  ? Promise.all([
+                        (hcpType.id === 'NIHII-HOSPITAL' || hcpType.id === 'NIHII-PHARMACY')  ? Promise.all([
                                 !isValidNihii ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByNihiiUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),
-                                this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*', ( recipientType.id === 'NIHII-PHARMACY' ? "PHARMACY" : "HOSPITAL" ) ).then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                                this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*', ( hcpType.id === 'NIHII-PHARMACY' ? "PHARMACY" : "HOSPITAL" ) ).then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
                             ]) :
                             // Default type = NIHII
                             Promise.all([
                                 !isValidNihii ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getHcpByNihiiUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),
-                                this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(recipientFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
+                                this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
                             ])
 
             searchProm
-                .then(searchResults => { if (reqIdx === this.recipientReqIdx) {
-                    this.set("filteredRecipientsList", _
+                .then(searchResults => { if (reqIdx === this.hcpReqIdx) {
+                    this.set("filteredHcpList", _
                         .chain(searchResults)
+                        .flatMap()
                         .map(singleRecipient => _.assign({displayName : _.compact([
                                 _.map( _.trim(_.get(singleRecipient, "lastName", "")).split(" "),i=> _.capitalize(i)).join(" "),
                                 _.map( _.trim(_.get(singleRecipient, "firstName", "")).split(" "),i=> _.capitalize(i)).join(" "),
@@ -1964,22 +1920,22 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
                         .value()
                     )
 
-                    console.log(this.filteredRecipientsList)
+                    console.log(this.filteredHcpList)
                 }})
-                .catch(e=>{console.log("ERROR with _recipientsFilterChanged: ", e);})
+                .catch(e=>{console.log("ERROR with _hcpFilterChanged: ", e);})
                 .finally(() => this.set('busySpinner', false))
 
         }, 300)
     }
 
-    _loadRecipientTypesTranslations() {
+    _loadHcpTypesTranslations() {
 
-        let cbe = this.recipientTypes.find(i=>i.id==="CBE")
-        let ehp = this.recipientTypes.find(i=>i.id==="EHP")
-        let inss = this.recipientTypes.find(i=>i.id==="INSS")
-        let nihii = this.recipientTypes.find(i=>i.id==="NIHII")
-        let nihiiHospital = this.recipientTypes.find(i=>i.id==="NIHII-HOSPITAL")
-        let nihiiPharmacy = this.recipientTypes.find(i=>i.id==="NIHII-PHARMACY")
+        let cbe = this.hcpTypes.find(i=>i.id==="CBE")
+        let ehp = this.hcpTypes.find(i=>i.id==="EHP")
+        let inss = this.hcpTypes.find(i=>i.id==="INSS")
+        let nihii = this.hcpTypes.find(i=>i.id==="NIHII")
+        let nihiiHospital = this.hcpTypes.find(i=>i.id==="NIHII-HOSPITAL")
+        let nihiiPharmacy = this.hcpTypes.find(i=>i.id==="NIHII-PHARMACY")
 
         cbe.label = this.localize('cbe', 'CBE', this.language) + " / " + this.localize('name', 'Name', this.language)
         ehp.label = "EHP (eHealth Partner) / " + this.localize('name', 'Name', this.language)
@@ -1988,8 +1944,105 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
         nihiiHospital.label = this.localize('nihii', 'INAMI', this.language) + " " + this.localize('hospital', 'Hospital', this.language) + " / " + this.localize('name', 'Name', this.language)
         nihiiPharmacy.label = this.localize('nihii', 'INAMI', this.language) + " " + this.localize('pharmacy', 'Pharmacy', this.language) + " / " + this.localize('name', 'Name', this.language)
 
-        this.set("recipientType", nihii)
+        this.set("hcpType", nihii)
 
+    }
+
+
+    _selectedHcpChanged(){
+        console.log(this.selectedHcp)
+
+        this.set("newHcpCareTeam", {
+            lastName: _.get(this.selectedHcp, "lastName", null),
+            firstName :  _.get(this.selectedHcp, "firstName", null),
+            nihii :  _.get(this.selectedHcp, "nihii", null),
+            niss :  _.get(this.selectedHcp, "ssin", null),
+            speciality:  _.get(this.selectedHcp, "speciality", null)
+        })
+    }
+
+    _showInternalTeamSelector(){
+        this.$['internalCareTeamDialog'].open()
+    }
+
+    _showExternalTeamSelector(){
+        this.$['externalCareTeamDialog'].open()
+    }
+
+    _addHcpToInternalTeam(){
+        let pPromise = Promise.resolve([])
+        const hcpId = this.user.healthcarePartyId
+
+        pPromise = pPromise.then(pats =>
+            this.api.patient().share(this.api.user, this.patient.id, hcpId, this.hcpSelectedForTeam.filter(hcp =>
+                hcp.check && hcp.id).map(hcp => hcp.id))
+                .then(pat => {
+                        _.concat(pats, pat)
+                        this.initCurrentCareTeam()
+                    }
+                )
+        )
+        return pPromise
+    }
+
+    _addHcpToExternalTeam(){
+
+        if(_.get(this.newHcpCareTeam, 'invite', false) === true){
+            this.api.hcparty().createHealthcareParty({
+                name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
+                lastName: _.get(this.newHcpCareTeam, 'lastName', null),
+                firstName: _.get(this.newHcpCareTeam, 'firstName', null),
+                nihii: _.get(this.newHcpCareTeam, 'nihii', null),
+                ssin: _.get(this.newHcpCareTeam, 'ssin', null)
+            })
+            .then(hcp => Promise.all([hcp, this.api.user().createUser({
+                healthcarePartyId: hcp.id,
+                name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
+                email: _.get(this.newHcpCareTeam, 'email', null),
+                applicationTokens: {tmpFirstLogin : this.api.crypto().randomUuid()},
+                status: "ACTIVE",
+                type: "database"
+            })]))
+            .then(([hcp, usr]) => Promise.all([hcp, usr, this.api.patient().getPatientWithUser(this.user, this.patient.id)]))
+            .then(([hcp, usr, patient]) => {
+                patient.patientHealthCareParties.push({
+                    healthcarePartyId : hcp.id,
+                    referal: false
+                })
+                return Promise.all([usr, this.api.patient().modifyPatientWithUser(this.user, patient)])
+            })
+            .then(([usr, patient]) => Promise.all([usr, this.api.register(patient, 'patient')]))
+            .then(([usr, patient]) => {
+                this.$['externalCareTeamDialog'].close()
+                this.$['ht-invite-hcp-link'].open()
+                this.invitedHcpLink = window.location.origin + window.location.pathname + '/?userId=' + usr.id + '&token=' + usr.applicationTokens.tmpFirstLogin
+            }).finally(() => this.initCurrentCareTeam())
+            .catch(e => console.log("Error: "+e))
+
+        }else{
+            this.api.hcparty().createHealthcareParty({
+                name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
+                lastName: _.get(this.newHcpCareTeam, 'lastName', null),
+                firstName: _.get(this.newHcpCareTeam, 'firstName', null),
+                nihii: _.get(this.newHcpCareTeam, 'nihii', null),
+                ssin: _.get(this.newHcpCareTeam, 'ssin', null)
+            })
+            .then(hcp => Promise.all([hcp, this.api.patient().getPatientWithUser(this.user, this.patient.id)])
+            .then(([hcp, patient]) => {
+                patient.patientHealthCareParties.push({
+                    healthcarePartyId : hcp.id,
+                    referal: false
+                })
+
+                return patient
+            }))
+            .then(patient => this.api.patient().modifyPatientWithUser(this.user, patient))
+            .then(patient => this.api.register(patient, 'patient'))
+            .finally(() => {
+                console.log(this.patient)
+                this.$['externalCareTeamDialog'].close()
+            }).catch(e => console.log("Error: "+e))
+        }
     }
 
 }
