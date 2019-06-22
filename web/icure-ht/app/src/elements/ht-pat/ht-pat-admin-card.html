@@ -132,84 +132,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 height: calc(100% - 20px);
             }
 
-            vaadin-grid.material {
-                box-shadow: var(--app-shadow-elevation-1);
-                border: 0;
-                font-family: Roboto, sans-serif;
-                --divider-color: rgba(0, 0, 0, var(--dark-divider-opacity));
-                margin: 0 0 32px 0;
-
-                --vaadin-grid-cell: {
-                    padding: 8px;
-                };
-
-                --vaadin-grid-header-cell: {
-                    height: 64px;
-                    color: rgba(0, 0, 0, var(--dark-secondary-opacity));
-                    font-size: 12px;
-                };
-
-                --vaadin-grid-body-cell: {
-                    height: 48px;
-                    color: rgba(0, 0, 0, var(--dark-primary-opacity));
-                    font-size: 13px;
-                };
-
-                --vaadin-grid-body-row-hover-cell: {
-                    background-color: var(--paper-grey-200);
-                };
-
-                --vaadin-grid-body-row-selected-cell: {
-                    background-color: var(--paper-grey-100);
-                };
-
-                --vaadin-grid-focused-cell: {
-                    box-shadow: none;
-                    font-weight: bold;
-                };
-            }
-
-            vaadin-grid.material .cell {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                padding-right: 56px;
-            }
-
-            vaadin-grid.material .cell.last {
-                padding-right: 24px;
-            }
-
-            vaadin-grid.material .cell.numeric {
-                text-align: right;
-            }
-
-            vaadin-grid.material paper-checkbox {
-                --primary-color: var(--paper-indigo-500);
-                margin: 0 24px;
-            }
-
-            vaadin-grid.material vaadin-grid-sorter .cell {
-                flex: 1;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            vaadin-grid.material vaadin-grid-sorter iron-icon {
-                transform: scale(0.8);
-            }
-
-            vaadin-grid.material vaadin-grid-sorter:not([direction]) iron-icon {
-                color: rgba(0, 0, 0, var(--dark-disabled-opacity));
-            }
-
-            vaadin-grid.material vaadin-grid-sorter[direction] {
-                color: rgba(0, 0, 0, var(--dark-primary-opacity));
-            }
-
-            vaadin-grid.material vaadin-grid-sorter[direction=desc] iron-icon {
-                transform: scale(0.8) rotate(180deg);
-            }
 
             paper-dialog paper-input{
                 padding: 0;
@@ -493,6 +415,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 height: 40px;
                 padding: 0;
             }
+            
+            .referral-icon{
+                height: 15px;
+                width: 15px;
+            }
+            
+            .hidden{
+                visibility: hidden;
+            }
 
 
         </style>
@@ -548,7 +479,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="lastName">[[localize('las_nam','Last name',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[item.lastName]]</div>
+                                            [[item.lastName]]
                                         </template>
                                     </vaadin-grid-column>
                                     <vaadin-grid-column width="120px">
@@ -556,7 +487,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="firstName">[[localize('fir_nam','Last name',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[item.firstName]]</div>
+                                           [[item.firstName]]
                                         </template>
                                     </vaadin-grid-column>
                                     <vaadin-grid-column width="80px">
@@ -564,7 +495,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="nihii">[[localize('inami','Nihii',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[formatNihiiNumber(item.nihii)]]</div>
+                                            [[formatNihiiNumber(item.nihii)]]
                                         </template>
                                     </vaadin-grid-column>
                                     <vaadin-grid-column width="80px">
@@ -572,7 +503,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="speciality">[[localize('speciality','Speciality',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[_localizeSpeciality(item.speciality)]]</div>
+                                            [[_localizeSpeciality(item.speciality)]]
                                         </template>
                                     </vaadin-grid-column>
                                 </vaadin-grid>
@@ -585,7 +516,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="name">[[localize('nam','Name',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[getHcpName(item)]]</div>
+                                            <template is="dom-if" if="[[_isReferral(item)]]">
+                                                <iron-icon class="referral-icon" icon="icons:accessibility"></iron-icon>
+                                            </template>
+                                            <template is="dom-if" if="[[!_isReferral(item)]]">
+                                                <iron-icon class="referral-icon hidden" icon="icons:accessibility"></iron-icon>
+                                            </template>
+                                           [[getHcpName(item)]]
                                         </template>
                                     </vaadin-grid-column>
                                     <vaadin-grid-column width="80px">
@@ -593,7 +530,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="nihii">[[localize('inami','Nihii',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[formatNihiiNumber(item.nihii)]]</div>
+                                            [[formatNihiiNumber(item.nihii)]]
                                         </template>
                                     </vaadin-grid-column>
                                     <vaadin-grid-column width="80px">
@@ -601,7 +538,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="speciality">[[localize('speciality','Speciality',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[item.speciality]]</div>
+                                            [[item.speciality]]
                                         </template>
                                     </vaadin-grid-column>
                                     <vaadin-grid-column>
@@ -609,7 +546,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="beginDate">[[localize('foll-up-beg','Beginning of the follow-up',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[getStartDate(item)]]</div>
+                                            [[getStartDate(item)]]
                                         </template>
                                     </vaadin-grid-column>
                                     <vaadin-grid-column>
@@ -617,7 +554,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <vaadin-grid-sorter path="endDate">[[localize('foll-up-end','End of the follow-up',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
-                                            <div class="cell frozen">[[getEndDate(item)]]</div>
+                                            [[getEndDate(item)]]
                                         </template>
                                     </vaadin-grid-column>
                                 </vaadin-grid>
@@ -663,7 +600,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <vaadin-grid-sorter path="lastName">[[localize('las_nam','Last name',language)]]</vaadin-grid-sorter>
                         </template>
                         <template>
-                            <div class="cell frozen">[[item.lastName]]</div>
+                            [[item.lastName]]
                         </template>
                     </vaadin-grid-column>
                     <vaadin-grid-column width="120px">
@@ -671,7 +608,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <vaadin-grid-sorter path="firstName">[[localize('fir_nam','First name',language)]]</vaadin-grid-sorter>
                         </template>
                         <template>
-                            <div class="cell frozen">[[item.firstName]]</div>
+                            [[item.firstName]]
                         </template>
                     </vaadin-grid-column>
                     <vaadin-grid-column width="80px">
@@ -679,7 +616,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <vaadin-grid-sorter path="nihii">[[localize('inami','Nihii',language)]]</vaadin-grid-sorter>
                         </template>
                         <template>
-                            <div class="cell frozen">[[formatNihiiNumber(item.nihii)]]</div>
+                           [[formatNihiiNumber(item.nihii)]]
                         </template>
                     </vaadin-grid-column>
                     <vaadin-grid-column width="80px">
@@ -687,7 +624,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <vaadin-grid-sorter path="speciality">[[localize('speciality','Speciality',language)]]</vaadin-grid-sorter>
                         </template>
                         <template>
-                            <div class="cell frozen">[[item.speciality]]</div>
+                            [[item.speciality]]
                         </template>
                     </vaadin-grid-column>
                 </vaadin-grid>
@@ -2090,6 +2027,10 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
                 this.$['externalCareTeamDialog'].close()
             }).catch(e => console.log("Error: "+e))
         }
+    }
+
+    _isReferral(item){
+        return _.get(item, 'referral', false)
     }
 
 }
