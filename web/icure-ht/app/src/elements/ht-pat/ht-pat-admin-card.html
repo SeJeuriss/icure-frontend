@@ -476,6 +476,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 width: 12px;
             }
 
+            .external-care-team-form{
+
+            }
+
+            .external-care-team-line{
+                display: flex;
+            }
+
+            .external-care-team-line-item{
+                width: 50%;
+                padding: 5px;
+            }
+
+            vaadin-text-field {
+                height: 40px;
+                padding: 0;
+            }
+
 
         </style>
         <div class="administrative-panel">
@@ -588,7 +606,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     </vaadin-grid-column>
                                     <vaadin-grid-column>
                                         <template class="header">
-                                            <vaadin-grid-sorter path="beginDate">[[localize('sta_dat','Start date',language)]]</vaadin-grid-sorter>
+                                            <vaadin-grid-sorter path="beginDate">[[localize('foll-up-beg','Beginning of the follow-up',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
                                             <div class="cell frozen">[[getStartDate(item)]]</div>
@@ -596,7 +614,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     </vaadin-grid-column>
                                     <vaadin-grid-column>
                                         <template class="header">
-                                            <vaadin-grid-sorter path="endDate">[[localize('end_dat','End date',language)]]</vaadin-grid-sorter>
+                                            <vaadin-grid-sorter path="endDate">[[localize('foll-up-end','End of the follow-up',language)]]</vaadin-grid-sorter>
                                         </template>
                                         <template>
                                             <div class="cell frozen">[[getEndDate(item)]]</div>
@@ -686,21 +704,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-combo-box id="newHcp" label="[[localize('inputYourSearchQuery','What are you looking for ?',language)]]" filter="{{hcpFilter}}" filtered-items="[[filteredHcpList]]" item-label-path="displayName" selected-item="{{selectedHcp}}" allow-custom-value><template>[[item.displayName]]</template></vaadin-combo-box>
                 <vaadin-combo-box class="type-to m-l-20" id="type-To" items="[[hcpTypes]]" item-label-path="label" item-value-path="id" required error-message="This field is required" label="[[localize('sch_by', 'Search by', language)]]" selected-item="{{hcpType}}"></vaadin-combo-box>
             </template>
-            <div>
-                <paper-input id="" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.lastName}}"></paper-input>
-                <paper-input id="" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.firstName}}"></paper-input>
-                <paper-input id="" label="[[localize('ema','Email',language)]]" value="{{newHcpCareTeam.email}}"></paper-input>
-                <paper-input id="" label="[[localize('inami','Nihii',language)]]" value="{{newHcpCareTeam.nihii}}"></paper-input>
-                <paper-input id="" label="[[localize('niss','Niss',language)]]" value="{{newHcpCareTeam.niss}}"></paper-input>
-                <paper-input id="" label="[[localize('speciality','Speciality',language)]]" value="{{newHcpCareTeam.speciality}}"></paper-input>
+            <div class="external-care-team-form">
+                <div class="external-care-team-line">
+                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.lastName}}"></vaadin-text-field>
+                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.firstName}}"></vaadin-text-field>
+                </div>
+                <div class="external-care-team-line">
+                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('inami','Nihii',language)]]" value="{{newHcpCareTeam.nihii}}"></vaadin-text-field>
+                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('niss','Niss',language)]]" value="{{newHcpCareTeam.niss}}"></vaadin-text-field>
+                </div>
+                <div class="external-care-team-line">
+                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('ema','Email',language)]]" value="{{newHcpCareTeam.email}}"></vaadin-text-field>
+                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('speciality','Speciality',language)]]" value="{{newHcpCareTeam.speciality}}"></vaadin-text-field>
+                </div>
+                <div class="external-care-team-line">
+                    <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-beg','Beginning of the follow-up',language)]]" value="{{newHcpCareTeam.referralStartDate}}" i18n="[[i18n]]"></vaadin-date-picker>
+                    <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-end','End of the follow-up',language)]]" value="{{newHcpCareTeam.referralEndDate}}" i18n="[[i18n]]"></vaadin-date-picker>
+                    <paper-checkbox class="external-care-team-line-item" value="{{newHcpCareTeam.referral}}" on-change="_chckIfReferral">[[localize('ref-hcp', 'Referral hcp', language)]]</paper-checkbox>
+                    <paper-checkbox class="external-care-team-line-item" value="{{newHcpCareTeam.invite}}" on-change="chckInvite">[[localize('inv-hcp', 'Invite hcp', language)]]</paper-checkbox>
+                </div>
             </div>
             <div class="buttons">
-                <paper-checkbox value="{{newHcpCareTeam.invite}}" on-change="chckInvite">Invite care provider</paper-checkbox>
-
-                <div>
-                    <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                    <paper-button class="modal-button--save" dialog-confirm autofocus on-tap="_addHcpToExternalTeam">[[localize('save','Save',language)]]</paper-button>
-                </div>
+                <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
+                <paper-button class="modal-button--save" dialog-confirm autofocus on-tap="_addHcpToExternalTeam">[[localize('save','Save',language)]]</paper-button>
             </div>
         </paper-dialog>
 
@@ -806,6 +832,12 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
             api: {
                 type: Object
             },
+            resources: {
+                type: Object
+            },
+            i18n:{
+              type: Object
+            },
             credentials: {
                 type: Object,
                 noReset: true
@@ -881,34 +913,32 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
                     'speciality': '',
                     'email': '',
                     'niss': '',
-                    'invite': false
+                    'invite': false,
+                    'isReferral': false,
+                    'referralStartDate' : null,
+                    'referralEndDate': null
                 }
             },
-
             currentInternalCareTeam: {
                 type: Array,
                 value: [],
                 notify: true
             },
-
             currentExternalCareTeam: {
                 type: Array,
                 value: [],
                 notify: true
             },
-
             currentExternalPatientCareTeam: {
                 type: Array,
                 value: [],
                 notify: true
             },
-
             currentDMGOwner: {
                 type: Array,
                 value: [],
                 notify: true
             },
-
             currentHcp: {
                 type: Array,
                 value: []
@@ -1766,6 +1796,14 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
         }
     }
 
+    _chckIfReferral(e){
+        if(e.target.checked){
+            this.set("newHcpCareTeam.isReferral", true)
+        }else{
+            this.set("newHcpCareTeam.isReferral", false)
+        }
+    }
+
     fillWithCard(){
         if(Object.keys(this.cardData).length!==0 && this.patient.ssin === this.cardData.nationalNumber){
             let streetData = _.trim(this.cardData.street).split(" ")
@@ -2007,7 +2045,11 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
             .then(([hcp, usr, patient]) => {
                 patient.patientHealthCareParties.push({
                     healthcarePartyId : hcp.id,
-                    referal: false
+                    referral: _.get(this.newHcpCareTeam, 'isReferral', false),
+                    referralPeriods: [{
+                        startDate : _.get(this.newHcpCareTeam, 'referralStartDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralStartDate"))).format('YYYYMMDD')) : null,
+                        endDate: _.get(this.newHcpCareTeam, 'referralEndDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralEndDate"))).format('YYYYMMDD')) : null
+                    }]
                 })
                 return Promise.all([usr, this.api.patient().modifyPatientWithUser(this.user, patient)])
             })
@@ -2031,7 +2073,12 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
             .then(([hcp, patient]) => {
                 patient.patientHealthCareParties.push({
                     healthcarePartyId : hcp.id,
-                    referal: false
+                    referral: _.get(this.newHcpCareTeam, 'isReferral', false),
+                    referralPeriods: [{
+                        startDate : _.get(this.newHcpCareTeam, 'referralStartDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralStartDate"))).format('YYYYMMDD')) : null,
+                        endDate: _.get(this.newHcpCareTeam, 'referralEndDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralEndDate"))).format('YYYYMMDD')) : null
+                    }]
+
                 })
 
                 return patient
