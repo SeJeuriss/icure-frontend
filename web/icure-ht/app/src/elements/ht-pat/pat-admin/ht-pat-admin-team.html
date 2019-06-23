@@ -338,7 +338,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <vaadin-grid-sorter path="speciality">[[localize('speciality','Speciality',language)]]</vaadin-grid-sorter>
                         </template>
                         <template>
-                            [[item.speciality]]
+                            [[_localizeSpeciality(item.speciality)]]
                         </template>
                     </vaadin-grid-column>
                     <vaadin-grid-column>
@@ -414,14 +414,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <paper-dialog id="externalCareTeamDialog">
             <h2 class="modal-title">[[localize('add_new_per_to_car_tea','Add new person to the care team',language)]]</h2>
-            <template is="dom-if" if="[[_isEhealthActive]]">
+            <template is="dom-if" if="[[_isEhealthActive()]]">
                 <vaadin-combo-box id="newHcp" label="[[localize('inputYourSearchQuery','What are you looking for ?',language)]]" filter="{{hcpFilter}}" filtered-items="[[filteredHcpList]]" item-label-path="displayName" selected-item="{{selectedHcp}}" allow-custom-value><template>[[item.displayName]]</template></vaadin-combo-box>
                 <vaadin-combo-box class="type-to m-l-20" id="type-To" items="[[hcpTypes]]" item-label-path="label" item-value-path="id" required error-message="This field is required" label="[[localize('sch_by', 'Search by', language)]]" selected-item="{{hcpType}}"></vaadin-combo-box>
             </template>
             <div class="external-care-team-form">
                 <div class="external-care-team-line">
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.lastName}}"></vaadin-text-field>
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.firstName}}"></vaadin-text-field>
+                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.lastName}}" required error-message="This field is required"></vaadin-text-field>
+                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.firstName}}" required error-message="This field is required"></vaadin-text-field>
                 </div>
                 <div class="external-care-team-line">
                     <vaadin-text-field class="external-care-team-line-item" label="[[localize('inami','Nihii',language)]]" value="{{newHcpCareTeam.nihii}}"></vaadin-text-field>
@@ -429,7 +429,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
                 <div class="external-care-team-line">
                     <vaadin-text-field class="external-care-team-line-item" label="[[localize('ema','Email',language)]]" value="{{newHcpCareTeam.email}}"></vaadin-text-field>
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('speciality','Speciality',language)]]" value="{{newHcpCareTeam.speciality}}"></vaadin-text-field>
+                    <vaadin-combo-box id="hcpSpeciality" class="external-care-team-line-item" items="[[specialityList]]" item-label-path="label.en" item-value-path="id" required error-message="This field is required" label="[[localize('speciality','Speciality',language)]]" selected-item="{{selectedHcpSpeciality}}"></vaadin-combo-box>
                 </div>
                 <div class="external-care-team-line">
                     <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-beg','Beginning of the follow-up',language)]]" value="{{newHcpCareTeam.referralStartDate}}" i18n="[[i18n]]"></vaadin-date-picker>
@@ -651,12 +651,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     selectedHcp: {
                         type: Object,
                         value: () => {}
+                    },
+                    specialityList:{
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedHcpSpeciality:{
+                        type: Object,
+                        value: () => {}
                     }
                 };
             }
 
             static get observers() {
-                return ['_hcpFilterChanged(hcpType, hcpFilter)', '_loadHcpTypesTranslations(language)', '_selectedHcpChanged(selectedHcp)', '_initialize(usr, patient)'];
+                return ['_hcpFilterChanged(hcpType, hcpFilter)', '_loadHcpTypesTranslations(language)', '_selectedHcpChanged(selectedHcp)', '_initialize(usr, patient)', '_selectedHcpSpecialityChanged(selectedHcpSpeciality)'];
             }
 
             constructor() {
@@ -672,7 +680,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _initialize(){
-                this.initCurrentCareTeam();
+                this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', 'fr', 'pers', null, null, 1000).then(specList => {
+                    this.set('specialityList', specList.rows)
+                    this.initCurrentCareTeam();
+                })
+
             }
 
 
@@ -712,7 +724,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             patientHcp.name = _.get(hcp, "name", null)
                                             patientHcp.nihii = _.get(hcp, "nihii", null)
                                             patientHcp.ssin = _.get(hcp, "ssin", null)
-                                            patientHcp.isDmg = _.get(patientHcp, "referral", false)
+                                            patientHcp.isDmg = _.get(hcp, "referral", false)
+                                            patientHcp.speciality = _.get(hcp, "speciality", null)
+
                                             externalTeam.push(hcp);
                                             externalPatientHcpTeam.push(patientHcp);
                                         }
@@ -1027,7 +1041,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _isEhealthActive(){
-                return this.api.tokenId && this.api.keystoreId && this.api.credentials.ehpassword? true : false
+                return this.api.tokenId && this.api.keystoreId && this.api.credentials.ehpassword ? true : false
             }
 
             _hcpFilterChanged(hcpType, hcpFilter) {
@@ -1054,27 +1068,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                     let searchProm = hcpType.id === 'CBE' ?
                         Promise.all([
-                            !isValidBce ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByCbeUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'cbe',false)).value()),
-                            this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
-                            this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                            !isValidBce ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByCbeUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'cbe',false)).value()),
+                            this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
+                            this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
                         ]) :
                         hcpType.id === 'EHP' ? Promise.all([
-                                !isValidEhp ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByEhpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'ehp',false)).value()),
-                                this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
-                                this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                                !isValidEhp ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByEhpUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'ehp',false)).value()),
+                                this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value()),
+                                this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
                             ]) :
                             hcpType.id === 'INSS' ? Promise.all([
-                                    !isValidSsin ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getHcpBySsinUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),    // Looking for SSIN "53815994527" returns it but WITHOUT SSIN value, quite logical. Filtering on NIHII then
-                                    this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
+                                    !isValidSsin ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getHcpBySsinUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),    // Looking for SSIN "53815994527" returns it but WITHOUT SSIN value, quite logical. Filtering on NIHII then
+                                    this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
                                 ]) :
                                 (hcpType.id === 'NIHII-HOSPITAL' || hcpType.id === 'NIHII-PHARMACY')  ? Promise.all([
-                                        !isValidNihii ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByNihiiUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),
-                                        this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*', ( hcpType.id === 'NIHII-PHARMACY' ? "PHARMACY" : "HOSPITAL" ) ).then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
+                                        !isValidNihii ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getOrgByNihiiUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),
+                                        this.api.fhc().Addressbookcontroller().searchOrgUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, _.trim(hcpFilter) + '*', ( hcpType.id === 'NIHII-PHARMACY' ? "PHARMACY" : "HOSPITAL" ) ).then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'ehp',false)).uniqBy('ehp').value())
                                     ]) :
                                     // Default type = NIHII
                                     Promise.all([
-                                        !isValidNihii ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getHcpByNihiiUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),
-                                        this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
+                                        !isValidNihii ? Promise.resolve([]) : this.api.fhc().Addressbookcontroller().getHcpByNihiiUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, numericSearchQuery ).then(searchResults=>_.chain([searchResults]).filter(i=>!!_.get(i,'nihii',false)).value()),
+                                        this.api.fhc().Addressbookcontroller().searchHcpUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, _.trim(hcpFilter) + '*').then(searchResults=>_.chain(searchResults).filter(i=>!!_.get(i,'nihii',false)).uniqBy('nihii').value())
                                     ])
 
                     searchProm
@@ -1168,7 +1182,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         lastName: _.get(this.newHcpCareTeam, 'lastName', null),
                         firstName: _.get(this.newHcpCareTeam, 'firstName', null),
                         nihii: _.get(this.newHcpCareTeam, 'nihii', null),
-                        ssin: _.get(this.newHcpCareTeam, 'ssin', null)
+                        ssin: _.get(this.newHcpCareTeam, 'ssin', null),
+                        speciality: _.get(this.newHcpCareTeam, 'speciality', null)
                     })
                         .then(hcp => Promise.all([hcp, this.api.user().createUser({
                             healthcarePartyId: hcp.id,
@@ -1204,7 +1219,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         lastName: _.get(this.newHcpCareTeam, 'lastName', null),
                         firstName: _.get(this.newHcpCareTeam, 'firstName', null),
                         nihii: _.get(this.newHcpCareTeam, 'nihii', null),
-                        ssin: _.get(this.newHcpCareTeam, 'ssin', null)
+                        ssin: _.get(this.newHcpCareTeam, 'ssin', null),
+                        speciality: _.get(this.newHcpCareTeam, 'speciality', null)
                     })
                         .then(hcp => Promise.all([hcp, this.api.patient().getPatientWithUser(this.user, this.patient.id)])
                             .then(([hcp, patient]) => {
@@ -1223,14 +1239,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         .then(patient => this.api.patient().modifyPatientWithUser(this.user, patient))
                         .then(patient => this.api.register(patient, 'patient'))
                         .finally(() => {
-                            console.log(this.patient)
+                            this.currentExternalPatientCareTeam.push({
+                                name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
+                                lastName: _.get(this.newHcpCareTeam, 'lastName', null),
+                                firstName: _.get(this.newHcpCareTeam, 'firstName', null),
+                                nihii: _.get(this.newHcpCareTeam, 'nihii', null),
+                                ssin: _.get(this.newHcpCareTeam, 'ssin', null),
+                                speciality: _.get(this.newHcpCareTeam, 'speciality', null),
+                                isDmg: _.get(this.newHcpCareTeam, "referral", false)
+                            })
+                            this.$['dmg-owner-list'].clearCache()
                             this.$['externalCareTeamDialog'].close()
+                            this.set('newHcpCareTeam', {})
+                            this.shadowRoot.querySelector('#newHcp')._clear() || false
+                            this.shadowRoot.querySelector('#hcpSpeciality')._clear() || false
+
                         }).catch(e => console.log("Error: "+e))
                 }
             }
 
             _isReferral(item){
                 return _.get(item, 'referral', false)
+            }
+
+            _selectedHcpSpecialityChanged(){
+                this.set('newHcpCareTeam.speciality', _.get(this.selectedHcpSpeciality, 'code', null))
             }
 
         }
