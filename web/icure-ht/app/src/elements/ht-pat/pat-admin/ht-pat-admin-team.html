@@ -272,7 +272,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="team-contenair">
             <div class="internal-team">
                 <h4 class="subtitle">[[localize('icp','Internal care provider',language)]] <iron-icon class="icon-title" icon="vaadin:plus-circle" on-tap="_showInternalTeamSelector"></iron-icon></h4>
-                <vaadin-grid id="internal-care-team-list" class="material" overflow="bottom" multi-sort="[[multiSort]]" items=[[currentInternalCareTeam]] active-item="{{selectedCareProvider}}" on-tap="showInfoSelectedHcp">
+                <vaadin-grid id="internal-care-team-list" class="material" overflow="bottom" multi-sort="[[multiSort]]" items=[[patientTeam.internal]] active-item="{{selectedCareProvider}}" on-tap="showInfoSelectedHcp">
                     <vaadin-grid-column width="120px">
                         <template class="header">
                             <vaadin-grid-sorter path="lastName">[[localize('las_nam','Last name',language)]]</vaadin-grid-sorter>
@@ -310,7 +310,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <div class="external-team">
                 <h4 class="subtitle">[[localize('ecp','External care provider',language)]] <iron-icon class="icon-title" icon="vaadin:plus-circle" on-tap="_showExternalTeamSelector"></iron-icon></h4>
-                <vaadin-grid id="dmg-owner-list" class="material" overflow="bottom" multi-sort="[[multiSort]]" items="[[currentExternalPatientCareTeam]]" active-item="{{selectedCareProvider}}" on-tap="showInfoSelectedHcp">
+                <vaadin-grid id="dmg-owner-list" class="material" overflow="bottom" multi-sort="[[multiSort]]" items="[[patientTeam.external]]" active-item="{{selectedCareProvider}}" on-tap="showInfoSelectedHcp">
                     <vaadin-grid-column width="240px">
                         <template class="header">
                             <vaadin-grid-sorter path="name">[[localize('nam','Name',language)]]</vaadin-grid-sorter>
@@ -659,6 +659,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     selectedHcpSpeciality:{
                         type: Object,
                         value: () => {}
+                    },
+                    patientTeam:{
+                        type: Object,
+                        value: () => {}
                     }
                 };
             }
@@ -682,11 +686,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _initialize(){
                 this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', 'fr', 'pers', null, null, 1000).then(specList => {
                     this.set('specialityList', specList.rows)
-                    this.initCurrentCareTeam();
+                    this._initCurrentCareTeam();
+                    this._checkForDmgOwner();
                 })
 
             }
-
 
             _showAddPersonToCareTeam() {
                 this.$['internalCareTeamDialog'].open()
@@ -697,6 +701,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$['internalCareTeamDialog'].close()
                 this.$['externalCareTeamDialog'].open()
             }
+
+            _initCurrentCareTeam(){
+                this.api.patient().getPatientWithUser(this.user, this.patient.id)
+                    .then(patient => this.api.register(patient, 'patient'))
+                    .then(patient => Promise.all([patient, this.api.hcparty().getHealthcareParties(_.keys(patient.delegations).join(','))]))
+                    .then(([patient, listOfInternalHcp]) => Promise.all([listOfInternalHcp, this.api.hcparty().getHealthcareParties(patient.patientHealthCareParties.map(hcp => hcp.healthcarePartyId).join(','))]))
+                    .then(([listOfInternalHcp, listOfExternalHcp]) => {
+                        this.patient.patientHealthCareParties.map(patientHcp => _.assign(listOfExternalHcp.find(externHcp => externHcp.id === patientHcp.healthcarePartyId), {referral: patientHcp.referral, referralPeriods: patientHcp.referralPeriods}))
+                        this.set('patientTeam', _.assign({internal: listOfInternalHcp}, {external: listOfExternalHcp}))
+                    })
+            }
+
+            _checkForDmgOwner(){
+                if(this.patient && this.patient.ssin && this.api.tokenId){
+                    this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                        .then(hcp => this.api.fhc().Dmgcontroller().consultDmgUsingGET(this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, hcp.nihii, hcp.ssin, hcp.firstName, hcp.lastName, this.patient.ssin))
+                        .then(rep => {
+                            const dmgNihii = rep.hcParty && rep.hcParty.ids && rep.hcParty.ids.find(id => id.s === 'ID_HCPARTY') ? rep.hcParty.ids.find(id => id.s === 'ID_HCPARTY').value : null
+
+                            if(dmgNihii && this.patientTeam.internal.find(h => h.nihii === dmgNihii)){
+                                console.log('dmg owner in internal team')
+                            }else if(dmgNihii && this.patientTeam.external.find(h => h.nihii === dmgNihii)){
+                                console.log('dmg owner in external team')
+                                const dmgOwner = this.patientTeam.external.find(h => h.nihii === dmgNihii)
+                                console.log(dmgOwner)
+
+                            }else if(dmgNihii){
+                                console.log('dmg owner not yet in patientHcParties')
+                                console.log(dmgNihii)
+
+                            }
+                        })
+                }
+            }
+
 
             initCurrentCareTeam() {
                 var internalTeam = []
@@ -1195,14 +1234,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         })]))
                         .then(([hcp, usr]) => Promise.all([hcp, usr, this.api.patient().getPatientWithUser(this.user, this.patient.id)]))
                         .then(([hcp, usr, patient]) => {
-                            patient.patientHealthCareParties.push({
+                            const newHcp = {
                                 healthcarePartyId : hcp.id,
                                 referral: _.get(this.newHcpCareTeam, 'isReferral', false),
                                 referralPeriods: [{
                                     startDate : _.get(this.newHcpCareTeam, 'referralStartDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralStartDate"))).format('YYYYMMDD')) : null,
                                     endDate: _.get(this.newHcpCareTeam, 'referralEndDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralEndDate"))).format('YYYYMMDD')) : null
                                 }]
-                            })
+                            }
+                            patient.patientHealthCareParties.push(newHcp)
+
+                            this.patientTeam.external.push(_.assign(hcp, newHcp))
+
                             return Promise.all([usr, this.api.patient().modifyPatientWithUser(this.user, patient)])
                         })
                         .then(([usr, patient]) => Promise.all([usr, this.api.register(patient, 'patient')]))
@@ -1210,7 +1253,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.$['externalCareTeamDialog'].close()
                             this.$['ht-invite-hcp-link'].open()
                             this.invitedHcpLink = window.location.origin + window.location.pathname + '/?userId=' + usr.id + '&token=' + usr.applicationTokens.tmpFirstLogin
-                        }).finally(() => this.initCurrentCareTeam())
+                        }).finally(() => {
+                            this.$['dmg-owner-list'].clearCache()
+                            this.$['externalCareTeamDialog'].close()
+                            this.set('newHcpCareTeam', {})
+                            this.shadowRoot.querySelector('#newHcp')._clear() || false
+                            this.shadowRoot.querySelector('#hcpSpeciality')._clear() || false
+                        })
                         .catch(e => console.log("Error: "+e))
 
                 }else{
@@ -1223,31 +1272,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         speciality: _.get(this.newHcpCareTeam, 'speciality', null)
                     })
                         .then(hcp => Promise.all([hcp, this.api.patient().getPatientWithUser(this.user, this.patient.id)])
-                            .then(([hcp, patient]) => {
-                                patient.patientHealthCareParties.push({
-                                    healthcarePartyId : hcp.id,
-                                    referral: _.get(this.newHcpCareTeam, 'isReferral', false),
-                                    referralPeriods: [{
-                                        startDate : _.get(this.newHcpCareTeam, 'referralStartDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralStartDate"))).format('YYYYMMDD')) : null,
-                                        endDate: _.get(this.newHcpCareTeam, 'referralEndDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralEndDate"))).format('YYYYMMDD')) : null
-                                    }]
+                        .then(([hcp, patient]) => {
+                            const newHcp = {
+                                healthcarePartyId : hcp.id,
+                                referral: _.get(this.newHcpCareTeam, 'isReferral', false),
+                                referralPeriods: [{
+                                    startDate : _.get(this.newHcpCareTeam, 'referralStartDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralStartDate"))).format('YYYYMMDD')) : null,
+                                    endDate: _.get(this.newHcpCareTeam, 'referralEndDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralEndDate"))).format('YYYYMMDD')) : null
+                                }]
+                            }
+                            patient.patientHealthCareParties.push(newHcp)
 
-                                })
+                            this.patientTeam.external.push(_.assign(hcp, newHcp))
 
-                                return patient
-                            }))
+                            return patient
+                        }))
                         .then(patient => this.api.patient().modifyPatientWithUser(this.user, patient))
                         .then(patient => this.api.register(patient, 'patient'))
                         .finally(() => {
-                            this.currentExternalPatientCareTeam.push({
-                                name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
-                                lastName: _.get(this.newHcpCareTeam, 'lastName', null),
-                                firstName: _.get(this.newHcpCareTeam, 'firstName', null),
-                                nihii: _.get(this.newHcpCareTeam, 'nihii', null),
-                                ssin: _.get(this.newHcpCareTeam, 'ssin', null),
-                                speciality: _.get(this.newHcpCareTeam, 'speciality', null),
-                                isDmg: _.get(this.newHcpCareTeam, "referral", false)
-                            })
                             this.$['dmg-owner-list'].clearCache()
                             this.$['externalCareTeamDialog'].close()
                             this.set('newHcpCareTeam', {})
