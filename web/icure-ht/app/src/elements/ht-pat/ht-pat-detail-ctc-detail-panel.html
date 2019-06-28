@@ -781,6 +781,18 @@
 							<span class="no-mobile">[[localize('inv','Invoice',language)]]</span>
 						</paper-button>
 					</div>
+
+
+
+					<div id="physiotherapistBtnCtnr">
+						<paper-button id="physiotherapistBtn" class="physiotherapist-btn ac.detail-panel div.paragraph-contenttion-btn" on-tap="_openTriptyqueDialog" data-triptyque="physiotherapist">
+							<iron-icon icon="vaadin:specialist" on-tap="_openTriptyqueDialog" data-triptyque="physiotherapist"></iron-icon>
+							<span class="no-mobile">[[localize('triptyque','Triptyque',language)]]</span>
+						</paper-button>
+					</div>
+
+
+
 				</template>
 			</div>
             <div class="floating-action-bar-tooltips mobile-only">
@@ -3479,6 +3491,12 @@
 					.catch(e=>{console.log(e)})
 					.finally(()=>{ this.busySpinner=false; })
 
+			}
+
+			_openTriptyqueDialog(e){
+				const defaultTriptyque = "physiotherapist"
+				const triptyqueType = _.trim(_.get(_.filter(_.get(e,"path",[]), nodePath=> !!_.trim(_.get(nodePath,"dataset.triptyque",defaultTriptyque))),"[0].dataset.triptyque",defaultTriptyque))
+				this.dispatchEvent(new CustomEvent("open-triptyque", {composed: true, bubbles: true, detail: {type: triptyqueType}}))
 			}
 
         }

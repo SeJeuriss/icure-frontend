@@ -490,6 +490,10 @@
                 display: none;
             }
 
+            .paddingForComboBox {
+                padding:0
+            }
+
             @media screen and (max-width: 800px) {
                 paper-dialog#dialog {
                     margin: 0;
@@ -693,13 +697,10 @@
                                 <template is="dom-if" if="[[!_isMedicalHouse(hcp.type)]]">
                                     <div class="col-lg-6 tile">
                                         <h2><iron-icon icon="assignment"></iron-icon> [[localize('info','Informations',language)]] [[localize('inv_prest','physician',language)]]</h2>
-                                        <!-- <paper-input label="[[localize('civility','Civilité',language)]]" value="{{hcp.civility}}"></paper-input> -->
-                                        <paper-input label="[[localize('speciality','Spécialité',language)]]" value="{{hcp.speciality}}"></paper-input>
+                                        <vaadin-combo-box filtered-items="[[_cdHcPartySpecialities]]" item-label-path="label" item-value-path="id" value="{{hcp.speciality}}" label="[[localize('speciality','Spécialité',language)]]" class="paddingForComboBox"></vaadin-combo-box>
                                         <paper-input label="[[localize('gender','Genre',language)]]" value="{{hcp.gender}}"></paper-input>
                                     </div>
                                 </template>
-                                <!--<div class="toolTip" style="margin-top:20px"><iron-icon icon="icons:info-outline" style="margin-right: 10px"></iron-icon> Vous souhaitez modifier votre profile complet ?</div>-->
-                                <!--<div class="toolTip" style="margin-bottom:20px"><iron-icon icon="icons:account-circle" class="marginRight10"></iron-icon> <b>Rendez-vous dans <a on-tap="_gotoMyProfile" style="color:var(&#45;&#45;app-secondary-color); cursor:pointer">votre fiche personnelle</a></b></div>-->
 
                             </vaadin-form-layout>
                         </div>
@@ -1022,7 +1023,11 @@
                     idAddress:{
                         type: Number,
                         value: -1
-                    }
+                    },
+                    _cdHcPartySpecialities: {
+                        type: Array,
+                        value: ()=>[]
+                    },
                 };
             }
 
@@ -1055,8 +1060,7 @@
                 propAr.typedValue = {type: 'BOOLEAN', booleanValue: ev.detail.value === 'wide'}
             }
 
-            showEHPreferrences(user)
-            {
+            showEHPreferrences(user) {
                 const propHub = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.preferredhub') ||
                     (this.user.properties[this.user.properties.length] = {
                         type: {identifier: 'org.taktik.icure.user.preferredhub'},
@@ -1168,7 +1172,6 @@
                 return regs;
             }
 
-
             registerToEDMGbyOA(reg) {
                 if (this.api.tokenId) {
                     if (!iban.isValid(reg.iban)) {
@@ -1233,57 +1236,90 @@
             }
 
             apiReady() {
-                if (this.user && this.api && this.opened) {
-                    this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => this.hcp = this.api.register(hcp, 'hcp',null,true)).then(hcp => {
-                        if (!hcp.languages || !hcp.languages.length) hcp.languages = ['en'];
-                        if (!hcp.type) hcp.type='persphysician';
-                        if (!hcp.billingType) hcp.billingType='flatRate';
 
-                        // Resolve for dataprovider / combobox
-                        if( hcp.supervisorId || hcp.parentId || hcp.contactPersonHcpId) {
+                if (this.user && this.api) {
 
-                            const hcpIdx = _.compact([hcp.supervisorId,hcp.parentId, hcp.contactPersonHcpId]).join(',')
-                            this.api.hcparty().getHealthcareParties(hcpIdx).then(results => {
-                                const supervisor = _.chain(results).filter({id:hcp.supervisorId}).head().value();
-                                const parent = _.chain(results).filter({id:hcp.parentId}).head().value();
-                                const contactPerson = _.chain(results).filter({id:hcp.contactPersonHcpId}).head().value();
+                    if(!_.size(_.get(this,"_cdHcPartySpecialities",[]))) this.api.code().findCodes("be", 'CD-HCPARTY')
+                        .then(specialities => this.set("_cdHcPartySpecialities", _
+                        .chain(specialities)
+                        .filter(sp => _.trim(_.get(sp,"code","")).substring(0,4) !== "dept" )
+                        .map(sp=>{return {
+                            id:sp.id,
+                            label: _.trim(_.get(sp,"label." + this.language)) ? _.trim(_.get(sp,"label." + this.language)) : _.trim(_.head(_.flatMap(_.get(sp,"label")))),
+                            labels: _.get(sp,"label", {}),
+                            links: !!_.size(_.get(sp,"links", [])) ? _.get(sp,"links") : _.get(sp,"links", [sp.id])
+                        }})
+                        .orderBy(["label"],["asc"])
+                        .value()
+                    ))
 
-                                this.supervisorListItem = supervisor ? [{
-                                    id: supervisor.id,
-                                    lastName: _.upperFirst(_.lowerCase(supervisor.lastName)),
-                                    hrLabel:
-                                        _.upperFirst(_.lowerCase(supervisor.lastName)) + ' ' +
-                                        _.upperFirst(_.lowerCase(supervisor.firstName)) + ' ' +
-                                        (typeof supervisor.nihii === 'undefined' || !supervisor.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + supervisor.nihii) + ' ' +
-                                        (typeof supervisor.ssin === 'undefined' || !supervisor.ssin ? '' : ' - ' + this.localize('ssin', 'Registre national', language) + ': ' + supervisor.ssin.substr(0, 6) + '-' + supervisor.ssin.substr(6, 3) + '-' + supervisor.ssin.substr(8, 2)) + ' ' +
-                                        ''
-                                }] : [];
+                    if (this.opened) {
+                        this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                            .then(hcp => this.hcp = this.api.register(hcp, 'hcp',null,true))
+                            .then(hcp => {
+                                const currentSpeciality = _.trim(_.get(hcp,"speciality","")).substring(0,4) === "pers" ? _.trim(_.get(hcp,"speciality","")).substring(4) : _.trim(_.get(hcp,"speciality",""))
+                                const defaultSpeciality = "CD-HCPARTY|persphysician|1"
 
-                                this.mhListItem = parent ? [{
-                                    id: parent.id,
-                                    name: _.upperFirst(_.lowerCase(parent.name)),
-                                    hrLabel:
-                                        _.upperFirst(_.lowerCase(parent.name)) + ' ' +
-                                        (typeof parent.nihii === 'undefined' || !parent.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + parent.nihii) + ' ' +
-                                        ''
-                                }] : [];
+                                // Old system used to rely on strings and not codes
+                                this.set("hcp", _.merge({}, hcp, {
+                                    speciality: !_.trim(currentSpeciality) ?
+                                        defaultSpeciality :
+                                        currentSpeciality.indexOf("CD-HCPARTY") === -1 ? _.get(_.compact(_.map(this._cdHcPartySpecialities, i => !_.trim(currentSpeciality) || _.flatMap(i.labels).indexOf(currentSpeciality) === -1 ? false : i)), "[0].id", defaultSpeciality) :
+                                        _.trim(currentSpeciality)
+                                }))
 
-                                this.contactListItem = contactPerson ? [{
-                                    id: contactPerson.id,
-                                    name: _.upperFirst(_.lowerCase(contactPerson.name)),
-                                    hrLabel:
-                                        _.upperFirst(_.lowerCase(contactPerson.name)) + ' ' +
-                                        (typeof contactPerson.nihii === 'undefined' || !contactPerson.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + contactPerson.nihii) + ' ' +
-                                        ''
-                                }] : [];
+                                if (!hcp.languages || !hcp.languages.length) hcp.languages = ['en'];
+                                if (!hcp.type) hcp.type='persphysician';
+                                if (!hcp.billingType) hcp.billingType='flatRate';
 
-                            });
+                                // Resolve for dataprovider / combobox
+                                if( hcp.supervisorId || hcp.parentId || hcp.contactPersonHcpId) {
 
-                        }
+                                    const hcpIdx = _.compact([hcp.supervisorId,hcp.parentId, hcp.contactPersonHcpId]).join(',')
+                                    this.api.hcparty().getHealthcareParties(hcpIdx).then(results => {
+                                        const supervisor = _.chain(results).filter({id:hcp.supervisorId}).head().value();
+                                        const parent = _.chain(results).filter({id:hcp.parentId}).head().value();
+                                        const contactPerson = _.chain(results).filter({id:hcp.contactPersonHcpId}).head().value();
 
-                        this._hcpChanged()
-                    });
+                                        this.supervisorListItem = supervisor ? [{
+                                            id: supervisor.id,
+                                            lastName: _.upperFirst(_.lowerCase(supervisor.lastName)),
+                                            hrLabel:
+                                                _.upperFirst(_.lowerCase(supervisor.lastName)) + ' ' +
+                                                _.upperFirst(_.lowerCase(supervisor.firstName)) + ' ' +
+                                                (typeof supervisor.nihii === 'undefined' || !supervisor.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + supervisor.nihii) + ' ' +
+                                                (typeof supervisor.ssin === 'undefined' || !supervisor.ssin ? '' : ' - ' + this.localize('ssin', 'Registre national', language) + ': ' + supervisor.ssin.substr(0, 6) + '-' + supervisor.ssin.substr(6, 3) + '-' + supervisor.ssin.substr(8, 2)) + ' ' +
+                                                ''
+                                        }] : [];
+
+                                        this.mhListItem = parent ? [{
+                                            id: parent.id,
+                                            name: _.upperFirst(_.lowerCase(parent.name)),
+                                            hrLabel:
+                                                _.upperFirst(_.lowerCase(parent.name)) + ' ' +
+                                                (typeof parent.nihii === 'undefined' || !parent.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + parent.nihii) + ' ' +
+                                                ''
+                                        }] : [];
+
+                                        this.contactListItem = contactPerson ? [{
+                                            id: contactPerson.id,
+                                            name: _.upperFirst(_.lowerCase(contactPerson.name)),
+                                            hrLabel:
+                                                _.upperFirst(_.lowerCase(contactPerson.name)) + ' ' +
+                                                (typeof contactPerson.nihii === 'undefined' || !contactPerson.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + contactPerson.nihii) + ' ' +
+                                                ''
+                                        }] : [];
+
+                                    });
+
+                                }
+
+                                this._hcpChanged()
+                            })
+                    }
+
                 }
+
             }
 
             _hcpChanged() {
@@ -1291,8 +1327,8 @@
                     this.api.getRegistry('hcp').listeners['hcp-profile'] = {target: this, callbacks: [() => this._hcpChanged()], pool: [this.hcp.id]}
 
                     if(this.idAddress===-1){this.idAddress=this.hcp.addresses.findIndex(adr=> adr.addressType==="work")}
-                    let idxPhone = this.hcp.addresses[this.idAddress].telecoms.findIndex(tel => tel && tel.telecomType==="phone")
-                    let idxMail = this.hcp.addresses[this.idAddress].telecoms.findIndex(tel => tel && tel.telecomType==="email")
+                    let idxPhone = _.get(this,"hcp.addresses[this.idAddress].telecoms",[]).findIndex(tel => _.get(tel,"telecomType","")==="phone")
+                    let idxMail = _.get(this,"hcp.addresses[this.idAddress].telecoms",[]).findIndex(tel => _.get(tel,"telecomType","")==="email")
                     this.idAddress>=0 ? this.set('adr',{
                         addressType:"work",
                         street:this.hcp.addresses[this.idAddress].street,
@@ -1306,7 +1342,6 @@
                     }) : ""
                 }
             }
-
 
             qrCode(login, secret) {
                 return login && secret ? `otpauth://totp/${login}:iCure-cloud?secret=${secret}&issuer=icure-cloud` : '';
@@ -1344,10 +1379,14 @@
             }
 
             confirm() {
+
                 if ((!this.userPassword || this.userPassword.length > 7) && this.userPassword === this.userConfirmation) {
+
                     this.user.passwordHash = this.userPassword || this.user.passwordHash
+
                     let propHub = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.preferredhub')
                     propHub.typedValue.stringValue = this.userPreferredHub;
+
                     let propEnv = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.eHealthEnv')
                     propEnv.typedValue.stringValue = this.userEHealthEnv;
 
@@ -1357,13 +1396,20 @@
                     // Only save if we actually have data
                     if( this.hcp && this.hcp.financialInstitutionInformation ) this.hcp.financialInstitutionInformation =  _.filter( this.hcp.financialInstitutionInformation, 'bankAccount' );
 
-                    // this.api.user().modifyUser(this.user)
-                    //     .then(user => this.api.register(user,"user"))
-                    //     .then(user => this.dispatchEvent(new CustomEvent('user-saved', {detail: user, bubbles: true, composed: true})))
-                    //     .then(() => this.api.hcparty().modifyHealthcareParty(this.hcp))
-                    //     .then(hcp => this.api.register(hcp,"hcp"))
-                    //     .then(hcp => this.hcp = hcp)
-                    //     .finally(() => this.$.dialog.close())
+                    const hcpGivenSepciality = _.trim(_.get(this,"hcp.speciality","CD-HCPARTY|persphysician|1"))
+                    const hcpResolvedSpeciality = _.find( this._cdHcPartySpecialities, sp => sp.id === hcpGivenSepciality )
+                    const specialityLinks = !!_.size(_.get(hcpResolvedSpeciality, "links", [])) ? _.get(hcpResolvedSpeciality, "links") : [_.get(hcpResolvedSpeciality, "id")]
+
+                    this.hcp.specialityCodes = _.map(specialityLinks, spL => {
+                        const spLSubParts = _.trim(spL).split("|")
+                        return {
+                            type: spLSubParts[0],
+                            code: spLSubParts[1],
+                            version: spLSubParts[2],
+                            id: _.trim(spL)
+                        }
+                    })
+
                     Promise.all([this.api.user().modifyUser(this.user), this.api.hcparty().modifyHealthcareParty(this.hcp)])
                     .then(([user,hcp]) => {
                         this.api.register(hcp,'hcp');
@@ -1373,6 +1419,7 @@
                     .catch(err => console.error(err))
 
                 }
+
             }
 
             // Resolve and assign BIC based on IBAN
