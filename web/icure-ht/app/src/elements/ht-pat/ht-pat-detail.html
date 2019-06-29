@@ -77,10 +77,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="dialogs/hubs/ht-pat-hub-detail.html">
 <link rel="import" href="dialogs/hubs/ht-pat-hub-upload.html">
 <link rel="import" href="../../ht-upload-dialog.html">
+<link rel="import" href="dialogs/ht-pat-triptyque.html">
 
 
 <link rel="import" href="../../dialog-style.html">
 <link rel="import" href="../../notification-style.html">
+
 
 <dom-module id="ht-pat-detail">
     <template>
@@ -2014,7 +2016,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             on-select-current-contact="_selectCurrentContact" on-plan-action="_planAction" on-close-contact="_closeContact" on-change="formsChanged" on-must-save-contact="_saveContact" on-medications-selection="_selectMultiMedication" on-medication-selection="_selectMedication"
                             on-medication-detail="_medicationDetail" on-medications-detail="_medicationsDetail" contact-type-list="[[contactTypeList]]" on-contact-saved="contactChanged" on-add-other="addOther" on-add-document="_openUploadDialog" on-prescribe="_prescribe"
                             credentials="[[credentials]]" on-write-linking-letter="writeLinkingLetter" on-reset-patient="_resetPatient" linking-letter-dialog="[[linkingLetterDialog]]" on-forward-document="_forwardDocument" global-hcp="[[globalHcp]]"
-                            on-open-triptyque="_openTriptyque"
+                            on-open-triptyque-dialog="_openTriptyqueDialog"
                         ></ht-pat-detail-ctc-detail-panel>
                 </template>
                 <template is="dom-if" if="[[isAdminSelected(selectedAdminOrCompleteFileIndex)]]">
@@ -2403,6 +2405,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <paper-button class="modal-button" on-tap="_closeDialogs"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
             </div>
         </paper-dialog>
+
+        <ht-pat-triptyque-dialog id="triptyqueDialog" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]" patient="[[patient]]" on-triptyque-dialog-closed="_triptyqueDialogClosed"></ht-pat-triptyque-dialog>
 
     </template>
     <script>
@@ -5417,11 +5421,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.shadowRoot.querySelector("#upload-dialog").showErrorMessage(e);
             }
 
-            _openTriptyque(e) {
-                const triptyqueType = _.trim(_.get(e,"detail.type"))
-                console.log(triptyqueType);
-                // Fabien: new component tryptique type
+
+
+
+
+
+
+
+
+
+
+            _openTriptyqueDialog(e) {
+                const triptyqueType = _.trim(_.get(e,"detail.type","physiotherapist"))
+                return this.$['triptyqueDialog'].open({_dialogParameters: {triptyqueType:triptyqueType}});
             }
+
+            _triptyqueDialogClosed(e) {
+                // Todo: something...
+            }
+
+
+
+
+
+
         }
 
         customElements.define(HtPatDetail.is, HtPatDetail);

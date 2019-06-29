@@ -782,16 +782,12 @@
 						</paper-button>
 					</div>
 
-
-
-					<div id="physiotherapistBtnCtnr">
-						<paper-button id="physiotherapistBtn" class="physiotherapist-btn ac.detail-panel div.paragraph-contenttion-btn" on-tap="_openTriptyqueDialog" data-triptyque="physiotherapist">
-							<iron-icon icon="vaadin:specialist" on-tap="_openTriptyqueDialog" data-triptyque="physiotherapist"></iron-icon>
+					<div id="triptyqueBtnCtnr">
+						<paper-button id="triptyqueBtn" class="triptyque-btn ac.detail-panel div.paragraph-contenttion-btn" on-tap="_openTriptyqueDialog" data-triptyque="physiotherapist">
+							<iron-icon icon="vaadin:specialist"></iron-icon>
 							<span class="no-mobile">[[localize('triptyque','Triptyque',language)]]</span>
 						</paper-button>
 					</div>
-
-
 
 				</template>
 			</div>
@@ -800,6 +796,7 @@
                 <paper-tooltip for="prescribeBtn" position="top">[[localize('pri_pre','Print prescription',language)]]</paper-tooltip>
                 <paper-tooltip for="procedureBtn" position="top">[[localize('proc','Procedure',language)]]</paper-tooltip>
                 <paper-tooltip for="invoicingBtn" position="top">[[localize('inv','Invoice',language)]]</paper-tooltip>
+                <paper-tooltip for="triptyqueBtn" position="top">[[localize('triptyque','Triptyque',language)]]</paper-tooltip>
             </div>
 			<paper-tooltip for="prescribeBtnCtnr" position="top">
 				<template is="dom-if" if="[[_canPrescribe(api.tokenId,patient.ssin,servicesMap.*,currentContact,currentContact.services,currentContact.services.*)]]">[[localize('pre_thi_but_to_pre','Press this button to prescribe',language)]]<br></template>
@@ -3494,9 +3491,8 @@
 			}
 
 			_openTriptyqueDialog(e){
-				const defaultTriptyque = "physiotherapist"
-				const triptyqueType = _.trim(_.get(_.filter(_.get(e,"path",[]), nodePath=> !!_.trim(_.get(nodePath,"dataset.triptyque",defaultTriptyque))),"[0].dataset.triptyque",defaultTriptyque))
-				this.dispatchEvent(new CustomEvent("open-triptyque", {composed: true, bubbles: true, detail: {type: triptyqueType}}))
+				const triptyqueType = _.trim(_.get(_.filter(_.get(e,"path",[]), nodePath=> !!_.trim(_.get(nodePath,"dataset.triptyque",""))),"[0].dataset.triptyque","physiotherapist"))
+				this.dispatchEvent(new CustomEvent("open-triptyque-dialog", {composed: true, bubbles: true, detail: {type: triptyqueType}}))
 			}
 
         }

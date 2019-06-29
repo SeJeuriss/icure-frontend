@@ -1,0 +1,495 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../ht-spinner/ht-spinner.html">
+
+<link rel="import" href="../../../../bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-column.html">
+<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-sorter.html">
+
+<link rel="import" href="../../../shared-styles.html">
+<link rel="import" href="../../../dialog-style.html">
+<link rel="import" href="../../../notification-style.html">
+<link rel="import" href="../../../spinner-style.html">
+
+
+
+
+
+<dom-module id="ht-pat-triptyque-dialog">
+
+
+
+
+
+    <template>
+
+
+
+
+
+        <style include="shared-styles dialog-style notification-style spinner-style">
+
+        </style>
+
+
+
+
+
+        <paper-dialog id="triptyqueDialog" always-on-top="true" no-cancel-on-outside-click="true" no-cancel-on-esc-key="true">
+
+
+
+            <template is="dom-if" if="[[_isLoading]]">
+                <div id="loadingContainer">
+                    <div id="loadingContentContainer">
+                        <div class="mw100 m0auto"><ht-spinner class="spinner" alt="Loading..." active></ht-spinner></div>
+                        <div id="loadingContent"></div>
+                    </div>
+                </div>
+            </template>
+
+
+
+            <template is="dom-if" if="[[_dialogParameters.actions.listing]]">
+
+
+
+                <h3 class="mt0">[[localize('onGoingPlansOfAction','Ongoing plans of action',language)]]</h3>
+
+                <vaadin-grid id="vaadinGridPlanOfAction" class="mt0 vaadinGridPlanOfAction" items="[[_vaadinGridPlanOfActionDataToShow]]" active-item="{{_vaadinGridPlanOfActionActiveItem}}" pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]" on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged">
+
+                    <vaadin-grid-column width="100px" flex-grow="0">
+                        <template class="header"><vaadin-grid-sorter path="openingDate"><b>[[localize('dat','Date',language)]]</b></vaadin-grid-sorter></template>
+                        <template>[[item.openingDate]]</template>
+                    </vaadin-grid-column>
+
+                    <vaadin-grid-column flex-grow="1">
+                        <template class="header"><vaadin-grid-sorter path="heDescr">[[localize('healthcareelement','Healthcare Elements',language)]]</vaadin-grid-sorter></template>
+                        <template>[[item.heDescr]]</template>
+                    </vaadin-grid-column>
+
+                    <vaadin-grid-column width="100px" flex-grow="0">
+                        <template class="header"><vaadin-grid-sorter path="documentIds">[[localize('prescription','Prescription',language)]]</vaadin-grid-sorter></template>
+                        <template>[[item.prescriptionExists]]</template>
+                    </vaadin-grid-column>
+
+                    <vaadin-grid-column flex-grow="1">
+                        <template class="header"><vaadin-grid-sorter path="name">[[localize('lab','Label',language)]]</vaadin-grid-sorter></template>
+                        <template>[[item.label]]</template>
+                    </vaadin-grid-column>
+
+                    <vaadin-grid-column flex-grow="1">
+                        <template class="header"><vaadin-grid-sorter path="prescriber">[[localize('prescriber','Prescriber',language)]]</vaadin-grid-sorter></template>
+                        <template>[[item.prescriber]]</template>
+                    </vaadin-grid-column>
+
+                    <vaadin-grid-column width="100px" flex-grow="0">
+                        <template class="header"><vaadin-grid-sorter path="contactsCount">[[localize('qua','Quantity',language)]]</vaadin-grid-sorter></template>
+                        <template>[[item.contactsCount]]/[[item.numberOfCares]]</template>
+                    </vaadin-grid-column>
+
+                    <vaadin-grid-column width="150px" flex-grow="0">
+                        <template class="header"><vaadin-grid-sorter path="statusHr">[[localize('sta','Status',language)]]</vaadin-grid-sorter></template>
+                        <template>[[item.statusHr]]</template>
+                    </vaadin-grid-column>
+
+                    <vaadin-grid-column width="50px" flex-grow="0">
+                        <template class="header"></template>
+                        <template><paper-button class="tool-btn pl15 pr15" on-tap="_browseAppointments" data-plan-of-action-id="[[item.id]]"><iron-icon data-name="diary" icon="date-range" class="ml5"></iron-icon> [[localize('diary','Diary',language)]]</paper-button></template>
+                    </vaadin-grid-column>
+
+                </vaadin-grid>
+
+                <div class="vaadinGridBottomActions">
+                    <div class="grid-size-indicator hideOnMobile"> [[pageStart]] – [[pageEnd]] [[localize('sur','sur',language)]] [[_totalMessagesForCurrentFolderAndCurrentFilter]]</div>
+                    <paper-icon-button id="previous-page-change" icon="chevron-left" class="vaadinGridPageToPageNavigation" on-tap="_gotoPreviousGridPage"></paper-icon-button>
+                    <paper-icon-button id="next-page-change" icon="chevron-right" class="vaadinGridPageToPageNavigation" on-tap="_gotoNextGridPage"></paper-icon-button>
+                    <div class="hideOnMobile"><paper-icon-button class="vaadinGridScrollToTop" icon="arrow-upward" on-tap="_scrollToTop"></paper-icon-button></div>
+                </div>
+
+
+
+                <div class="buttons">
+                    <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class="m-r-5"></iron-icon>[[localize('clo','Close',language)]]</paper-button>
+                    <paper-button on-tap="_addPlanOfAction" class="modal-button modal-button--save"><iron-icon icon="icons:add-circle" class="m-r-5"></iron-icon>[[localize('createPlanOfAction','Create plan of action',language)]]</paper-button>
+                </div>
+
+
+
+            </template>
+
+
+
+            <template is="dom-if" if="[[_dialogParameters.actions.detail]]">
+
+
+                "Onglet" pat details<br />
+                + Left panel = liste pdfs avec deux scénarios A) + B) + btn lier / délier (caca)
+
+
+
+                <paper-tabs selected="{{_triptyqueDetailActiveTab}}" attr-for-selected="name">
+                    <paper-tab class="dialogTab" name="prescription"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon>[[localize('pri_pre','Print prescription',language)]]</paper-tab>
+                    <paper-tab class="dialogTab" name="planOfAction"><iron-icon icon="vaadin:user-card" class="mr8 darkBlue"></iron-icon> [[localize('ehb.assignToNewPatient','New patient',language)]]</paper-tab>
+                    <paper-tab class="dialogTab" name="procedures"><iron-icon icon="vaadin:tools" class="mr8 darkBlue"></iron-icon> [[localize('proc(s)','Procedure(s)',language)]] <span class="batchNumber greenBg ml10">[[_totalExistingProceduresForCurrentPlanOfAction]]</span></paper-tab>
+                </paper-tabs>
+
+                <div class="dialogTabContent">
+
+                    <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'prescription')]]">
+
+                        PRESCRIPTION
+
+                    </template>
+
+
+
+                    <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'planOfAction')]]">
+
+                        Plan d'action
+
+                    </template>
+
+
+
+                    <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'procedures')]]">
+
+                        Procédures
+
+                    </template>
+
+                </div>
+
+
+
+                <div class="buttons">
+                    <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class="m-r-5"></iron-icon>[[localize('clo','Close',language)]]</paper-button>
+                    <paper-button on-tap="_XXXXXX" class="modal-button modal-button--save"><iron-icon icon="icons:save" class="m-r-5"></iron-icon>[[localize('save','Save',language)]]</paper-button>
+
+                    <paper-button on-tap="_XXXXXX" class="modal-button modal-button--cancel"><iron-icon icon="icons:save" class="m-r-5"></iron-icon>Icone ... verticaux + ouvrir sub-menu d'actions</paper-button>
+
+                </div>
+
+            </template>
+
+
+
+        </paper-dialog>
+
+
+
+
+
+    </template>
+
+
+
+
+
+    <script>
+
+        import _ from 'lodash/lodash';
+        import moment from 'moment/src/moment';
+
+        class HtPatTriptyqueDialog extends Polymer.TkLocalizerMixin(Polymer.Element) {
+
+            static get is() {
+                return 'ht-pat-triptyque-dialog';
+            }
+
+            static get properties() {
+                return {
+                    api: {
+                        type: Object,
+                        noReset: true,
+                        value: () => {}
+                    },
+                    user: {
+                        type: Object,
+                        noReset: true,
+                        value: () => {}
+                    },
+                    i18n: {
+                        type: Object,
+                        noReset: true,
+                        value: () => {}
+                    },
+                    language: {
+                        type: String,
+                        noReset: true,
+                        value: "fr"
+                    },
+                    _isLoading: {
+                        type: Boolean,
+                        value: true,
+                        noReset: true
+                    },
+                    _loadingMessages: {
+                        type: Array,
+                        value: () => []
+                    },
+                    _dialogParameters: {
+                        type: Object,
+                        value: () => {
+                            return {
+                                actions: {
+                                    listing: true,
+                                    detail: false
+                                },
+                                triptyqueType: "physiotherapist"
+                            }
+                        }
+                    },
+                    patient: {
+                        type: Object,
+                        noReset: true,
+                        value: () => {}
+                    },
+                    _vaadinGridPlanOfActionDataToShow: {
+                        type: Array,
+                        value: () => []
+                    },
+                    _vaadinGridPlanOfActionActiveItem: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    _vaadinGridPlanOfActionMaxItemsPerPage: {
+                        type: Number,
+                        value: 100
+                    },
+                    _triptyqueDetailActiveTab: {
+                        type: String,
+                        value: "prescription"
+                    },
+                    _totalExistingProceduresForCurrentPlanOfAction: {
+                        type: Number,
+                        value: 0
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_loadingStatusChanged(_isLoading)',
+                    '_vaadinGridPlanOfActionActiveItemChanged(_vaadinGridPlanOfActionActiveItem)'
+                ];
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+            }
+
+            _loadingStatusChanged() {
+                if(!this._isLoading) this._resetLoadingMessage();
+            }
+
+            _resetLoadingMessage() {
+                this._loadingMessages = [];
+            }
+
+            _setLoadingMessage( messageData ) {
+                setTimeout(()=> {
+                    if (!!_.get(messageData,"updateLastMessage",false)) this._loadingMessages.pop();
+                    this._loadingMessages.push(messageData);
+                    const loadingContentTarget = this.shadowRoot.querySelectorAll('#loadingContent')[0];
+                    if (loadingContentTarget) { loadingContentTarget.innerHTML = ''; _.each(this._loadingMessages, (v) => { loadingContentTarget.innerHTML += "<p><iron-icon icon='" + v.icon + "' class='" + (v.done ? "loadingIcon done" : "loadingIcon") + "'></iron-icon>" + v.message + "</p>"; }); }
+                },100)
+            }
+
+            _resetComponentProperties() {
+
+                const promResolve = Promise.resolve();
+
+                return promResolve
+                    .then(() => {
+                        const componentProperties = HtPatTriptyqueDialog.properties
+                        Object.keys(componentProperties).forEach(k => { if (!_.get(componentProperties[k],"noReset", false)) { this.set(k, (typeof componentProperties[k].value === 'function' ? componentProperties[k].value() : (componentProperties[k].value || null))) }})
+                        return promResolve
+                    })
+
+            }
+
+            _closeTriptyqueDialog() {
+
+                const promResolve = Promise.resolve();
+
+                return promResolve
+                    .then(() => this._resetComponentProperties())
+                    .then(() => {
+                        this.$["triptyqueDialog"].close()
+                        this.dispatchEvent(new CustomEvent("triptyque-dialog-closed", {composed: true, bubbles: true, detail: {}}))
+                        return promResolve
+                    })
+
+            }
+
+            _changeDialogAction(action) {
+
+                const promResolve = Promise.resolve();
+
+                return promResolve
+                    .then(() => _.map(_.keys(_.get(this,"_dialogParameters.actions",[])), k => this.set("_dialogParameters.actions."+k, false)))
+                    .then(() => this.set("_dialogParameters.actions."+action, true))
+                    .then(() => promResolve )
+
+            }
+
+            _getGridSelectedItems() {
+                return _.get(this.shadowRoot.querySelector('#vaadinGridPlanOfAction'), "selectedItems", []);
+            }
+
+            _resetGridSelectedItems() {
+                const vaadinGrid = this.shadowRoot.querySelector('#vaadinGridPlanOfAction');
+                vaadinGrid.selectedItems = []
+            }
+
+            _clearGridCache() {
+                const vaadinGrid = this.shadowRoot.querySelector('#vaadinGridPlanOfAction');
+                vaadinGrid && vaadinGrid.clearCache()
+            }
+
+            _isEqual(a, b) {
+                return !!(a===b)
+            }
+
+            _msTstampToDDMMYYYY(msTstamp) {
+                return parseInt(msTstamp) ? this.api.moment(parseInt(msTstamp)).format('DD/MM/YYYY') : ""
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            open(dialogParameters) {
+
+                const promResolve = Promise.resolve();
+                this._setLoadingMessage({ message: this.localize('ongoingProcess',this.language), icon:"arrow-forward"});
+
+                return promResolve
+                    .then(() => this._resetComponentProperties())
+                    .then(() => _.merge(this, dialogParameters) && this.$["triptyqueDialog"].open() && promResolve)
+                    .then(() => {
+
+                        console.log(this.user);
+                        console.log(this.patient);
+                        console.log(dialogParameters);
+                        console.log(this._dialogParameters);
+
+
+
+
+
+                        this._clearGridCache()
+                        this._resetGridSelectedItems()
+
+                        this.set("_vaadinGridPlanOfActionDataToShow", [
+                            {
+                                id: "123-456-789",
+                                openingDate: "29/06/2019",
+                                heDescr: "Health element description",
+                                prescriptionExists: "Juste dire oui / non",
+                                label: "Libellé du plan (besoin dates ?)",
+                                prescriber: "Docteur Frankenstein",
+                                contactsCount: "2",
+                                numberOfCares: "7",
+                                statusHr: "En cours"
+                            },
+                            {
+                                id: "987-654-321",
+                                openingDate: "25/06/2019",
+                                heDescr: "Health element description 2",
+                                prescriptionExists: "Juste dire oui / non 2",
+                                label: "Libellé du plan 2 (besoin dates ?)",
+                                prescriber: "Docteur Frankenstein 2",
+                                contactsCount: "0",
+                                numberOfCares: "8",
+                                statusHr: "En attente"
+                            }
+                        ])
+
+
+
+
+
+
+
+                        setTimeout(() => { this._changeDialogAction("detail"); }, 2000 )
+                        setTimeout(() => { this._changeDialogAction("listing"); }, 4000 )
+
+                    })
+                    .finally(()=>{
+                        this.set("_isLoading", false);
+                    })
+
+                // this._changeDialogAction("detail");
+                // this._changeDialogAction("listing");
+
+            }
+
+            _addPlanOfAction() {
+
+                return this._changeDialogAction("detail")
+                    .then(()=>{
+                        console.log(this.patient);
+                    })
+
+            }
+
+            _vaadinGridPlanOfActionActiveItemChanged(activeItem) {
+                console.log("_vaadinGridPlanOfActionActiveItemChanged", activeItem);
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+        customElements.define(HtPatTriptyqueDialog.is, HtPatTriptyqueDialog);
+
+    </script>
+
+
+
+</dom-module>

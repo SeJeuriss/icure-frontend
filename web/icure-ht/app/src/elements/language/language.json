@@ -1116,6 +1116,7 @@
     "primary_contact_for": "Primary Contact For",
     "probable": "Probable",
     "proc": "Procedure",
+    "proc(s)": "Procedure(s)",
     "proc_error": "Procédure incorrecte",
     "proc_or_prof_not_exist": "Procedure/Profession inexistante",
     "process": "Processing",
@@ -1706,7 +1707,9 @@
     "someFieldsAreEmpty": "Some required fields are empty.",
     "pleaseCompleteAllFields": "Please fill in all fields.",
     "patientAlreadyExists": "This patient already exists in your database.",
-    "referToManualAssignment": "Please refer to manual assignments."
+    "referToManualAssignment": "Please refer to manual assignments.",
+    "createPlanOfAction": "Create plan of action",
+    "onGoingPlansOfAction": "Ongoing plans of action"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -2894,6 +2897,7 @@
     "primary_contact_for": "Contact principal pour",
     "probable": "Probable",
     "proc": "Procédure",
+    "proc(s)": "Procédure(s)",
     "proc_error": "Procédure incorrecte",
     "proc_or_prof_not_exist": "Procedure/Profession inexistante",
     "process": "En cours",
@@ -3499,7 +3503,9 @@
     "someFieldsAreEmpty": "Certains champs requis ne sont pas renseignés.",
     "pleaseCompleteAllFields": "Veuillez s'il vous plait remplir tous les champs.",
     "patientAlreadyExists": "Ce patient exite déjà dans votre base de données.",
-    "referToManualAssignment": "Veuillez s'il vous plait vous référer à l'assignation manuelle."
+    "referToManualAssignment": "Veuillez s'il vous plait vous référer à l'assignation manuelle.",
+    "createPlanOfAction": "Créer un plan d'action",
+    "onGoingPlansOfAction": "Plans d'action en cours"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -4657,6 +4663,7 @@
     "primary_contact_for": "Primary Contact For",
     "probable": "Waarschijnlijk",
     "proc": "Procedure",
+    "proc(s)": "Procedure(s)",
     "proc_error": "Procédure incorrecte",
     "proc_or_prof_not_exist": "Procedure/Profession inexistante",
     "process": "Processing",
@@ -5263,6 +5270,8 @@
     "someFieldsAreEmpty": "Some required fields are empty.",
     "pleaseCompleteAllFields": "Please fill in all fields.",
     "patientAlreadyExists": "This patient already exists in your database.",
-    "referToManualAssignment": "Please refer to manual assignments."
+    "referToManualAssignment": "Please refer to manual assignments.",
+    "createPlanOfAction": "Create plan of action",
+    "onGoingPlansOfAction": "Ongoing plans of action"
   }
 }
