@@ -127,7 +127,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             #externalCareTeamDialog{
-                height: 440px;
+                height: 505px;
                 width: 1024px;
             }
 
@@ -214,7 +214,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .external-care-team-form{
-
+                height: 275px;
+                overflow: auto;
             }
 
             .external-care-team-line{
@@ -224,6 +225,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             .external-care-team-line-item{
                 width: 50%!important;
                 padding: 5px!important;
+            }
+
+            .external-care-team-line-item-only{
+                width: 100%!important;
+                padding: 5px!important;
+            }
+
+            .external-care-team-block{
+                width: 100%;
+                height: auto;
+                box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+                margin-bottom: 12px;
+            }
+
+            .external-care-team-block-title{
+                font-size: var(--font-size-large);
+                background: var(--app-background-color-dark);
+                padding: 0 12px;
+                box-sizing: border-box;
             }
 
             vaadin-text-field {
@@ -445,23 +465,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-combo-box class="type-to m-l-20" id="type-To" items="[[hcpTypes]]" item-label-path="label" item-value-path="id" required error-message="This field is required" label="[[localize('sch_by', 'Search by', language)]]" selected-item="{{hcpType}}"></vaadin-combo-box>
             </template>
             <div class="external-care-team-form">
-                <div class="external-care-team-line">
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.lastName}}" required error-message="This field is required"></vaadin-text-field>
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.firstName}}" required error-message="This field is required"></vaadin-text-field>
+                <div class="external-care-team-block">
+                    <div class="external-care-team-block-title">Praticien</div>
+                    <div class="external-care-team-line">
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.lastName}}" required error-message="This field is required"></vaadin-text-field>
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.firstName}}" required error-message="This field is required"></vaadin-text-field>
+                    </div>
+                    <div class="external-care-team-line">
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('inami','Nihii',language)]]" value="{{newHcpCareTeam.nihii}}"></vaadin-text-field>
+                        <vaadin-combo-box id="hcpSpeciality" class="external-care-team-line-item" items="[[specialityList]]" item-label-path="label.fr" item-value-path="id" label="[[localize('speciality','Speciality',language)]]" selected-item="{{selectedHcpSpeciality}}"></vaadin-combo-box>
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('niss','Niss',language)]]" value="{{newHcpCareTeam.niss}}"></vaadin-text-field>
+                    </div>
+                    <div class="external-care-team-line">
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('cbe','Cbe',language)]]" value="{{newHcpCareTeam.cbe}}"></vaadin-text-field>
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('comp_nam','Compagny name',language)]]" value="{{newHcpCareTeam.companyName}}"></vaadin-text-field>
+                    </div>
                 </div>
-                <div class="external-care-team-line">
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('inami','Nihii',language)]]" value="{{newHcpCareTeam.nihii}}"></vaadin-text-field>
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('niss','Niss',language)]]" value="{{newHcpCareTeam.niss}}"></vaadin-text-field>
+                <div class="external-care-team-block">
+                    <div class="external-care-team-block-title">Commentaire</div>
+                    <div class="external-care-team-line">
+                        <vaadin-text-field class="external-care-team-line-item-only" label="[[localize('comm','Comment',language)]]" value="{{newHcpCareTeam.notes}}"></vaadin-text-field>
+                    </div>
                 </div>
-                <div class="external-care-team-line">
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('ema','Email',language)]]" value="{{newHcpCareTeam.email}}"></vaadin-text-field>
-                    <vaadin-combo-box id="hcpSpeciality" class="external-care-team-line-item" items="[[specialityList]]" item-label-path="label.fr" item-value-path="id" label="[[localize('speciality','Speciality',language)]]" selected-item="{{selectedHcpSpeciality}}"></vaadin-combo-box>
+                <div class="external-care-team-block">
+                    <div class="external-care-team-block-title">Période de référence</div>
+                    <div class="external-care-team-line">
+                        <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-beg','Beginning of the follow-up',language)]]" value="{{newHcpCareTeam.referralStartDate}}" i18n="[[i18n]]"></vaadin-date-picker>
+                        <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-end','End of the follow-up',language)]]" value="{{newHcpCareTeam.referralEndDate}}" i18n="[[i18n]]"></vaadin-date-picker>
+                        <paper-checkbox class="external-care-team-line-item" value="{{newHcpCareTeam.referral}}" on-change="_chckIfReferral">[[localize('ref-hcp', 'Referral hcp', language)]]</paper-checkbox>
+                        <!--<paper-checkbox class="external-care-team-line-item" value="{{newHcpCareTeam.invite}}" on-change="chckInvite">[[localize('inv-hcp', 'Invite hcp', language)]]</paper-checkbox>-->
+                    </div>
                 </div>
-                <div class="external-care-team-line">
-                    <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-beg','Beginning of the follow-up',language)]]" value="{{newHcpCareTeam.referralStartDate}}" i18n="[[i18n]]"></vaadin-date-picker>
-                    <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-end','End of the follow-up',language)]]" value="{{newHcpCareTeam.referralEndDate}}" i18n="[[i18n]]"></vaadin-date-picker>
-                    <paper-checkbox class="external-care-team-line-item" value="{{newHcpCareTeam.referral}}" on-change="_chckIfReferral">[[localize('ref-hcp', 'Referral hcp', language)]]</paper-checkbox>
-                    <!--<paper-checkbox class="external-care-team-line-item" value="{{newHcpCareTeam.invite}}" on-change="chckInvite">[[localize('inv-hcp', 'Invite hcp', language)]]</paper-checkbox>-->
+                <div class="external-care-team-block">
+                    <div class="external-care-team-block-title">Données de contacts</div>
+                    <div class="external-care-team-line">
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('street','Street',language)]]" value="{{newHcpCareTeam.addresses.0.street}}"></vaadin-text-field>
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('number','Number',language)]]" value="{{newHcpCareTeam.addresses.0.houseNumber}}"></vaadin-text-field>
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('post_code','Postal code',language)]]" value="{{newHcpCareTeam.addresses.0.postalCode}}"></vaadin-text-field>
+                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('city','City',language)]]" value="{{newHcpCareTeam.addresses.0.city}}"></vaadin-text-field>
+                    </div>
                 </div>
             </div>
             <div class="buttons">
@@ -470,39 +512,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
         </paper-dialog>
 
-
-        <paper-dialog id="hcpInfoDialog">
-            <h3 class="modal-title">
-                <iron-icon icon="icons:assignment-ind"></iron-icon>
-                [[localize('car-prov-inf','Care provider informations',language)]]
-            </h3>
-
-            <div class="hcp-info-dialog-form">
-                <div class="external-care-team-line">
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{selectedCareProvider.lastName}}" required error-message="This field is required"></vaadin-text-field>
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{selectedCareProvider.firstName}}" required error-message="This field is required"></vaadin-text-field>
-                </div>
-                <div class="external-care-team-line">
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('inami','Nihii',language)]]" value="{{selectedCareProvider.nihii}}" readonly></vaadin-text-field>
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('niss','Niss',language)]]" value="{{selectedCareProvider.niss}}"></vaadin-text-field>
-                </div>
-                <div class="external-care-team-line">
-                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('ema','Email',language)]]" value="{{selectedCareProvider.email}}"></vaadin-text-field>
-                    <vaadin-combo-box id="hcpSpeciality" class="external-care-team-line-item" items="[[specialityList]]" item-label-path="label.fr" item-value-path="id" label="[[localize('speciality','Speciality',language)]]" selected-item="{{selectedHcpSpeciality}}"></vaadin-combo-box>
-                </div>
-                <template is="dom-repeat" items="[[selectedCareProvider.referralPeriods]]" as="per">
-                    <div class="external-care-team-line">
-                        <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-beg','Beginning of the follow-up',language)]]" value="{{per.referralStartDate}}" i18n="[[i18n]]"></vaadin-date-picker>
-                        <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-end','End of the follow-up',language)]]" value="{{per.referralEndDate}}" i18n="[[i18n]]"></vaadin-date-picker>
-                    </div>
-                </template>
-            </div>
-
-            <div class="buttons">
-                <paper-button class="modal-button" dialog-dismiss>[[localize('can','Cancel',language)]]</paper-button>
-                <paper-button class="modal-button--save" dialog-confirm autofocus on-tap="">[[localize('save','Save',language)]]</paper-button>
-            </div>
-        </paper-dialog>
 
         <paper-dialog id="ht-invite-hcp-link">
             <h3>Lien de première connexion</h3>
@@ -552,18 +561,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     },
                     newHcpCareTeam: {
                         type: Object,
-                        value: {
-                            'lastName': '',
-                            'firstName': '',
-                            'nihii': '',
-                            'speciality': '',
-                            'email': '',
-                            'niss': '',
-                            'invite': false,
-                            'isReferral': false,
-                            'referralStartDate' : null,
-                            'referralEndDate': null
-                        }
+                        value: () => ({
+                            civility: null,
+                            firstName: null,
+                            lastName: null,
+                            speciality: null,
+                            nihii: null,
+                            niss: null,
+                            cbe: null,
+                            companyName: null,
+                            referral: null,
+                            notes: null,
+                            referralPeriods: [],
+                            addresses: []
+                        })
                     },
                     currentInternalCareTeam: {
                         type: Array,
@@ -667,7 +678,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', 'fr', 'pers', null, null, 1000).then(specList => {
                     this.set('specialityList', specList.rows)
                     this._initCurrentCareTeam();
-                    this._checkForDmgOwner();
                 })
 
             }
@@ -685,12 +695,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _initCurrentCareTeam(){
                 this.api.patient().getPatientWithUser(this.user, this.patient.id)
                     .then(patient => this.api.register(patient, 'patient'))
-                    .then(patient => Promise.all([patient, this.api.hcparty().getHealthcareParties(_.keys(patient.delegations).join(','))]))
-                    .then(([patient, listOfInternalHcp]) => Promise.all([listOfInternalHcp, this.api.hcparty().getHealthcareParties(patient.patientHealthCareParties.map(hcp => hcp.healthcarePartyId).join(','))]))
+                    .then(patient => Promise.all([patient, _.keys(patient.delegations).length > 0 ? this.api.hcparty().getHealthcareParties(_.keys(patient.delegations).join(',')) : Promise.resolve([])]))
+                    .then(([patient, listOfInternalHcp]) => Promise.all([listOfInternalHcp, patient.patientHealthCareParties.length > 0 ? this.api.hcparty().getHealthcareParties(patient.patientHealthCareParties.map(hcp => hcp.healthcarePartyId).join(',')) : Promise.resolve([])]))
                     .then(([listOfInternalHcp, listOfExternalHcp]) => {
-                        this.patient.patientHealthCareParties.map(patientHcp => _.assign(listOfExternalHcp.find(externHcp => externHcp.id === patientHcp.healthcarePartyId), {referral: patientHcp.referral, referralPeriods: patientHcp.referralPeriods}))
+                        this.patient.patientHealthCareParties.map(patientHcp => _.assign(_.compact(listOfExternalHcp).find(externHcp => externHcp.id === patientHcp.healthcarePartyId), {referral: patientHcp.referral, referralPeriods: patientHcp.referralPeriods}))
                         this.set('patientTeam', _.assign({internal: listOfInternalHcp}, {external: listOfExternalHcp}))
                     })
+                    .finally(() => {
+                        this._checkForDmgOwner();
+                    })
+
             }
 
             _checkForDmgOwner(){
@@ -715,7 +729,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         })
                 }
             }
-
 
             initCurrentCareTeam() {
                 var internalTeam = []
@@ -937,41 +950,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             getHcpName(hcp){
-                if(hcp.name && hcp.name !== '') {
-                    return hcp.name
-                }
-                else{
-                    return hcp.firstName + ' ' + hcp.lastName
-                }
+
+                return _.get(hcp, 'name', null) ? hcp.name : _.get(hcp, 'firstName', null) || _.get(hcp, 'firstName', null)
             }
 
             formatDate(date){
-                if(date){
-                    return this.api.moment(date).format('DD/MM/YYYY')
-                }
-                else {
-                    return ''
-                }
+                return date ? this.api.moment(date).format('DD/MM/YYYY') : null
             }
 
             getStartDate(item){
-                if(item.referralPeriods && item.referralPeriods[0]){
-                    return this.formatDate(item.referralPeriods[0].startDate)
-                }
-                else
-                {
-                    return null;
-                }
+                return _.get(item, 'referralPeriods[0].startDate', null) ? this.api.moment(_.get(item, 'referralPeriods[0].startDate', null)).format('DD/MM/YYYY') : null
             }
 
             getEndDate(item){
-                if(item.referralPeriods && item.referralPeriods[0]){
-                    return this.formatDate(item.referralPeriods[0].endDate)
-                }
-                else
-                {
-                    return null;
-                }
+                return _.get(item, 'referralPeriods[0].endDate', null) ? this.api.moment(_.get(item, 'referralPeriods[0].endDate', null)).format('DD/MM/YYYY') : null
             }
 
             _selectedCareProviderChanged(){
@@ -1033,7 +1025,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
             _localizeSpeciality(speciality){
-                return this.localize('cd-hcp-'+speciality, speciality, this.language)
+               return this.specialityList.find(spec => spec.id === speciality) && this.specialityList.find(spec => spec.id === speciality).code ? this.localize('cd-hcp-'+this.specialityList.find(spec => spec.id === speciality).code, this.specialityList.find(spec => spec.id === speciality).code, this.language)  : this.localize('cd-hcp-'+speciality, speciality, this.language)
             }
 
             _isEhealthActive(){
@@ -1171,16 +1163,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _addHcpToExternalTeam(){
-
                 if(_.get(this.newHcpCareTeam, 'invite', false) === true){
                     this.api.hcparty().createHealthcareParty({
-                        name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
-                        lastName: _.get(this.newHcpCareTeam, 'lastName', null),
-                        firstName: _.get(this.newHcpCareTeam, 'firstName', null),
-                        nihii: _.get(this.newHcpCareTeam, 'nihii', null),
-                        ssin: _.get(this.newHcpCareTeam, 'ssin', null),
-                        speciality: _.get(this.newHcpCareTeam, 'speciality', null)
-                    })
+                            name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
+                            lastName: _.get(this.newHcpCareTeam, 'lastName', null),
+                            firstName: _.get(this.newHcpCareTeam, 'firstName', null),
+                            nihii: _.get(this.newHcpCareTeam, 'nihii', null),
+                            ssin: _.get(this.newHcpCareTeam, 'ssin', null),
+                            speciality: _.get(this.newHcpCareTeam, 'speciality.id', null),
+                            compagyName: _.get(this.newHcpCareTeam, 'compagyName', null),
+                            notes: _.get(this.newHcpCareTeam, 'notes', null),
+                            cbe: _.get(this.newHcpCareTeam, 'cbe', null),
+                            addresses: _.get(this.newHcpCareTeam, 'addresses', null),
+                            specialityCodes: dept.length > 0 ? dept.map(dept => {
+                                return {
+                                    code: _.get(_.split(dept, '|'), 1, null),
+                                    type: _.get(_.split(dept, '|'), 0, null),
+                                    version: _.get(_.split(dept, '|'), 2, null),
+                                    id: dept
+                                }
+                            }) : null
+                        })
                         .then(hcp => Promise.all([hcp, this.api.user().createUser({
                             healthcarePartyId: hcp.id,
                             name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
@@ -1211,39 +1214,48 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.$['ht-invite-hcp-link'].open()
                             this.invitedHcpLink = window.location.origin + window.location.pathname + '/?userId=' + usr.id + '&token=' + usr.applicationTokens.tmpFirstLogin
                         }).finally(() => {
-                            this.$['dmg-owner-list'].clearCache()
-                            this.$['externalCareTeamDialog'].close()
-                            this.set('newHcpCareTeam', {})
-                            this.shadowRoot.querySelector('#newHcp')._clear() || false
-                            this.shadowRoot.querySelector('#hcpSpeciality')._clear() || false
-                        })
+                        this.$['dmg-owner-list'].clearCache()
+                        this.$['externalCareTeamDialog'].close()
+                        this.set('newHcpCareTeam', {})
+                        this.shadowRoot.querySelector('#newHcp')._clear() || false
+                        this.shadowRoot.querySelector('#hcpSpeciality')._clear() || false
+                    })
                         .catch(e => console.log("Error: "+e))
-
                 }else{
                     this.api.hcparty().createHealthcareParty({
-                        name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
-                        lastName: _.get(this.newHcpCareTeam, 'lastName', null),
-                        firstName: _.get(this.newHcpCareTeam, 'firstName', null),
-                        nihii: _.get(this.newHcpCareTeam, 'nihii', null),
-                        ssin: _.get(this.newHcpCareTeam, 'ssin', null),
-                        speciality: _.get(this.newHcpCareTeam, 'speciality', null)
-                    })
+                            name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
+                            lastName: _.get(this.newHcpCareTeam, 'lastName', null),
+                            firstName: _.get(this.newHcpCareTeam, 'firstName', null),
+                            nihii: _.get(this.newHcpCareTeam, 'nihii', null),
+                            ssin: _.get(this.newHcpCareTeam, 'ssin', null),
+                            companyName: _.get(this.newHcpCareTeam, 'companyName', null),
+                            notes: _.get(this.newHcpCareTeam, 'notes', null),
+                            cbe: _.get(this.newHcpCareTeam, 'cbe', null),
+                            speciality: _.get(this.newHcpCareTeam, 'speciality.id', null),
+                            addresses: _.get(this.newHcpCareTeam, 'addresses', null),
+                            specialityCodes: _.get(this.newHcpCareTeam, 'speciality.links', []).length ? _.get(this.newHcpCareTeam, 'speciality.links', []).map(dept => {
+                                return {
+                                    code: _.get(_.split(dept, '|'), 1, null),
+                                    type: _.get(_.split(dept, '|'), 0, null),
+                                    version: _.get(_.split(dept, '|'), 2, null),
+                                    id: dept
+                                }
+                            }) : null
+                        })
                         .then(hcp => Promise.all([hcp, this.api.patient().getPatientWithUser(this.user, this.patient.id)])
-                        .then(([hcp, patient]) => {
-                            const newHcp = {
-                                healthcarePartyId : hcp.id,
-                                referral: _.get(this.newHcpCareTeam, 'isReferral', false),
-                                referralPeriods: [{
-                                    startDate : _.get(this.newHcpCareTeam, 'referralStartDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralStartDate"))).format('YYYYMMDD')) : null,
-                                    endDate: _.get(this.newHcpCareTeam, 'referralEndDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralEndDate"))).format('YYYYMMDD')) : null
-                                }]
-                            }
-                            patient.patientHealthCareParties.push(newHcp)
-
-                            this.patientTeam.external.push(_.assign(hcp, newHcp))
-
-                            return patient
-                        }))
+                            .then(([hcp, patient]) => {
+                                const newHcp = {
+                                    healthcarePartyId : hcp.id,
+                                    referral: _.get(this.newHcpCareTeam, 'isReferral', false),
+                                    referralPeriods: [{
+                                        startDate : _.get(this.newHcpCareTeam, 'referralStartDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralStartDate"))).format('YYYYMMDD')) : null,
+                                        endDate: _.get(this.newHcpCareTeam, 'referralEndDate', null) != null ? parseInt(moment(_.trim(_.get(this.newHcpCareTeam, "referralEndDate"))).format('YYYYMMDD')) : null
+                                    }]
+                                }
+                                patient.patientHealthCareParties.push(newHcp)
+                                this.patientTeam.external.push(_.assign(hcp, newHcp))
+                                return patient
+                            }))
                         .then(patient => this.api.patient().modifyPatientWithUser(this.user, patient))
                         .then(patient => this.api.register(patient, 'patient'))
                         .finally(() => {
@@ -1252,17 +1264,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this.set('newHcpCareTeam', {})
                             this.shadowRoot.querySelector('#newHcp')._clear() || false
                             this.shadowRoot.querySelector('#hcpSpeciality')._clear() || false
-
                         }).catch(e => console.log("Error: "+e))
                 }
+
             }
+
 
             _isReferral(item){
                 return _.get(item, 'referral', false)
             }
 
             _selectedHcpSpecialityChanged(){
-                this.set('newHcpCareTeam.speciality', _.get(this.selectedHcpSpeciality, 'code', null))
+                this.set('newHcpCareTeam.speciality', _.get(this, "selectedHcpSpeciality", {}))
             }
 
         }
