@@ -1712,7 +1712,11 @@
     "patientAlreadyExists": "This patient already exists in your database.",
     "referToManualAssignment": "Please refer to manual assignments.",
     "createPlanOfAction": "Create plan of action",
-    "onGoingPlansOfAction": "Ongoing plans of action"
+    "onGoingPlansOfActions": "Ongoing plans of actions",
+    "triptyqueDetails": "Details of triptyque",
+    "summary": "Summary",
+    "detailsPlanOfActions": "Details plan of actions",
+    "form": "Form"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3511,7 +3515,11 @@
     "patientAlreadyExists": "Ce patient exite déjà dans votre base de données.",
     "referToManualAssignment": "Veuillez s'il vous plait vous référer à l'assignation manuelle.",
     "createPlanOfAction": "Créer un plan d'action",
-    "onGoingPlansOfAction": "Plans d'action en cours"
+    "onGoingPlansOfActions": "Plans d'actions en cours",
+    "triptyqueDetails": "Détails du triptyque",
+    "summary": "Résumé",
+    "detailsPlanOfActions": "Détails du plan d'actions",
+    "form": "Formulaire"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5281,6 +5289,10 @@
     "patientAlreadyExists": "This patient already exists in your database.",
     "referToManualAssignment": "Please refer to manual assignments.",
     "createPlanOfAction": "Create plan of action",
-    "onGoingPlansOfAction": "Ongoing plans of action"
+    "onGoingPlansOfActions": "Ongoing plans of actions",
+    "triptyqueDetails": "Details of triptyque",
+    "summary": "Summary",
+    "detailsPlanOfActions": "Details plan of actions",
+    "form": "Form"
   }
 }

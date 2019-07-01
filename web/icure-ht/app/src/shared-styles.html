@@ -612,6 +612,11 @@
                 padding: 24px 10px 0 10px;
             }
 
+			#triptyqueDialog .buttons {
+				padding-left:0;
+				padding-right:0;
+			}
+
             .vaadinGridBottomActions {
                 display: flex;
                 width: 100%;
@@ -670,6 +675,10 @@
                 border-right:1px solid var(--app-background-color-darker);
             }
 
+            #triptyqueDialog .dialogTab:first-child {
+                border-left:none;
+            }
+
             .batchNumber{
                 padding: 1px 5px;
                 font-size: 11px;
@@ -686,6 +695,51 @@
             .blueBg { background-color: var(--paper-blue-400); }
             .greenBg { background-color: var(--paper-green-400); }
             .purpleBg { background-color: var(--paper-purple-300); }
+
+			.panelNavigator, .panelNavigatorContent {
+				position:relative;
+				width:100%;
+				height:100%;
+			}
+
+			.panelNavigator.hasTabViews {
+				height:calc(100% - 36px)
+			}
+
+			.panelNavigatorAnchor {
+				width: 30px;
+				background-color: #eee;
+				border: 1px solid #ccc;
+				height: calc(100% - 46px);
+				text-align: center;
+				writing-mode: vertical-lr;
+				line-height: 30px;
+				float:left;
+				overflow: hidden;
+			}
+			
+			.panelNavigatorContent {
+				width:calc(100% - 35px);
+				float:left;
+			}
+
+			.panelNavigatorAnchor paper-button {
+				transform: rotate(180deg);
+				text-transform: uppercase;
+				margin:0;
+				padding:0;
+				min-width:0;
+				display:block;
+			}
+			.panelNavigatorAnchor paper-button iron-icon {
+				padding: 0;
+				margin: 0;
+				width: 22px;
+				height: 22px;
+				margin-bottom: 5px;
+				transform:rotate(180deg);
+				margin-left:-5px
+			}
 
 		</style>
 	</template>

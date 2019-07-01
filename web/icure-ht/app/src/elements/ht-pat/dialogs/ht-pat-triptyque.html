@@ -54,64 +54,71 @@
 
 
 
-                <h3 class="mt0">[[localize('onGoingPlansOfAction','Ongoing plans of action',language)]]</h3>
+                <div class="panelNavigator m0 p0">
 
-                <vaadin-grid id="vaadinGridPlanOfAction" class="mt0 vaadinGridPlanOfAction" items="[[_vaadinGridPlanOfActionDataToShow]]" active-item="{{_vaadinGridPlanOfActionActiveItem}}" pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]" on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged">
+                    <h3 class="p0 mt0">[[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]] <span class="fspoint8em fw400">([[_formatTranslateGender(patient.gender)]] [[_ucFirst(patient.lastName)]] [[_ucFirst(patient.firstName)]] - [[_formatDateOfBirth(patient.dateOfBirth)]] - [[_dobToAge(patient.dateOfBirth)]] - [[patient.profession]])</span></h3>
 
-                    <vaadin-grid-column width="100px" flex-grow="0">
-                        <template class="header"><vaadin-grid-sorter path="openingDate"><b>[[localize('dat','Date',language)]]</b></vaadin-grid-sorter></template>
-                        <template>[[item.openingDate]]</template>
-                    </vaadin-grid-column>
+                    <vaadin-grid id="vaadinGridPlanOfAction" class="m0 p0 vaadinGridPlanOfAction" items="[[_vaadinGridPlanOfActionDataToShow]]" active-item="{{_vaadinGridPlanOfActionActiveItem}}" pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]" on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged">
 
-                    <vaadin-grid-column flex-grow="1">
-                        <template class="header"><vaadin-grid-sorter path="heDescr">[[localize('healthcareelement','Healthcare Elements',language)]]</vaadin-grid-sorter></template>
-                        <template>[[item.heDescr]]</template>
-                    </vaadin-grid-column>
+                        <vaadin-grid-column width="100px" flex-grow="0">
+                            <template class="header"><vaadin-grid-sorter path="openingDate"><b>[[localize('dat','Date',language)]]</b></vaadin-grid-sorter></template>
+                            <template>[[item.openingDate]]</template>
+                        </vaadin-grid-column>
 
-                    <vaadin-grid-column width="100px" flex-grow="0">
-                        <template class="header"><vaadin-grid-sorter path="documentIds">[[localize('prescription','Prescription',language)]]</vaadin-grid-sorter></template>
-                        <template>[[item.prescriptionExists]]</template>
-                    </vaadin-grid-column>
+                        <vaadin-grid-column flex-grow="1">
+                            <template class="header"><vaadin-grid-sorter path="heDescr">[[localize('healthcareelement','Healthcare Elements',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.heDescr]]</template>
+                        </vaadin-grid-column>
 
-                    <vaadin-grid-column flex-grow="1">
-                        <template class="header"><vaadin-grid-sorter path="name">[[localize('lab','Label',language)]]</vaadin-grid-sorter></template>
-                        <template>[[item.label]]</template>
-                    </vaadin-grid-column>
+                        <vaadin-grid-column width="100px" flex-grow="0">
+                            <template class="header"><vaadin-grid-sorter path="documentIds">[[localize('prescription','Prescription',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.prescriptionExists]]</template>
+                        </vaadin-grid-column>
 
-                    <vaadin-grid-column flex-grow="1">
-                        <template class="header"><vaadin-grid-sorter path="prescriber">[[localize('prescriber','Prescriber',language)]]</vaadin-grid-sorter></template>
-                        <template>[[item.prescriber]]</template>
-                    </vaadin-grid-column>
+                        <vaadin-grid-column flex-grow="1">
+                            <template class="header"><vaadin-grid-sorter path="name">[[localize('lab','Label',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.label]]</template>
+                        </vaadin-grid-column>
 
-                    <vaadin-grid-column width="100px" flex-grow="0">
-                        <template class="header"><vaadin-grid-sorter path="contactsCount">[[localize('qua','Quantity',language)]]</vaadin-grid-sorter></template>
-                        <template>[[item.contactsCount]]/[[item.numberOfCares]]</template>
-                    </vaadin-grid-column>
+                        <vaadin-grid-column flex-grow="1">
+                            <template class="header"><vaadin-grid-sorter path="prescriber">[[localize('prescriber','Prescriber',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.prescriber]]</template>
+                        </vaadin-grid-column>
 
-                    <vaadin-grid-column width="150px" flex-grow="0">
-                        <template class="header"><vaadin-grid-sorter path="statusHr">[[localize('sta','Status',language)]]</vaadin-grid-sorter></template>
-                        <template>[[item.statusHr]]</template>
-                    </vaadin-grid-column>
+                        <vaadin-grid-column flex-grow="1">
+                            <template class="header"><vaadin-grid-sorter path="responsibleHr">[[localize('persphysicianRole','Physician',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.responsibleHr]]</template>
+                        </vaadin-grid-column>
 
-                    <vaadin-grid-column width="50px" flex-grow="0">
-                        <template class="header"></template>
-                        <template><paper-button class="tool-btn pl15 pr15" on-tap="_browseAppointments" data-plan-of-action-id="[[item.id]]"><iron-icon data-name="diary" icon="date-range" class="ml5"></iron-icon> [[localize('diary','Diary',language)]]</paper-button></template>
-                    </vaadin-grid-column>
+                        <vaadin-grid-column width="100px" flex-grow="0">
+                            <template class="header"><vaadin-grid-sorter path="contactsCount">[[localize('qua','Quantity',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.contactsCount]]/[[item.numberOfCares]]</template>
+                        </vaadin-grid-column>
 
-                </vaadin-grid>
+                        <vaadin-grid-column width="150px" flex-grow="0">
+                            <template class="header"><vaadin-grid-sorter path="statusHr">[[localize('sta','Status',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.statusHr]]</template>
+                        </vaadin-grid-column>
 
-                <div class="vaadinGridBottomActions">
-                    <div class="grid-size-indicator hideOnMobile"> [[pageStart]] – [[pageEnd]] [[localize('sur','sur',language)]] [[_totalMessagesForCurrentFolderAndCurrentFilter]]</div>
-                    <paper-icon-button id="previous-page-change" icon="chevron-left" class="vaadinGridPageToPageNavigation" on-tap="_gotoPreviousGridPage"></paper-icon-button>
-                    <paper-icon-button id="next-page-change" icon="chevron-right" class="vaadinGridPageToPageNavigation" on-tap="_gotoNextGridPage"></paper-icon-button>
-                    <div class="hideOnMobile"><paper-icon-button class="vaadinGridScrollToTop" icon="arrow-upward" on-tap="_scrollToTop"></paper-icon-button></div>
-                </div>
+                        <vaadin-grid-column width="50px" flex-grow="0">
+                            <template class="header"></template>
+                            <template><paper-button class="tool-btn pl15 pr15" on-tap="_browseAppointments" data-plan-of-action-id="[[item.id]]"><iron-icon data-name="diary" icon="date-range" class="ml5"></iron-icon> [[localize('diary','Diary',language)]]</paper-button></template>
+                        </vaadin-grid-column>
 
+                    </vaadin-grid>
 
+                    <div class="vaadinGridBottomActions mt20">
+                        <div class="grid-size-indicator hideOnMobile"> [[pageStart]] – [[pageEnd]] [[localize('sur','sur',language)]] [[_totalMessagesForCurrentFolderAndCurrentFilter]]</div>
+                        <paper-icon-button id="previous-page-change" icon="chevron-left" class="vaadinGridPageToPageNavigation" on-tap="_gotoPreviousGridPage"></paper-icon-button>
+                        <paper-icon-button id="next-page-change" icon="chevron-right" class="vaadinGridPageToPageNavigation" on-tap="_gotoNextGridPage"></paper-icon-button>
+                        <div class="hideOnMobile"><paper-icon-button class="vaadinGridScrollToTop" icon="arrow-upward" on-tap="_scrollToTop"></paper-icon-button></div>
+                    </div>
 
-                <div class="buttons">
-                    <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class="m-r-5"></iron-icon>[[localize('clo','Close',language)]]</paper-button>
-                    <paper-button on-tap="_addPlanOfAction" class="modal-button modal-button--save"><iron-icon icon="icons:add-circle" class="m-r-5"></iron-icon>[[localize('createPlanOfAction','Create plan of action',language)]]</paper-button>
+                    <div class="buttons">
+                        <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
+                        <paper-button on-tap="_addPlanOfAction" class="modal-button modal-button--save"><iron-icon icon="icons:add-circle" class="mr0"></iron-icon>[[localize('createPlanOfAction','Create plan of action',language)]]</paper-button>
+                    </div>
+
                 </div>
 
 
@@ -122,53 +129,56 @@
 
             <template is="dom-if" if="[[_dialogParameters.actions.detail]]">
 
+                <h3 class="p0 mt0">[[localize('detailsPlanOfActions','Details plan of actions',language)]] <span class="fspoint8em fw400">([[_formatTranslateGender(patient.gender)]] [[_ucFirst(patient.lastName)]] [[_ucFirst(patient.firstName)]] - [[_formatDateOfBirth(patient.dateOfBirth)]] - [[_dobToAge(patient.dateOfBirth)]] - [[patient.profession]])</span></h3>
 
-                "Onglet" pat details<br />
-                + Left panel = liste pdfs avec deux scénarios A) + B) + btn lier / délier (caca)
+                <div class="panelNavigator m0 p0 hasTabViews">
+                    <div class="panelNavigatorAnchor"><paper-button class="msg-detail-btn" on-tap="_closePlanOfAction"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]]</paper-button></div>
+                    <div class="panelNavigatorContent p0 mt0">
 
+                        <paper-tabs selected="{{_triptyqueDetailActiveTab}}" attr-for-selected="name" class="p0">
+                            <paper-tab class="dialogTab" name="prescriptionForm"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon>[[localize('prescription','Prescription',language)]]</paper-tab>
+                            <paper-tab class="dialogTab" name="summary"><iron-icon icon="icons:list" class="mr8 darkBlue"></iron-icon> [[localize('summary','Summary',language)]]</paper-tab>
+                            <paper-tab class="dialogTab" name="procedures"><iron-icon icon="vaadin:tools" class="mr8 darkBlue"></iron-icon> [[localize('proc(s)','Procedure(s)',language)]] <span class="batchNumber greenBg ml10">[[_totalExistingProceduresForCurrentPlanOfAction]]</span></paper-tab>
+                        </paper-tabs>
 
-
-                <paper-tabs selected="{{_triptyqueDetailActiveTab}}" attr-for-selected="name">
-                    <paper-tab class="dialogTab" name="prescription"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon>[[localize('pri_pre','Print prescription',language)]]</paper-tab>
-                    <paper-tab class="dialogTab" name="planOfAction"><iron-icon icon="vaadin:user-card" class="mr8 darkBlue"></iron-icon> [[localize('ehb.assignToNewPatient','New patient',language)]]</paper-tab>
-                    <paper-tab class="dialogTab" name="procedures"><iron-icon icon="vaadin:tools" class="mr8 darkBlue"></iron-icon> [[localize('proc(s)','Procedure(s)',language)]] <span class="batchNumber greenBg ml10">[[_totalExistingProceduresForCurrentPlanOfAction]]</span></paper-tab>
-                </paper-tabs>
-
-                <div class="dialogTabContent">
-
-                    <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'prescription')]]">
-
-                        PRESCRIPTION
-
-                    </template>
+                        <div class="dialogTabContent">
 
 
 
-                    <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'planOfAction')]]">
+                            <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'prescriptionForm')]]">
 
-                        Plan d'action
+                                FORMULAIRE PRESCRIPTION
 
-                    </template>
+                            </template>
 
 
 
-                    <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'procedures')]]">
+                            <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'summary')]]">
 
-                        Procédures
+                                Plan d'action
 
-                    </template>
+                            </template>
+
+
+
+                            <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'procedures')]]">
+
+                                Procédures
+
+                            </template>
+
+                        </div>
+
+                        <div class="buttons">
+                            <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
+                            <paper-button on-tap="_XXXXXX" class="modal-button modal-button--save"><iron-icon icon="icons:save" class=""></iron-icon>[[localize('save','Save',language)]]</paper-button>
+                            <paper-button on-tap="_XXXXXX" class="modal-button modal-button--cancel"><iron-icon icon="icons:save" class="mr0"></iron-icon>Icone ... verticaux + ouvrir sub-menu d'actions</paper-button>
+                        </div>
+
+                    </div>
 
                 </div>
 
-
-
-                <div class="buttons">
-                    <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class="m-r-5"></iron-icon>[[localize('clo','Close',language)]]</paper-button>
-                    <paper-button on-tap="_XXXXXX" class="modal-button modal-button--save"><iron-icon icon="icons:save" class="m-r-5"></iron-icon>[[localize('save','Save',language)]]</paper-button>
-
-                    <paper-button on-tap="_XXXXXX" class="modal-button modal-button--cancel"><iron-icon icon="icons:save" class="m-r-5"></iron-icon>Icone ... verticaux + ouvrir sub-menu d'actions</paper-button>
-
-                </div>
 
             </template>
 
@@ -259,7 +269,7 @@
                     },
                     _triptyqueDetailActiveTab: {
                         type: String,
-                        value: "prescription"
+                        value: "prescriptionForm"
                     },
                     _totalExistingProceduresForCurrentPlanOfAction: {
                         type: Number,
@@ -344,7 +354,7 @@
 
             _resetGridSelectedItems() {
                 const vaadinGrid = this.shadowRoot.querySelector('#vaadinGridPlanOfAction');
-                vaadinGrid.selectedItems = []
+                return vaadinGrid ? vaadinGrid.selectedItems = [] : false
             }
 
             _clearGridCache() {
@@ -358,6 +368,30 @@
 
             _msTstampToDDMMYYYY(msTstamp) {
                 return parseInt(msTstamp) ? this.api.moment(parseInt(msTstamp)).format('DD/MM/YYYY') : ""
+            }
+
+            _closePlanOfAction(e) {
+
+                return this.set("_vaadinGridPlanOfActionActiveItem", {})
+
+            }
+
+            _formatTranslateGender(gender){
+                return gender === "female" ?
+                    this.localize("abrv_female","Miss",this.language) :
+                    this.localize("abrv_male","Mr.",this.language)
+            }
+
+            _ucFirst(inputValue){
+                return _.map(_.trim(inputValue).split(" "),i=>_.upperFirst(_.trim(i).toLowerCase())).join(" ")
+            }
+
+            _formatDateOfBirth(inputValue){
+                return inputValue ? this.api.moment(inputValue).format('DD/MM/YYYY') : ''
+            }
+
+            _dobToAge(inputValue) {
+                return inputValue ? this.api.getCurrentAgeFromBirthDate(inputValue,( e , s ) => this.localize(e, s, this.language)) : ''
             }
 
 
@@ -395,12 +429,11 @@
                     .then(() => _.merge(this, dialogParameters) && this.$["triptyqueDialog"].open() && promResolve)
                     .then(() => {
 
+
+
                         console.log(this.user);
                         console.log(this.patient);
-                        console.log(dialogParameters);
                         console.log(this._dialogParameters);
-
-
 
 
 
@@ -415,6 +448,7 @@
                                 prescriptionExists: "Juste dire oui / non",
                                 label: "Libellé du plan (besoin dates ?)",
                                 prescriber: "Docteur Frankenstein",
+                                responsibleHr: "Docteur Maboule",
                                 contactsCount: "2",
                                 numberOfCares: "7",
                                 statusHr: "En cours"
@@ -426,6 +460,7 @@
                                 prescriptionExists: "Juste dire oui / non 2",
                                 label: "Libellé du plan 2 (besoin dates ?)",
                                 prescriber: "Docteur Frankenstein 2",
+                                responsibleHr: "Docteur Jamoule",
                                 contactsCount: "0",
                                 numberOfCares: "8",
                                 statusHr: "En attente"
@@ -434,20 +469,10 @@
 
 
 
-
-
-
-
-                        setTimeout(() => { this._changeDialogAction("detail"); }, 2000 )
-                        setTimeout(() => { this._changeDialogAction("listing"); }, 4000 )
-
                     })
                     .finally(()=>{
                         this.set("_isLoading", false);
                     })
-
-                // this._changeDialogAction("detail");
-                // this._changeDialogAction("listing");
 
             }
 
@@ -455,13 +480,22 @@
 
                 return this._changeDialogAction("detail")
                     .then(()=>{
-                        console.log(this.patient);
+                        console.log("_addPlanOfAction");
+                        console.log("Patient", this.patient)
                     })
 
             }
 
             _vaadinGridPlanOfActionActiveItemChanged(activeItem) {
-                console.log("_vaadinGridPlanOfActionActiveItemChanged", activeItem);
+
+                return !!_.trim(_.get(activeItem,"id","")) ?
+                    this._changeDialogAction("detail")
+                        .then(() => {
+                            console.log("Patient", this.patient)
+                            console.log("GLOBAL active item", this._vaadinGridPlanOfActionActiveItem)
+                        }) :
+                    this._changeDialogAction("listing")
+
             }
 
 
