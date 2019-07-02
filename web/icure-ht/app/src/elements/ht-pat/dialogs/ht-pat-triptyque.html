@@ -29,6 +29,12 @@
 
         <style include="shared-styles dialog-style notification-style spinner-style">
 
+            #panelNavigator_1 {
+            }
+
+            #panelNavigator_2 {
+            }
+
         </style>
 
 
@@ -54,7 +60,7 @@
 
 
 
-                <div class="panelNavigator m0 p0">
+                <div class="panelNavigator m0 p0" id="panelNavigator_1">
 
                     <h3 class="p0 mt0">[[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]] <span class="fspoint8em fw400">([[_formatTranslateGender(patient.gender)]] [[_ucFirst(patient.lastName)]] [[_ucFirst(patient.firstName)]] - [[_formatDateOfBirth(patient.dateOfBirth)]] - [[_dobToAge(patient.dateOfBirth)]] - [[patient.profession]])</span></h3>
 
@@ -131,9 +137,18 @@
 
                 <h3 class="p0 mt0">[[localize('detailsPlanOfActions','Details plan of actions',language)]] <span class="fspoint8em fw400">([[_formatTranslateGender(patient.gender)]] [[_ucFirst(patient.lastName)]] [[_ucFirst(patient.firstName)]] - [[_formatDateOfBirth(patient.dateOfBirth)]] - [[_dobToAge(patient.dateOfBirth)]] - [[patient.profession]])</span></h3>
 
-                <div class="panelNavigator m0 p0 hasTabViews">
-                    <div class="panelNavigatorAnchor"><paper-button class="msg-detail-btn" on-tap="_closePlanOfAction"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]]</paper-button></div>
+                <div class="panelNavigator m0 p0 hasTabViews" id="panelNavigator_2">
+                    <div class="panelNavigatorAnchor"><paper-button on-tap="_closePlanOfAction"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]]</paper-button></div>
                     <div class="panelNavigatorContent p0 mt0">
+
+                        <div id="pdfPanel" class="bl0">
+                            PDF LIST<br />
+                            SEARCH + PREVIEW + LINK<br />
+                            OR IMPORT<br />
+                            PDF PRESCRIPTION<br />
+                            UNLINK<br />
+                        </div>
+                        <div class="panelNavigatorAnchor bl0"><paper-button on-tap="_toggleCollapsePdfPanel"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('"prescription"','Prescription',language)]] PDF</paper-button></div>
 
                         <paper-tabs selected="{{_triptyqueDetailActiveTab}}" attr-for-selected="name" class="p0">
                             <paper-tab class="dialogTab" name="prescriptionForm"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon>[[localize('prescription','Prescription',language)]]</paper-tab>
@@ -246,7 +261,15 @@
                                     listing: true,
                                     detail: false
                                 },
-                                triptyqueType: "physiotherapist"
+                                triptyqueType: "physiotherapist",
+                                configByType: {
+                                    physiotherapist: {
+                                        pdfDocumentsLabelKey: "requestForKineCare_header1",
+                                    },
+                                    persnurse: {
+                                        pdfDocumentsLabelKey: "requestForNurseCare_header1",
+                                    }
+                                }
                             }
                         }
                     },
@@ -344,6 +367,12 @@
                 return promResolve
                     .then(() => _.map(_.keys(_.get(this,"_dialogParameters.actions",[])), k => this.set("_dialogParameters.actions."+k, false)))
                     .then(() => this.set("_dialogParameters.actions."+action, true))
+                    .then(() => setTimeout(()=>{
+                        _.map(this.shadowRoot.querySelectorAll('.panelNavigator'), i => i && i.classList && i.classList.remove('visible'))
+                        return action === "detail" ?
+                            this.shadowRoot.querySelector('#panelNavigator_2').classList.add('visible') :
+                            this.shadowRoot.querySelector('#panelNavigator_1').classList.add('visible')
+                    },1))
                     .then(() => promResolve )
 
             }
@@ -394,6 +423,46 @@
                 return inputValue ? this.api.getCurrentAgeFromBirthDate(inputValue,( e , s ) => this.localize(e, s, this.language)) : ''
             }
 
+            _toggleCollapsePdfPanel(e) {
+
+                const pdfPanel = this.shadowRoot.querySelector('#pdfPanel')
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+
+                pdfPanel && pdfPanel.classList && pdfPanel.classList.toggle("collapsed")
+                targetButton && targetButton.firstElementChild && targetButton.firstElementChild.classList && targetButton.firstElementChild.classList.toggle("collapsedIcon")
+
+            }
+
+            getTopazPdfPrescriptions() {
+
+                const pdfDocumentsLabelKey = _.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","") + ".pdfDocumentsLabelKey","")
+                const pdfDocumentsServiceStringValue = this.localize(pdfDocumentsLabelKey,"Prescription de kinésithérapie", this.language)
+
+                return this.api.contact().findBy( this.user.healthcarePartyId, this.patient )
+                    .then(patientContacts => _.compact(_.flatten(_.map(patientContacts, singleContact => _.map(singleContact.services, s => (!_.trim(_.get(s,"content." + this.language + ".documentId")) ||_.trim(_.get(s,"content." + this.language + ".stringValue")) !== pdfDocumentsServiceStringValue) ? false : {
+                        serviceId: _.trim(_.get(s,"id")),
+                        formId: _.trim(_.get(s,"formId")),
+                        date: parseInt(_.get(s,"valueDate")),
+                        documentId: _.trim(_.get(s,"content." + this.language + ".documentId"))
+                    })))))
+                    .then(foundServicesWithPrescription => !_.size(foundServicesWithPrescription) ? false : this.api.document().getDocuments({ids:_.map(foundServicesWithPrescription,s=>s.documentId)}).then(foundDocuments=>[foundServicesWithPrescription,foundDocuments]))
+                    .then(([foundServicesWithPrescription,foundDocuments]) => !_.size(foundDocuments) ?
+                        [foundServicesWithPrescription,false] :
+                        Promise.all(_.compact(_.filter(foundDocuments,d=>!!_.trim(_.get(d,"attachmentId","")) && !!_.trim(_.get(d,"secretForeignKeys","")))).map(singleDocument => this.api.crypto().extractKeysFromDelegationsForHcpHierarchy(_.get(this, "user.healthcarePartyId", null), _.trim(_.get(singleDocument, "id", "")), _.size(_.get(singleDocument, "encryptionKeys", [])) ? _.get(singleDocument, "encryptionKeys", []) : _.get(singleDocument, "delegations", []))
+                            .then(({extractedKeys: enckeys}) => !!_.trim(_.get(singleDocument,"id","")) && _.trim(_.get(singleDocument,"attachmentId","")) ? this.api.document().getAttachment(_.trim(_.get(singleDocument,"id","")), _.trim(_.get(singleDocument,"attachmentId","")), enckeys.join(',')).then(decryptedContent=>(_.merge(singleDocument,{decryptedContent:decryptedContent}))).catch(e=>{console.log("ERROR with getAttachment: ",e); }) : singleDocument)
+                        )).then(documentsAndContent => ([foundServicesWithPrescription,documentsAndContent]))
+                    )
+                    // .then(([foundServicesWithPrescription,documentsAndContent]) => _.map(foundServicesWithPrescription, fswp => _.merge({},fswp,{document:}) ))
+                    .then(([foundServicesWithPrescription,documentsAndContent]) => _.map(foundServicesWithPrescription, fswp => _.merge({},_.omit(fswp,['documentId']),{document:_.find(documentsAndContent,{id:_.trim(_.get(fswp,"documentId"))})})))
+                    .then(servicesAndDocuments => _
+                        .chain(servicesAndDocuments)
+                        .filter(i => !!_.trim(_.get(i,"document.id")) && !!parseInt(_.get(i,"document.decryptedContent.byteLength")) )
+                        .orderBy(['date'], ['desc'])
+                        .value()
+                    )
+
+            }
+
 
 
 
@@ -429,17 +498,8 @@
                     .then(() => _.merge(this, dialogParameters) && this.$["triptyqueDialog"].open() && promResolve)
                     .then(() => {
 
-
-
-                        console.log(this.user);
-                        console.log(this.patient);
-                        console.log(this._dialogParameters);
-
-
-
                         this._clearGridCache()
                         this._resetGridSelectedItems()
-
                         this.set("_vaadinGridPlanOfActionDataToShow", [
                             {
                                 id: "123-456-789",
@@ -467,11 +527,16 @@
                             }
                         ])
 
-
-
                     })
                     .finally(()=>{
+
                         this.set("_isLoading", false);
+                        this._changeDialogAction("listing")
+
+                        console.log(this.user);
+                        console.log(this.patient);
+                        console.log(this._dialogParameters);
+
                     })
 
             }
@@ -488,13 +553,23 @@
 
             _vaadinGridPlanOfActionActiveItemChanged(activeItem) {
 
-                return !!_.trim(_.get(activeItem,"id","")) ?
+                return !_.trim(_.get(activeItem,"id","")) ?
+                    this._changeDialogAction("listing") :
                     this._changeDialogAction("detail")
-                        .then(() => {
+                        .then(()=> {
+
+                            // Soit pdf déjà lié -> get juste celui-là
+                            // Soit get la liste des PDF qui existent déjà
+                            return this.getTopazPdfPrescriptions()
+
+                        })
+                        .then(topazPdfPrescriptions => {
+
                             console.log("Patient", this.patient)
                             console.log("GLOBAL active item", this._vaadinGridPlanOfActionActiveItem)
-                        }) :
-                    this._changeDialogAction("listing")
+                            console.log("topazPdfPrescriptions", topazPdfPrescriptions)
+
+                        })
 
             }
 

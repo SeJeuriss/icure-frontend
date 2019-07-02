@@ -1716,7 +1716,8 @@
     "triptyqueDetails": "Details of triptyque",
     "summary": "Summary",
     "detailsPlanOfActions": "Details plan of actions",
-    "form": "Form"
+    "form": "Form",
+    "prescription": "Prescription"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3519,7 +3520,8 @@
     "triptyqueDetails": "Détails du triptyque",
     "summary": "Résumé",
     "detailsPlanOfActions": "Détails du plan d'actions",
-    "form": "Formulaire"
+    "form": "Formulaire",
+    "prescription": "Prescription"
   },
   "nl": {
     "AFF": "Lidnummer",

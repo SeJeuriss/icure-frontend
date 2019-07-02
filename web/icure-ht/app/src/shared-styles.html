@@ -538,6 +538,11 @@
             .fontstyleitalic {font-style:italic;}
             .fontstylenormal {font-style:normal;}
 
+			.bt0 {border-top:0!important;}
+			.br0 {border-righ:0!important;}
+			.bb0 {border-bottom:0!important;}
+			.bl0 {border-left:0!important;}
+
             .fr {float:right}
             .fl {float:left}
             .flnone {float:none}
@@ -702,6 +707,15 @@
 				height:100%;
 			}
 
+			.panelNavigator {
+				transition: all .2s ease-out;
+				margin-left:-100vw;
+			}
+
+			.panelNavigator.visible {
+				margin-left:0vw;
+			}
+
 			.panelNavigator.hasTabViews {
 				height:calc(100% - 36px)
 			}
@@ -709,7 +723,7 @@
 			.panelNavigatorAnchor {
 				width: 30px;
 				background-color: #eee;
-				border: 1px solid #ccc;
+				border: 1px solid #ddd;
 				height: calc(100% - 46px);
 				text-align: center;
 				writing-mode: vertical-lr;
@@ -738,7 +752,32 @@
 				height: 22px;
 				margin-bottom: 5px;
 				transform:rotate(180deg);
-				margin-left:-5px
+				margin-left:-5px;
+				transition: all 1s ease-out;
+			}
+
+			#triptyqueDialog #pdfPanel {
+				float: left;
+				position: relative;
+				border: 1px solid #ddd;
+				height: calc(100% - 66px);
+				width: 30%;
+				padding:10px;
+				overflow: hidden;
+				transition: all .2s ease-out;
+			}
+
+			#triptyqueDialog #pdfPanel.collapsed {
+				padding:10px 0 10px 0;
+				max-width: 0;
+			}
+
+			#triptyqueDialog .collapsedIcon {
+				transform: rotate(0);
+			}
+
+			#triptyqueDialog .dialogTabContent {
+				display:var(--layout_-_display)
 			}
 
 		</style>
