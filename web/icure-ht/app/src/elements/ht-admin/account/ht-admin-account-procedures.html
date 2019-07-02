@@ -204,14 +204,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="package-container">
                 <div class="package-list-container">
                     <div class="package-list-title">
-
+                        <paper-input class="" value="{{currentPackageTitle}}" label="Package"></paper-input>
                     </div>
                     <div class="package-list-of-procedure">
-                        <template is="dom-repeat" items="[[currentPackage]]">
+                        <template is="dom-repeat" items="[[currentPackageProcedure]]">
                             <div class="procedure-container">
                                 <div class="procedure-title">
                                     [[_localizeLabel(item.label)]]
-                                    <iron-icon icon="vaadin:trash" class="trashIcon"></iron-icon>
+                                    <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_deleteFormPackage" data-item-procedure$="[[item]]"></iron-icon>
                                 </div>
                                 <div class="procedure-description">
 
@@ -234,23 +234,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <vaadin-grid id="procedureList" class="material pad-6 mar-10" items="[[filterList]]">
                                 <vaadin-grid-column>
                                     <template class="header">
-
-                                    </template>
-                                    <template>
-                                        <iron-icon icon="vaadin:plus" class="addIcon" on-tap="_addToPackage" data-item-procedure$="[[item]]"></iron-icon>
-                                    </template>
-                                </vaadin-grid-column>
-                                <vaadin-grid-column>
-                                    <template class="header">
                                         [[localize('proc','Code',language)]]
                                     </template>
                                     <template>
+                                        <iron-icon icon="vaadin:plus" class="addIcon" on-tap="_addToPackage" data-item-procedure$="[[item]]"></iron-icon>
                                         [[item.code]]
                                     </template>
                                 </vaadin-grid-column>
                                 <vaadin-grid-column>
                                     <template class="header">
-                                        [[localize('proc','Procedures',language)]]
+                                        [[localize('code','Code',language)]]
                                     </template>
                                     <template>
                                         [[_localizeLabel(item.label)]]
@@ -306,8 +299,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: () => []
                     },
                     currentPackage:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    currentPackageProcedure:{
                         type: Array,
                         value: () => []
+                    },
+                    currentPackageTitle:{
+                        type: String,
+                        value: ""
                     }
                 }
             }
@@ -344,19 +345,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _savePackage(){
-
+                if(this.currentPackageProcedure && this.currentPackageProcedure.length){
+                    this.api.code().createCode({
+                        id: "care.topaz.procedurepackage|"+this.currentPackageTitle+"|1",
+                        code: "care.topaz.procedurepackage",
+                        version: 1,
+                        level: 1,
+                        links: this.currentPackage.map(proc => proc.id),
+                        flags: this.hcp.specialityCodes,
+                        regions: []
+                    }).then(code => {
+                        console.log(code)
+                    })
+                }
             }
 
             _addToPackage(e){
                 if(_.get(e, 'target.dataset.itemProcedure', null)){
                     const procedure = JSON.parse(_.get(e, 'target.dataset.itemProcedure', null))
 
-                    if(!this.currentPackage.find(proc => proc.id === procedure.id)){
-                        this.push('currentPackage', procedure)
+                    if(!this.currentPackageProcedure.find(proc => proc.id === procedure.id)){
+                        this.push('currentPackageProcedure', procedure)
                     }
 
-                    console.log(this.currentPackage)
+                    console.log(this.currentPackageProcedure)
                 }
+            }
+
+            _deleteFormPackage(e){
+                if(_.get(e, 'target.dataset.itemProcedure', null)){
+                    const procedure = JSON.parse(_.get(e, 'target.dataset.itemProcedure', null))
+
+                    this.currentPackageProcedure.splice(_.indexOf(this.currentPackageProcedure.find(proc => proc.id === procedure.id)), 1)
+                }
+
+                console.log(this.currentPackageProcedure)
             }
 
             _localizeLabel(label){
