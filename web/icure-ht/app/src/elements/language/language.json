@@ -1717,7 +1717,7 @@
     "summary": "Summary",
     "detailsPlanOfActions": "Details plan of actions",
     "form": "Form",
-    "prescription": "Prescription"
+    "linkPdf": "Link PDF"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3461,7 +3461,6 @@
     "labresult": "Résultat de laboratoire",
     "mea": "Mea",
     "note": "Note",
-    "prescription": "Prescription",
     "referral": "Référence",
     "report": "Rapport",
     "request": "Demande",
@@ -3521,7 +3520,8 @@
     "summary": "Résumé",
     "detailsPlanOfActions": "Détails du plan d'actions",
     "form": "Formulaire",
-    "prescription": "Prescription"
+    "prescription": "Prescription",
+    "linkPdf": "Lier le PDF"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5295,6 +5295,7 @@
     "triptyqueDetails": "Details of triptyque",
     "summary": "Summary",
     "detailsPlanOfActions": "Details plan of actions",
-    "form": "Form"
+    "form": "Form",
+    "linkPdf": "Link PDF"
   }
 }

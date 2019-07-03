@@ -141,20 +141,37 @@
                     <div class="panelNavigatorAnchor"><paper-button on-tap="_closePlanOfAction"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]]</paper-button></div>
                     <div class="panelNavigatorContent p0 mt0">
 
+
+
                         <div id="pdfPanel" class="bl0">
-                            PDF LIST<br />
-                            SEARCH + PREVIEW + LINK<br />
-                            OR IMPORT<br />
-                            PDF PRESCRIPTION<br />
-                            UNLINK<br />
+
+                            <div id="_pdfPrescriptionsList">
+                                <template is="dom-repeat" items="[[_pdfPrescriptionsList]]" as="singlePdfPrescription">
+
+                                    <div class="_singlePdfPrescription" data-service-id$="[[singlePdfPrescription.serviceId]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]">
+                                        <div class="header">
+                                            <span class="date">[[singlePdfPrescription.dateAndTimeHr]]</span>
+                                            <paper-button on-tap="_toggleCollapsePdfPreview"><iron-icon icon="icons:visibility" id$="view-[[singlePdfPrescription.serviceId]]"></iron-icon></paper-button><paper-tooltip for$="view-[[singlePdfPrescription.serviceId]]">[[localize('ehb.view','View',language)]]</paper-tooltip>
+                                            <paper-button on-tap="_linkPdfPrescription"><iron-icon icon="icons:link" id$="link-[[singlePdfPrescription.serviceId]]"></iron-icon></paper-button><paper-tooltip for$="link-[[singlePdfPrescription.serviceId]]">[[localize('linkPdf','Link PDF',language)]]</paper-tooltip>
+                                        </div>
+                                        <div class="body">[[singlePdfPrescription.serviceTitle]]</div>
+                                    </div>
+
+                                </template>
+                            </div>
+
                         </div>
-                        <div class="panelNavigatorAnchor bl0"><paper-button on-tap="_toggleCollapsePdfPanel"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('"prescription"','Prescription',language)]] PDF</paper-button></div>
+                        <div class="panelNavigatorAnchor bl0"><paper-button on-tap="_toggleCollapsePdfPanel"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('prescription','Prescription',language)]] PDF</paper-button></div>
+
+
 
                         <paper-tabs selected="{{_triptyqueDetailActiveTab}}" attr-for-selected="name" class="p0">
                             <paper-tab class="dialogTab" name="prescriptionForm"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon>[[localize('prescription','Prescription',language)]]</paper-tab>
                             <paper-tab class="dialogTab" name="summary"><iron-icon icon="icons:list" class="mr8 darkBlue"></iron-icon> [[localize('summary','Summary',language)]]</paper-tab>
                             <paper-tab class="dialogTab" name="procedures"><iron-icon icon="vaadin:tools" class="mr8 darkBlue"></iron-icon> [[localize('proc(s)','Procedure(s)',language)]] <span class="batchNumber greenBg ml10">[[_totalExistingProceduresForCurrentPlanOfAction]]</span></paper-tab>
                         </paper-tabs>
+
+
 
                         <div class="dialogTabContent">
 
@@ -182,7 +199,11 @@
 
                             </template>
 
+
+
                         </div>
+
+
 
                         <div class="buttons">
                             <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
@@ -297,6 +318,10 @@
                     _totalExistingProceduresForCurrentPlanOfAction: {
                         type: Number,
                         value: 0
+                    },
+                    _pdfPrescriptionsList: {
+                        type: Array,
+                        value: () => []
                     }
                 };
             }
@@ -433,27 +458,39 @@
 
             }
 
-            getTopazPdfPrescriptions() {
+            _getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription(inputConfig={}) {
+
+                // Fabien: inputConfig ==> aller rechercher contact / services / pdf / form... si déjà lié
 
                 const pdfDocumentsLabelKey = _.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","") + ".pdfDocumentsLabelKey","")
                 const pdfDocumentsServiceStringValue = this.localize(pdfDocumentsLabelKey,"Prescription de kinésithérapie", this.language)
 
                 return this.api.contact().findBy( this.user.healthcarePartyId, this.patient )
-                    .then(patientContacts => _.compact(_.flatten(_.map(patientContacts, singleContact => _.map(singleContact.services, s => (!_.trim(_.get(s,"content." + this.language + ".documentId")) ||_.trim(_.get(s,"content." + this.language + ".stringValue")) !== pdfDocumentsServiceStringValue) ? false : {
+                    .then(patientContacts => _.compact(_.flatten(_.map(patientContacts, singleContact => _.map(singleContact.services, s => !_.trim(_.get(s,"content." + this.language + ".documentId")) ? false : {
                         serviceId: _.trim(_.get(s,"id")),
+                        serviceTitle: _.trim(_.get(s,"content." + this.language + ".stringValue")),
                         formId: _.trim(_.get(s,"formId")),
                         date: parseInt(_.get(s,"valueDate")),
+                        dateAndTimeHr: moment(parseInt(_.trim(_.get(s,"valueDate")).substring(0,8)),"YYYYMMDD").format('DD/MM/YYYY') + " - " + _.trim(_.get(s,"valueDate")).substring(8,10) + ":" + _.trim(_.get(s,"valueDate")).substring(10,12),
                         documentId: _.trim(_.get(s,"content." + this.language + ".documentId"))
                     })))))
                     .then(foundServicesWithPrescription => !_.size(foundServicesWithPrescription) ? false : this.api.document().getDocuments({ids:_.map(foundServicesWithPrescription,s=>s.documentId)}).then(foundDocuments=>[foundServicesWithPrescription,foundDocuments]))
-                    .then(([foundServicesWithPrescription,foundDocuments]) => !_.size(foundDocuments) ?
-                        [foundServicesWithPrescription,false] :
-                        Promise.all(_.compact(_.filter(foundDocuments,d=>!!_.trim(_.get(d,"attachmentId","")) && !!_.trim(_.get(d,"secretForeignKeys","")))).map(singleDocument => this.api.crypto().extractKeysFromDelegationsForHcpHierarchy(_.get(this, "user.healthcarePartyId", null), _.trim(_.get(singleDocument, "id", "")), _.size(_.get(singleDocument, "encryptionKeys", [])) ? _.get(singleDocument, "encryptionKeys", []) : _.get(singleDocument, "delegations", []))
-                            .then(({extractedKeys: enckeys}) => !!_.trim(_.get(singleDocument,"id","")) && _.trim(_.get(singleDocument,"attachmentId","")) ? this.api.document().getAttachment(_.trim(_.get(singleDocument,"id","")), _.trim(_.get(singleDocument,"attachmentId","")), enckeys.join(',')).then(decryptedContent=>(_.merge(singleDocument,{decryptedContent:decryptedContent}))).catch(e=>{console.log("ERROR with getAttachment: ",e); }) : singleDocument)
-                        )).then(documentsAndContent => ([foundServicesWithPrescription,documentsAndContent]))
+                    .then(([foundServicesWithPrescription,foundDocuments]) => _.compact(_.map(foundServicesWithPrescription, fswp => {
+                        const serviceDocument = _.find(foundDocuments, {id: _.trim(_.get(fswp, "documentId"))})
+                        return (
+                            (
+                                fswp.serviceTitle !== pdfDocumentsServiceStringValue &&
+                                _.trim(_.get(serviceDocument, "documentType", "")).toLowerCase() !== "prescription"
+                            ) ||
+                            !_.trim(_.get(serviceDocument,"id","")) ||
+                            !_.trim(_.get(serviceDocument,"attachmentId","")) ||
+                            !_.trim(_.get(serviceDocument,"secretForeignKeys",""))
+                        ) ? false : _.merge({}, _.omit(fswp, ['documentId']), {document: serviceDocument})
+                    })))
+                    .then(servicesAndDocuments => Promise.all(servicesAndDocuments.map(sad => this.api.crypto().extractKeysFromDelegationsForHcpHierarchy(_.get(this, "user.healthcarePartyId", null), _.trim(_.get(sad.document, "id", "")), _.size(_.get(sad.document, "encryptionKeys", [])) ? _.get(sad.document, "encryptionKeys", []) : _.get(sad.document, "delegations", []))
+                            .then(({extractedKeys: enckeys}) => !!_.trim(_.get(sad.document,"id","")) && _.trim(_.get(sad.document,"attachmentId","")) ? this.api.document().getAttachment(_.trim(_.get(sad.document,"id","")), _.trim(_.get(sad.document,"attachmentId","")), enckeys.join(',')).then(decryptedContent=>(_.merge(sad, {document:{decryptedContent:decryptedContent}}))).catch(e=>{console.log("ERROR with getAttachment: ",e); }) : sad)
+                        )).then(servicesAndDocuments => servicesAndDocuments)
                     )
-                    // .then(([foundServicesWithPrescription,documentsAndContent]) => _.map(foundServicesWithPrescription, fswp => _.merge({},fswp,{document:}) ))
-                    .then(([foundServicesWithPrescription,documentsAndContent]) => _.map(foundServicesWithPrescription, fswp => _.merge({},_.omit(fswp,['documentId']),{document:_.find(documentsAndContent,{id:_.trim(_.get(fswp,"documentId"))})})))
                     .then(servicesAndDocuments => _
                         .chain(servicesAndDocuments)
                         .filter(i => !!_.trim(_.get(i,"document.id")) && !!parseInt(_.get(i,"document.decryptedContent.byteLength")) )
@@ -543,33 +580,40 @@
 
             _addPlanOfAction() {
 
+                this.set("_isLoading", true);
                 return this._changeDialogAction("detail")
                     .then(()=>{
                         console.log("_addPlanOfAction");
                         console.log("Patient", this.patient)
                     })
+                    .finally(()=>this.set("_isLoading", false))
 
             }
 
             _vaadinGridPlanOfActionActiveItemChanged(activeItem) {
+
+                this.set("_isLoading", true);
 
                 return !_.trim(_.get(activeItem,"id","")) ?
                     this._changeDialogAction("listing") :
                     this._changeDialogAction("detail")
                         .then(()=> {
 
-                            // Soit pdf déjà lié -> get juste celui-là
-                            // Soit get la liste des PDF qui existent déjà
-                            return this.getTopazPdfPrescriptions()
+                            // Fabien : Soit pdf déjà lié -> get juste celui-là
+                            // Fabien : Soit get la liste des PDF qui existent déjà
+                            return this._getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription()
 
                         })
-                        .then(topazPdfPrescriptions => {
+                        .then(pdfPrescriptions => {
+
+                            this.set("_pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : [])
 
                             console.log("Patient", this.patient)
                             console.log("GLOBAL active item", this._vaadinGridPlanOfActionActiveItem)
-                            console.log("topazPdfPrescriptions", topazPdfPrescriptions)
+                            console.log("pdfPrescriptions", pdfPrescriptions)
 
                         })
+                        .finally(()=>this.set("_isLoading", false))
 
             }
 
