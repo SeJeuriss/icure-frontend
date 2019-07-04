@@ -215,7 +215,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="">
                 <h4>[[localize('list-of-packages', 'List of packages', language)]] <paper-icon-button class="add-btn" icon="icons:add-circle" on-tap="_openPackageDialog"></paper-icon-button></h4>
 
-                <vaadin-grid id="packageList" class="material pad-6 mar-10" items="[[packageList]]" active-item="{{selectedPackage}}">
+                <vaadin-grid id="packageList" class="material pad-6 mar-10" items="[[listOfPackage]]" active-item="{{selectedPackage}}">
                     <vaadin-grid-column>
                         <template class="header">
                             [[localize('pack','Package',language)]]
@@ -232,14 +232,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="package-container">
                 <div class="package-list-container">
                     <div class="package-list-title">
-                        <paper-input class="" value="{{currentPackageTitle}}" label="Package"></paper-input>
+                        <paper-input class="" value="{{selectedPackageInfo.packageName}}" label="Package"></paper-input>
                     </div>
                     <div class="package-list-of-procedure">
-                        <template is="dom-repeat" items="[[currentPackageProcedure]]">
+                        <template is="dom-repeat" items="[[selectedPackageInfo.listOfProcedures]]">
                             <div class="procedure-container">
                                 <div class="procedure-title">
                                     [[_localizeLabel(item.label)]]
-                                    <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_deleteFormPackage" data-item-procedure$="[[item]]"></iron-icon>
+                                    <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_deleteProcedureFromPackage" data-item-procedure$="[[item]]"></iron-icon>
                                 </div>
                                 <div class="procedure-description">
 
@@ -256,16 +256,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </div>
                     <div class="package-search-block">
                         <div class="package-search">
-                            <paper-input label="Recherche" value="{{procedureFilter}}" class="pad-6 w-70"></paper-input> <paper-checkbox class="w-30 p-30" on-change="_allDepartementCheckChanged" value="{{allDepartment}}">Tous les départements</paper-checkbox>
+                            <paper-input label="Recherche" value="{{procedureFilter}}" class="pad-6 w-70"></paper-input> <paper-checkbox class="w-30 p-30" on-change="_allDepartementCheckChanged" value="{{allDepartmentChecked}}">Tous les départements</paper-checkbox>
                         </div>
                         <div class="package-search-result">
-                            <vaadin-grid id="procedureList" class="material pad-6 mar-10" items="[[filterList]]">
+                            <vaadin-grid id="procedureList" class="material pad-6 mar-10" items="[[displayedResultOfSearch]]">
                                 <vaadin-grid-column>
                                     <template class="header">
                                         [[localize('code','Code',language)]]
                                     </template>
                                     <template>
-                                        <iron-icon icon="vaadin:plus" class="addIcon" on-tap="_addToPackage" data-item-procedure$="[[item]]"></iron-icon>
+                                        <iron-icon icon="vaadin:plus" class="addIcon" on-tap="_addProcedureToPackage" data-item-procedure$="[[item]]"></iron-icon>
                                         [[item.code]]
                                     </template>
                                 </vaadin-grid-column>
@@ -320,51 +320,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Object,
                         noReset: true
                     },
-                    procedureFilter:{
-                        type: String,
-                        value: ""
-                    },
-                    filterListFull:{
-                        type: Array,
-                        value: () => []
-                    },
-                    filterList:{
-                        type: Array,
-                        value: () => []
-                    },
-                    currentPackage:{
-                        type: Object,
-                        value: () => {}
-                    },
-                    currentPackageProcedure:{
-                        type: Array,
-                        value: () => []
-                    },
-                    currentPackageTitle:{
-                        type: String,
-                        value: ""
-                    },
-                    allDepartementChecked:{
-                        type: Boolean,
-                        value: false
-                    },
                     hcp:{
                         type: Object,
                         value: () => {}
                     },
-                    packageList:{
-                        type: Array,
+                    listOfPackage: {
+                        type: Object,
                         value: () => []
                     },
                     selectedPackage:{
                         type: Object,
                         value: () => {}
+                    },
+                    selectedPackageInfo:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    procedureFilter:{
+                        type: String,
+                        value: null
+                    },
+                    searchResult:{
+                        type: Array,
+                        value: () => []
+                    },
+                    allDepartmentChecked:{
+                        type: Boolean,
+                        value: false
+                    },
+                    displayedResultOfSearch:{
+                        type: Array,
+                        value: () => []
                     }
                 }
             }
 
             static get observers() {
-                return ['_procedureFilterChanged(procedureFilter)', '_initialize(api, user)', '_selectedPackageChanged(selectedPackage)'];
+                return ['_initialize(api, user)', '_selectedPackageChanged(selectedPackage)', '_procedureFilterChanged(procedureFilter)'];
             }
 
             constructor() {
@@ -379,129 +371,95 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                     .then(hcp => this.set('hcp', hcp))
                     .then(() => this.api.code().findPaginatedCodes('be', 'care.topaz.procedurepackage', '', null, null, 100))
-                    .then(pack => {
-                        this.set('packageList', pack.rows)
+                    .then(listOfPackage => {
+                        this.set('listOfPackage', listOfPackage.rows)
                     })
+            }
+
+            _localizeLabel(label){
+                return label[this.language] || null
             }
 
             _selectedPackageChanged(){
                 if(this.selectedPackage){
-                    (_.get(this.selectedPackage, 'links', null) ? this.api.code().getCodes(this.selectedPackage.links.join(",")) : Promise.resolve([])).then(codesOfPackage => {
-                        this.set('currentPackageProcedure', codesOfPackage)
-                    })
-                    .finally(() => {
-                        this.set('currentPackageTitle', _.get(this.selectedPackage, 'label['+this.language+']', ''))
-                        this._openPackageDialog()
-                    })
-                    .catch(e => console.log(e))
+                    (_.get(this.selectedPackage, 'links', null) ? this.api.code().getCodes(this.selectedPackage.links.join(",")) : Promise.resolve([]))
+                        .then(listOfProcedures => {
+                            this.set('selectedPackageInfo', {
+                                packageName: _.get(this.selectedPackage, 'label['+this.language+']', null),
+                                listOfProcedures: listOfProcedures
+                            })
+                        }).finally(() => {
+                            this._openPackageDialog()
+                        })
+                }
+            }
+
+            _addProcedureToPackage(e){
+                if(_.get(e, 'target.dataset.itemProcedure', null)){
+                    const data = JSON.parse(_.get(e, 'target.dataset.itemProcedure', ''))
+                    !this.selectedPackageInfo.listOfProcedures.find(proc => proc.id === data.id) ? this.push('selectedPackageInfo.listOfProcedures', data) : null
+                }
+            }
+
+            _deleteProcedureFromPackage(e){
+                if(_.get(e, 'target.dataset.itemProcedure', null)){
+                    const data = JSON.parse(_.get(e, 'target.dataset.itemProcedure', ''))
+                    this.splice('selectedPackageInfo.listOfProcedures', _.indexOf(this.selectedPackageInfo.listOfProcedures, this.selectedPackageInfo.listOfProcedures.find(proc => proc.id === data.id)), 1)
                 }
             }
 
             _openPackageDialog(){
-                this.set('allDepartementChecked', false)
+                this.set('procedureFilter', null)
+                this.set('displayedResultOfSearch', [])
+                this.set('searchResult', [])
                 this.$['packageDialog'].open()
             }
 
             _closePackageDialog(){
-                this.set('procedureFilter', null)
-                this.set('filterListFull', [])
-                this.set('filterList', [])
                 this.$['packageDialog'].close()
             }
 
             _procedureFilterChanged(){
                 if(this.procedureFilter && _.trim(this.procedureFilter).length > 2){
-                    this.set('filterList', [])
+                    this.set('displayedResultOfSearch', [])
                     setTimeout(() => {
                         this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS-PROCEDURES', 'fr', this.procedureFilter, null, null, 1000)
-                        .then(results => {
-                            this.set('filterListFull', results.rows)
-                        })
-                        .finally(() => {
-                            if(this.allDepartementChecked === true){
-                                this.set('filterList', this.filterListFull)
-                            }else{
-                                this.filterListFull.map(proc => {
-                                    _.get(proc,'flags', []).find(flag => flag === "deptkinesitherapy") ? this.filterList.push(proc) : null
-                                })
-                            }
-                            this.set('filterList', _.orderBy(this.filterList, '[label['+this.language+']]', '[asc]'))
-                            this.$['procedureList'].clearCache()
-                        })
+                            .then(listOfProc => {
+                                this.set('searchResult', listOfProc.rows)
+                            })
+                            .finally(() => {
+                                this.set('displayedResultOfSearch', [])
+                                if(this.allDepartmentChecked === true){
+                                    this.set('displayedResultOfSearch', this.searchResult)
+                                }else{
+                                    this.searchResult.map(proc => {
+                                        _.get(proc,'flags', []).find(flag => flag === "deptkinesitherapy") ? this.displayedResultOfSearch.push(proc) : null
+                                    })
+                                }
+                                this.set('displayedResultOfSearch', _.orderBy(this.displayedResultOfSearch, '[label['+this.language+']]', '[asc]'))
+                                this.$['procedureList'].clearCache()
+                            })
                     }, 300)
                 }
             }
 
-            _savePackage(){
-                if(this.currentPackageProcedure && this.currentPackageProcedure.length && this.currentPackageTitle.length){
-                    if(_.get(this.selectedPackage, 'id', null)){
-                        this.set('selectedPackage.links',this.currentPackageProcedure.map(proc => proc.id))
-                        this.set('selectedPackage.label', {[this.language]: this.currentPackageTitle})
-
-                        this.api.code().modifyCode(this.selectedPackage)
-                            .then(code => this.api.register(code, 'selectedPackage'))
-                            .finally(() => {
-                                this._closePackageDialog
-                                this.$['procedureList'].clearCache()
-                            })
-                    }else{
-                        const uuid = this.api.crypto().randomUuid()
-                        this.api.code().createCode({
-                            id: "care.topaz.procedurepackage|"+uuid+"|1",
-                            code: uuid,
-                            type: "care.topaz.procedurepackage",
-                            version: 1,
-                            level: 1,
-                            links: this.currentPackageProcedure.map(proc => proc.id),
-                            flags: this.hcp.specialityCodes.map(spec => spec.code),
-                            regions: ["be", "fr"],
-                            label: {[this.language]: this.currentPackageTitle}
-                        }).then(pack => {
-                            this.push('packageList', pack)
-                            this.$['procedureList'].clearCache()
-                        })
-                    }
-                }
-            }
-
-            _addToPackage(e){
-                if(_.get(e, 'target.dataset.itemProcedure', null)){
-                    const procedure = JSON.parse(_.get(e, 'target.dataset.itemProcedure', null))
-
-                    if(!this.currentPackageProcedure.find(proc => proc.id === procedure.id)){
-                        this.push('currentPackageProcedure', procedure)
-                    }
-                }
-            }
-
-            _deleteFormPackage(e){
-                if(_.get(e, 'target.dataset.itemProcedure', null)){
-                    const procedure = JSON.parse(_.get(e, 'target.dataset.itemProcedure', null))
-                    this.splice('currentPackageProcedure', _.indexOf(this.currentPackageProcedure.find(proc => proc.id === procedure.id)), 1)
-                }
-
-                console.log(this.currentPackageProcedure)
-            }
-
-            _localizeLabel(label){
-                return label[this.language]
-            }
-
-            _localizeFlags(flag){
-                return flag && this.localize('cd-hcp-'+flag, flag, this.language)
-            }
-
             _allDepartementCheckChanged(e){
-                this.set('filterList', [])
+                this.set('displayedResultOfSearch', [])
                 if(e.target.checked){
-                    this.set('filterList', this.filterListFull)
+                    this.set('allDepartmentChecked', true)
+                    this.set('displayedResultOfSearch', this.searchResult)
                 }else{
-                    this.filterListFull.map(proc => {
-                        _.get(proc,'flags', []).find(flag => flag === "deptkinesitherapy") ? this.filterList.push(proc) : null
+                    this.set('allDepartmentChecked', false)
+                    this.searchResult.map(proc => {
+                        _.get(proc,'flags', []).find(flag => flag === "deptkinesitherapy") ? this.displayedResultOfSearch.push(proc) : null
                     })
                 }
-                this.set('filterList', _.orderBy(this.filterList, '[label['+this.language+']]', '[asc]'))
+                this.set('displayedResultOfSearch', _.orderBy(this.displayedResultOfSearch, '[label['+this.language+']]', '[asc]'))
                 this.$['procedureList'].clearCache()
+            }
+
+            _savePackage(){
+
             }
 
         }
