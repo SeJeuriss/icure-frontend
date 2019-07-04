@@ -133,6 +133,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             .package-search{
                 height: 60px;
                 width: 100%;
+                display: flex;
             }
 
             .package-search-result{
@@ -189,6 +190,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 float: right;
             }
 
+            #procedureList{
+                height: calc(100% - 60px);
+                width: auto;
+            }
+
+            .w-70{
+                width: 80%;
+            }
+
+            .w-30{
+                width: 20%;
+            }
+
+            .p-30{
+                padding: 30px;
+            }
+
         </style>
 
 
@@ -197,6 +215,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="">
                 <h4>[[localize('list-of-packages', 'List of packages', language)]] <paper-icon-button class="add-btn" icon="icons:add-circle" on-tap="_openPackageDialog"></paper-icon-button></h4>
 
+                <vaadin-grid id="packageList" class="material pad-6 mar-10" items="[[packageList]]" active-item="{{selectedPackage}}">
+                    <vaadin-grid-column>
+                        <template class="header">
+                            [[localize('pack','Package',language)]]
+                        </template>
+                        <template>
+                            [[_localizeLabel(item.label)]]
+                        </template>
+                    </vaadin-grid-column>
+                </vaadin-grid>
             </div>
         </div>
 
@@ -228,13 +256,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </div>
                     <div class="package-search-block">
                         <div class="package-search">
-                            <paper-input label="Recherche" value="{{procedureFilter}}" class="pad-6"></paper-input>
+                            <paper-input label="Recherche" value="{{procedureFilter}}" class="pad-6 w-70"></paper-input> <paper-checkbox class="w-30 p-30" on-change="_allDepartementCheckChanged" value="{{allDepartment}}">Tous les départements</paper-checkbox>
                         </div>
                         <div class="package-search-result">
                             <vaadin-grid id="procedureList" class="material pad-6 mar-10" items="[[filterList]]">
                                 <vaadin-grid-column>
                                     <template class="header">
-                                        [[localize('proc','Code',language)]]
+                                        [[localize('code','Code',language)]]
                                     </template>
                                     <template>
                                         <iron-icon icon="vaadin:plus" class="addIcon" on-tap="_addToPackage" data-item-procedure$="[[item]]"></iron-icon>
@@ -243,7 +271,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </vaadin-grid-column>
                                 <vaadin-grid-column>
                                     <template class="header">
-                                        [[localize('code','Code',language)]]
+                                        [[localize('proc','Procedure',language)]]
                                     </template>
                                     <template>
                                         [[_localizeLabel(item.label)]]
@@ -251,10 +279,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </vaadin-grid-column>
                                 <vaadin-grid-column>
                                     <template class="header">
-                                        [[localize('dept','Département',language)]]
+                                        [[localize('dept','Departement',language)]]
                                     </template>
                                     <template>
-                                        [[_localizeFlags(item.flags)]]
+                                        <template is="dom-repeat" items="[[item.flags]]" as="flag">
+                                            <div>[[_localizeFlags(flag)]]</div>
+                                        </template>
                                     </template>
                                 </vaadin-grid-column>
                             </vaadin-grid>
@@ -294,6 +324,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         value: ""
                     },
+                    filterListFull:{
+                        type: Array,
+                        value: () => []
+                    },
                     filterList:{
                         type: Array,
                         value: () => []
@@ -309,12 +343,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     currentPackageTitle:{
                         type: String,
                         value: ""
+                    },
+                    allDepartementChecked:{
+                        type: Boolean,
+                        value: false
+                    },
+                    hcp:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    packageList:{
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedPackage:{
+                        type: Object,
+                        value: () => {}
                     }
                 }
             }
 
             static get observers() {
-                return ['_procedureFilterChanged(procedureFilter)'];
+                return ['_procedureFilterChanged(procedureFilter)', '_initialize(api, user)', '_selectedPackageChanged(selectedPackage)'];
             }
 
             constructor() {
@@ -325,38 +375,92 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 super.ready()
             }
 
+            _initialize(){
+                this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                    .then(hcp => this.set('hcp', hcp))
+                    .then(() => this.api.code().findPaginatedCodes('be', 'care.topaz.procedurepackage', '', null, null, 100))
+                    .then(pack => {
+                        this.set('packageList', pack.rows)
+                    })
+            }
+
+            _selectedPackageChanged(){
+                if(this.selectedPackage){
+                    (_.get(this.selectedPackage, 'links', null) ? this.api.code().getCodes(this.selectedPackage.links.join(",")) : Promise.resolve([])).then(codesOfPackage => {
+                        this.set('currentPackageProcedure', codesOfPackage)
+                    })
+                    .finally(() => {
+                        this.set('currentPackageTitle', _.get(this.selectedPackage, 'label['+this.language+']', ''))
+                        this._openPackageDialog()
+                    })
+                    .catch(e => console.log(e))
+                }
+            }
+
             _openPackageDialog(){
+                this.set('allDepartementChecked', false)
                 this.$['packageDialog'].open()
             }
 
             _closePackageDialog(){
+                this.set('procedureFilter', null)
+                this.set('filterListFull', [])
+                this.set('filterList', [])
                 this.$['packageDialog'].close()
             }
 
             _procedureFilterChanged(){
                 if(this.procedureFilter && _.trim(this.procedureFilter).length > 2){
+                    this.set('filterList', [])
                     setTimeout(() => {
-                        this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS-PROCEDURES', 'fr', this.procedureFilter, null, null, 1000).then(results => {
-                            console.log(results.rows)
-                            this.set('filterList', results.rows)
+                        this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS-PROCEDURES', 'fr', this.procedureFilter, null, null, 1000)
+                        .then(results => {
+                            this.set('filterListFull', results.rows)
+                        })
+                        .finally(() => {
+                            if(this.allDepartementChecked === true){
+                                this.set('filterList', this.filterListFull)
+                            }else{
+                                this.filterListFull.map(proc => {
+                                    _.get(proc,'flags', []).find(flag => flag === "deptkinesitherapy") ? this.filterList.push(proc) : null
+                                })
+                            }
+                            this.set('filterList', _.orderBy(this.filterList, '[label['+this.language+']]', '[asc]'))
+                            this.$['procedureList'].clearCache()
                         })
                     }, 300)
                 }
             }
 
             _savePackage(){
-                if(this.currentPackageProcedure && this.currentPackageProcedure.length){
-                    this.api.code().createCode({
-                        id: "care.topaz.procedurepackage|"+this.currentPackageTitle+"|1",
-                        code: "care.topaz.procedurepackage",
-                        version: 1,
-                        level: 1,
-                        links: this.currentPackage.map(proc => proc.id),
-                        flags: this.hcp.specialityCodes,
-                        regions: []
-                    }).then(code => {
-                        console.log(code)
-                    })
+                if(this.currentPackageProcedure && this.currentPackageProcedure.length && this.currentPackageTitle.length){
+                    if(_.get(this.selectedPackage, 'id', null)){
+                        this.set('selectedPackage.links',this.currentPackageProcedure.map(proc => proc.id))
+                        this.set('selectedPackage.label', {[this.language]: this.currentPackageTitle})
+
+                        this.api.code().modifyCode(this.selectedPackage)
+                            .then(code => this.api.register(code, 'selectedPackage'))
+                            .finally(() => {
+                                this._closePackageDialog
+                                this.$['procedureList'].clearCache()
+                            })
+                    }else{
+                        const uuid = this.api.crypto().randomUuid()
+                        this.api.code().createCode({
+                            id: "care.topaz.procedurepackage|"+uuid+"|1",
+                            code: uuid,
+                            type: "care.topaz.procedurepackage",
+                            version: 1,
+                            level: 1,
+                            links: this.currentPackageProcedure.map(proc => proc.id),
+                            flags: this.hcp.specialityCodes.map(spec => spec.code),
+                            regions: ["be", "fr"],
+                            label: {[this.language]: this.currentPackageTitle}
+                        }).then(pack => {
+                            this.push('packageList', pack)
+                            this.$['procedureList'].clearCache()
+                        })
+                    }
                 }
             }
 
@@ -367,16 +471,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     if(!this.currentPackageProcedure.find(proc => proc.id === procedure.id)){
                         this.push('currentPackageProcedure', procedure)
                     }
-
-                    console.log(this.currentPackageProcedure)
                 }
             }
 
             _deleteFormPackage(e){
                 if(_.get(e, 'target.dataset.itemProcedure', null)){
                     const procedure = JSON.parse(_.get(e, 'target.dataset.itemProcedure', null))
-
-                    this.currentPackageProcedure.splice(_.indexOf(this.currentPackageProcedure.find(proc => proc.id === procedure.id)), 1)
+                    this.splice('currentPackageProcedure', _.indexOf(this.currentPackageProcedure.find(proc => proc.id === procedure.id)), 1)
                 }
 
                 console.log(this.currentPackageProcedure)
@@ -386,8 +487,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 return label[this.language]
             }
 
-            _localizeFlags(flags){
-                return flags && flags.map(flag => this.localize('cd-hcp-'+flag, flag, this.language)).join(",")
+            _localizeFlags(flag){
+                return flag && this.localize('cd-hcp-'+flag, flag, this.language)
+            }
+
+            _allDepartementCheckChanged(e){
+                this.set('filterList', [])
+                if(e.target.checked){
+                    this.set('filterList', this.filterListFull)
+                }else{
+                    this.filterListFull.map(proc => {
+                        _.get(proc,'flags', []).find(flag => flag === "deptkinesitherapy") ? this.filterList.push(proc) : null
+                    })
+                }
+                this.set('filterList', _.orderBy(this.filterList, '[label['+this.language+']]', '[asc]'))
+                this.$['procedureList'].clearCache()
             }
 
         }
