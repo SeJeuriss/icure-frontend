@@ -218,12 +218,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="procedures-panel">
             <h4 class="section-title">[[localize('my_pro', 'My profil', language)]] - [[localize('my-proc', 'My procedures', language)]]</h4>
             <div class="">
-                <h4>[[localize('list-of-packages', 'List of packages', language)]] <paper-icon-button class="add-btn" icon="icons:add-circle" on-tap="_openPackageDialog"></paper-icon-button></h4>
+                <h4>[[localize('adm-pack-avai', 'Available package', language)]] <paper-icon-button class="add-btn" icon="icons:add-circle" on-tap="_openPackageDialog"></paper-icon-button></h4>
 
                 <vaadin-grid id="packageList" class="material pad-6 mar-10" items="[[listOfPackage]]" active-item="{{selectedPackage}}">
                     <vaadin-grid-column>
                         <template class="header">
-                            [[localize('pack_name','Package name',language)]]
+                            [[localize('adm-pack-name','Package name',language)]]
                         </template>
                         <template>
                             [[_localizeLabel(item.label)]]
@@ -231,7 +231,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </vaadin-grid-column>
                     <vaadin-grid-column>
                         <template class="header">
-                            [[localize('num_proc','Number of procedure',language)]]
+                            [[localize('adm-pack-nb-proc','Number of procedure',language)]]
                         </template>
                         <template>
                             [[_getNumberOfProcedure(item.links)]]
@@ -239,7 +239,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </vaadin-grid-column>
                     <vaadin-grid-column>
                         <template class="header">
-                            [[localize('type','Type',language)]]
+                            [[localize('adm-pack-dept','Type',language)]]
                         </template>
                         <template>
                             <template is="dom-repeat" items="[[item.flags]]" as="flag">
@@ -255,7 +255,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="package-container">
                 <div class="package-list-container">
                     <div class="package-list-title">
-                        <paper-input class="packageTitle" value="{{selectedPackageInfo.packageName}}" label="Package title"></paper-input>
+                        <paper-input class="packageTitle" value="{{selectedPackageInfo.packageName}}" label="[[localize('adm-pack-name', 'Package name', language)]]"></paper-input>
                     </div>
                     <div class="package-list-of-procedure">
                         <template is="dom-repeat" items="[[selectedPackageInfo.listOfProcedures]]">
@@ -274,18 +274,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <div class="package-search-container">
                     <div class="package-search-title">
                         <div class="package-search-title-content">
-                            <iron-icon icon="vaadin:search" class="title-icon"></iron-icon> Recherche de procédures
+                            <iron-icon icon="vaadin:search" class="title-icon"></iron-icon> [[localize('adm-pack-proc-search', 'Search procedure', language)]]
                         </div>
                     </div>
                     <div class="package-search-block">
                         <div class="package-search">
-                            <paper-input label="Recherche" value="{{procedureFilter}}" class="pad-6 w-70"></paper-input> <paper-checkbox class="w-30 p-30" on-change="_allDepartementCheckChanged" value="{{allDepartmentChecked}}">Tous les départements</paper-checkbox>
+                            <paper-input label="[[localize('adm-pack-search', 'Search', language)]]" value="{{procedureFilter}}" class="pad-6 w-70"></paper-input> <paper-checkbox class="w-30 p-30" on-change="_allDepartementCheckChanged" value="{{allDepartmentChecked}}">[[localize('adm-pack-all-dept', 'All departments', language)]]</paper-checkbox>
                         </div>
                         <div class="package-search-result">
                             <vaadin-grid id="procedureList" class="material pad-6 mar-10" items="[[displayedResultOfSearch]]">
                                 <vaadin-grid-column>
                                     <template class="header">
-                                        [[localize('code','Code',language)]]
+                                        [[localize('adm-pack-code','Code',language)]]
                                     </template>
                                     <template>
                                         <iron-icon icon="vaadin:plus" class="addIcon" on-tap="_addProcedureToPackage" data-item-procedure$="[[item]]"></iron-icon>
@@ -294,7 +294,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </vaadin-grid-column>
                                 <vaadin-grid-column>
                                     <template class="header">
-                                        [[localize('proc','Procedure',language)]]
+                                        [[localize('adm-pack-proc','Procedure',language)]]
                                     </template>
                                     <template>
                                         [[_localizeLabel(item.label)]]
@@ -302,11 +302,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </vaadin-grid-column>
                                 <vaadin-grid-column>
                                     <template class="header">
-                                        [[localize('dept','Departement',language)]]
+                                        [[localize('adm-pack-dept','Departement',language)]]
                                     </template>
                                     <template>
                                         <template is="dom-repeat" items="[[item.flags]]" as="flag">
-                                            <div>[[_localizeFlags(flag)]]</div>
+                                            <div>[[_localizeType(flag)]]</div>
                                         </template>
                                     </template>
                                 </vaadin-grid-column>
@@ -360,7 +360,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: () => ({
                             packageName: null,
                             listOfProcedures: []
-
                         })
                     },
                     procedureFilter:{
@@ -461,7 +460,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     this.set('displayedResultOfSearch', this.searchResult)
                                 }else{
                                     this.searchResult.map(proc => {
-                                        _.get(proc,'flags', []).find(flag => flag === "deptkinesitherapy") ? this.displayedResultOfSearch.push(proc) : null
+                                        _.get(proc,'flags', []).find(flag => flag === _.get(this.hcp, 'specialityCodes[0].code', 'deptgeneralpractice')) ? this.displayedResultOfSearch.push(proc) : null
                                     })
                                 }
                                 this.set('displayedResultOfSearch', _.orderBy(this.displayedResultOfSearch, '[label['+this.language+']]', '[asc]'))
@@ -479,7 +478,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }else{
                     this.set('allDepartmentChecked', false)
                     this.searchResult.map(proc => {
-                        _.get(proc,'flags', []).find(flag => flag === "deptkinesitherapy") ? this.displayedResultOfSearch.push(proc) : null
+                        _.get(proc,'flags', []).find(flag => flag === _.get(this.hcp, 'specialityCodes[0].code', 'deptgeneralpractice')) ? this.displayedResultOfSearch.push(proc) : null
                     })
                 }
                 this.set('displayedResultOfSearch', _.orderBy(this.displayedResultOfSearch, '[label['+this.language+']]', '[asc]'))
@@ -531,7 +530,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _localizeType(flag){
-                return this.localize('cd-hcp-'+flag, flag, this.language)
+                if(this.allDepartmentChecked === true){
+                    return this.localize('cd-hcp-'+flag, flag, this.language)
+                }else{
+                    return flag && flag === _.get(this.hcp, 'specialityCodes[0].code', 'deptgeneralpractice') ? this.localize('cd-hcp-'+flag, flag, this.language) : null
+                }
+
             }
 
         }
