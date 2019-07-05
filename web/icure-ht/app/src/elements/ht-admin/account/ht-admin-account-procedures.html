@@ -39,6 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../../bower_components/paper-input/paper-input-container.html">
 <link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 
 <dom-module id="ht-admin-account-procedures">
@@ -212,6 +213,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin-top: -9px;
             }
 
+            paper-toggle-button.status{
+                --paper-toggle-button-checked-bar-color:  var(--paper-green-500);
+                --paper-toggle-button-checked-button-color:  var(--paper-green-500);
+                --paper-toggle-button-checked-ink-color: var(--paper-green-500);
+                --paper-toggle-button-unchecked-bar-color:  var(--paper-red-900);
+                --paper-toggle-button-unchecked-button-color:  var(--paper-red-900);
+                --paper-toggle-button-unchecked-ink-color: var(--paper-red-900);
+            }
+
         </style>
 
 
@@ -245,6 +255,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <template is="dom-repeat" items="[[item.flags]]" as="flag">
                                 <div>[[_localizeType(flag)]]</div>
                             </template>
+                        </template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column>
+                        <template class="header">
+
+                        </template>
+                        <template>
+                            <paper-toggle-button class="status" id="[[item.id]]" on-change="_toggleStatusChanged"></paper-toggle-button>
                         </template>
                     </vaadin-grid-column>
                 </vaadin-grid>
@@ -535,7 +553,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }else{
                     return flag && flag === _.get(this.hcp, 'specialityCodes[0].code', 'deptgeneralpractice') ? this.localize('cd-hcp-'+flag, flag, this.language) : null
                 }
+            }
 
+            _toggleStatusChanged(e){
+                e.stopPropagation()
+                if(e.target.id && e.target.checked){
+                    console.log(e.target.id)
+                    //todo see if code can be disabled
+                }
             }
 
         }
