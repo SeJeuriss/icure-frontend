@@ -223,7 +223,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <vaadin-grid id="packageList" class="material pad-6 mar-10" items="[[listOfPackage]]" active-item="{{selectedPackage}}">
                     <vaadin-grid-column>
                         <template class="header">
-                            [[localize('pack','Package',language)]]
+                            [[localize('pack_name','Package name',language)]]
                         </template>
                         <template>
                             [[_localizeLabel(item.label)]]
@@ -239,9 +239,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </vaadin-grid-column>
                     <vaadin-grid-column>
                         <template class="header">
-                            [[localize('auth','Author',language)]]
+                            [[localize('type','Type',language)]]
                         </template>
                         <template>
+                            <template is="dom-repeat" items="[[item.flags]]" as="flag">
+                                <div>[[_localizeType(flag)]]</div>
+                            </template>
                         </template>
                     </vaadin-grid-column>
                 </vaadin-grid>
@@ -525,6 +528,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _getNumberOfProcedure(links){
                 return links && links.length || null
+            }
+
+            _localizeType(flag){
+                return this.localize('cd-hcp-'+flag, flag, this.language)
             }
 
         }
