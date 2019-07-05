@@ -207,6 +207,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 padding: 30px;
             }
 
+            .packageTitle{
+                width: 100%;
+                margin-top: -9px;
+            }
+
         </style>
 
 
@@ -224,6 +229,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             [[_localizeLabel(item.label)]]
                         </template>
                     </vaadin-grid-column>
+                    <vaadin-grid-column>
+                        <template class="header">
+                            [[localize('num_proc','Number of procedure',language)]]
+                        </template>
+                        <template>
+                            [[_getNumberOfProcedure(item.links)]]
+                        </template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column>
+                        <template class="header">
+                            [[localize('auth','Author',language)]]
+                        </template>
+                        <template>
+                        </template>
+                    </vaadin-grid-column>
                 </vaadin-grid>
             </div>
         </div>
@@ -232,7 +252,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <div class="package-container">
                 <div class="package-list-container">
                     <div class="package-list-title">
-                        <paper-input class="" value="{{selectedPackageInfo.packageName}}" label="Package"></paper-input>
+                        <paper-input class="packageTitle" value="{{selectedPackageInfo.packageName}}" label="Package title"></paper-input>
                     </div>
                     <div class="package-list-of-procedure">
                         <template is="dom-repeat" items="[[selectedPackageInfo.listOfProcedures]]">
@@ -334,7 +354,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     },
                     selectedPackageInfo:{
                         type: Object,
-                        value: () => {}
+                        value: () => ({
+                            packageName: null,
+                            listOfProcedures: []
+
+                        })
                     },
                     procedureFilter:{
                         type: String,
@@ -409,13 +433,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _openPackageDialog(){
-                this.set('procedureFilter', null)
-                this.set('displayedResultOfSearch', [])
-                this.set('searchResult', [])
                 this.$['packageDialog'].open()
             }
 
             _closePackageDialog(){
+                this.set('procedureFilter', null)
+                this.set('displayedResultOfSearch', [])
+                this.set('searchResult', [])
+                this.set('selectedPackageInfo', { packageName: null, listOfProcedures: []})
                 this.$['packageDialog'].close()
             }
 
@@ -459,7 +484,47 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _savePackage(){
+                if(this.selectedPackage && this.selectedPackage.id){
+                    const newPackage = _.cloneDeep(this.selectedPackage)
+                    newPackage.links = this.selectedPackageInfo.listOfProcedures.map(proc => proc.id)
+                    newPackage.label =  {[this.language]: this.selectedPackageInfo.packageName}
+                    this.api.code().modifyCode(newPackage)
+                        .then(pack => this.api.register(pack, 'selectedPackage'))
+                        .then(pack => {
+                            this.splice('listOfPackage', _.indexOf(this.listOfPackage.find(p => p.id === pack.id)), 1)
+                            this.push('listOfPackage', pack)
+                        })
+                        .finally(() => {
+                            this.$['procedureList'].clearCache()
+                            this._closePackageDialog()
+                        })
+                }else{
+                    const uuid = this.api.crypto().randomUuid()
+                    this.api.code().createCode({
+                        id: 'care.topaz.procedurepackage|'+uuid+'|1',
+                        code: uuid,
+                        type: 'care.topaz.procedurepackage',
+                        version: 1,
+                        level: 1,
+                        links: this.selectedPackageInfo.listOfProcedures.map(proc => proc.id),
+                        flags: this.hcp.specialityCodes.map(spec => spec.code),
+                        regions: ["be", "fr"],
+                        label: {[this.language]: this.selectedPackageInfo.packageName},
+                        author: this.user.id
+                    })
+                    .then(pack => this.api.register(pack, 'selectedPackage'))
+                    .then(pack => {
+                        this.push('listOfPackage', pack)
+                    })
+                    .finally(() => {
+                        this.$['procedureList'].clearCache()
+                        this._closePackageDialog()
+                    })
+                }
+            }
 
+            _getNumberOfProcedure(links){
+                return links && links.length || null
             }
 
         }
