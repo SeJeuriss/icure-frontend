@@ -5,11 +5,34 @@
 <link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-column.html">
 <link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-sorter.html">
+<link rel="import" href="../../../../bower_components/vaadin-icons/vaadin-icons.html">
+
+<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../../bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/editor-icons.html">
+
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../../../bower_components/paper-styles/shadow.html">
+
+<link rel="import" href="../../dynamic-form/dynamically-loaded-form.html">
+
+<link rel="import" href="../../dynamic-form/dynamic-doc.html">
+<link rel="import" href="../../pdf-element/pdf-element.html">
 
 <link rel="import" href="../../../shared-styles.html">
 <link rel="import" href="../../../dialog-style.html">
 <link rel="import" href="../../../notification-style.html">
 <link rel="import" href="../../../spinner-style.html">
+<link rel="import" href="../../../scrollbar-style.html">
 
 
 
@@ -27,12 +50,23 @@
 
 
 
-        <style include="shared-styles dialog-style notification-style spinner-style">
+        <style include="shared-styles dialog-style notification-style spinner-style scrollbar-style">
 
-            #panelNavigator_1 {
+            .singlePdfPrescription {
+                border:1px solid var(--app-primary-color);
+                margin-bottom:20px;
+                box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+
             }
 
-            #panelNavigator_2 {
+            .singlePdfPrescription .header {
+                background-color: var(--app-primary-color);
+                color:#ffffff;
+
+            }
+
+            #pdfPrescriptionsList .singlePdfPrescription paper-button {
+                min-width:0;
             }
 
         </style>
@@ -143,23 +177,78 @@
 
 
 
-                        <div id="pdfPanel" class="bl0">
+                        <div id="pdfPanel" class="">
+                            <div id="pdfPrescriptionsList">
 
-                            <div id="_pdfPrescriptionsList">
-                                <template is="dom-repeat" items="[[_pdfPrescriptionsList]]" as="singlePdfPrescription">
 
-                                    <div class="_singlePdfPrescription" data-service-id$="[[singlePdfPrescription.serviceId]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]">
-                                        <div class="header">
-                                            <span class="date">[[singlePdfPrescription.dateAndTimeHr]]</span>
-                                            <paper-button on-tap="_toggleCollapsePdfPreview"><iron-icon icon="icons:visibility" id$="view-[[singlePdfPrescription.serviceId]]"></iron-icon></paper-button><paper-tooltip for$="view-[[singlePdfPrescription.serviceId]]">[[localize('ehb.view','View',language)]]</paper-tooltip>
-                                            <paper-button on-tap="_linkPdfPrescription"><iron-icon icon="icons:link" id$="link-[[singlePdfPrescription.serviceId]]"></iron-icon></paper-button><paper-tooltip for$="link-[[singlePdfPrescription.serviceId]]">[[localize('linkPdf','Link PDF',language)]]</paper-tooltip>
+
+                                <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
+                                    <h4 class="textaligncenter uppercase"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon> [[localize('linkedPrescriptionToYourTriptyque','This prescription is linked to your triptyque',language)]]:</h4>
+                                    <div class="singlePdfPrescription" data-service-id$="[[_selectedPrescriptionObject.service.id]]" data-form-id$="[[_selectedPrescriptionObject.formId]]" data-document-id$="[[_selectedPrescriptionObject.document.id]]">
+                                        <div class="header p10">
+                                            <span class="date">[[_selectedPrescriptionObject.dateAndTimeHr]]</span>
+                                            <paper-button class="p0 m0 fr" on-tap="_unlinkPdfPrescription" data-contact-id$="[[_selectedPrescriptionObject.contact.id]]" data-service-id$="[[_selectedPrescriptionObject.service.id]]" data-form-id$="[[_selectedPrescriptionObject.formId]]" data-document-id$="[[_selectedPrescriptionObject.document.id]]"><iron-icon icon="vaadin:unlink" id$="unlink-[[_selectedPrescriptionObject.service.id]]"></iron-icon></paper-button><paper-tooltip for$="unlink-[[_selectedPrescriptionObject.service.id]]">[[localize('unlinkPdf','Unlink PDF',language)]]</paper-tooltip>
                                         </div>
-                                        <div class="body">[[singlePdfPrescription.serviceTitle]]</div>
+                                        <div class="body p5 fspoint9em"><iron-icon icon="image:picture-as-pdf" class="mr5 darkRed"></iron-icon> [[_selectedPrescriptionObject.serviceTitle]]</div>
+                                        <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
+                                            <dynamic-doc
+                                                id="selected-pdf-preview-[[_selectedPrescriptionObject.document.id]]"
+                                                api="[[api]]"
+                                                i18n="[[i18n]]"
+                                                user="[[user]]"
+                                                document-id="[[_selectedPrescriptionObject.document.id]]"
+                                                language="[[language]]"
+                                                preview="true"
+                                                downloadable="true"
+                                                fullwidth="true"
+                                                force-no-assignation="true"
+                                                force-no-document-header="true"
+                                                additional-css-class="tripTyque"
+                                            ></dynamic-doc>
+                                        </template>
                                     </div>
-
                                 </template>
-                            </div>
 
+
+
+                                <template is="dom-if" if="[[!_selectedPrescriptionBoolean]]">
+                                    <h4 class="textaligncenter uppercase"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon> [[localize('choosePrescriptionForTriptyque','Please choose a prescription to link to your triptyque',language)]]:</h4>
+                                    <template is="dom-repeat" items="[[_pdfPrescriptionsList]]" as="singlePdfPrescription">
+
+                                        <div class="singlePdfPrescription" data-service-id$="[[singlePdfPrescription.service.id]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]">
+                                            <div class="header p10">
+                                                <span class="date">[[singlePdfPrescription.dateAndTimeHr]]</span>
+                                                <paper-button class="p0 m0 fr" on-tap="_linkPdfPrescription" data-contact-id$="[[singlePdfPrescription.contact.id]]" data-service-id$="[[singlePdfPrescription.service.id]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]"><iron-icon icon="icons:link" id$="link-[[singlePdfPrescription.service.id]]"></iron-icon></paper-button><paper-tooltip for$="link-[[singlePdfPrescription.service.id]]">[[localize('linkPdf','Link PDF',language)]]</paper-tooltip>
+                                                <paper-button class="p0 m0 fr mr10" on-tap="_toggleCollapsePdfPreview" data-contact-id$="[[singlePdfPrescription.contact.id]]" data-service-id$="[[singlePdfPrescription.service.id]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]"><iron-icon icon="icons:visibility" id$="view-[[singlePdfPrescription.service.id]]"></iron-icon></paper-button><paper-tooltip for$="view-[[singlePdfPrescription.service.id]]">[[localize('ehb.view','View',language)]]</paper-tooltip>
+                                            </div>
+                                            <div class="body p5 fspoint9em"><iron-icon icon="image:picture-as-pdf" class="mr5 darkRed"></iron-icon> [[singlePdfPrescription.serviceTitle]]</div>
+
+                                            <template is="dom-if" if="[[_isEqual(_currentPdfPreviewDocumentId, singlePdfPrescription.document.id)]]">
+                                                <dynamic-doc
+                                                    id="pdf-preview-[[singlePdfPrescription.document.id]]"
+                                                    api="[[api]]"
+                                                    i18n="[[i18n]]"
+                                                    user="[[user]]"
+                                                    document-id="[[singlePdfPrescription.document.id]]"
+                                                    title="[[singlePdfPrescription.serviceTitle]]"
+                                                    language="[[language]]"
+                                                    preview="true"
+                                                    downloadable="true"
+                                                    fullwidth="true"
+                                                    force-no-assignation="true"
+                                                    force-no-document-header="true"
+                                                    additional-css-class="tripTyque"
+                                                ></dynamic-doc>
+                                            </template>
+
+                                        </div>
+
+                                    </template>
+                                </template>
+
+
+
+                            </div>
                         </div>
                         <div class="panelNavigatorAnchor bl0"><paper-button on-tap="_toggleCollapsePdfPanel"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('prescription','Prescription',language)]] PDF</paper-button></div>
 
@@ -173,13 +262,49 @@
 
 
 
-                        <div class="dialogTabContent">
+                        <div class="dialogTabContent p10">
 
 
 
                             <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'prescriptionForm')]]">
 
-                                FORMULAIRE PRESCRIPTION
+                                <template is="dom-if" if="[[!_selectedPrescriptionBoolean]]"><iron-icon icon="warning" class="mr8 darkRed"></iron-icon> [[localize('pleaseLinkPrescriptionToTriptyqueFirst','Please link a prescription to your triptyque first',language)]].</template>
+
+                                <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
+
+                                    form-id="[[_selectedPrescriptionObject.formId]]"<br />
+                                    contact="[[_selectedPrescriptionObject.contact.id]]"<br />
+                                    current-contact="[[currentContact]]"<br />
+                                    main-health-elements="[[mainHealthElements]]"<br />
+                                    health-elements="[[healthElements]]"<br />
+                                    contacts="[[allContacts]]"<br />
+                                    services-map="[[servicesMap]]"<br />
+                                    subcontact-type="[[subcontactType]]"<br />
+
+                                    <div class="ctc-header"><span class="contact-title">[[_contactHeaderLabel(dof.ctc, currentContact.tags.*)]]</span></div>
+                                    <dynamically-loaded-form
+                                        id="dynamicallyLoadedFormTripTyque"
+                                        api="[[api]]"
+                                        user="[[user]]"
+                                        patient="[[patient]]"
+                                        form-id="[[_selectedPrescriptionObject.formId]]"
+                                        contact="[[_selectedPrescriptionObject.contact.id]]"
+                                        current-contact="[[currentContact]]"
+                                        main-health-elements="[[mainHealthElements]]"
+                                        health-elements="[[healthElements]]"
+                                        contacts="[[allContacts]]"
+                                        services-map="[[servicesMap]]"
+                                        i18n="[[i18n]]"
+                                        language="[[language]]"
+                                        resources="[[resources]]"
+                                        on-edit-form="edit"
+                                        on-data-change="_refreshFromServices"
+                                        subcontact-type="[[subcontactType]]"
+                                     ></dynamically-loaded-form>
+
+                                    </template>
+
+                                </template>
 
                             </template>
 
@@ -187,7 +312,11 @@
 
                             <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'summary')]]">
 
-                                Plan d'action
+                                <template is="dom-if" if="[[!_selectedPrescriptionBoolean]]"><iron-icon icon="warning" class="mr8 darkRed"></iron-icon> [[localize('pleaseLinkPrescriptionToTriptyqueFirst','Please link a prescription to your triptyque first',language)]].</template>
+
+                                <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
+                                    Plan d'action
+                                </template>
 
                             </template>
 
@@ -195,7 +324,11 @@
 
                             <template is="dom-if" if="[[_isEqual(_triptyqueDetailActiveTab,'procedures')]]">
 
-                                Procédures
+                                <template is="dom-if" if="[[!_selectedPrescriptionBoolean]]"><iron-icon icon="warning" class="mr8 darkRed"></iron-icon> [[localize('pleaseLinkPrescriptionToTriptyqueFirst','Please link a prescription to your triptyque first',language)]].</template>
+
+                                <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
+                                    Procédures
+                                </template>
 
                             </template>
 
@@ -286,9 +419,11 @@
                                 configByType: {
                                     physiotherapist: {
                                         pdfDocumentsLabelKey: "requestForKineCare_header1",
+                                        formTemplateId: "AEFED10A-9A72-4B40-981B-1D79ADB05516"
                                     },
                                     persnurse: {
                                         pdfDocumentsLabelKey: "requestForNurseCare_header1",
+                                        formTemplateId: "64DAB551-B007-4B5C-BD64-F886301F5326"
                                     }
                                 }
                             }
@@ -322,6 +457,18 @@
                     _pdfPrescriptionsList: {
                         type: Array,
                         value: () => []
+                    },
+                    _currentPdfPreviewDocumentId: {
+                        type: String,
+                        value: ""
+                    },
+                    _selectedPrescriptionObject: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    _selectedPrescriptionBoolean: {
+                        type: Boolean,
+                        value: false
                     }
                 };
             }
@@ -329,8 +476,9 @@
             static get observers() {
                 return [
                     '_loadingStatusChanged(_isLoading)',
-                    '_vaadinGridPlanOfActionActiveItemChanged(_vaadinGridPlanOfActionActiveItem)'
-                ];
+                    '_vaadinGridPlanOfActionActiveItemChanged(_vaadinGridPlanOfActionActiveItem)',
+                    '_selectedDocumentChanged(_selectedPrescriptionObject)',
+                ]
             }
 
             constructor() {
@@ -458,6 +606,156 @@
 
             }
 
+            _toggleCollapsePdfPreview(e) {
+
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
+
+                return !_.trim(documentId) ? promResolve : promResolve
+                    .then(()=> _.trim(_.get(this,"_currentPdfPreviewDocumentId","")) === documentId ?
+                        this.set("_currentPdfPreviewDocumentId", "") :
+                        this.set("_currentPdfPreviewDocumentId", documentId)
+                    )
+                    .then(()=>{
+                        const targetPdfPreviewPdfElement = this.shadowRoot.querySelector("#pdf-preview-" + documentId) && this.shadowRoot.querySelector("#pdf-preview-" + documentId).shadowRoot.querySelector("pdf-element")
+                        return typeof _.get(targetPdfPreviewPdfElement,"onWidthChange","") === "function" ? targetPdfPreviewPdfElement.onWidthChange() : false
+                    })
+
+            }
+
+            _selectedDocumentChanged(_selectedPrescriptionObject) {
+                this.set("_selectedPrescriptionBoolean", !!_.size(_selectedPrescriptionObject) )
+            }
+
+            _unlinkPdfPrescription(e) {
+                this.set("_selectedPrescriptionObject", {})
+            }
+
+            _linkPdfPrescription(e) {
+
+                this.set("_isLoading", true);
+
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+
+                const contactId = _.get(targetButton,"dataset.contactId")
+                const documentId = _.get(targetButton,"dataset.documentId")
+                const documentServiceId = _.get(targetButton,"dataset.serviceId")
+                const formId = _.get(targetButton,"dataset.formId")
+                const formData = !!_.trim(formId) ? _.find(_.get(this,"_selectedPrescriptionObject.contact.subContacts",[]), {formId: formId}) : {}
+
+                return promResolve
+                    .then(() => {
+
+                        this.set("_currentPdfPreviewDocumentId", "")
+                        this.set("_selectedPrescriptionObject", _.find(this._pdfPrescriptionsList, i=> i.service.id === documentServiceId && i.document.id === documentId))
+
+                    })
+                    .finally(() => {
+
+                        console.log("contactId", contactId);
+                        console.log("documentId", documentId);
+                        console.log("documentServiceId", documentServiceId);
+                        console.log("formId", formId);
+                        console.log("formData", formData);
+
+                        console.log("this._pdfPrescriptionsList", this._pdfPrescriptionsList);
+                        console.log("this._selectedPrescriptionObject", this._selectedPrescriptionObject);
+
+                        console.log(this.patient);
+
+                        this.set("_isLoading", false);
+
+                    })
+
+
+                // let helement = {
+                //     descr: healthElement.descr,
+                //     openingDate: healthElement.openingDate || +new Date(),
+                //     closingDate: healthElement.closingDate,
+                //     status: healthElement.status || 0,
+                //     plansOfAction: (healthElement.plansOfAction || []).map(poa => _.extend(poa, { id: this.api.crypto().randomUuid(), openingDate: parseInt(moment().format('YYYYMMDDHHmmss')) })),
+                //     tags: (healthElement.tags || []).map(c => this.api.code().normalize(c)),
+                //     codes: (healthElement.codes || []).map(c => this.api.code().normalize(c)),
+                //     idService: healthElement.idService
+                // }
+
+                // let helement = {
+                //     descr: "",
+                //     openingDate: +new Date(),
+                //     closingDate: "",
+                //     status: 0,
+                //     plansOfAction: (healthElement.plansOfAction || []).map(poa => _.extend(poa, { id: this.api.crypto().randomUuid(), openingDate: parseInt(moment().format('YYYYMMDDHHmmss')) })),
+                //     tags: (healthElement.tags || []).map(c => this.api.code().normalize(c)),
+                //     codes: (healthElement.codes || []).map(c => this.api.code().normalize(c)),
+                //     idService: serviceId
+                // }
+
+                // this.api.helement()
+                //     .newInstance(
+                //         this.user,
+                //         this.patient,
+                //         this._normalizedHealthElement(healthElement)
+                //     )
+                //         .then(he => this.api.helement().createHealthElement(he))
+                //         .then(he => {
+                //             console.log("he", he)
+                //         })
+
+                // PlanOfActionDto {
+                //     id?: string;
+                //     name?: string;
+                //     descr?: string;
+                //     valueDate?: number;
+                //     openingDate?: number;
+                //     closingDate?: number;
+                //     idOpeningContact?: string;
+                //     idClosingContact?: string;
+                //     author?: string;
+                //     responsible?: string;
+                //     created?: number;
+                //     modified?: number;
+                //     endOfLife?: number;
+                //     codes?: Array<models.CodeDto>;
+                //     tags?: Array<models.CodeDto>;
+                // }
+
+                // HealthElementDto {
+                //     id?: string;
+                //     created?: number;
+                //     modified?: number;
+                //     endOfLife?: number;
+                //     author?: string;
+                //     responsible?: string;
+                //     medicalLocationId?: string;
+                //     codes?: Array<models.CodeDto>;
+                //     tags?: Array<models.CodeDto>;
+                //     healthElementId?: string;
+                //     descr?: string;
+                //     note?: string;
+                //     relevant?: boolean;
+                //     valueDate?: number;
+                //     openingDate?: number;
+                //     closingDate?: number;
+                //     idOpeningContact?: string;
+                //     idClosingContact?: string;
+                //     status?: number;
+                //     idService?: string;
+                //     plansOfAction?: Array<models.PlanOfActionDto>;
+                // }
+
+            }
+
+
+
+
+
+
+
+
+
+
             _getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription(inputConfig={}) {
 
                 // Fabien: inputConfig ==> aller rechercher contact / services / pdf / form... si déjà lié
@@ -466,22 +764,25 @@
                 const pdfDocumentsServiceStringValue = this.localize(pdfDocumentsLabelKey,"Prescription de kinésithérapie", this.language)
 
                 return this.api.contact().findBy( this.user.healthcarePartyId, this.patient )
-                    .then(patientContacts => _.compact(_.flatten(_.map(patientContacts, singleContact => _.map(singleContact.services, s => !_.trim(_.get(s,"content." + this.language + ".documentId")) ? false : {
-                        serviceId: _.trim(_.get(s,"id")),
-                        serviceTitle: _.trim(_.get(s,"content." + this.language + ".stringValue")),
-                        formId: _.trim(_.get(s,"formId")),
-                        date: parseInt(_.get(s,"valueDate")),
-                        dateAndTimeHr: moment(parseInt(_.trim(_.get(s,"valueDate")).substring(0,8)),"YYYYMMDD").format('DD/MM/YYYY') + " - " + _.trim(_.get(s,"valueDate")).substring(8,10) + ":" + _.trim(_.get(s,"valueDate")).substring(10,12),
-                        documentId: _.trim(_.get(s,"content." + this.language + ".documentId"))
+                    .then(patientContacts => _.compact(_.flatten(_.map(patientContacts, singleContact => _.map(singleContact.services, singleService => !_.trim(_.get(singleService,"content." + this.language + ".documentId")) ? false : {
+                        contact: singleContact,
+                        service: singleService,
+                        serviceTitle: _.trim(_.get(singleService,"content." + this.language + ".stringValue")),
+                        formId: _.trim(_.get(singleService,"formId")),
+                        date: parseInt(_.get(singleService,"valueDate")),
+                        dateAndTimeHr: moment(parseInt(_.trim(_.get(singleService,"valueDate")).substring(0,8)),"YYYYMMDD").format('DD/MM/YYYY') + " - " + _.trim(_.get(singleService,"valueDate")).substring(8,10) + ":" + _.trim(_.get(singleService,"valueDate")).substring(10,12),
+                        documentId: _.trim(_.get(singleService,"content." + this.language + ".documentId"))
                     })))))
                     .then(foundServicesWithPrescription => !_.size(foundServicesWithPrescription) ? false : this.api.document().getDocuments({ids:_.map(foundServicesWithPrescription,s=>s.documentId)}).then(foundDocuments=>[foundServicesWithPrescription,foundDocuments]))
                     .then(([foundServicesWithPrescription,foundDocuments]) => _.compact(_.map(foundServicesWithPrescription, fswp => {
                         const serviceDocument = _.find(foundDocuments, {id: _.trim(_.get(fswp, "documentId"))})
+                        const documentExtension = _.trim(_.last(_.trim(_.get(serviceDocument,"name","")).split("."))).toLowerCase()
                         return (
                             (
                                 fswp.serviceTitle !== pdfDocumentsServiceStringValue &&
                                 _.trim(_.get(serviceDocument, "documentType", "")).toLowerCase() !== "prescription"
                             ) ||
+                            ['jpg','jpeg','pdf','png','tif','tiff'].indexOf(documentExtension) === -1 ||
                             !_.trim(_.get(serviceDocument,"id","")) ||
                             !_.trim(_.get(serviceDocument,"attachmentId","")) ||
                             !_.trim(_.get(serviceDocument,"secretForeignKeys",""))
@@ -499,31 +800,6 @@
                     )
 
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             open(dialogParameters) {
 
@@ -595,7 +871,7 @@
                 this.set("_isLoading", true);
 
                 return !_.trim(_.get(activeItem,"id","")) ?
-                    this._changeDialogAction("listing") :
+                    this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
                     this._changeDialogAction("detail")
                         .then(()=> {
 
@@ -610,7 +886,6 @@
 
                             console.log("Patient", this.patient)
                             console.log("GLOBAL active item", this._vaadinGridPlanOfActionActiveItem)
-                            console.log("pdfPrescriptions", pdfPrescriptions)
 
                         })
                         .finally(()=>this.set("_isLoading", false))

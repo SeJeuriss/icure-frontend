@@ -50,6 +50,11 @@
                 width: calc(100% - 64px);
             }
 
+            .pat-details-card.tripTyque {
+                margin: 0!important;
+                box-shadow:none;
+            }
+
             .pat-details-card.fullWidth {
                 margin: 0 0 32px 0;
                 width: 100%;
@@ -113,6 +118,17 @@
 
             .img-container img{
                 max-height:400px;
+                align-self: center;
+            }
+
+            .tripTyque .img-container {
+                max-height:unset;
+            }
+
+            .tripTyque .img-container img{
+                max-height:unset;
+                width: 100%;
+                height:auto;
                 align-self: center;
             }
 
@@ -416,65 +432,67 @@
 
 
         <template is="dom-if" if="[[!isLabOrProtocol]]">
-            <paper-card class$="pat-details-card [[_fullWidth(fullwidth)]]">
+            <paper-card class$="pat-details-card [[_fullWidth(fullwidth)]] [[additionalCssClass]]">
 
                 <template is="dom-if" if="[[!_unknownMimeType(document.mainUti, document.otherUtis.*, dataUrl, data)]]">
 
                     <template is="dom-if" if="[[!documentId]]"><template is="dom-if" if="[[isLoading]]"><ht-spinner active></ht-spinner></template></template>
 
                     <template is="dom-if" if="[[_imageMimeType(document.mainUti, document.otherUtis.*, dataUrl, data)]]">
-                        <div class="form-title">
-                            [[_title(document.name, title)]]
-                            <div>
-                                <template is="dom-if" if="[[downloadable]]">
-                                    <paper-button on-tap="_downloadAnnex" dataUrl$='[[item.dataUrl]]' class="actionIcons fowardIcon form-title-bar-btn" id="downloadFile"><iron-icon icon="file-download" dataUrl$='[[item.dataUrl]]'></iron-icon></paper-button>
-                                    <paper-tooltip for="downloadFile" position="left">[[localize('dl','Download',language)]]</paper-tooltip>
-                                </template>
+                        <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                            <div class="form-title">
+                                [[_title(document.name, title)]]
+                                <div>
+                                    <template is="dom-if" if="[[downloadable]]">
+                                        <paper-button on-tap="_downloadAnnex" dataUrl$='[[item.dataUrl]]' class="actionIcons fowardIcon form-title-bar-btn" id="downloadFile"><iron-icon icon="file-download" dataUrl$='[[item.dataUrl]]'></iron-icon></paper-button>
+                                        <paper-tooltip for="downloadFile" position="left">[[localize('dl','Download',language)]]</paper-tooltip>
+                                    </template>
 
-                                <template is="dom-if" if="[[!_isEqual(document.documentLocation,'body')]]">
-                                    <template is="dom-if" if="[[!isPatDetail]]">
-                                        <template is="dom-if" if="[[!forceNoAssignation]]">
-                                            <paper-button on-tap="_triggerOpenAssignmentDialog" document-id$="[[item.id]]" class="actionIcons form-title-bar-btn" id="assign-ico-lab"><iron-icon icon="icons:assignment-ind" document-id$="[[item.id]]" class="bg-app-secondary"></iron-icon></paper-button>
-                                            <paper-tooltip for="assign-ico-lab" position="left">[[localize('assign_to_pat','Assign to a patient',language)]]</paper-tooltip>
+                                    <template is="dom-if" if="[[!_isEqual(document.documentLocation,'body')]]">
+                                        <template is="dom-if" if="[[!isPatDetail]]">
+                                            <template is="dom-if" if="[[!forceNoAssignation]]">
+                                                <paper-button on-tap="_triggerOpenAssignmentDialog" document-id$="[[item.id]]" class="actionIcons form-title-bar-btn" id="assign-ico-lab"><iron-icon icon="icons:assignment-ind" document-id$="[[item.id]]" class="bg-app-secondary"></iron-icon></paper-button>
+                                                <paper-tooltip for="assign-ico-lab" position="left">[[localize('assign_to_pat','Assign to a patient',language)]]</paper-tooltip>
+                                            </template>
                                         </template>
                                     </template>
-                                </template>
 
-                                <template is="dom-if" if="[[hubImportable]]">
-                                    <paper-button on-tap="_importDocumentFromHub" data-document$="[[data]]" data-transaction$="[[transactionInfo]]" class="actionIcons fowardIcon form-title-bar-btn" id="downloadFileOnHub"><iron-icon icon="icons:cloud-download" data-document$="[[data]]" data-transaction$="[[transactionInfo]]" ></iron-icon></paper-button>
-                                    <paper-tooltip for="downloadFileOnHub" position="left">[[localize('hub-down-fil-pat','Download file into patient folder',language)]]</paper-tooltip>
-                                </template>
+                                    <template is="dom-if" if="[[hubImportable]]">
+                                        <paper-button on-tap="_importDocumentFromHub" data-document$="[[data]]" data-transaction$="[[transactionInfo]]" class="actionIcons fowardIcon form-title-bar-btn" id="downloadFileOnHub"><iron-icon icon="icons:cloud-download" data-document$="[[data]]" data-transaction$="[[transactionInfo]]" ></iron-icon></paper-button>
+                                        <paper-tooltip for="downloadFileOnHub" position="left">[[localize('hub-down-fil-pat','Download file into patient folder',language)]]</paper-tooltip>
+                                    </template>
 
-                                <template is="dom-if" if="[[hubUploadable]]">
-                                    <paper-button on-tap="_uploadOnHubs" data-document-id$="[[document.id]]" class="actionIcons fowardIcon form-title-bar-btn" id="uploadFileOnHub"><iron-icon icon="icons:cloud-upload" data-document-id$="[[document.id]]"></iron-icon></paper-button>
-                                    <paper-tooltip for="uploadFileOnHub" position="left">[[localize('hub-upl-fil','Upload file on hubs',language)]]</paper-tooltip>
-                                </template>
+                                    <template is="dom-if" if="[[hubUploadable]]">
+                                        <paper-button on-tap="_uploadOnHubs" data-document-id$="[[document.id]]" class="actionIcons fowardIcon form-title-bar-btn" id="uploadFileOnHub"><iron-icon icon="icons:cloud-upload" data-document-id$="[[document.id]]"></iron-icon></paper-button>
+                                        <paper-tooltip for="uploadFileOnHub" position="left">[[localize('hub-upl-fil','Upload file on hubs',language)]]</paper-tooltip>
+                                    </template>
 
-                                <template is="dom-if" if="[[printable]]">
-                                    <paper-button on-tap="_print" to-print="[[item]]" class="actionIcons fowardIcon form-title-bar-btn" id="printFile"><iron-icon to-print="[[item]]" icon="print"></iron-icon></paper-button>
-                                    <paper-tooltip for="printFile" position="left">[[localize('print','Print',language)]]</paper-tooltip>
-                                </template>
+                                    <template is="dom-if" if="[[printable]]">
+                                        <paper-button on-tap="_print" to-print="[[item]]" class="actionIcons fowardIcon form-title-bar-btn" id="printFile"><iron-icon to-print="[[item]]" icon="print"></iron-icon></paper-button>
+                                        <paper-tooltip for="printFile" position="left">[[localize('print','Print',language)]]</paper-tooltip>
+                                    </template>
 
-                                <template is="dom-if" if="[[forwardable]]">
-                                    <paper-button on-tap="_forwardDocument" data-document-id$="[[document.id]]" class="actionIcons fowardIcon" id="forwardDocument"><iron-icon icon="arrow-forward" data-document-id$="[[document.id]]"> </iron-icon><iron-icon icon="mail" data-document-id$="[[document.id]]"></iron-icon></paper-button>
-                                    <paper-tooltip for="forwardDocument" position="left">[[localize('forwardDocumentToColleague','Forward document to a colleague',language)]]</paper-tooltip>
-                                </template>                            </div>
-                        </div>
+                                    <template is="dom-if" if="[[forwardable]]">
+                                        <paper-button on-tap="_forwardDocument" data-document-id$="[[document.id]]" class="actionIcons fowardIcon" id="forwardDocument"><iron-icon icon="arrow-forward" data-document-id$="[[document.id]]"> </iron-icon><iron-icon icon="mail" data-document-id$="[[document.id]]"></iron-icon></paper-button>
+                                        <paper-tooltip for="forwardDocument" position="left">[[localize('forwardDocumentToColleague','Forward document to a colleague',language)]]</paper-tooltip>
+                                    </template>                            </div>
+                            </div>
 
-                        <template is="dom-if" if="[[_size(patientData)]]">
-                            <div class="resInfos">
-                                <div class="patientInfos">
-                                    <div class="patientPicture"><img src$="[[_renderPatientPicture(patientData)]]"></div>
-                                    <div class="m-b-3"><iron-icon icon$="[[_iconBySex(patientData.sex)]]" class$="m-r-5 [[_colorCssClassBySex(patientData.sex)]] w20 m-t-minus-2"></iron-icon> <b>[[patientData.lastName]] [[patientData.firstName]]</b></div>
-                                    <div class="m-b-3"><iron-icon icon="vaadin:user-card" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('ssinPatVerbose','National identification number',language)]]: [[_formatSsinNumber(patientData.ssin)]]</div>
-                                    <div class="m-b-3"><iron-icon icon="social:cake" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('birthDate','Birth date',language)]]: [[patientData.dateOfBirthHr]]</div>
-                                    <div class="m-b-3"><iron-icon icon="icons:home" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('postalAddress','Address',language)]]: [[patientData.address.street]] [[patientData.address.houseNumber]] [[patientData.address.postboxNumber]]</div>
-                                    <div class="m-b-3"><iron-icon icon="social:location-city" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('zipHyphenCity','ZIP - City',language)]]: [[patientData.address.postalCode]] [[patientData.address.city]]</div>
-                                    <div class="flTopRight">
-                                        <iron-icon icon="icons:check-circle" class="m-r-5 w20 m-t-minus-2 darkerGreen"></iron-icon> <span class="bold darkerGreen">[[localize('documentAssigned','Document assigned',language)]]</span>
+                            <template is="dom-if" if="[[_size(patientData)]]">
+                                <div class="resInfos">
+                                    <div class="patientInfos">
+                                        <div class="patientPicture"><img src$="[[_renderPatientPicture(patientData)]]"></div>
+                                        <div class="m-b-3"><iron-icon icon$="[[_iconBySex(patientData.sex)]]" class$="m-r-5 [[_colorCssClassBySex(patientData.sex)]] w20 m-t-minus-2"></iron-icon> <b>[[patientData.lastName]] [[patientData.firstName]]</b></div>
+                                        <div class="m-b-3"><iron-icon icon="vaadin:user-card" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('ssinPatVerbose','National identification number',language)]]: [[_formatSsinNumber(patientData.ssin)]]</div>
+                                        <div class="m-b-3"><iron-icon icon="social:cake" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('birthDate','Birth date',language)]]: [[patientData.dateOfBirthHr]]</div>
+                                        <div class="m-b-3"><iron-icon icon="icons:home" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('postalAddress','Address',language)]]: [[patientData.address.street]] [[patientData.address.houseNumber]] [[patientData.address.postboxNumber]]</div>
+                                        <div class="m-b-3"><iron-icon icon="social:location-city" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('zipHyphenCity','ZIP - City',language)]]: [[patientData.address.postalCode]] [[patientData.address.city]]</div>
+                                        <div class="flTopRight">
+                                            <iron-icon icon="icons:check-circle" class="m-r-5 w20 m-t-minus-2 darkerGreen"></iron-icon> <span class="bold darkerGreen">[[localize('documentAssigned','Document assigned',language)]]</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </template>
                         </template>
 
                         <template is="dom-if" if="[[isLoading]]"><ht-spinner active></ht-spinner></template>
@@ -484,57 +502,61 @@
                     </template>
 
                     <template is="dom-if" if="[[_pdfMimeType(document.mainUti, document.otherUtis.*, dataUrl, data)]]">
-                        <div class="form-title">
-                            [[_extendedTitle(document.name, document.created, document.modified, title)]]
-                            <div>
-                                <template is="dom-if" if="[[downloadable]]">
-                                    <paper-button on-tap="_downloadAnnex" dataUrl$='[[item.dataUrl]]' class="actionIcons fowardIcon form-title-bar-btn" id="downloadFile"><iron-icon icon="file-download" dataUrl$='[[item.dataUrl]]'></iron-icon></paper-button>
-                                    <paper-tooltip for="downloadFile" position="left">[[localize('dl','Download',language)]]</paper-tooltip>
-                                </template>
+                        <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                            <div class="form-title">
 
-                                <template is="dom-if" if="[[!isPatDetail]]">
-                                    <template is="dom-if" if="[[!forceNoAssignation]]">
-                                        <paper-button on-tap="_triggerOpenAssignmentDialog" document-id$="[[item.id]]" class="actionIcons form-title-bar-btn" id="assign-ico-lab"><iron-icon icon="icons:assignment-ind" document-id$="[[item.id]]" class="bg-app-secondary"></iron-icon></paper-button>
-                                        <paper-tooltip for="assign-ico-lab" position="left">[[localize('assign_to_pat','Assign to a patient',language)]]</paper-tooltip>
+                                [[_extendedTitle(document.name, document.created, document.modified, title)]]
+
+                                <div>
+                                    <template is="dom-if" if="[[downloadable]]">
+                                        <paper-button on-tap="_downloadAnnex" dataUrl$='[[item.dataUrl]]' class="actionIcons fowardIcon form-title-bar-btn" id="downloadFile"><iron-icon icon="file-download" dataUrl$='[[item.dataUrl]]'></iron-icon></paper-button>
+                                        <paper-tooltip for="downloadFile" position="left">[[localize('dl','Download',language)]]</paper-tooltip>
                                     </template>
-                                </template>
 
-                                <template is="dom-if" if="[[hubImportable]]">
-                                    <paper-button on-tap="_importDocumentFromHub" data-document$="[[data]]" data-transaction$="[[transactionInfo]]" class="actionIcons fowardIcon form-title-bar-btn" id="downloadFileOnHub"><iron-icon icon="icons:cloud-download" data-document$="[[data]]" data-transaction$="[[transactionInfo]]" ></iron-icon></paper-button>
-                                    <paper-tooltip for="downloadFileOnHub" position="left">[[localize('hub-down-fil-pat','Download file into patient folder',language)]]</paper-tooltip>
-                                </template>
+                                    <template is="dom-if" if="[[!isPatDetail]]">
+                                        <template is="dom-if" if="[[!forceNoAssignation]]">
+                                            <paper-button on-tap="_triggerOpenAssignmentDialog" document-id$="[[item.id]]" class="actionIcons form-title-bar-btn" id="assign-ico-lab"><iron-icon icon="icons:assignment-ind" document-id$="[[item.id]]" class="bg-app-secondary"></iron-icon></paper-button>
+                                            <paper-tooltip for="assign-ico-lab" position="left">[[localize('assign_to_pat','Assign to a patient',language)]]</paper-tooltip>
+                                        </template>
+                                    </template>
 
-                                <template is="dom-if" if="[[hubUploadable]]">
-                                    <paper-button on-tap="_uploadOnHubs" data-document-id$="[[document.id]]" class="actionIcons fowardIcon form-title-bar-btn" id="uploadFileOnHub"><iron-icon icon="icons:cloud-upload" data-document-id$="[[document.id]]"></iron-icon></paper-button>
-                                    <paper-tooltip for="uploadFileOnHub" position="left">[[localize('hub-upl-fil','Upload file on hubs',language)]]</paper-tooltip>
-                                </template>
+                                    <template is="dom-if" if="[[hubImportable]]">
+                                        <paper-button on-tap="_importDocumentFromHub" data-document$="[[data]]" data-transaction$="[[transactionInfo]]" class="actionIcons fowardIcon form-title-bar-btn" id="downloadFileOnHub"><iron-icon icon="icons:cloud-download" data-document$="[[data]]" data-transaction$="[[transactionInfo]]" ></iron-icon></paper-button>
+                                        <paper-tooltip for="downloadFileOnHub" position="left">[[localize('hub-down-fil-pat','Download file into patient folder',language)]]</paper-tooltip>
+                                    </template>
 
-                                <template is="dom-if" if="[[printable]]">
-                                    <paper-button on-tap="_print" to-print="[[item]]" class="actionIcons fowardIcon form-title-bar-btn" id="printFile"><iron-icon to-print="[[item]]" icon="print"></iron-icon></paper-button>
-                                    <paper-tooltip for="printFile" position="left">[[localize('print','Print',language)]]</paper-tooltip>
-                                </template>
+                                    <template is="dom-if" if="[[hubUploadable]]">
+                                        <paper-button on-tap="_uploadOnHubs" data-document-id$="[[document.id]]" class="actionIcons fowardIcon form-title-bar-btn" id="uploadFileOnHub"><iron-icon icon="icons:cloud-upload" data-document-id$="[[document.id]]"></iron-icon></paper-button>
+                                        <paper-tooltip for="uploadFileOnHub" position="left">[[localize('hub-upl-fil','Upload file on hubs',language)]]</paper-tooltip>
+                                    </template>
 
-                                <template is="dom-if" if="[[forwardable]]">
-                                    <paper-button on-tap="_forwardDocument" data-document-id$="[[document.id]]" class="actionIcons fowardIcon" id="forwardDocument"><iron-icon icon="arrow-forward" data-document-id$="[[document.id]]"> </iron-icon><iron-icon icon="mail" data-document-id$="[[document.id]]"></iron-icon></paper-button>
-                                    <paper-tooltip for="forwardDocument" position="left">[[localize('forwardDocumentToColleague','Forward document to a colleague',language)]]</paper-tooltip>
-                                </template>
-                            </div>
-                        </div>
+                                    <template is="dom-if" if="[[printable]]">
+                                        <paper-button on-tap="_print" to-print="[[item]]" class="actionIcons fowardIcon form-title-bar-btn" id="printFile"><iron-icon to-print="[[item]]" icon="print"></iron-icon></paper-button>
+                                        <paper-tooltip for="printFile" position="left">[[localize('print','Print',language)]]</paper-tooltip>
+                                    </template>
 
-                        <template is="dom-if" if="[[_size(patientData)]]">
-                            <div class="resInfos">
-                                <div class="patientInfos">
-                                    <div class="patientPicture"><img src$="[[_renderPatientPicture(patientData)]]"></div>
-                                    <div class="m-b-3"><iron-icon icon$="[[_iconBySex(patientData.sex)]]" class$="m-r-5 [[_colorCssClassBySex(patientData.sex)]] w20 m-t-minus-2"></iron-icon> <b>[[patientData.lastName]] [[patientData.firstName]]</b></div>
-                                    <div class="m-b-3"><iron-icon icon="vaadin:user-card" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('ssinPatVerbose','National identification number',language)]]: [[_formatSsinNumber(patientData.ssin)]]</div>
-                                    <div class="m-b-3"><iron-icon icon="social:cake" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('birthDate','Birth date',language)]]: [[patientData.dateOfBirthHr]]</div>
-                                    <div class="m-b-3"><iron-icon icon="icons:home" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('postalAddress','Address',language)]]: [[patientData.address.street]] [[patientData.address.houseNumber]] [[patientData.address.postboxNumber]]</div>
-                                    <div class="m-b-3"><iron-icon icon="social:location-city" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('zipHyphenCity','ZIP - City',language)]]: [[patientData.address.postalCode]] [[patientData.address.city]]</div>
-                                    <div class="flTopRight">
-                                        <iron-icon icon="icons:check-circle" class="m-r-5 w20 m-t-minus-2 darkerGreen"></iron-icon> <span class="bold darkerGreen">[[localize('documentAssigned','Document assigned',language)]]</span>
-                                    </div>
+                                    <template is="dom-if" if="[[forwardable]]">
+                                        <paper-button on-tap="_forwardDocument" data-document-id$="[[document.id]]" class="actionIcons fowardIcon" id="forwardDocument"><iron-icon icon="arrow-forward" data-document-id$="[[document.id]]"> </iron-icon><iron-icon icon="mail" data-document-id$="[[document.id]]"></iron-icon></paper-button>
+                                        <paper-tooltip for="forwardDocument" position="left">[[localize('forwardDocumentToColleague','Forward document to a colleague',language)]]</paper-tooltip>
+                                    </template>
                                 </div>
                             </div>
+
+                            <template is="dom-if" if="[[_size(patientData)]]">
+                                <div class="resInfos">
+                                    <div class="patientInfos">
+                                        <div class="patientPicture"><img src$="[[_renderPatientPicture(patientData)]]"></div>
+                                        <div class="m-b-3"><iron-icon icon$="[[_iconBySex(patientData.sex)]]" class$="m-r-5 [[_colorCssClassBySex(patientData.sex)]] w20 m-t-minus-2"></iron-icon> <b>[[patientData.lastName]] [[patientData.firstName]]</b></div>
+                                        <div class="m-b-3"><iron-icon icon="vaadin:user-card" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('ssinPatVerbose','National identification number',language)]]: [[_formatSsinNumber(patientData.ssin)]]</div>
+                                        <div class="m-b-3"><iron-icon icon="social:cake" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('birthDate','Birth date',language)]]: [[patientData.dateOfBirthHr]]</div>
+                                        <div class="m-b-3"><iron-icon icon="icons:home" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('postalAddress','Address',language)]]: [[patientData.address.street]] [[patientData.address.houseNumber]] [[patientData.address.postboxNumber]]</div>
+                                        <div class="m-b-3"><iron-icon icon="social:location-city" class="m-r-5 w20 m-t-minus-2"></iron-icon> [[localize('zipHyphenCity','ZIP - City',language)]]: [[patientData.address.postalCode]] [[patientData.address.city]]</div>
+                                        <div class="flTopRight">
+                                            <iron-icon icon="icons:check-circle" class="m-r-5 w20 m-t-minus-2 darkerGreen"></iron-icon> <span class="bold darkerGreen">[[localize('documentAssigned','Document assigned',language)]]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
                         </template>
 
                         <template is="dom-if" if="[[isLoading]]"><ht-spinner active></ht-spinner></template>
@@ -917,6 +939,10 @@
                     downloadable:{
                         type: Boolean
                     },
+                    forceNoDocumentHeader:{
+                        type: Boolean,
+                        value: false
+                    },
                     forwardable:{
                         type: Boolean,
                         value: false
@@ -945,6 +971,10 @@
                         value: null
                     },
                     documentAttachment:{
+                        type: String,
+                        value: null
+                    },
+                    additionalCssClass:{
                         type: String,
                         value: null
                     },

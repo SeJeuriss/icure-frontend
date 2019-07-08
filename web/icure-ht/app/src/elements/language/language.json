@@ -1717,7 +1717,11 @@
     "summary": "Summary",
     "detailsPlanOfActions": "Details plan of actions",
     "form": "Form",
-    "linkPdf": "Link PDF"
+    "linkPdf": "Link document",
+    "unlinkPdf": "Unlink document",
+    "choosePrescriptionForTriptyque": "Please choose a prescription to link to your triptyque",
+    "linkedPrescriptionToYourTriptyque": "This prescription is linked to your triptyque",
+    "pleaseLinkPrescriptionToTriptyqueFirst": "Please link a prescription to your triptyque first"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3521,7 +3525,11 @@
     "detailsPlanOfActions": "Détails du plan d'actions",
     "form": "Formulaire",
     "prescription": "Prescription",
-    "linkPdf": "Lier le PDF"
+    "linkPdf": "Lier le document",
+    "unlinkPdf": "Délier le document",
+    "choosePrescriptionForTriptyque": "Veuillez choisir une prescription à lier à votre triptyque",
+    "linkedPrescriptionToYourTriptyque": "Cette prescription est liée à votre triptyque",
+    "pleaseLinkPrescriptionToTriptyqueFirst": "Veuillez commencer par lier une prescription à votre triptyque"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5296,6 +5304,10 @@
     "summary": "Summary",
     "detailsPlanOfActions": "Details plan of actions",
     "form": "Form",
-    "linkPdf": "Link PDF"
+    "linkPdf": "Link document",
+    "unlinkPdf": "Unlink document",
+    "choosePrescriptionForTriptyque": "Please choose a prescription to link to your triptyque",
+    "linkedPrescriptionToYourTriptyque": "This prescription is linked to your triptyque",
+    "pleaseLinkPrescriptionToTriptyqueFirst": "Please link a prescription to your triptyque first"
   }
 }
