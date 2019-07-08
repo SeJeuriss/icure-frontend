@@ -882,7 +882,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _showFieldInfo(e){
                 if(e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item){
                     const field = JSON.parse(_.get(e, 'currentTarget.dataset.item'))
-                    this.api.code().getCodes('care.topaz.form.'+this.selectedFormData.id+'|'+_.replace(_.toUpper(_.trim(field.name)), /\s/g, "-")+'|1')
+                    this.api.code().getCodes('care.topaz.form|'+_.replace(_.toUpper(_.trim(field.name)), /\s/g, "-")+'|1')
                         .then(code => {
                             this.set('selectedField', {code: code})
                         })
