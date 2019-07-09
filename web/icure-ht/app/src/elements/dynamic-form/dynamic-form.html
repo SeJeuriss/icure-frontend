@@ -60,6 +60,11 @@
 				padding: 0 8px 8px;
 			}
 
+			.tripTyque.pat-details-card {
+				width: 100%;
+				margin: 0 0 10px 0;
+			}
+
 			.horizontal {
 				display: flex;
 				flex-direction: row;
@@ -205,7 +210,7 @@
 		<ckmeans-grouping id="ckmeans-grouping"></ckmeans-grouping>
 		<ckmeans-grouping id="ckmeans-flow-grouping" max-distance="8"></ckmeans-grouping>
 
-		<paper-card class$="{{_patCardClass(isSubForm)}}">
+		<paper-card class$="{{_patCardClass(isSubForm)}} [[additionalCssClass]]">
 			<template is="dom-if" if="[[showTitle]]">
 				<div class="form-title">
 					<span>[[displayedTitle]]</span>
@@ -439,7 +444,11 @@
                     },
                     closed: {
 					    type: Boolean
-                    }
+                    },
+					additionalCssClass:{
+						type: String,
+						value: null
+					}
 				};
 			}
 
@@ -503,6 +512,7 @@
 			}
 
 			_displayedTitle() {
+				this.set("showTitle", !this.forceNoTitle)
 				return this.title && this.dataProvider ? this.title+" "+this.dataProvider.subContactTitle() : "Loading ...";
 			}
 
