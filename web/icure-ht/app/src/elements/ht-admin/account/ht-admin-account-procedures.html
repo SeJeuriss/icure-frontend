@@ -519,10 +519,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             this._closePackageDialog()
                         })
                 }else{
-                    const uuid = this.api.crypto().randomUuid()
                     this.api.code().createCode({
-                        id: 'care.topaz.procedurepackage|'+uuid+'|1',
-                        code: uuid,
+                        id: 'care.topaz.procedurepackage|'+_.replace(_.toUpper(_.trim(this.selectedPackageInfo.packageName)), /\s/g, "-")+'|1',
+                        code: _.replace(_.toUpper(_.trim(this.selectedPackageInfo.packageName)), /\s/g, "-"),
                         type: 'care.topaz.procedurepackage',
                         version: 1,
                         level: 1,
