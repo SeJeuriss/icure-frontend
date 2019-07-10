@@ -262,7 +262,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             [[localize('status','Status',language)]]
                         </template>
                         <template>
-                            <paper-toggle-button class="status" id="[[item.id]]" on-change="_toggleStatusChanged"></paper-toggle-button>
+                            <paper-toggle-button class="status" id="[[item.id]]" on-change="_toggleStatusChanged" checked="[[_getStatusOfPackage(item, item.*)]]"></paper-toggle-button>
                         </template>
                     </vaadin-grid-column>
                 </vaadin-grid>
@@ -511,7 +511,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.api.code().modifyCode(newPackage)
                         .then(pack => this.api.register(pack, 'selectedPackage'))
                         .then(pack => {
-                            this.splice('listOfPackage', _.indexOf(this.listOfPackage.find(p => p.id === pack.id)), 1)
+                            this.splice('listOfPackage', _.indexOf(this.listOfPackage, this.listOfPackage.find(p => p.id === pack.id)), 1)
                             this.push('listOfPackage', pack)
                         })
                         .finally(() => {
@@ -529,7 +529,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         flags: this.hcp.specialityCodes.map(spec => spec.code),
                         regions: ["be", "fr"],
                         label: {[this.language]: this.selectedPackageInfo.packageName},
-                        author: this.user.id
+                        author: this.user.id,
+                        disabled: false
                     })
                     .then(pack => this.api.register(pack, 'selectedPackage'))
                     .then(pack => {
@@ -556,11 +557,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _toggleStatusChanged(e){
                 e.stopPropagation()
-                if(e.target.id && e.target.checked){
-                    console.log(e.target.id)
-                    //todo see if code can be disabled
+                if(e.target.id){
+                    const pack = this.listOfPackage.find(pack => pack.id === e.target.id)
+                    pack.disabled = e.target.checked
+
+                    this.api.code().modifyCode(pack).then(newPack => {
+                        this.splice('listOfPackage', _.indexOf(this.listOfPackage, this.listOfPackage.find(p => p.id === newPack.id)), 1)
+                        this.push('listOfPackage', newPack)
+                    }).finally(() => {
+                        this.$['procedureList'].clearCache()
+                    })
+
                 }
             }
+
+            _getStatusOfPackage(item){
+               //return item && item.disabled && item.disabled === true ? true : false
+            }
+
+
 
         }
 
