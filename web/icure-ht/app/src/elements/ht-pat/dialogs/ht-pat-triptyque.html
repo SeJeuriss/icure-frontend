@@ -286,12 +286,8 @@
                                         force-no-print="true"
                                         force-no-title="true"
                                         additional-css-class="tripTyque"
-
                                         services-map="[[_selectedPrescriptionObject.servicesMap]]"
-
                                         on-data-change="_prescriptionFormDataGotChanged"
-                                        on-edit-form="edit"
-
                                      ></dynamically-loaded-form>
 
                                     </template>
@@ -646,95 +642,176 @@
                 const documentContactId = _.trim(_.get(targetButton,"dataset.contactId"))
                 const documentServiceId = _.trim(_.get(targetButton,"dataset.serviceId"))
                 const documentFormId = _.trim(_.get(targetButton,"dataset.formId"))
-                const formTemplateGuid = _.trim(_.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","") + ".formTemplateGuid",""))
+                const formTemplateGuid = _.trim(_.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","physiotherapist") + ".formTemplateGuid",""))
                 const selectedPrescriptionObject = _.find(this._pdfPrescriptionsList, i=> i.service.id === documentServiceId && i.document.id === documentId)
                 const documentContactObject = _.get(selectedPrescriptionObject,"contact",{})
 
                 return promResolve
-                    // .then(() => this.api.patient().getPatientWithUser(this.user, _.trim(_.get(this,"patient.id",""))))
-                    // .then(patientObject => this.api.contact().newInstance(this.user, patientObject, {
-                    //         groupId: documentId,
-                    //         created: +new Date,
-                    //         modified: +new Date,
-                    //         author: _.trim(_.get(this,"user.id","")),
-                    //         responsible: _.trim(_.get(this,"user.healthcarePartyId","")),
-                    //         openingDate: moment().format('YYYYMMDDHHmmss'),
-                    //         closingDate: moment().format('YYYYMMDDHHmmss'),
-                    //         encounterType: { type: "CD-TRANSACTION", version: "1", code: documentType },
-                    //         descr: _.trim(documentTypeLabel) + ": " + _.trim(_.get(documentToAssign,"docInfo[0].labo","")),
-                    //         tags: [{type: 'CD-TRANSACTION', code: documentType}],
-                    //         subContacts: []
-                    //     }).then(contactInstance => [contactInstance,patientObject])
-                    // )
-                    // .then(([contactInstance,patientObject]) => {
-                    //
-                    //     if(isLabResult) {
-                    //         contactInstance.services.push({
-                    //             id: this.api.crypto().randomUuid(),
-                    //             label: documentType,
-                    //             valueDate: parseInt(moment().format('YYYYMMDDHHmmss')),
-                    //             content: _.fromPairs([[this.language, {stringValue: _.trim(_.get(documentToAssign,"docInfo[0].labo",""))}]]),
-                    //             tags: [{type: 'CD-TRANSACTION', code: documentType}]
-                    //         })
-                    //     } else {
-                    //         const svc = this.api.contact().service().newInstance( this.user, { tags: [{type: 'CD-TRANSACTION', code: documentType}], content: _.fromPairs([[this.language, {documentId: documentId, stringValue: _.trim(_.get(documentToAssign,"name",""))}]]), label: (_.trim(documentTypeLabel) ? _.trim(documentTypeLabel) : "Annexe") + ": " + _.trim(_.get(documentToAssign,"name","")) })
-                    //         contactInstance.services = [svc]
-                    //         contactInstance.subContacts.push({status: 64, services: [{serviceId: svc.id}]})
-                    //     }
-                    //
-                    //     return this.api.contact().createContactWithUser(this.user, contactInstance)
-                    //         .then(createdContact => [createdContact,patientObject])
-                    //
-                    // })
-                    // .then(([createdContact,patientObject]) => !isLabResult ? createdContact :
-                    //     this.api.form().newInstance(this.user, patientObject, {contactId: _.trim(_.get(createdContact,"id","")), descr: "Lab result " + +new Date})
-                    //         .then(formInstance => this.api.form().createForm(formInstance))
-                    //         .then(createdForm
-
-
-
-
-
-
-
-                    .then(() => this.api.hcparty().getCurrentHealthcareParty()
+                    .then(() => this.api.code().findPaginatedCodes('be', 'care.topaz.customTransaction', ''))
+                    .then(transactionCodes => _.find(transactionCodes.rows, tc => _.trim(_.get(tc,"code","")).toLowerCase() === "triptyque"))
+                    .then(existingTriptyqueTransactionCode => !!_.size(existingTriptyqueTransactionCode) ? existingTriptyqueTransactionCode : this.api.code().createCode({
+                            version: "1",
+                            code: "triptyque",
+                            regions: ["be","fr"],
+                            type: "care.topaz.customTransaction",
+                            id: "care.topaz.customTransaction|triptyque|1",
+                            label: {fr:"Triptyque",nl:"Triptyque",en:"Triptyque"}
+                        })
+                    )
+                    .then(triptyqueTransactionCode => this.api.patient().getPatientWithUser(this.user, _.trim(_.get(this,"patient.id",""))).then(patientObject => ([triptyqueTransactionCode,patientObject])))
+                    .then(([triptyqueTransactionCode,patientObject]) => this.api.contact().newInstance(this.user, patientObject, {
+                            groupId: documentId,
+                            created: +new Date,
+                            modified: +new Date,
+                            author: _.trim(_.get(this,"user.id","")),
+                            responsible: _.trim(_.get(this,"user.healthcarePartyId","")),
+                            openingDate: moment().format('YYYYMMDDHHmmss'),
+                            closingDate: moment().format('YYYYMMDDHHmmss'),
+                            encounterType: { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
+                            descr: _.trim(_.get(triptyqueTransactionCode,"label." + this.language,"Triptyque")) + ": " + _.trim(this.localize(_.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","physiotherapist") + ".pdfDocumentsLabelKey",""),"Prescription de kinésithérapie", this.language)),
+                            tags: [
+                                { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
+                                { type: "originalDocumentId", data: documentId },
+                                { type: "originalContactId", data: documentContactId },
+                                { type: "originalFormId", data: documentFormId}
+                            ],
+                            subContacts: []
+                        }).then(contactInstance => ([triptyqueTransactionCode,patientObject,contactInstance]))
+                    )
+                    .then(([triptyqueTransactionCode,patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([triptyqueTransactionCode,patientObject,createdContact])))
+                    .then(([triptyqueTransactionCode,patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
                         .then(currentHcp => Promise.all([
                             this.api.form().getFormTemplatesByGuid( formTemplateGuid, "deptgeneralpractice" ),
                             this.api.form().getFormTemplatesByGuid( formTemplateGuid, _.trim(_.get(currentHcp,"specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
-                        ]).then(promResults => _.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()))
-                        .then(formTemplate => this.api.form().newInstance(this.user, this.patient, { contactId: documentContactId, formTemplateId: _.trim(_.get(formTemplate,"id","")), descr: _.trim(_.get(formTemplate,"name","")) }))
-                        .then(formInstance => this.api.form().createForm(formInstance).then(createdForm => _.trim(_.get(createdForm,"id",""))))
+                        ]).then(promResults => ([triptyqueTransactionCode,patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
                     )
-                    .then(createdOrExistingFormId => {
+                    .then(([triptyqueTransactionCode,patientObject,createdContact,formTemplate]) => this.api.helement().newInstance(this.user, patientObject, {
+                            tags: [
+                                { type: "CD-ITEM", version: "1", code: "healthcareelement" },
+                                { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
+                                { type: "originalDocumentId", data: documentId },
+                                { type: "originalContactId", data: documentContactId },
+                                { type: "originalFormId", data: documentFormId}
+                            ],
 
-                        // FABIEN: faire un nouveau contact à l'instant T lors liaison avec triptyque SSI form existe pas encore (celui dans lequel je travaille, PAS le form éventuellement lié à mon PDF)
-                        // FABIEN: ouvrir et fermer directement ce contact
-                        // FABIEN: Sinon je ne passe pas par ici (SSI form DU TRIPTYQUE existe) -> pas confondre avec le form éventuellement lié (par le praticien général - dans le cas d'une MM) à la prescription. Dans 99.99% des cas -> ne sera pas le cas
+                            Fabien: descr = BE-THESAURUS-PROCEDURES|A57.062|3.1.0 ==> kinésithérapie
+                            ==> Get avant tout ceci
+                            ==> Marquer le code dans la CGF générale du triptyque
+                            ==> Foutre également ceci dans les "code"
 
-                        console.log("createdOrExistingFormId",createdOrExistingFormId);
-                        selectedPrescriptionObject.formId = _.trim(createdOrExistingFormId)
-                        selectedPrescriptionObject.contact.subContacts.push({ formId: _.trim(createdOrExistingFormId), services: [] })
-                        selectedPrescriptionObject.contacts = [documentContactObject]
-                        selectedPrescriptionObject.servicesMap = this._getServicesMap([documentContactObject])
+                            descr: healthElement.descr,
+                            status: healthElement.status || 0,
+                            plansOfAction: (healthElement.plansOfAction || []).map(poa => _.extend(poa, { id: this.api.crypto().randomUuid(), openingDate: parseInt(moment().format('YYYYMMDDHHmmss')) })),
+                            codes: (healthElement.codes || []).map(c => this.api.code().normalize(c)),
+                            idService: healthElement.idService ==> ?
 
-                        this.set("_currentPdfPreviewDocumentId", "")
-                        this.set("_selectedPrescriptionObject", selectedPrescriptionObject)
+
+                            ==> UTILS
+                            http://127.0.0.1:5984/_utils/#database/icure-healthdata-dev-master/215f06ce-153a-4c05-9f06-ce153a0c0555
+                            http://127.0.0.1:5984/_utils/#database/icure-healthdata-dev-master/05ff6c44-350e-4565-bf6c-44350ed565ee
+
+                            web/icure-ht/node_modules/icc-api/icc-api/model/FormDto.ts
+                            web/icure-ht/node_modules/icc-api/icc-api/model/ContactDto.ts
+                            web/icure-ht/node_modules/icc-api/icc-api/api/iccHelementApi.ts
+                            web/icure-ht/node_modules/icc-api/icc-x-api/icc-helement-x-api.ts
+                            web/icure-ht/node_modules/icc-api/dist/icc-api/model/HealthElementDto.d.ts
+                            web/icure-ht/node_modules/icc-api/dist/icc-api/model/PlanOfActionDto.d.ts
+
+
+                            ==> APrès ceci: injecter dans les services les valeurs de l'éventuel formulaire lié à mon pdf (si mm par ex.)'
+
+
+                        }).then( helementInstance => ([triptyqueTransactionCode,patientObject,createdContact,formTemplate,helementInstance]))
+                    )
+
+
+
+
+
+                        // De ehbox, après création contact instance
+                        //
+                        // if(isLabResult) {
+                        //     contactInstance.services.push({
+                        //         id: this.api.crypto().randomUuid(),
+                        //         label: documentType,
+                        //         valueDate: parseInt(moment().format('YYYYMMDDHHmmss')),
+                        //         content: _.fromPairs([[this.language, {stringValue: _.trim(_.get(documentToAssign,"docInfo[0].labo",""))}]]),
+                        //         tags: [{type: 'CD-TRANSACTION', code: documentType}]
+                        //     })
+                        // } else {
+                        //     const svc = this.api.contact().service().newInstance( this.user, { tags: [{type: 'CD-TRANSACTION', code: documentType}], content: _.fromPairs([[this.language, {documentId: documentId, stringValue: _.trim(_.get(documentToAssign,"name",""))}]]), label: (_.trim(documentTypeLabel) ? _.trim(documentTypeLabel) : "Annexe") + ": " + _.trim(_.get(documentToAssign,"name","")) })
+                        //     contactInstance.services = [svc]
+                        //     contactInstance.subContacts.push({status: 64, services: [{serviceId: svc.id}]})
+                        // }
+
+
+
+
+
+
+
+                    .then(([triptyqueTransactionCode,patientObject,createdContact,formTemplate,helementInstance]) => this.api.helement().createHealthElement(helementInstance).then(createdHelement => ([triptyqueTransactionCode,patientObject,createdContact,formTemplate,createdHelement])))
+                    .then(([triptyqueTransactionCode,patientObject,createdContact,formTemplate,createdHelement]) => this.api.form().newInstance(this.user, patientObject, {
+                            contactId: _.trim(_.get(createdContact,"id","")),
+                            formTemplateId: _.trim(_.get(formTemplate,"id","")),
+                            descr: _.trim(_.get(formTemplate,"name","")),
+                            tags: [
+                                { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
+                                { type: "originalDocumentId", data: documentId },
+                                { type: "originalContactId", data: documentContactId },
+                                { type: "originalFormId", data: documentFormId}
+                            ],
+
+                            healthElementId: _.trim(_.get(createdHelement,"id","")),
+                            planOfActionId: "XXXXXXXX"
+
+                        }).then(formInstance => ([triptyqueTransactionCode,patientObject,createdContact,formInstance]))
+                    )
+                    .then(([triptyqueTransactionCode,patientObject,createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([triptyqueTransactionCode,patientObject,createdContact,createdForm])))
+                    .then(([triptyqueTransactionCode,patientObject,createdContact,createdForm]) => {
+
+                        console.log("triptyqueTransactionCode",triptyqueTransactionCode)
+                        console.log("patientObject",patientObject)
+                        console.log("createdContact",createdContact)
+                        console.log("createdForm",createdForm)
+
+                        // createdOrExistingFormId ==> _.trim(_.get(createdForm,"id",""))
 
                     })
-                    .finally(() => {
 
-                        console.log("documentContactId", documentContactId);
-                        console.log("documentServiceId", documentServiceId);
-                        console.log("documentFormId", documentFormId);
-
-                        console.log("this._pdfPrescriptionsList", this._pdfPrescriptionsList);
-                        console.log("selectedPrescriptionObject", selectedPrescriptionObject);
-
-                        console.log(this.patient);
-
-                        this.set("_isLoading", false);
-
-                    })
+                    //
+                    // .then(createdOrExistingFormId => {
+                    //
+                    //     // FABIEN: faire un nouveau contact à l'instant T lors liaison avec triptyque SSI form existe pas encore (celui dans lequel je travaille, PAS le form éventuellement lié à mon PDF)
+                    //     // FABIEN: ouvrir et fermer directement ce contact
+                    //     // FABIEN: Sinon je ne passe pas par ici (SSI form DU TRIPTYQUE existe) -> pas confondre avec le form éventuellement lié (par le praticien général - dans le cas d'une MM) à la prescription. Dans 99.99% des cas -> ne sera pas le cas
+                    //
+                    //     // documentFormId
+                    //
+                    //     console.log("createdOrExistingFormId",createdOrExistingFormId);
+                    //     selectedPrescriptionObject.formId = _.trim(createdOrExistingFormId)
+                    //     selectedPrescriptionObject.contact.subContacts.push({ formId: _.trim(createdOrExistingFormId), services: [] })
+                    //     selectedPrescriptionObject.contacts = [documentContactObject]
+                    //     selectedPrescriptionObject.servicesMap = this._getServicesMap([documentContactObject])
+                    //
+                    //     this.set("_currentPdfPreviewDocumentId", "")
+                    //     this.set("_selectedPrescriptionObject", selectedPrescriptionObject)
+                    //
+                    // })
+                    // .finally(() => {
+                    //
+                    //     console.log("documentContactId", documentContactId);
+                    //     console.log("documentServiceId", documentServiceId);
+                    //     console.log("documentFormId", documentFormId);
+                    //
+                    //     console.log("this._pdfPrescriptionsList", this._pdfPrescriptionsList);
+                    //     console.log("selectedPrescriptionObject", selectedPrescriptionObject);
+                    //
+                    //     console.log(this.patient);
+                    //
+                    //     this.set("_isLoading", false);
+                    //
+                    // })
 
 
                 // let helement = {
@@ -831,7 +908,7 @@
 
                 // Fabien: inputConfig ==> aller rechercher contact / services / pdf / form... si déjà lié
 
-                const pdfDocumentsLabelKey = _.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","") + ".pdfDocumentsLabelKey","")
+                const pdfDocumentsLabelKey = _.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","physiotherapist") + ".pdfDocumentsLabelKey","")
                 const pdfDocumentsServiceStringValue = this.localize(pdfDocumentsLabelKey,"Prescription de kinésithérapie", this.language)
 
                 return this.api.contact().findBy( this.user.healthcarePartyId, this.patient )
