@@ -521,7 +521,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }else{
                     this.api.code().createCode({
                         id: 'care.topaz.procedurepackage|'+_.replace(_.toUpper(_.trim(this.selectedPackageInfo.packageName)), /\s/g, "-")+'|1',
-                        code: _.replace(_.toUpper(_.trim(this.selectedPackageInfo.packageName)), /\s/g, "-"),
+                        code: _.replace(_.toLower(_.trim(this.selectedPackageInfo.packageName)), /\s/g, "-"),
                         type: 'care.topaz.procedurepackage',
                         version: 1,
                         level: 1,
