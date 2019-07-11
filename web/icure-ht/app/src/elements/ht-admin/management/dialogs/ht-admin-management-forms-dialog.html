@@ -725,6 +725,72 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 padding: 5px;
             }
 
+            #newNmclCode{
+                width: 100%;
+            }
+
+            .horizontal {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                flex-basis: 100%;
+                align-items: center;
+            }
+
+            .nmcls-list {
+                overflow-x: auto;
+            }
+
+            .nmcl-tag {
+                background: rgba(0,0,0,.1);
+                color: var(--exm-token-input-badge-text-color,--text-primary-color);
+                height: 24px;
+                min-height: 1px;
+                font-size: 12px;
+                min-width: initial;
+                padding: 0;
+                margin: 5px 10px 0 0;
+                border-radius: 5px;
+                overflow: hidden;
+                float:left;
+            }
+
+            .nmcl-type{
+                background: var(--app-secondary-color);
+                color: var(--app-text-color);
+                display: flex;
+                height: 100%;
+                flex-flow: row wrap;
+                padding: 0 4px;
+                box-sizing: border-box;
+                align-items: center;
+                margin-right: 8px;
+            }
+
+            .del-destination {
+                height: 22px;
+                width: 22px;
+                margin: 0 4px 0 8px;
+                padding: 2px;
+            }
+
+            .container-line{
+                display: flex;
+            }
+
+            .container-line-field{
+                margin: 2px;
+                padding: 2px;
+            }
+
+            .w-50{
+                width: 50%;
+            }
+
+            .w-100{
+                width: 100%;
+            }
+
         </style>
 
         <paper-dialog id="formManagementDialog">
@@ -771,12 +837,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <page>
                             <template is="dom-if" if="[[_isSelectedField(selectedField)]]">
                                 <div class="page-container">
-                                    <paper-input label="Nom du champ" value="{{selectedField.label}}"></paper-input>
-                                    <paper-input label="Id" value="{{selectedField.name}}"></paper-input>
-                                    <paper-input label="Infobulle"></paper-input>
-                                    <paper-input label="Url externe"></paper-input>
-                                    <paper-input label="Support vidéo"></paper-input>
-                                    <paper-input label="Codes nomenclatures liés"></paper-input>
+                                    <div class="container-line">
+                                        <paper-input class="container-line-field w-50" label="Nom du champ" value="{{selectedField.label}}"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="Id" value="{{selectedField.name}}"></paper-input>
+                                    </div>
+                                    <div class="container-line">
+                                        <paper-input class="container-line-field w-100" label="Infobulle"></paper-input>
+                                    </div>
+                                    <div class="container-line">
+                                        <paper-input class="container-line-field w-50" label="Url externe"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="Support vidéo"></paper-input>
+                                    </div>
+                                    <div class="container-line">
+                                        <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newNmclCode" label="[[localize('inputYourSearchQuery','Linked nomenclature code',language)]]" filter="{{nmclFilter}}" filtered-items="[[filteredNmclList]]" item-label-path="displayName" selected-item="{{selectedNmcl}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
+                                    </div>
+                                    <div class="container-line">
+                                        <div class="horizontal nmcls-list w-100">
+                                            <template is="dom-if" if="[[selectedField.code.links]]">
+                                                <template is="dom-repeat" items="[[selectedField.code.links]]" as="singleNmcl" id="nmclList">
+                                                    <paper-item class="nmcl-tag" id="[[singleNmcl]]">
+                                                        <div class="nmcl-type" data-document-id="[[singleAnnex.documentId]]">[[singleAnnex.fileExtensionUppercase]]</div>
+                                                        <div class="one-line-menu-nmcl list-title-nmcl">[[singleNmcl]]</div>
+                                                        <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleRecipient]]" on-tap="_removeNmcl" data-nmcl-index$='[[singleRecipient]]'></paper-icon-button>
+                                                    </paper-item>
+                                                </template>
+                                            </template>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </template>
                         </page>
@@ -838,12 +926,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Object,
                         value: () => {},
                         notify: true
+                    },
+                    nmclFilter:{
+                        type: String,
+                        value: null
+                    },
+                    filteredNmclList:{
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedNmcl:{
+                        type: Object,
+                        value: () => {}
                     }
                 }
             }
 
             static get observers() {
-                return [];
+                return ['_nmclFilterChanged(nmclFilter)', '_selectedNmclChanged(selectedNmcl)'];
             }
 
             constructor() {
@@ -857,32 +957,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             openFormDialog(){
                 if(this.selectedForm && this.selectedForm.id){
 
-                    let prom = Promise.resolve([])
-
                     this.api.form().getFormTemplate(this.selectedForm.id)
                         .then(form => {
-                            const fields =_.get(form, 'layout.sections[0].formColumns[0].formDataList', [])
+                            let fields = _.uniqBy(_.get(form, 'layout.sections[0].formColumns[0].formDataList', []), 'name')
 
-                            fields.map(field =>
-                               prom = prom.then(listOfField =>
-                                  this.api.code().getCode('care.topaz.form|'+field.name+'|1').then(field => _.concat(listOfField, {code: code}))
-                                )
-                            )
-
-                            prom.then(listOfField => {
-                                console.log(listOfField)
+                            this.api.code().getCodes(fields.map(field => 'care.topaz.form|'+field.name+'|1').join(',')).then(codes => {
+                                console.log(codes)
+                                this.set('selectedFormData', _.assign(form, {listOfFields: fields.map(f => codes.find(c => c.code === f.name) ? _.assign(f, {code: codes.find(c => c.code === f.name)}) : _.assign(f, {code: {links: [], appendices: [], label: f.label, code: f.name, type: 'care.topaz.form.field'}}))}))
                             })
-
-
                         })
-
-
-                    /*
-                    this.api.form().getFormTemplate(this.selectedForm.id)
-                        .then(form => this.set('selectedFormData', _.assign(form, {formDataAsString: JSON.stringify(form.layout)}, {listOfFields: _.get(form, 'layout.sections[0].formColumns[0].formDataList', [])})))
                         .finally(() => {
                             this._openFormDialog()
-                        })*/
+                        })
                 }
             }
 
@@ -908,12 +994,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _showFieldInfo(e){
                 if(e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item){
-                    const fields = JSON.parse(_.get(e, 'currentTarget.dataset.item'))
-
-                    this.api.code().getCode('care.topaz.form|'+_.replace(_.toUpper(_.trim(field.name)), /\s/g, "-")+'|1')
-                        .then(code => {
-                            this.set('selectedField', _.assign(field, {code: code}))
-                        })
+                    this.set('selectedField', JSON.parse(_.get(e, 'currentTarget.dataset.item')))
                 }
             }
 
@@ -931,6 +1012,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _isSelectedField(field){
                 return _.get(field, 'name', null) ? true : false
+            }
+
+            _nmclFilterChanged(nmclFilter){
+                if( _.trim(nmclFilter).length < 3){this.set("filteredNmclList",[]); return;}
+                setTimeout(() => {
+                    this.api.tarification().findPaginatedTarificationsByLabel('be', 'INAMI-RIZIV', this.language, nmclFilter, null, 100).then(codes => {
+                        this.set("filteredNmclList", codes.rows.map(code => _.assign(code, {displayedName: code.code+' '+code.label[this.language]})))
+                    })
+                    .catch(e=>{console.log("ERROR with _nmclFilterChanged: ", e);})
+                }, 300)
+            }
+
+            _selectedNmclChanged(){
+                if(this.selectedNmcl){
+                    this.push('selectedField.code.links', _.get(this.selectedNmcl, 'id', null))
+                    this.shadowRoot.querySelector('#newNmclCode')._clear() || false
+                }
             }
 
         }

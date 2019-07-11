@@ -204,7 +204,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <h4 class="panel-title">[[localize('man_forms', 'Management - Forms', language)]]</h4>
 
             <div>
-                <h4>[[localize('adm-form-list-of-form', 'Form list', language)]]</h4>
+                <h4>[[localize('adm-form-list-of-form', 'Form list', language)]]</h4> <!--<iron-icon icon="vaadin:database" on-tap="_createAllFieldBySpecialityInDb"></iron-icon>-->
                 <vaadin-grid id="activeUsersList" class="material grid" items="[[listForms]]" active-item="{{selectedForm}}">
                     <vaadin-grid-column>
                         <template class="header">
@@ -492,6 +492,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     console.log(e.target.id)
                     //todo
                 }
+            }
+
+            _createAllFieldBySpecialityInDb(){
+                let prom = Promise.resolve([])
+
+                this.listForms.map(formulaire =>
+                    prom = prom.then(listOfForm => this.api.form().getFormTemplate(formulaire.id).then(form => _.concat(listOfForm, form)))
+                )
+
+                prom.then(listOfForm => {
+                    let sprom = Promise.resolve([])
+                    _.uniqBy(_.flatten(listOfForm.map(form => _.get(form, 'layout.sections[0].formColumns[0].formDataList', []))), 'name')
+                        .map(field =>
+                            sprom = sprom.then( listOfFields =>
+                            this.api.code().createCode({
+                                id: 'care.topaz.form.field|'+field.name+'|1',
+                                code: field.name,
+                                type: 'care.topaz.form.field',
+                                version: 1,
+                                level: 1,
+                                links: [],
+                                flags: [],
+                                regions: ["be", "fr"],
+                                label: {[this.language]: field.label},
+                                author: this.user.id,
+                                disabled: false
+                            })
+                            .then(field => {
+                                listOfFields = _.concat(listOfFields, [field])
+                            })))
+
+                    sprom.then(listOfFields => {
+                        console.log(listOfFields)
+                    })
+                })
             }
         }
 
