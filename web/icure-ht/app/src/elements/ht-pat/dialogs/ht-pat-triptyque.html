@@ -326,8 +326,8 @@
 
                         <div class="buttons">
                             <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
-                            <paper-button on-tap="_XXXXXX" class="modal-button modal-button--save"><iron-icon icon="icons:save" class=""></iron-icon>[[localize('save','Save',language)]]</paper-button>
-                            <paper-button on-tap="_XXXXXX" class="modal-button modal-button--cancel"><iron-icon icon="icons:save" class="mr0"></iron-icon>Icone ... verticaux + ouvrir sub-menu d'actions</paper-button>
+                            <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_XXXXXX" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--save"><iron-icon icon="icons:save" class=""></iron-icon>[[localize('save','Save',language)]]</paper-button>
+                            <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_XXXXXX" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--cancel minw0"><iron-icon icon="icons:more-vert" class="mr0"></iron-icon></paper-button>
                         </div>
 
                     </div>
@@ -398,40 +398,6 @@
                         type: Array,
                         value: () => []
                     },
-                    _dialogParameters: {
-                        type: Object,
-                        value: () => {
-                            return {
-                                actions: {
-                                    listing: true,
-                                    detail: false
-                                },
-                                triptyqueType: "physiotherapist",
-                                configByType: {
-                                    physiotherapist: {
-                                        pdfDocumentsLabelKey: "requestForKineCare_header1",
-                                        formTemplateGuid: "AEFED10A-9A72-4B40-981B-1D79ADB05516",
-                                        defaultCodes: [
-                                            {id: "BE-THESAURUS-PROCEDURES|A57.062|3.1.0"},
-                                            {id: "CD-HCPARTY|persphysiotherapist|1"},
-                                            {id: "BE-THESAURUS|40001315|3.1.0"},
-                                            {id: "ICPC|*57.03|2"},
-                                        ]
-                                    },
-                                    persnurse: {
-                                        pdfDocumentsLabelKey: "requestForNurseCare_header1",
-                                        formTemplateGuid: "64DAB551-B007-4B5C-BD64-F886301F5326",
-                                        defaultCodes: [
-                                            {id:"BE-THESAURUS-PROCEDURES|A66.015|3.1.0"},
-                                            {id:"BE-THESAURUS|40001452|3.1.0"},
-                                            {id:"CD-HCPARTY|persnurse|1"},
-                                            {id:"ICPC|*66.01|2"}
-                                        ]
-                                    }
-                                }
-                            }
-                        }
-                    },
                     patient: {
                         type: Object,
                         noReset: true,
@@ -472,6 +438,44 @@
                     _selectedPrescriptionBoolean: {
                         type: Boolean,
                         value: false
+                    },
+                    _saveFormReqIdx: {
+                        type: Number,
+                        value: 0
+                    },
+                    _dialogParameters: {
+                        type: Object,
+                        value: () => {
+                            return {
+                                actions: {
+                                    listing: true,
+                                    detail: false
+                                },
+                                triptyqueType: "physiotherapist",
+                                configByType: {
+                                    physiotherapist: {
+                                        pdfDocumentsLabelKey: "requestForKineCare_header1",
+                                        formTemplateGuid: "AEFED10A-9A72-4B40-981B-1D79ADB05516",
+                                        defaultCodes: [
+                                            {id: "BE-THESAURUS-PROCEDURES|A57.062|3.1.0"},
+                                            {id: "CD-HCPARTY|persphysiotherapist|1"},
+                                            {id: "BE-THESAURUS|40001315|3.1.0"},
+                                            {id: "ICPC|*57.03|2"},
+                                        ]
+                                    },
+                                    persnurse: {
+                                        pdfDocumentsLabelKey: "requestForNurseCare_header1",
+                                        formTemplateGuid: "64DAB551-B007-4B5C-BD64-F886301F5326",
+                                        defaultCodes: [
+                                            {id:"BE-THESAURUS-PROCEDURES|A66.015|3.1.0"},
+                                            {id:"BE-THESAURUS|40001452|3.1.0"},
+                                            {id:"CD-HCPARTY|persnurse|1"},
+                                            {id:"ICPC|*66.01|2"}
+                                        ]
+                                    }
+                                }
+                            }
+                        }
                     }
                 };
             }
@@ -644,6 +648,14 @@
                 }, {})
             }
 
+            _stringByValue(stringToReturn, valueToMatch, inputVar) {
+
+                valueToMatch = valueToMatch === "false" ? false : valueToMatch === "true" ? true : valueToMatch
+                inputVar = !inputVar && valueToMatch === false ? false : inputVar
+                return inputVar === valueToMatch ? stringToReturn : ""
+
+            }
+
             _linkPdfPrescription(e) {
 
                 this.set("_isLoading", true);
@@ -682,6 +694,8 @@
                             encounterType: { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
                             descr: _.trim(_.get(triptyqueTransactionCode,"label." + this.language,"Triptyque")) + ": " + _.trim(this.localize(_.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","physiotherapist") + ".pdfDocumentsLabelKey",""),"Prescription de kinésithérapie", this.language)),
                             tags: [
+                                { type: "BE-CONTACT-TYPE", version: "1", code: "1" },
+                                { type: "BE-CONTACT-TYPE", version: "1", code: "20" },
                                 { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
                                 { type: "originalDocumentId", id: documentId },
                                 { type: "originalDocumentContactId", id: _.trim(_.get(documentContactObject,"id",""))},
@@ -689,119 +703,104 @@
                                 { type: "originalDocumentFormId", id: documentFormId},
                             ],
                             codes: _.map(defaultCodes, dc =>{return{type: _.trim(_.get(dc,"type")), version: _.trim(_.get(dc,"version")), code: _.trim(_.get(dc,"code")), label: _.get(dc,"label",{}) }}),
-                            // subContacts: ( !!_.size(_.get(documentContactObject,"subContacts",[])) ? _.get(documentContactObject,"subContacts",[]) : []),
-                            // services: ( !!_.size(_.get(documentContactObject,"services",[])) ? _.get(documentContactObject,"services",[]) : [])
-                        }).then(contactInstance => ([triptyqueTransactionCode,defaultCodes,patientObject,contactInstance]))
+                            subContacts: [],
+                            services: []
+                        }).then(contactInstance => ([defaultCodes,patientObject,contactInstance]))
                     )
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([triptyqueTransactionCode,defaultCodes,patientObject,createdContact])))
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
+
+                    // .then(([defaultCodes,patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([defaultCodes,patientObject,createdContact])))
+                    .then(([patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([patientObject,createdContact])))
+
+                    // .then(([defaultCodes,patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
+                    .then(([patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
                         .then(currentHcp => Promise.all([
                             this.api.form().getFormTemplatesByGuid( formTemplateGuid, "deptgeneralpractice" ),
                             this.api.form().getFormTemplatesByGuid( formTemplateGuid, _.trim(_.get(currentHcp,"specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
-                        ]).then(promResults => ([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
+
+                        // ]).then(promResults => ([defaultCodes,patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
+                        ]).then(promResults => ([patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
+
                     )
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,formTemplate]) => this.api.helement().newInstance(this.user, patientObject, {
-                            tags: _.concat( _.get(createdContact,"tags",[]), [{ type: "CD-ITEM", version: "1", code: "healthcareelement" }]),
-                            idOpeningContact:_.trim(_.get(createdContact,"id","")),
-                            relevant: true,
-                            codes: _.get(createdContact,"codes",[]),
-                            descr: _.get(_.find(defaultCodes, {type:"BE-THESAURUS-PROCEDURES"}),"label."+this.language,""),
-                            status: 0,
-                            idService: documentServiceId,
-                            plansOfAction: [{
-                                id: this.api.crypto().randomUuid(),
-                                openingDate: parseInt(moment().format('YYYYMMDDHHmmss')),
-                                name: _.get(_.find(defaultCodes, {type:"BE-THESAURUS-PROCEDURES"}),"label."+this.language,""),
-                                idOpeningContact:_.trim(_.get(createdContact,"id","")),
-                                created: +new Date,
-                                modified: +new Date,
-                                codes: _.get(createdContact,"codes",[]),
-                                tags: _.get(createdContact,"tags",[]),
-                            }]
-                        }).then( helementInstance => ([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,formTemplate,helementInstance]))
-                    )
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,formTemplate,helementInstance]) => this.api.helement().createHealthElement(helementInstance).then(createdHelement => ([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,formTemplate,createdHelement])))
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,formTemplate,createdHelement]) => this.api.form().newInstance(this.user, patientObject, {
+
+                    // FABIEN: pas créer ES, se baser sur existant
+                    // .then(([defaultCodes,patientObject,createdContact,formTemplate]) => this.api.helement().newInstance(this.user, patientObject, {
+                    //         tags: _.concat( _.get(createdContact,"tags",[]), [{ type: "CD-ITEM", version: "1", code: "healthcareelement" }]),
+                    //         idOpeningContact:_.trim(_.get(createdContact,"id","")),     // FZ: rajouter si pas encore existant mais ne pas overwrite (normalement doit tjs être set)
+                    //         relevant: true,
+                    //         codes: _.get(createdContact,"codes",[]),
+                    //         descr: _.get(_.find(defaultCodes, {type:"BE-THESAURUS-PROCEDURES"}),"label."+this.language,""),
+                    //         status: 0,
+                    //         idService: documentServiceId,       // FZ: rajouter si pas encore existant mais ne pas overwrite
+                    //         plansOfAction: [{
+                    //             id: this.api.crypto().randomUuid(),
+                    //             openingDate: parseInt(moment().format('YYYYMMDDHHmmss')),
+                    //             name: _.get(_.find(defaultCodes, {type:"BE-THESAURUS-PROCEDURES"}),"label."+this.language,""),
+                    //             idOpeningContact:_.trim(_.get(createdContact,"id","")),
+                    //             created: +new Date,
+                    //             modified: +new Date,
+                    //             codes: _.get(createdContact,"codes",[]),
+                    //             tags: _.get(createdContact,"tags",[]),
+                    //         }]
+                    //     }).then( helementInstance => ([patientObject,createdContact,formTemplate,helementInstance]))
+                    // )
+                    // .then(([patientObject,createdContact,formTemplate,helementInstance]) => this.api.helement().createHealthElement(helementInstance).then(createdHelement => ([patientObject,createdContact,formTemplate,createdHelement])))
+
+                    // FZ: healthElementId & planOfActionId pas encore existant lors création form car choisis après. Du coup repasser sur ce form pour mettre IDS une fois choisis.
+                    // .then(([patientObject,createdContact,formTemplate,createdHelement]) => this.api.form().newInstance(this.user, patientObject, {
+
+                    .then(([patientObject,createdContact,formTemplate]) => this.api.form().newInstance(this.user, patientObject, {
                             contactId: _.trim(_.get(createdContact,"id","")),
                             formTemplateId: _.trim(_.get(formTemplate,"id","")),
                             descr: _.trim(_.get(formTemplate,"name","")),
                             tags: _.get(createdContact,"tags",[]),
-                            healthElementId: _.trim(_.get(createdHelement,"id","")),
-                            planOfActionId: _.trim(_.get(createdHelement,"plansOfAction[0].id",""))
-                        }).then(formInstance => ([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,createdHelement, formInstance]))
+                            // healthElementId: _.trim(_.get(createdHelement,"id","")),
+                            // planOfActionId: _.trim(_.get(createdHelement,"plansOfAction[0].id",""))
+                        // }).then(formInstance => ([patientObject,createdContact,createdHelement, formInstance]))
+                        }).then(formInstance => ([patientObject,createdContact,formInstance]))
                     )
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,createdHelement,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,createdHelement,createdForm])))
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject,createdContact,createdHelement,createdForm]) => {
 
-                        const createdFormId = _.trim(_.get(createdForm,"id",""))
+                    // .then(([patientObject,createdContact,createdHelement,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([patientObject,createdContact,createdHelement,createdForm])))
+                    .then(([patientObject,createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([patientObject,createdContact,createdForm])))
+
+                    // .then(([patientObject,createdContact,createdHelement,createdForm]) => {
+                    .then(([patientObject,createdContact,createdForm]) => {
+
+                        const subContactServiceIds = _.compact(_.uniq(_.get(_.find(_.get(documentContactObject,"subContacts",[]), {formId: documentFormId}),"services",[]).map(i=>_.trim(_.get(i,"serviceId","")))))
+                        const subContactServiceDatas = _.filter(_.get(documentContactObject,"services",[]), i=> subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) > -1 )
+                        const newServicesData = _.map(subContactServiceDatas, scsd => this.api.contact().service().newInstance(this.user, _.merge({}, _.omit(scsd, ["author","created","cryptedForeignKeys","delegations","encryptedSelf","encryptionKeys","id","modified","responsible","secretForeignKeys"]))))
+
+                        createdContact.services = newServicesData
+                        createdContact.subContacts = [{
+                            codes:[],
+                            descr:this.api.crypto().randomUuid(),
+                            formId:_.trim(_.get(createdForm,"id","")),
+                            hasBeenInitialized: false,
+                            services: _.map(newServicesData, sv => {return{serviceId: _.trim(_.get(sv,"id",""))/*, service:sv*/}})
+                        }]
+
+                        // return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([patientObject,modifiedContact,createdHelement,createdForm]))
+                        return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([patientObject,modifiedContact,createdForm]))
+
+                    })
+
+                    // .then(([patientObject,modifiedContact,createdHelement,createdForm]) => {
+                    .then(([patientObject,modifiedContact,createdForm]) => {
+
+                        selectedPrescriptionObject.formId = _.trim(_.get(createdForm,"id",""))
+                        selectedPrescriptionObject.contact = modifiedContact
+                        selectedPrescriptionObject.contacts = [modifiedContact]
+                        selectedPrescriptionObject.servicesMap = this._getServicesMap([modifiedContact])
+                        // selectedPrescriptionObject.createdHelement = createdHelement
 
                         this.set("patient", patientObject)
-
-                        console.log("triptyqueTransactionCode",triptyqueTransactionCode)
-                        console.log("defaultCodes",defaultCodes)
-                        console.log("patientObject",patientObject)
-                        console.log("createdContact",createdContact)
-                        console.log("createdHelement",createdHelement)
-                        console.log("createdForm",createdForm)
-
-                        selectedPrescriptionObject.formId = createdFormId
-                        selectedPrescriptionObject.contact.subContacts.push({ formId: createdFormId, services: [] })
-                        selectedPrescriptionObject.contacts = [createdContact]
-                        selectedPrescriptionObject.servicesMap = this._getServicesMap([createdContact])
-
                         this.set("_currentPdfPreviewDocumentId", "")
                         this.set("_selectedPrescriptionObject", selectedPrescriptionObject)
 
-                        console.log("--------------------------------");
-                        console.log("documentContactId", documentContactId);
-                        console.log("documentServiceId", documentServiceId);
-                        console.log("documentFormId", documentFormId);
-                        console.log("this._pdfPrescriptionsList", this._pdfPrescriptionsList);
-                        console.log("selectedPrescriptionObject", selectedPrescriptionObject);
-                        console.log("documentContactObject", documentContactObject);
-
-                        // Nettoyer totu ce que l'on transport au travers des promesses -> ne prendre que le nécessaire
-
                     })
-                    .finally(() => { this.set("_isLoading", false); })
-
-
-
-
-        // ==> APrès ceci: injecter dans les services (de contact) les valeurs de l'éventuel formulaire lié à mon pdf (si mm par ex.)'
-        // De ehbox, après création contact instance
-        //
-        // if(isLabResult) {
-        //     contactInstance.services.push({
-        //         id: this.api.crypto().randomUuid(),
-        //         label: documentType,
-        //         valueDate: parseInt(moment().format('YYYYMMDDHHmmss')),
-        //         content: _.fromPairs([[this.language, {stringValue: _.trim(_.get(documentToAssign,"docInfo[0].labo",""))}]]),
-        //         tags: [{type: 'CD-TRANSACTION', code: documentType}]
-        //     })
-        // } else {
-        //     const svc = this.api.contact().service().newInstance( this.user, { tags: [{type: 'CD-TRANSACTION', code: documentType}], content: _.fromPairs([[this.language, {documentId: documentId, stringValue: _.trim(_.get(documentToAssign,"name",""))}]]), label: (_.trim(documentTypeLabel) ? _.trim(documentTypeLabel) : "Annexe") + ": " + _.trim(_.get(documentToAssign,"name","")) })
-        //     contactInstance.services = [svc]
-        //     contactInstance.subContacts.push({status: 64, services: [{serviceId: svc.id}]})
-        // }
-
-
-
-
-                    // .then(createdOrExistingFormId => {
-                    //
-                    //     // documentFormId
-                    //
-                    //     console.log("createdOrExistingFormId",createdOrExistingFormId);
-                    //     selectedPrescriptionObject.formId = _.trim(createdOrExistingFormId)
-                    //     selectedPrescriptionObject.contact.subContacts.push({ formId: _.trim(createdOrExistingFormId), services: [] })
-                    //     selectedPrescriptionObject.contacts = [documentContactObject]
-                    //     selectedPrescriptionObject.servicesMap = this._getServicesMap([documentContactObject])
-                    //
-                    //     this.set("_currentPdfPreviewDocumentId", "")
-                    //     this.set("_selectedPrescriptionObject", selectedPrescriptionObject)
-                    //
-                    // })
+                    .finally(() => {
+                        console.log("selectedPrescriptionObject", selectedPrescriptionObject)
+                        this.set("_isLoading", false);
+                    })
 
             }
 
@@ -814,9 +813,23 @@
 
             _prescriptionFormDataGotChanged(e) {
 
-                console.log("----- _prescriptionFormDataGotChanged -----", e);
+                const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
+                const contactObject = _.get(e,"detail",{})
+
+                setTimeout(() => {
+                    return (reqIdx !== this._saveFormReqIdx || !_.size(contactObject)) ? false : this.api.contact().modifyContactWithUser(this.user, contactObject)
+                        .then(modifiedContact => this.api.register(modifiedContact, 'contact'))
+                        .then(modifiedContact => { return (reqIdx !== this._saveFormReqIdx) ? false : this.set("_selectedPrescriptionObject", _.merge({},_.get(this,"_selectedPrescriptionObject",{}), { contact: modifiedContact, contacts: [modifiedContact], servicesMap: this._getServicesMap([modifiedContact]) })) })
+
+                }, 2000)
 
             }
+
+
+
+
+
+
 
             _getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription(inputConfig={}) {
 
@@ -903,7 +916,7 @@
                         ])
 
                     })
-                    .finally(()=>{
+                    .finally(() => {
 
                         this.set("_isLoading", false);
                         this._changeDialogAction("listing")
@@ -918,17 +931,21 @@
 
             _addPlanOfAction() {
 
+                console.log("_addPlanOfAction");
+                console.log("Patient", this.patient)
+
                 this.set("_isLoading", true);
                 return this._changeDialogAction("detail")
-                    .then(()=>{
-                        console.log("_addPlanOfAction");
-                        console.log("Patient", this.patient)
-                    })
-                    .finally(()=>this.set("_isLoading", false))
+                    .then(() => this._getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription())
+                    .then(pdfPrescriptions => this.set("_pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : []))
+                    .finally(() => this.set("_isLoading", false))
 
             }
 
             _vaadinGridPlanOfActionActiveItemChanged(activeItem) {
+
+                console.log("Patient", this.patient)
+                console.log("GLOBAL active item", this._vaadinGridPlanOfActionActiveItem)
 
                 this.set("_isLoading", true);
 
@@ -942,15 +959,8 @@
                             return this._getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription()
 
                         })
-                        .then(pdfPrescriptions => {
-
-                            this.set("_pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : [])
-
-                            console.log("Patient", this.patient)
-                            console.log("GLOBAL active item", this._vaadinGridPlanOfActionActiveItem)
-
-                        })
-                        .finally(()=>this.set("_isLoading", false))
+                        .then(pdfPrescriptions => this.set("_pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : []))
+                        .finally(() => this.set("_isLoading", false))
 
             }
 
@@ -980,7 +990,6 @@
             //         -   Delete all linked objects lors de "délier" pdf ?
             //         -   SSI already existing HE => tout load / comme si just _linkPdfPrescription
             //         -   Menu "..." verticaux + quels actions ?
-            //         -   Besoin tous les codes & tags dans contact / he / planofaction / form / ... ?
             //         -   Detect si déjà existing HE sur contact / dans le triptyque
             //         -   Nice / smart callbacks pour save lors change tab / modify form ?
             //         -   Code générique pour imprimer tous les forms pdfs à la fois kine & infi
@@ -988,7 +997,6 @@
             //         -   Action reload toutes datas SSI prescription / HE / plan of action existe déjà
             //         -   Revoir vaadin grid listing "mode list" + PTP + DP + columns + layout
             //         -   Revoir lien avec Mikrono / intégration
-            //         -   En tant que kine je ne vois pas le form (au sein de même mm) si pat pas partagé ? ==> retest le tout
             //         -   Re-double check tout sous le couvert d'une infi
             //         -   Quid gestion sub-forms (dans le cadre des infis) => actuellement pas géré
             //         -   Eval number of cares (vaading grid)
