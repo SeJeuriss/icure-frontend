@@ -49,6 +49,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="account/ht-admin-account-printers.html">
 <link rel="import" href="account/ht-admin-account-agenda.html">
 <link rel="import" href="account/ht-admin-account-invoice.html">
+<link rel="import" href="account/ht-admin-account-procedures.html">
 
 
 <dom-module id="ht-admin-account">
@@ -115,6 +116,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <template is="dom-if" if="[[invoiceLayout]]">
             <ht-admin-account-invoice id="admin-account-invoice" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-account-invoice>
+        </template>
+
+        <template is="dom-if" if="[[proceduresLayout]]">
+            <ht-admin-account-procedures id="admin-account-procedures" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" user="[[user]]"></ht-admin-account-procedures>
         </template>
 
     </template>
@@ -198,6 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
                     this.set('invoiceLayout', false)
+                    this.set('proceduresLayout', false)
                 }else if(this.selectedSubMenu === "edmgInformationSubMenu"){
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', true)
@@ -207,6 +213,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
                     this.set('invoiceLayout', false)
+                    this.set('proceduresLayout', false)
                 }else if (this.selectedSubMenu === "printersInformationSubMenu"){
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
@@ -216,6 +223,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
                     this.set('invoiceLayout', false)
+                    this.set('proceduresLayout', false)
                 }else if(this.selectedSubMenu === "accountInformationSubMenu"){
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
@@ -225,6 +233,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
                     this.set('invoiceLayout', false)
+                    this.set('proceduresLayout', false)
                 }else if(this.selectedSubMenu === "bankInformationsSubMenu"){
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
@@ -234,6 +243,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
                     this.set('invoiceLayout', false)
+                    this.set('proceduresLayout', false)
                 }else if(this.selectedSubMenu === "myDelegationsSubMenu"){
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
@@ -243,6 +253,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('delegationLayout', true)
                     this.set('agendaLayout', false)
                     this.set('invoiceLayout', false)
+                    this.set('proceduresLayout', false)
                 }else if(this.selectedSubMenu === "agendaSubMenu"){
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
@@ -252,6 +263,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', true)
                     this.set('invoiceLayout', false)
+                    this.set('proceduresLayout', false)
                 }else if(this.selectedSubMenu === "invoiceSubMenu"){
                     this.set('preferencesLayout', false)
                     this.set('edmgInformationLayout', false)
@@ -261,6 +273,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.set('delegationLayout', false)
                     this.set('agendaLayout', false)
                     this.set('invoiceLayout', true)
+                    this.set('proceduresLayout', false)
+                }else if(this.selectedSubMenu === "proceduresSubMenu"){
+                    this.set('preferencesLayout', false)
+                    this.set('edmgInformationLayout', false)
+                    this.set('printersInformationLayout', false)
+                    this.set('accountInformationsLayout', false)
+                    this.set('bankInformationsLayout', false)
+                    this.set('delegationLayout', false)
+                    this.set('agendaLayout', false)
+                    this.set('invoiceLayout', false)
+                    this.set('proceduresLayout', true)
                 }
             }
 
