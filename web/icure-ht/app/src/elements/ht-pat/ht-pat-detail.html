@@ -2406,7 +2406,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
         </paper-dialog>
 
-        <ht-pat-triptyque-dialog id="triptyqueDialog" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" current-contact="[[currentContact]]" services-map="[[servicesMap]]" user="[[user]]" patient="[[patient]]" on-triptyque-dialog-closed="_triptyqueDialogClosed"></ht-pat-triptyque-dialog>
+        <ht-pat-triptyque-dialog
+            id="triptyqueDialog"
+            api="[[api]]"
+            i18n="[[i18n]]"
+            language="[[language]]"
+            resources="[[resources]]"
+            current-contact="[[currentContact]]"
+            services-map="[[servicesMap]]"
+            user="[[user]]"
+            patient="[[patient]]"
+            on-triptyque-dialog-closed="_triptyqueDialogClosed"
+            active-health-elements="[[activeHealthElements]]"
+        ></ht-pat-triptyque-dialog>
 
     </template>
     <script>

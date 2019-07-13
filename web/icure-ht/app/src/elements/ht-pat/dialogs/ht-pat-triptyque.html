@@ -183,7 +183,7 @@
 
 
                                 <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
-                                    <h4 class="textaligncenter uppercase"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon> [[localize('linkedPrescriptionToYourTriptyque','This prescription is linked to your triptyque',language)]]:</h4>
+                                    <h4 class="textaligncenter uppercase"><iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon> [[localize('linkedPrescriptionToYourTriptyque','This prescription is linked to your triptyque',language)]]:</h4>
                                     <div class="singlePdfPrescription" data-service-id$="[[_selectedPrescriptionObject.service.id]]" data-form-id$="[[_selectedPrescriptionObject.formId]]" data-document-id$="[[_selectedPrescriptionObject.document.id]]">
                                         <div class="header p10">
                                             <span class="date">[[_selectedPrescriptionObject.dateAndTimeHr]]</span>
@@ -212,7 +212,7 @@
 
 
                                 <template is="dom-if" if="[[!_selectedPrescriptionBoolean]]">
-                                    <h4 class="textaligncenter uppercase"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon> [[localize('choosePrescriptionForTriptyque','Please choose a prescription to link to your triptyque',language)]]:</h4>
+                                    <h4 class="textaligncenter uppercase"><iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon> [[localize('choosePrescriptionForTriptyque','Please choose a prescription to link to your triptyque',language)]]:</h4>
                                     <template is="dom-repeat" items="[[_pdfPrescriptionsList]]" as="singlePdfPrescription">
 
                                         <div class="singlePdfPrescription" data-service-id$="[[singlePdfPrescription.service.id]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]">
@@ -254,8 +254,8 @@
 
 
 
-                        <paper-tabs selected="{{_triptyqueDetailActiveTab}}" attr-for-selected="name" class="p0">
-                            <paper-tab class="dialogTab" name="prescriptionForm"><iron-icon icon="vaadin:pills" class="mr8 darkBlue"></iron-icon>[[localize('prescription','Prescription',language)]]</paper-tab>
+                        <paper-tabs selected="{{_triptyqueDetailActiveTab}}" on-tap="_gotoTabIfsAllowed" attr-for-selected="name" class="p0">
+                            <paper-tab class="dialogTab" name="prescriptionForm"><iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon>[[localize('prescription','Prescription',language)]]</paper-tab>
                             <paper-tab class="dialogTab" name="summary"><iron-icon icon="icons:list" class="mr8 darkBlue"></iron-icon> [[localize('summary','Summary',language)]]</paper-tab>
                             <paper-tab class="dialogTab" name="procedures"><iron-icon icon="vaadin:tools" class="mr8 darkBlue"></iron-icon> [[localize('proc(s)','Procedure(s)',language)]] <span class="batchNumber greenBg ml10">[[_totalExistingProceduresForCurrentPlanOfAction]]</span></paper-tab>
                         </paper-tabs>
@@ -301,7 +301,22 @@
                                 <template is="dom-if" if="[[!_selectedPrescriptionBoolean]]"><iron-icon icon="warning" class="mr8 darkRed"></iron-icon> [[localize('pleaseLinkPrescriptionToTriptyqueFirst','Please link a prescription to your triptyque first',language)]].</template>
 
                                 <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
-                                    Plan d'action
+                                    Plan d'action<br /><br />
+
+                                    Lier ES: this.activeHealthElements<br />
+                                    Documents mutuelle<br />
+                                    Nom de suivi = texte libre vallant par défaut ES = name du planofactions<br />
+                                    "Ma date"<br />
+                                    Prestataire lié % équipe soin (faire do route si besoin edit)<br />
+                                    From -> to % prescription<br />
+                                    Select xls 1 (fz: injecter codes)<br />
+                                    Select xls 2 % 1  (fz: injecter codes + parent rel)<br />
+                                    Date prochain rappel = prefilled % fin prescription<br />
+                                    Latéralité (G/D/C)<br />
+                                    Select sur "type accident de..." (inventer valeurs)<br />
+                                    Valider tab summary lors du change tab (_gotoTabIfsAllowed)<br />
+                                    Faire système de toggle / collapse verticaux<br />
+
                                 </template>
 
                             </template>
@@ -442,6 +457,11 @@
                     _saveFormReqIdx: {
                         type: Number,
                         value: 0
+                    },
+                    activeHealthElements: {
+                        type: Array,
+                        value: ()=>[],
+                        noReset: true
                     },
                     _dialogParameters: {
                         type: Object,
@@ -663,7 +683,6 @@
                 const promResolve = Promise.resolve();
                 const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
-                const documentContactId = _.trim(_.get(targetButton,"dataset.contactId"))
                 const documentServiceId = _.trim(_.get(targetButton,"dataset.serviceId"))
                 const documentFormId = _.trim(_.get(targetButton,"dataset.formId"))
                 const formTemplateGuid = _.trim(_.get(this,"_dialogParameters.configByType." + _.get(this,"_dialogParameters.triptyqueType","physiotherapist") + ".formTemplateGuid",""))
@@ -705,7 +724,9 @@
                             codes: _.map(defaultCodes, dc =>{return{type: _.trim(_.get(dc,"type")), version: _.trim(_.get(dc,"version")), code: _.trim(_.get(dc,"code")), label: _.get(dc,"label",{}) }}),
                             subContacts: [],
                             services: []
-                        }).then(contactInstance => ([defaultCodes,patientObject,contactInstance]))
+
+                        // }).then(contactInstance => ([defaultCodes,patientObject,contactInstance]))
+                        }).then(contactInstance => ([patientObject,contactInstance]))
                     )
 
                     // .then(([defaultCodes,patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([defaultCodes,patientObject,createdContact])))
@@ -804,13 +825,6 @@
 
             }
 
-
-
-
-
-
-
-
             _prescriptionFormDataGotChanged(e) {
 
                 const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
@@ -824,6 +838,34 @@
                 }, 2000)
 
             }
+
+            _gotoTabIfsAllowed(e) {
+
+                // 1. prescriptionForm
+                // 2. summary
+                // 3. procedures
+
+                const currentTab = _.trim(_.get(this,"_triptyqueDetailActiveTab", "prescriptionForm"))
+                const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
+                const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
+                    currentTab === "procedures" ? targetTab :
+                    currentTab === "prescriptionForm" && targetTab === "summary" ? !!_.size(_.compact(_.map( this._selectedPrescriptionObject.contact.services, sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) ? targetTab : currentTab :
+                    currentTab === "prescriptionForm" && targetTab === "procedures" ? (true === true /* Validate BOTH prescriptionForm & summary tabs here */ ) ? targetTab : currentTab :
+                    currentTab === "summary" ? (true === true /* Validate summary tab here */ ) ? targetTab : currentTab :
+                    targetTab
+
+                setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
+
+            }
+
+
+
+
+
+
+
+
+
 
 
 
