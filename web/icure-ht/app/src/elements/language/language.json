@@ -1742,7 +1742,8 @@
     "unlinkPdf": "Unlink document",
     "choosePrescriptionForTriptyque": "Please choose a prescription to link to your triptyque",
     "linkedPrescriptionToYourTriptyque": "This prescription is linked to your triptyque",
-    "pleaseLinkPrescriptionToTriptyqueFirst": "Please link a prescription to your triptyque first"
+    "pleaseLinkPrescriptionToTriptyqueFirst": "Please link a prescription to your triptyque first",
+    "linkedHealthElement": "Related health element"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3571,7 +3572,8 @@
     "unlinkPdf": "Délier le document",
     "choosePrescriptionForTriptyque": "Veuillez choisir une prescription à lier à votre triptyque",
     "linkedPrescriptionToYourTriptyque": "Cette prescription est liée à votre triptyque",
-    "pleaseLinkPrescriptionToTriptyqueFirst": "Veuillez commencer par lier une prescription à votre triptyque"
+    "pleaseLinkPrescriptionToTriptyqueFirst": "Veuillez commencer par lier une prescription à votre triptyque",
+    "linkedHealthElement": "Elément de soin lié"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5371,6 +5373,7 @@
     "unlinkPdf": "Unlink document",
     "choosePrescriptionForTriptyque": "Please choose a prescription to link to your triptyque",
     "linkedPrescriptionToYourTriptyque": "This prescription is linked to your triptyque",
-    "pleaseLinkPrescriptionToTriptyqueFirst": "Please link a prescription to your triptyque first"
+    "pleaseLinkPrescriptionToTriptyqueFirst": "Please link a prescription to your triptyque first",
+    "linkedHealthElement": "Related health element"
   }
 }
