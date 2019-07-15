@@ -1,0 +1,1403 @@
+{
+	"docs": [ 
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|courant|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "courant",
+			"label": { 
+				"fr": "Courant", 
+				"nl": "Courant" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|560210|1.0",
+				"INAMI-RIZIV|561470|1.0",
+				"INAMI-RIZIV|560254|1.0",
+				"INAMI-RIZIV|560313|1.0",
+				"INAMI-RIZIV|561492|1.0",
+				"INAMI-RIZIV|560350|1.0",
+				"INAMI-RIZIV|560571|1.0",
+				"INAMI-RIZIV|560615|1.0"
+
+
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+		
+		
+		
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "f-aigue",
+			"label": { 
+				"fr": "F Aigue", 
+				"nl": "F Acuut" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|563216|1.0",
+				"INAMI-RIZIV|561470|1.0",
+				"INAMI-RIZIV|563253|1.0",
+				"INAMI-RIZIV|563312|1.0",
+				"INAMI-RIZIV|561492|1.0",
+				"INAMI-RIZIV|563356|1.0",
+				"INAMI-RIZIV|563496|1.0",
+				"INAMI-RIZIV|563533|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "f-chronique",
+			"label": { 
+				"fr": "F Chronique", 
+				"nl": "F Chronisch" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|563813|1.0",
+				"INAMI-RIZIV|561470|1.0",
+				"INAMI-RIZIV|563850|1.0",
+				"INAMI-RIZIV|563916|1.0",
+				"INAMI-RIZIV|561492|1.0",
+				"INAMI-RIZIV|563953|1.0",
+				"INAMI-RIZIV|564093|1.0",
+				"INAMI-RIZIV|564130|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "pathologie-e",
+			"label": { 
+				"fr": "Pathologie E", 
+				"nl": "Pathologie E" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|560895|1.0",
+				"INAMI-RIZIV|560932|1.0",
+				"INAMI-RIZIV|561013|1.0",
+				"INAMI-RIZIV|561050|1.0",
+				"INAMI-RIZIV|561352|1.0",
+				"INAMI-RIZIV|561396|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|palliatif|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "palliatif",
+			"label": { 
+				"fr": "Palliatif", 
+				"nl": "Palliatief" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|564211|1.0",
+				"INAMI-RIZIV|564233|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|drainage-lymphatique-60|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "drainage-lymphatique-60",
+			"label": { 
+				"fr": "Drainage Lymphatique 60'", 
+				"nl": "Lymfe Drainage 60'" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|639376|1.0",
+				"INAMI-RIZIV|639391|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|drainage-lymphatique-120|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "drainage-lymphatique-120",
+			"label": { 
+				"fr": "Drainage Lymphatique 120'", 
+				"nl": "Lymfe Drainage 120'" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|639531|1.0",
+				"INAMI-RIZIV|639553|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|perinatal|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "perinatal",
+			"label": { 
+				"fr": "Périnatal", 
+				"nl": "Perinataal" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|561632|1.0",
+				"INAMI-RIZIV|561654|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|syndrome-fatigue-chronique|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "syndrome-fatigue-chronique",
+			"label": { 
+				"fr": "Syndrome de fatigue chronique", 
+				"nl": "Chronisch vermoeidheidssyndroom" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|564830|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|fibromyalgie|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "fibromyalgie",
+			"label": { 
+				"fr": "Fibromyalgie", 
+				"nl": "Fibromyalgie" 
+			},
+			"parent": "",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1",
+				"INAMI-RIZIV|564955|1.0"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		},
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|f-aigue-affection-posttraumatique|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "f-aigue-affection-posttraumatique",
+			"label": { 
+				"fr": "A1. Affection posttraumatique ou postopératoire (chirurgie, arthroscopies diagnostique et thérapeutique)", 
+				"nl": "A1. Posttraumatische of postoperatieve aandoeningen (heelkundige, diagnostische en therapeutische arthroscopieën)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|deficit-moteur-invalidite-myopathie|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "deficit-moteur-invalidite-myopathie",
+			"label": { 
+				"fr": "E9. Déficit moteur et invalidité (myopathie)", 
+				"nl": "E9. Motorisch deficit en invalidering (myopathie)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|orthopedie-traumatologie|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "orthopedie-traumatologie",
+			"label": { 
+				"fr": "F10. Situations dans le domaine de l'orthopédie - traumatologie", 
+				"nl": "F10. Situaties in het domein van de orthopedie - traumatology" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|capsulite-retractile|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "capsulite-retractile",
+			"label": { 
+				"fr": "G11. Capsulite rétractile", 
+				"nl": "G11. Adhesieve capsulitis" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|reeducation-uro-gyneco-colo-proctologique-neuropathie|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "reeducation-uro-gyneco-colo-proctologique-neuropathie",
+			"label": { 
+				"fr": "H12. Rééducation uro-, gynéco-, colo-, ou proctologique nécessitant beaucoup de soins (neuropathie)", 
+				"nl": "H12. Uro-gynnaeco-colo-proctologische revalidatie vereisen (neuropathie)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|reeducation-uro-gyneco-colo-proctologique-revalidation-postope|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "reeducation-uro-gyneco-colo-proctologique-revalidation-postope",
+			"label": { 
+				"fr": "H13. Rééducation uro-, gynéco-, colo-, ou proctologique nécessitant beaucoup de soins (revalidation postopératoire)", 
+				"nl": "H13. Uro-gynnaeco-colo-proctologische revalidatie vereisen (postoperatieve revalidatie)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|reeducation-uro-gyneco-colo-proctologique-aff-fonct-16-ans|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "reeducation-uro-gyneco-colo-proctologique-aff-fonct-16-ans",
+			"label": { 
+				"fr": "H14. Rééducation uro-, gynéco-, colo-, ou proctologique nécessitant beaucoup de soins (affections fonctionnelles chez l'enfant jusqu'au 16ème anniversaire)", 
+				"nl": "H14. Uro-gynnaeco-colo-proctologische revalidatie vereisen (functionele aandoeningen bij het kind tot de 16° verjaardag)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|sdrc|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "sdrc",
+			"label": { 
+				"fr": "I15. Syndrome Douloureux Régional Complexe (SDRC)", 
+				"nl": "I15. Reflex Sympathische Dystrofie (RSD)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|polytraumatismes|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "polytraumatismes",
+			"label": { 
+				"fr": "J16. Polytraumatismes", 
+				"nl": "J16. Polytraumatismen" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|stomatologie|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "stomatologie",
+			"label": { 
+				"fr": "K17. Stomatologie", 
+				"nl": "K17. Stomatologie" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|f-aigue-affection-posttraumatique-k225|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "f-aigue-affection-posttraumatique-k225",
+			"label": { 
+				"fr": "A2. Affection posttraumatique ou postopératoire (neurochirurgie K225 ou plus)", 
+				"nl": "A2. Posttraumatische of postoperatieve aandoeningen (neurochirurgie K225 of meer)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|f-aigue-affection-posttraumatique-ortho-chir-neurochir|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "f-aigue-affection-posttraumatique-ortho-chir-neurochir",
+			"label": { 
+				"fr": "A2b. Affection posttraumatique ou postopératoire (orthopédie, prestations chirugicales, neurochirurgie)", 
+				"nl": "A2b. Posttraumatische of postoperatieve aandoening (orthopedie, heelkundige verstrekkingen, neurochirurgie)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|f-aigue-affection-posttraumatique-postope|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "f-aigue-affection-posttraumatique-postope",
+			"label": { 
+				"fr": "A3. Affection posttraumatique ou postopératoire (prestations 227695-227706, 227710-228821, 227813-227824, ...)", 
+				"nl": "A3. Posttraumatische of postoperatieve aandoeningen (verstrekkingen 227695-227706, 227710-228821, 227813-227824, ...)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|reanimation-attestee|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "reanimation-attestee",
+			"label": { 
+				"fr": "B4. Situations pour lesquelles la réanimation a été attestée", 
+				"nl": "B4. Situaties waarbij reanimatie warden aangerekend" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|admis-soins-intensifs|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "admis-soins-intensifs",
+			"label": { 
+				"fr": "C5. Situations pour lesquelles les ayants-droit ont été admis dans un service de soins intensifs", 
+				"nl": "C5. Situaties waarbij de rechthebbenden opgenomen zijn geweest in een dienst intensieve zorg" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|insuffisance-respiratoire-moins-16-ans|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "insuffisance-respiratoire-moins-16-ans",
+			"label": { 
+				"fr": "D6. Insuffisance respiratoire chez l'enfant de moins de 16 ans", 
+				"nl": "D6. Ademhalingsinsufficiëntie bij kinderen onder 16 jaar" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|deficit-moteur-invalidite-mononeuropathie|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "deficit-moteur-invalidite-mononeuropathie",
+			"label": { 
+				"fr": "E7. Déficit moteur et invalidité (mononeuropathie)", 
+				"nl": "E7. Motorisch deficit en invalidering (mononeuropathie)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|deficit-moteur-invalidite-polyneuropathie|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "deficit-moteur-invalidite-polyneuropathie",
+			"label": { 
+				"fr": "E8. Déficit moteur et invalidité (polyneuropathie)", 
+				"nl": "E8. Motorisch deficit en invalidering (polyneuropathie)" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-aigue|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|reeducation-fonctionnelle-necessaire|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "reeducation-fonctionnelle-necessaire",
+			"label": { 
+				"fr": "A51. Situations qui rendent la rééducation fonctionnelle nécessaire", 
+				"nl": "A51. Situaties die een gangrevalidatie noodzakelijk maken" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|troubles-developpement-psychomoteur|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "troubles-developpement-psychomoteur",
+			"label": { 
+				"fr": "B59. Troubles du développement psychomoteur", 
+				"nl": "B59. Psychomotorische ontwikkelingsstoornissen" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|insuffisance-respiratoire|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "insuffisance-respiratoire",
+			"label": { 
+				"fr": "C54. Insuffisance respiratoire", 
+				"nl": "C54. Ademhalingsinsufficiëntie" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|polyneuropathie-motrice-mixte|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "polyneuropathie-motrice-mixte",
+			"label": { 
+				"fr": "D55. Polyneuropathie motrice ou mixte", 
+				"nl": "D55. Chronische motorische of gemengde polyneuropathie" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|fatigue-chronique|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "fatigue-chronique",
+			"label": { 
+				"fr": "E56. Syndrome de fatigue chronique", 
+				"nl": "E56. Chronisch vermoeidheidssyndroom" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|syndrome-fibromyalgique|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "syndrome-fibromyalgique",
+			"label": { 
+				"fr": "F57. Syndrome fibromyalgique", 
+				"nl": "F57. Fibromyalgiesyndroom" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|dystonie-cervicale-primaire|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "dystonie-cervicale-primaire",
+			"label": { 
+				"fr": "G58. Dystonie cervicale primaire", 
+				"nl": "G58. Primaire cervicale dystonie" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|lymphoedeme|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "lymphoedeme",
+			"label": { 
+				"fr": "H60. Lymphoedème", 
+				"nl": "H60. Lymfoedeem" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|f-chronique|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|paralysie-periphérique-etendue|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "paralysie-periphérique-etendue",
+			"label": { 
+				"fr": "01. Paralysie périphérique étendue", 
+				"nl": "01. Uitgebreide perifere verlammingen" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|affections-neurologiques-centrales|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "affections-neurologiques-centrales",
+			"label": { 
+				"fr": "02. Affections neurologiques centrales avec déficit moteur étendu", 
+				"nl": "02. Evolutieve aandoeningen van het centrale zenuwcentrum met een uitgebreid motorisch gebrek" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|sequelles-motrices-encephalique-medullaire|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "sequelles-motrices-encephalique-medullaire",
+			"label": { 
+				"fr": "03. Séquelles motrices étendues d'origine encéphalique ou médullaire", 
+				"nl": "03. Uitgebreide motorische sequellen van encefale of medullaire oorsprong" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|brulures-membres-cou-phase-evolutive|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "brulures-membres-cou-phase-evolutive",
+			"label": { 
+				"fr": "04. Suites de brûlures graves au niveau des membres et/ou du cou pendant la phase évolutive", 
+				"nl": "04. Sequellen van zware brandwonden t.h.v. de ledematen en/of de hals tijdens de evolutieve fase" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|agenesie-moins-18-ans|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "agenesie-moins-18-ans",
+			"label": { 
+				"fr": "05. Agénésie d'un membre pour un bénéficiaire en-dessous de 18 ans ; perte fonctionnelle globale d'un membre suite à une amputation ou par des séquelles post-traumatiqeus, pendant la période évolutive", 
+				"nl": "05. Agenesie van een lidmaat voor een rechthebbende jonger dan 18 jaar; global functonneel verlies van een lidmaat door amputatie of door posttraumatische sequellen tijdens de evolutieve periode" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|pied-bot-moins-2-ans|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "pied-bot-moins-2-ans",
+			"label": { 
+				"fr": "06. Pied bot varus équin chez l'enfant de moins de 2 ans", 
+				"nl": "06. Spits - en klompvoet bij een kind jonger dan 2 jaar" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|dysfonction-articulaire-grave|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "dysfonction-articulaire-grave",
+			"label": { 
+				"fr": "07. Dysfonction articulaire grave", 
+				"nl": "07. Gewrichtsdysfubctie" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|polyarthrites-chroniques-inflammatoires-immunitaire|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "polyarthrites-chroniques-inflammatoires-immunitaire",
+			"label": { 
+				"fr": "08. Polyarthrites chroniques inflammatoires d'origine immunitaire", 
+				"nl": "08. Chronische auto-immune inflammatoire polyarthritis" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|myopathies|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "myopathies",
+			"label": { 
+				"fr": "09. Myopathies", 
+				"nl": "09. Myopathieën" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|affections-pulmonaires|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "affections-pulmonaires",
+			"label": { 
+				"fr": "10. Affections pulmonaires", 
+				"nl": "10. Longaandoeningen" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|lymphoedeme-membre|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "lymphoedeme-membre",
+			"label": { 
+				"fr": "11. Lymphoedème d'un membre", 
+				"nl": "11. Lymfoedeem van een lidmaat" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}, 
+
+
+
+		{
+			"_id": "care.topaz.kinesitherapyPrescription|anomalie-structurelle-locomoteur|1",
+			"type": "care.topaz.kinesitherapyPrescription",
+			"code": "anomalie-structurelle-locomoteur",
+			"label": { 
+				"fr": "12. Anomalie structurelle du système locomoteur", 
+				"nl": "12. Structurele anomalie van het locomotorisch stelsel" 
+			},
+			"parent": "care.topaz.kinesitherapyPrescription|pathologie-e|1",
+			"links": [
+				"CD-HCPARTY|deptkinesitherapy|1"
+			],
+			"version": "1",
+			"regions": [ 
+				"be", 
+				"fr" 
+			],
+			"level": 0,
+			"flags": [ 
+				"deptkinesitherapy" 
+			],
+			"disabled": false,
+			"java_type": "org.taktik.icure.entities.base.Code",
+			"rev_history": {}
+		}
+	]
+}
