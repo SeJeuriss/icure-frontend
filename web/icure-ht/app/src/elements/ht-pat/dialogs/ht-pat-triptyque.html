@@ -6,6 +6,9 @@
 <link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-column.html">
 <link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-sorter.html">
 <link rel="import" href="../../../../bower_components/vaadin-icons/vaadin-icons.html">
+<link rel="import" href="../../../../bower_components/vaadin-themes/material/vaadin-date-picker.html">
+<link rel="import" href="../../../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../../../../bower_components/vaadin-checkbox/vaadin-checkbox.html">
 
 <link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../../bower_components/iron-icons/hardware-icons.html">
@@ -24,8 +27,12 @@
 <link rel="import" href="../../../../bower_components/paper-styles/shadow.html">
 
 <link rel="import" href="../../dynamic-form/dynamically-loaded-form.html">
-
 <link rel="import" href="../../dynamic-form/dynamic-doc.html">
+<link rel="import" href="../../dynamic-form/dynamic-number-field.html">
+<link rel="import" href="../../dynamic-form/dynamic-text-field.html">
+<link rel="import" href="../../dynamic-form/dynamic-date-field.html">
+<link rel="import" href="../../dynamic-form/dynamic-checkbox.html">
+
 <link rel="import" href="../../pdf-element/pdf-element.html">
 
 <link rel="import" href="../../../shared-styles.html">
@@ -51,23 +58,6 @@
 
 
         <style include="shared-styles dialog-style notification-style spinner-style scrollbar-style">
-
-            .singlePdfPrescription {
-                border:1px solid var(--app-primary-color);
-                margin-bottom:20px;
-                box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
-
-            }
-
-            .singlePdfPrescription .header {
-                background-color: var(--app-primary-color);
-                color:#ffffff;
-
-            }
-
-            #pdfPrescriptionsList .singlePdfPrescription paper-button {
-                min-width:0;
-            }
 
         </style>
 
@@ -302,23 +292,48 @@
 
                                 <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
 
-                                    <div class="summaryFormContainer">
-                                        <div class="formItem"><span class="">[[localize('linkedHealthElement','Related health element',language)]]:</span><vaadin-combo-box id="relatedHealthElement" class="" filtered-items="[[activeHealthElements]]" item-label-path="descr" item-value-path="id" value="[[item.id]]"></vaadin-combo-box></div>
+                                    <div class="summaryFormContainer w100pc">
+                                        <div class="fl50">
+                                            <div class="formItem"><vaadin-combo-box id="summaryRelatedHealthElementId" class="triptyqueVaadinComboBox" filtered-items="[[activeHealthElements]]" item-label-path="descrHr" item-value-path="id" value="{{summary.relatedHealthElementId}}" label="[[localize('linkedHealthElement','Related health element',language)]]"></vaadin-combo-box></div>
+                                            <div class="formItem"><vaadin-combo-box id="summaryRelatedParentPathologies" class="triptyqueVaadinComboBox" filtered-items="[[_relatedParentPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{summary.relatedParentPathology}}" label="Type de pathologie"></vaadin-combo-box></div>
+                                            <div class="formItem"><vaadin-combo-box id="summaryRelatedChildrenPathologies" class="triptyqueVaadinComboBox" filtered-items="[[_relatedChildrenPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{summary.relatedChildrenPathology}}" label="Affection"></vaadin-combo-box></div>
+                                            <div class="formItem mt8"><dynamic-checkbox checked="{{summary.lateralityLeft}}" class="ml5" label="Gauche"></dynamic-checkbox> <dynamic-checkbox checked="{{summary.lateralityRight}}" class="ml5" label="Droite"></dynamic-checkbox> <dynamic-checkbox checked="{{summary.lateralityCenter}}" class="ml5" label="Tronc central"></dynamic-checkbox></div>
+                                            <div class="fl50">
+                                                <div class="formItem mt20"><dynamic-date-field class="dynamicDateField" id="summaryStartDate" label="Date de début de la prescription" value="{{summary.startDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                                <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" id="summaryValueDate" label="Date de la première scéance" value="{{summary.valueDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                            </div>
+                                            <div class="fr50">
+                                                <div class="formItem mt20"><dynamic-date-field class="dynamicDateField" id="summaryEndDate" label="Date de fin de la prescription" value="{{summary.endDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                                <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" id="summaryCareRehearseDate" label="Date de rappel de la demande" value="{{summary.careRehearseDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                            </div>
+                                        </div>
+                                        <div class="fr50">
+                                            <div class="formItem mt2"><dynamic-text-field id="summaryPlanOfActionsName" class="m0" value="{{summary.planOfActionsName}}" label="Nom du plan d'action"></dynamic-text-field></div>
+                                            <div class="formItem mt6"><dynamic-text-field id="summaryNumberOfCares" class="m0" value="{{summary.numberOfCares}}" label="Nombre de séances" type="number"></dynamic-text-field></div>
+                                            <div class="formItem mt4"><vaadin-combo-box id="summaryCareReason" class="triptyqueVaadinComboBox" filtered-items="[[_careReasons]]" item-label-path="descr" item-value-path="id" value="{{summary.careReason}}" label="Justificatif de soins"></vaadin-combo-box></div>
+
+                                            <div class="formItem mt20">Bouton ou simple liste -> choisir prestataire lié % équipe de soin + link "doroute" pour aller directement dans tabview équipe de soins pour adapter</div>
+                                            <div class="formItem mt20">Bouton pour ouvrir documents mutuelle + liste de ceux déjà liés / style ehbox + icone delete (conserver dans {{summary.insuranceDocuments}} or something)</div>
+                                        </div>
                                     </div>
 
-                                    Lier ES: this.activeHealthElements<br />
-                                    Documents mutuelle<br />
-                                    Nom de suivi = texte libre vallant par défaut ES = name du planofactions<br />
-                                    "Ma date"<br />
-                                    Prestataire lié % équipe soin (faire do route si besoin edit)<br />
-                                    From -> to % prescription<br />
-                                    Select xls 1 (fz: injecter codes)<br />
-                                    Select xls 2 % 1  (fz: injecter codes + parent rel)<br />
-                                    Date prochain rappel = prefilled % fin prescription<br />
-                                    Latéralité (G/D/C)<br />
-                                    Select sur "type accident de..." (inventer valeurs)<br />
-                                    Valider tab summary lors du change tab (_gotoTabIfsAllowed)<br />
-                                    Faire système de toggle / collapse verticaux<br />
+                                    <!--
+                                    <div class="w100pc">
+                                        Documents mutuelle ==> faire dialog à part dans lequel on liste this._insuranceDocuments + se passer ids de ceux déjà liés + faire render style prescription liste avec dyn doc pour préview & action "lier" / supprimer + faire lien vers tab view (dossier pat) pour importer new<br />
+                                        Nom de suivi = texte libre vallant par défaut ES = name du planofactions<br />
+                                        "Ma date"<br />
+                                        Prestataire lié % équipe soin (faire do route si besoin edit)<br />
+                                        From -> to % prescription<br />
+                                        Select xls 1<br />
+                                        Select xls 2 % 1<br />
+                                        Date prochain rappel = prefilled % fin prescription<br />
+                                        Select sur "type accident de..." (inventer valeurs)<br />
+                                        Valider tab summary lors du change tab (_gotoTabIfsAllowed)<br />
+                                        Faire système de toggle / collapse verticaux<br />
+                                        FZ: repasser proprietes composant et décrire / ajouter définition de object {{summary}} + repasser sur les localize<br />
+                                        FZ: définir _careReasons + injecter db ? + remplir object<br />
+                                    </div>
+                                    -->
 
                                 </template>
 
@@ -466,6 +481,21 @@
                         value: ()=>[],
                         noReset: true
                     },
+                    _insuranceDocuments: {
+                        type: Array,
+                        value: ()=>[],
+                        noReset: true
+                    },
+                    _relatedParentPathologies: {
+                        type: Array,
+                        value: ()=>[],
+                        noReset: true
+                    },
+                    _relatedChildrenPathologies: {
+                        type: Array,
+                        value: ()=>[],
+                        noReset: true
+                    },
                     _dialogParameters: {
                         type: Object,
                         value: () => {
@@ -485,7 +515,8 @@
                                             {id: "BE-THESAURUS|40001315|3.1.0"},
                                             {id: "ICPC|*57.03|2"},
                                         ],
-                                        insuranceMessagesDocumentsTransportGuid: "INSURANCE:PAT:IMPORT"
+                                        insuranceMessagesDocumentsTransportGuid: "INSURANCE:PAT:IMPORT",
+                                        prescriptionTypeCode: "care.topaz.kinesitherapyPrescription"
                                     },
                                     persnurse: {
                                         pdfDocumentsLabelKey: "requestForNurseCare_header1",
@@ -496,7 +527,8 @@
                                             {id:"CD-HCPARTY|persnurse|1"},
                                             {id:"ICPC|*66.01|2"}
                                         ],
-                                        insuranceMessagesDocumentsTransportGuid: "INSURANCE:PAT:IMPORT"
+                                        insuranceMessagesDocumentsTransportGuid: "INSURANCE:PAT:IMPORT",
+                                        prescriptionTypeCode: "care.topaz.nursePrescription"
                                     }
                                 }
                             }
@@ -995,7 +1027,7 @@
                 this.set("_isLoading", true);
                 const promResolve = Promise.resolve();
 
-                return !_.trim(_.get(activeItem,"id","")) && !isNew ?
+                return !!(activeItem instanceof Event) ? this.set("_isLoading", false) : !_.trim(_.get(activeItem,"id","")) && !isNew ?
                     this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
                     this._changeDialogAction("detail")
 
@@ -1006,13 +1038,25 @@
 
                         // Fabien: load doc mutuelle % transportGuid SSI !activeItem sinon get depuis this.patient ==> encryptedAdministrativesDocuments
                         .then(() => this.api.message().findMessagesByTransportGuid(_.trim(this._getConfig("insuranceMessagesDocumentsTransportGuid","")), null, null, null, 1000).then(foundMessages => _.filter(foundMessages.rows, m => m && !parseInt(_.get(m,"deletionDate",0)))))
-                        .then(foundMessages => Promise.all(_.map(foundMessages, singleMessage => this.api.document().findByMessage(_.get(this,"user.healthcarePartyId",""), singleMessage))).then(foundDocuments=>([foundMessages,foundDocuments])))
-                        .then(([foundMessages,foundDocuments]) => {
-
-                            console.log("foundMessages", foundMessages);
-                            console.log("foundDocuments", foundDocuments);
-                            return false
-
+                        .then(foundMessages => Promise.all(_.map(foundMessages, singleMessage => this.api.document().findByMessage(_.get(this,"user.healthcarePartyId",""), singleMessage).then(foundDocument => _.merge({},singleMessage,{document:_.head(foundDocument)})))))
+                        .then(messagesAndDocuments => this.set("_insuranceDocuments", _.map(messagesAndDocuments, i => {return {
+                            messageId: _.trim(_.get(i, "id", "")),
+                            created: moment(parseInt(_.get(i, "created", 0))).format('DD/MM/YYYY - HH:mm'),
+                            documentId: _.trim(_.get(i, "document.id", "")),
+                            attachmentId: _.trim(_.get(i, "document.attachmentId", "")),
+                            documentMainUti: _.trim(_.get(i, "document.mainUti", "")),
+                            documentName: _.trim(_.get(i, "document.name", "")),
+                            documentType: _.trim(_.get(i, "metas.type", "")),
+                        }})))
+                        .then(() => this.set("activeHealthElements", _.map(this.activeHealthElements, i => {
+                            i.id = _.trim(_.get(i, "id", _.trim(_.get(i, "idService", ""))))
+                            i.descrHr = _.compact([_.get(_.filter(_.get(i, "codes", ""), j => _.get(j, "type", "") === "ICPC"), "[0].code", ""), _.get(i, "descr", "")]).join(" - ")
+                            return i
+                        })))
+                        .then(() => this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode",""), ''))
+                        .then(prescriptionCodes => {
+                            this.set("_relatedChildrenPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
+                            this.set("_relatedParentPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(this._relatedChildrenPathologies, j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
                         })
                         .finally(() => this.set("_isLoading", false))
 

@@ -551,6 +551,22 @@
             .fl50 { float:left; width: calc(50% - 10px); }
             .fr50 { float:right; width: calc(50% - 10px) }
 
+			@media screen and (max-width:960px) {
+				.fl50 { float: none; width: 100% }
+				.fr50 { float: none; width: 100% }
+			}
+
+			.w10pc { width:10%!important; }
+			.w20pc { width:20%!important; }
+			.w30pc { width:30%!important; }
+			.w40pc { width:40%!important; }
+			.w50pc { width:50%!important; }
+			.w60pc { width:60%!important; }
+			.w70pc { width:70%!important; }
+			.w80pc { width:80%!important; }
+			.w90pc { width:90%!important; }
+			.w100pc { width:100%!important; }
+
 			.minw0 { min-width:0px!important; }
 			.minw1 { min-width:1px!important; }
 			.minw2 { min-width:2px!important; }
@@ -815,8 +831,35 @@
 				border-right: 1px solid #ddd;
 			}
 
+			#triptyqueDialog .dynamicDateField {
+				margin:0;
+			}
+
 			.modal-button.disabled {
 				opacity: 0.3;
+			}
+
+			.triptyqueVaadinComboBox {
+				width:100%;
+				height:40px;
+				overflow:hidden;
+			}
+
+			.singlePdfPrescription {
+				border:1px solid var(--app-primary-color);
+				margin-bottom:20px;
+				box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+
+			}
+
+			.singlePdfPrescription .header {
+				background-color: var(--app-primary-color);
+				color:#ffffff;
+
+			}
+
+			#pdfPrescriptionsList .singlePdfPrescription paper-button {
+				min-width:0;
 			}
 
 		</style>
