@@ -511,6 +511,8 @@
             .fs19em { font-size:1.9em; }
             .fs2em { font-size:2em; }
 
+			.fsNormal { font-size:var(--font-size-normal); }
+
             .clear { clear: both; }
             .clearl { clear: left; }
             .clearr { clear: right; }
@@ -710,6 +712,7 @@
             .darkRed { color:#a00000!important; }
             .darkGreen { color:#41671e!important; }
             .darkBlue { color:var(--dark-primary-color)!important; }
+            .materialSecondaryTextColor { color:var(--material-secondary-text-color)!important; }
 
             .dialogTab {
                 border-top:1px solid var(--app-background-color-darker);
@@ -833,6 +836,15 @@
 
 			#triptyqueDialog .dynamicDateField {
 				margin:0;
+			}
+
+			#triptyqueDialog vaadin-checkbox {
+				font-size:var(--font-size-normal);
+				color: var(--app-text-color);
+			}
+
+			#triptyqueDialog vaadin-checkbox [part="checkbox"] {
+				box-shadow: inset 0 0 0 2px #000
 			}
 
 			.modal-button.disabled {

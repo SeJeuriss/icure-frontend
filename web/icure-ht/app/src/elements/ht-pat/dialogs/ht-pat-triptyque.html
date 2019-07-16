@@ -294,44 +294,40 @@
 
                                     <div class="summaryFormContainer w100pc">
                                         <div class="fl50">
-                                            <div class="formItem"><vaadin-combo-box id="summaryRelatedHealthElementId" class="triptyqueVaadinComboBox" filtered-items="[[activeHealthElements]]" item-label-path="descrHr" item-value-path="id" value="{{summary.relatedHealthElementId}}" label="[[localize('linkedHealthElement','Related health element',language)]]"></vaadin-combo-box></div>
-                                            <div class="formItem"><vaadin-combo-box id="summaryRelatedParentPathologies" class="triptyqueVaadinComboBox" filtered-items="[[_relatedParentPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{summary.relatedParentPathology}}" label="Type de pathologie"></vaadin-combo-box></div>
-                                            <div class="formItem"><vaadin-combo-box id="summaryRelatedChildrenPathologies" class="triptyqueVaadinComboBox" filtered-items="[[_relatedChildrenPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{summary.relatedChildrenPathology}}" label="Affection"></vaadin-combo-box></div>
-                                            <div class="formItem mt8"><dynamic-checkbox checked="{{summary.lateralityLeft}}" class="ml5" label="Gauche"></dynamic-checkbox> <dynamic-checkbox checked="{{summary.lateralityRight}}" class="ml5" label="Droite"></dynamic-checkbox> <dynamic-checkbox checked="{{summary.lateralityCenter}}" class="ml5" label="Tronc central"></dynamic-checkbox></div>
+                                            <div class="formItem"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[activeHealthElements]]" item-label-path="descrHr" item-value-path="id" value="{{_summaryForm.relatedHealthElementId}}" label="[[localize('linkedHealthElement','Related health element',language)]]"></vaadin-combo-box></div>
+                                            <div class="formItem"><vaadin-combo-box id="relatedParentPathology" class="triptyqueVaadinComboBox" filtered-items="[[_relatedParentPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedParentPathology}}" label="Type de pathologie"></vaadin-combo-box></div>
+                                            <div class="formItem"><vaadin-combo-box id="relatedChildrenPathology" class="triptyqueVaadinComboBox displaynone" filtered-items="[[_relatedChildrenPathologiesForSelectedParent]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedChildrenPathology}}" label="Affection"></vaadin-combo-box></div>
+                                            <div class="formItem mt8">
+                                                <vaadin-checkbox checked="{{_summaryForm.lateralityLeft}}"> Gauche</vaadin-checkbox>
+                                                <vaadin-checkbox checked="{{_summaryForm.lateralityRight}}"> Droite</vaadin-checkbox>
+                                                <vaadin-checkbox checked="{{_summaryForm.lateralityCenter}}"> Tronc central</vaadin-checkbox>
+                                            </div>
                                             <div class="fl50">
-                                                <div class="formItem mt20"><dynamic-date-field class="dynamicDateField" id="summaryStartDate" label="Date de début de la prescription" value="{{summary.startDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
-                                                <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" id="summaryValueDate" label="Date de la première scéance" value="{{summary.valueDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                                <div class="formItem mt15"><dynamic-date-field class="dynamicDateField" label="Date de début de la prescription" value="{{_summaryForm.startDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                                <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" label="Date de la première scéance" value="{{_summaryForm.valueDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
                                             </div>
                                             <div class="fr50">
-                                                <div class="formItem mt20"><dynamic-date-field class="dynamicDateField" id="summaryEndDate" label="Date de fin de la prescription" value="{{summary.endDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
-                                                <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" id="summaryCareRehearseDate" label="Date de rappel de la demande" value="{{summary.careRehearseDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                                <div class="formItem mt15"><dynamic-date-field class="dynamicDateField" label="Date de fin de la prescription" value="{{_summaryForm.endDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                                <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" label="Date de rappel de la demande" value="{{_summaryForm.careRehearseDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
                                             </div>
                                         </div>
                                         <div class="fr50">
-                                            <div class="formItem mt2"><dynamic-text-field id="summaryPlanOfActionsName" class="m0" value="{{summary.planOfActionsName}}" label="Nom du plan d'action"></dynamic-text-field></div>
-                                            <div class="formItem mt6"><dynamic-text-field id="summaryNumberOfCares" class="m0" value="{{summary.numberOfCares}}" label="Nombre de séances" type="number"></dynamic-text-field></div>
-                                            <div class="formItem mt4"><vaadin-combo-box id="summaryCareReason" class="triptyqueVaadinComboBox" filtered-items="[[_careReasons]]" item-label-path="descr" item-value-path="id" value="{{summary.careReason}}" label="Justificatif de soins"></vaadin-combo-box></div>
+                                            <div class="formItem mt2"><dynamic-text-field class="m0" value="{{_summaryForm.planOfActionsName}}" label="Nom du plan d'action"></dynamic-text-field></div>
+                                            <div class="formItem mt6"><dynamic-text-field class="m0" value="{{_summaryForm.numberOfCares}}" label="Nombre de séances" type="number"></dynamic-text-field></div>
+                                            <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_careReasons]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.careReason}}" label="Justificatif de soins"></vaadin-combo-box></div>
 
                                             <div class="formItem mt20">Bouton ou simple liste -> choisir prestataire lié % équipe de soin + link "doroute" pour aller directement dans tabview équipe de soins pour adapter</div>
-                                            <div class="formItem mt20">Bouton pour ouvrir documents mutuelle + liste de ceux déjà liés / style ehbox + icone delete (conserver dans {{summary.insuranceDocuments}} or something)</div>
+                                            <div class="formItem mt20">Bouton pour ouvrir documents mutuelle + liste de ceux déjà liés / style ehbox + icone delete (conserver dans {{_summaryForm.insuranceDocuments}} or something)</div>
                                         </div>
                                     </div>
 
                                     <!--
                                     <div class="w100pc">
                                         Documents mutuelle ==> faire dialog à part dans lequel on liste this._insuranceDocuments + se passer ids de ceux déjà liés + faire render style prescription liste avec dyn doc pour préview & action "lier" / supprimer + faire lien vers tab view (dossier pat) pour importer new<br />
-                                        Nom de suivi = texte libre vallant par défaut ES = name du planofactions<br />
-                                        "Ma date"<br />
                                         Prestataire lié % équipe soin (faire do route si besoin edit)<br />
-                                        From -> to % prescription<br />
-                                        Select xls 1<br />
-                                        Select xls 2 % 1<br />
-                                        Date prochain rappel = prefilled % fin prescription<br />
-                                        Select sur "type accident de..." (inventer valeurs)<br />
                                         Valider tab summary lors du change tab (_gotoTabIfsAllowed)<br />
                                         Faire système de toggle / collapse verticaux<br />
-                                        FZ: repasser proprietes composant et décrire / ajouter définition de object {{summary}} + repasser sur les localize<br />
-                                        FZ: définir _careReasons + injecter db ? + remplir object<br />
+                                        Repasser sur les localize en dur dans form summary<br />
                                     </div>
                                     -->
 
@@ -496,6 +492,34 @@
                         value: ()=>[],
                         noReset: true
                     },
+                    _relatedChildrenPathologiesForSelectedParent: {
+                        type: Array,
+                        value: ()=>[],
+                        noReset: true
+                    },
+                    _careReasons: {
+                        type: Array,
+                        value: ()=>[],
+                        noReset: true
+                    },
+                    _summaryForm: {
+                        type: Object,
+                        value: {
+                            relatedHealthElementId: "",
+                            relatedParentPathology: "",
+                            relatedChildrenPathology: "",
+                            lateralityLeft: false,
+                            lateralityRight: false,
+                            lateralityCenter: false,
+                            startDate: "",
+                            endDate: "",
+                            valueDate: "",
+                            careRehearseDate: "",
+                            planOfActionsName: "",
+                            numberOfCares: 1,
+                            careReason: ""
+                        }
+                    },
                     _dialogParameters: {
                         type: Object,
                         value: () => {
@@ -516,7 +540,10 @@
                                             {id: "ICPC|*57.03|2"},
                                         ],
                                         insuranceMessagesDocumentsTransportGuid: "INSURANCE:PAT:IMPORT",
-                                        prescriptionTypeCode: "care.topaz.kinesitherapyPrescription"
+                                        prescriptionTypeCode: "care.topaz.kinesitherapyPrescription",
+                                        careReasonsCode: "CD-INCAPACITYREASON",
+                                        careBeginDateServiceMapKey: "Date intervention",
+                                        numberOfCaresServiceMapKey: "Nombre de séances"
                                     },
                                     persnurse: {
                                         pdfDocumentsLabelKey: "requestForNurseCare_header1",
@@ -528,7 +555,10 @@
                                             {id:"ICPC|*66.01|2"}
                                         ],
                                         insuranceMessagesDocumentsTransportGuid: "INSURANCE:PAT:IMPORT",
-                                        prescriptionTypeCode: "care.topaz.nursePrescription"
+                                        prescriptionTypeCode: "care.topaz.nursePrescription",
+                                        careReasonsCode: "CD-INCAPACITYREASON",
+                                        careBeginDateServiceMapKey: "Date intervention",
+                                        numberOfCaresServiceMapKey: "Nombre de séances"
                                     }
                                 }
                             }
@@ -542,6 +572,7 @@
                     '_loadingStatusChanged(_isLoading)',
                     '_vaadinGridPlanOfActionActiveItemChanged(_vaadinGridPlanOfActionActiveItem)',
                     '_selectedDocumentChanged(_selectedPrescriptionObject)',
+                    '_summaryFormDataGotChanged(_summaryForm.*)',
                 ]
             }
 
@@ -1058,7 +1089,57 @@
                             this.set("_relatedChildrenPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
                             this.set("_relatedParentPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(this._relatedChildrenPathologies, j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
                         })
+                        .then(() => this.api.code().findCodes('be', this._getConfig("careReasonsCode",""), ''))
+                        .then(careReasonsData => this.set("_careReasons", _.orderBy(_.compact(_.map(_.filter(careReasonsData,i=>!_.get(i,"disabled",false)), i => { return {
+                            id: _.trim(_.get(i,"id","")),
+                            labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
+                        }})), ["labelHr"], ["asc"])))
                         .finally(() => this.set("_isLoading", false))
+
+            }
+
+            _summaryFormDataGotChanged(summaryForm) {
+
+                const careBeginningDate = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("careBeginDateServiceMapKey","Date intervention") + "][0].svc.content." + this.language + ".fuzzyDateValue", ""))
+                const numberOfCares = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("numberOfCaresServiceMapKey","Nombre de séances") + "][0].svc.content." + this.language + ".numberValue", ""))
+
+                // Show / hide children pathologies % parent pathologies
+                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedparentpathology') > -1 ) {
+
+                    const parentValue = _.trim(_.get(this,"_summaryForm.relatedParentPathology",""))
+                    const parentChildren = _.filter(this._relatedChildrenPathologies, i => _.trim(_.get(i,"parent","")) === parentValue )
+                    const childrenPathologiesForSelectedParent = !!_.trim(parentValue) && !!_.size(parentChildren) ? parentChildren : []
+                    const relatedChildrenPathologyVaadinComboBoxClassList = this.shadowRoot.querySelector('#relatedChildrenPathology').classList
+
+                    this.set("_summaryForm.relatedChildrenPathology", "")
+                    this.set("_relatedChildrenPathologiesForSelectedParent", !!_.size(childrenPathologiesForSelectedParent) ? childrenPathologiesForSelectedParent : [])
+                    relatedChildrenPathologyVaadinComboBoxClassList && !!_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.remove("displaynone")
+                    relatedChildrenPathologyVaadinComboBoxClassList && !_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.add("displaynone")
+
+                }
+
+                // Copy value of relatedhealthelementid (string) as plan of action's name
+                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedhealthelementid') > -1 && !!_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) && !_.trim(_.get(this,"_summaryForm.planOfActionsName",""))) {
+
+                    this.set("_summaryForm.planOfActionsName", _.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","") )
+
+                }
+
+                if(!_.trim(_.get(this,"_summaryForm.startDate",""))) this.set("_summaryForm.startDate", _.trim(_.get(this,"_selectedPrescriptionObject.date")).substr(0,8))
+                if(!_.trim(_.get(this,"_summaryForm.valueDate","")) && !!_.trim(careBeginningDate)) this.set("_summaryForm.valueDate", _.trim(careBeginningDate).substr(0,8))
+                if(parseInt(_.get(this,"_summaryForm.numberOfCares","")) === 1 && !!_.trim(numberOfCares)) this.set("_summaryForm.numberOfCares", _.trim(numberOfCares))
+
+                console.log(summaryForm, this._summaryForm);
+
+                return;
+
+                const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
+                setTimeout(() => {
+                    return (reqIdx !== this._saveFormReqIdx || !_.size(contactObject)) ? false : this.api.contact().modifyContactWithUser(this.user, contactObject)
+                        .then(modifiedContact => this.api.register(modifiedContact, 'contact'))
+                        .then(modifiedContact => { return (reqIdx !== this._saveFormReqIdx) ? false : this.set("_selectedPrescriptionObject", _.merge({},_.get(this,"_selectedPrescriptionObject",{}), { contact: modifiedContact, contacts: [modifiedContact], servicesMap: this._getServicesMap([modifiedContact]) })) })
+
+                }, 2000)
 
             }
 
@@ -1086,18 +1167,17 @@
             //         -   Double check tout ok infirmières
             //         -   Target / search / link procedures proprement
             //         -   Delete all linked objects lors de "délier" pdf ?
+            //         -   Ne pas reset toutes les datas lors open / close triptyque -> là où ça à du sens
             //         -   SSI already existing HE => tout load / comme si just _linkPdfPrescription
             //         -   Menu "..." verticaux + quels actions ?
-            //         -   Detect si déjà existing HE sur contact / dans le triptyque
             //         -   Nice / smart callbacks pour save lors change tab / modify form ?
             //         -   Code générique pour imprimer tous les forms pdfs à la fois kine & infi
             //         -   Search procedures & packages procédures smart => coordonner avec travail de Maxime
             //         -   Action reload toutes datas SSI prescription / HE / plan of action existe déjà
-            //         -   Revoir vaadin grid listing "mode list" + PTP + DP + columns + layout
+            //         -   Revoir vaadin grid listing "mode list" + PTP + DP + columns + layout + bouger "Agenda" dans nouvelles tab view interne (une fois prescription liée) -> du coup revoir mécanique d'approbation de changement de tab
             //         -   Revoir lien avec Mikrono / intégration
-            //         -   Re-double check tout sous le couvert d'une infi
             //         -   Quid gestion sub-forms (dans le cadre des infis) => actuellement pas géré
-            //         -   Eval number of cares (vaading grid)
+            //         -   Eval number of cares (vaading grid) = nombre de séances minus celles déjà faites
 
 
         }
