@@ -814,7 +814,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     <div class="table-line-menu table-line-menu-top">
                                         <div class="fieldName">[[localize('name','Name',language)]]</div>
                                     </div>
-                                    <template is="dom-repeat" items="[[_filterFiled(selectedFormData.listOfFields, fieldType)]]">
+                                    <template is="dom-repeat" items="[[_filterFiled(selectedFormData.listOfFields, fieldType, selectedFormData.*)]]">
                                         <collapse-button>
                                             <paper-item slot="sublist-collapse-item" id$="[[item]]" data-item$="[[item]]" aria-selected="[[selected]]" class$="menu-trigger menu-item [[isIronSelected(selected)]]" on-tap="_showFieldInfo">
                                                 <div id="subMenu" class="table-line-menu">
@@ -838,15 +838,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <template is="dom-if" if="[[_isSelectedField(selectedField)]]">
                                 <div class="page-container">
                                     <div class="container-line">
-                                        <paper-input class="container-line-field w-50" label="Nom du champ" value="{{selectedField.label}}"></paper-input>
-                                        <paper-input class="container-line-field w-50" label="Id" value="{{selectedField.name}}"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="Nom du champ" value="{{selectedField.label}}" readOnly="true"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="Id" value="{{selectedField.name}}" readOnly="true"></paper-input>
                                     </div>
                                     <div class="container-line">
-                                        <paper-input class="container-line-field w-100" label="Infobulle"></paper-input>
+                                        <paper-input class="container-line-field w-100" label="Infobulle" value="{{selectedField.code.appendices.description}}"></paper-input>
                                     </div>
                                     <div class="container-line">
-                                        <paper-input class="container-line-field w-50" label="Url externe"></paper-input>
-                                        <paper-input class="container-line-field w-50" label="Support vidéo"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="Url externe" value="{{selectedField.code.appendices.externalLink}}"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="Support vidéo" value="{{selectedField.code.appendices.video}}"></paper-input>
                                     </div>
                                     <div class="container-line">
                                         <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newNmclCode" label="[[localize('inputYourSearchQuery','Linked nomenclature code',language)]]" filter="{{nmclFilter}}" filtered-items="[[filteredNmclList]]" item-label-path="displayName" selected-item="{{selectedNmcl}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
@@ -856,9 +856,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <template is="dom-if" if="[[selectedField.code.links]]">
                                                 <template is="dom-repeat" items="[[selectedField.code.links]]" as="singleNmcl" id="nmclList">
                                                     <paper-item class="nmcl-tag" id="[[singleNmcl]]">
-                                                        <div class="nmcl-type" data-document-id="[[singleAnnex.documentId]]">[[singleAnnex.fileExtensionUppercase]]</div>
+                                                        <div class="nmcl-type"></div>
                                                         <div class="one-line-menu-nmcl list-title-nmcl">[[singleNmcl]]</div>
-                                                        <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleRecipient]]" on-tap="_removeNmcl" data-nmcl-index$='[[singleRecipient]]'></paper-icon-button>
+                                                        <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleNmcl]]" on-tap="_removeNmcl"></paper-icon-button>
                                                     </paper-item>
                                                 </template>
                                             </template>
@@ -878,7 +878,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
             <div class="buttons">
                 <paper-button class="modal-button" on-tap="_closeFormDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
-                <paper-button class="modal-button" on-tap=""><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
+                <paper-button class="modal-button" on-tap="_saveForm"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
             </div>
         </paper-dialog>
 
@@ -943,7 +943,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             static get observers() {
-                return ['_nmclFilterChanged(nmclFilter)', '_selectedNmclChanged(selectedNmcl)'];
+                return ['_nmclFilterChanged(nmclFilter)', '_selectedNmclChanged(selectedNmcl)', "_selectedFieldIndexChanged(selectedFieldIndex)"];
             }
 
             constructor() {
@@ -961,9 +961,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         .then(form => {
                             let fields = _.uniqBy(_.get(form, 'layout.sections[0].formColumns[0].formDataList', []), 'name')
 
-                            this.api.code().getCodes(fields.map(field => 'care.topaz.form|'+field.name+'|1').join(',')).then(codes => {
+                            this.api.code().getCodes(fields.map(field => 'care.topaz.form.field|'+field.name+'|1').join(',')).then(codes => {
                                 console.log(codes)
-                                this.set('selectedFormData', _.assign(form, {listOfFields: fields.map(f => codes.find(c => c.code === f.name) ? _.assign(f, {code: codes.find(c => c.code === f.name)}) : _.assign(f, {code: {links: [], appendices: [], label: f.label, code: f.name, type: 'care.topaz.form.field'}}))}))
+                                this.set('selectedFormData', _.assign(form, {listOfFields: fields.map(f => codes.find(c => c.code === f.name) ? _.assign(f, {code: codes.find(c => c.code === f.name)}) : _.assign(f, {code: {links: [], appendices: {externalLink: null, video: null, description: null}, label: f.label, code: f.name, type: 'care.topaz.form.field'}}))}))
                             })
                         })
                         .finally(() => {
@@ -989,12 +989,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _filterFiled(list, fieldType){
-                return list && fieldType ? list.filter(field => field.type === fieldType) : []
+                return list && fieldType ? _.orderBy(list.filter(field => field.type === fieldType), ['name'], ['asc']) : []
             }
 
             _showFieldInfo(e){
                 if(e && e.currentTarget && e.currentTarget.dataset && e.currentTarget.dataset.item){
-                    this.set('selectedField', JSON.parse(_.get(e, 'currentTarget.dataset.item')))
+                    const field = JSON.parse(_.get(e, 'currentTarget.dataset.item', null))
+                    this.set('selectedFieldIndex', _.indexOf(this.selectedFormData.listOfFields, this.selectedFormData.listOfFields.find(f => f.name === field.name)))
+                    this.set('selectedField', field)
+
                 }
             }
 
@@ -1030,6 +1033,57 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.shadowRoot.querySelector('#newNmclCode')._clear() || false
                 }
             }
+
+            _removeNmcl(e){
+                this.splice('selectedField.code.links', _.indexOf(this.selectedField.code.links, this.selectedField.code.links.find(l => l === e.target.id)), 1)
+            }
+
+            _selectedFieldIndexChanged(){
+                if(this.selectedField){
+                    this.splice('selectedFormData.listOfFields', _.indexOf(this.selectedFormData.listOfFields, this.selectedFormData.listOfFields.find(f => f.name === this.selectedField.name)), 1)
+                    this.push('selectedFormData.listOfFields', this.selectedField)
+                }
+            }
+
+            _saveForm(){
+                if(this.selectedField) {
+                    this.splice('selectedFormData.listOfFields', _.indexOf(this.selectedFormData.listOfFields, this.selectedFormData.listOfFields.find(f => f.name === this.selectedField.name)), 1)
+                    this.push('selectedFormData.listOfFields', this.selectedField)
+                }
+
+                let prom = Promise.resolve([])
+                this.selectedFormData.listOfFields.map(field => {
+
+                    //Create code in db
+                    prom = prom.then(listOfCode => _.get(field, 'code.id', null) === null && (_.get(field, 'code.links', []).length || _.get(field, 'code.appendices.externalLink', null) !== null || _.get(field, 'code.appendices.video', null) !== null || _.get(field, 'code.appendices.description', null) !== null) ?
+                        this.api.code().createCode({
+                            id: _.get(field, 'code.type', null)+'|'+_.get(field, 'code.code', null)+'|1',
+                            code: _.get(field, 'code.code', null),
+                            type: _.get(field, 'code.type', null),
+                            version: 1,
+                            level: 1,
+                            links: _.get(field, 'code.links', []),
+                            appendices: _.get(field, 'code.appendices', {}),
+                            regions: ["be", "fr"],
+                            label: {[this.language]: _.get(field, 'code.label', null)},
+                            author: this.user.id,
+                            disabled: false
+                    }).then(code => _.concat(listOfCode, code)) :
+                        _.get(field, 'code.id', null) !== null && (_.get(field, 'code.links', []).length || _.get(field, 'code.appendices.externalLink', null) !== null || _.get(field, 'code.appendices.video', null) !== null || _.get(field, 'code.appendices.description', null) !== null) ?
+                            this.api.code().modifyCode(field.code).then(code => _.concat(listOfCode, code)) :
+                            Promise.resolve([]))
+
+                })
+
+                prom.then(listOfCode => {
+                    console.log(listOfCode)
+                    this.set('selectedFormData', {})
+                    this.set('filteredNmclList', [])
+                    this.set('selectedField', {})
+                    this._closeFormDialog()
+                })
+            }
+
 
         }
 
