@@ -168,13 +168,13 @@
 
 
                         <div id="pdfPanel" class="">
-                            <div id="pdfPrescriptionsList">
+                            <div class="documentsList">
 
 
 
                                 <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
                                     <h4 class="textaligncenter uppercase"><iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon> [[localize('linkedPrescriptionToYourTriptyque','This prescription is linked to your triptyque',language)]]:</h4>
-                                    <div class="singlePdfPrescription" data-service-id$="[[_selectedPrescriptionObject.service.id]]" data-form-id$="[[_selectedPrescriptionObject.formId]]" data-document-id$="[[_selectedPrescriptionObject.document.id]]">
+                                    <div class="singleDocumentContainer" data-service-id$="[[_selectedPrescriptionObject.service.id]]" data-form-id$="[[_selectedPrescriptionObject.formId]]" data-document-id$="[[_selectedPrescriptionObject.document.id]]">
                                         <div class="header p10">
                                             <span class="date">[[_selectedPrescriptionObject.dateAndTimeHr]]</span>
                                             <paper-button class="p0 m0 fr" on-tap="_unlinkPdfPrescription" data-contact-id$="[[_selectedPrescriptionObject.contact.id]]" data-service-id$="[[_selectedPrescriptionObject.service.id]]" data-form-id$="[[_selectedPrescriptionObject.formId]]" data-document-id$="[[_selectedPrescriptionObject.document.id]]"><iron-icon icon="vaadin:unlink" id$="unlink-[[_selectedPrescriptionObject.service.id]]"></iron-icon></paper-button><paper-tooltip for$="unlink-[[_selectedPrescriptionObject.service.id]]">[[localize('unlinkPdf','Unlink PDF',language)]]</paper-tooltip>
@@ -205,7 +205,7 @@
                                     <h4 class="textaligncenter uppercase"><iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon> [[localize('choosePrescriptionForTriptyque','Please choose a prescription to link to your triptyque',language)]]:</h4>
                                     <template is="dom-repeat" items="[[_pdfPrescriptionsList]]" as="singlePdfPrescription">
 
-                                        <div class="singlePdfPrescription" data-service-id$="[[singlePdfPrescription.service.id]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]">
+                                        <div class="singleDocumentContainer" data-service-id$="[[singlePdfPrescription.service.id]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]">
                                             <div class="header p10">
                                                 <span class="date">[[singlePdfPrescription.dateAndTimeHr]]</span>
                                                 <paper-button class="p0 m0 fr" on-tap="_linkPdfPrescription" data-contact-id$="[[singlePdfPrescription.contact.id]]" data-service-id$="[[singlePdfPrescription.service.id]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]"><iron-icon icon="icons:link" id$="link-[[singlePdfPrescription.service.id]]"></iron-icon></paper-button><paper-tooltip for$="link-[[singlePdfPrescription.service.id]]">[[localize('linkPdf','Link PDF',language)]]</paper-tooltip>
@@ -314,19 +314,64 @@
                                         <div class="fr50">
                                             <div class="formItem mt2"><dynamic-text-field class="m0" value="{{_summaryForm.planOfActionsName}}" label="Nom du plan d'action"></dynamic-text-field></div>
                                             <div class="formItem mt6"><dynamic-text-field class="m0" value="{{_summaryForm.numberOfCares}}" label="Nombre de séances" type="number"></dynamic-text-field></div>
+                                            <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_careTeamValues]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.careTeam}}" label="Prestataire lié"></vaadin-combo-box></div>
                                             <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_careReasons]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.careReason}}" label="Justificatif de soins"></vaadin-combo-box></div>
+                                        </div>
+                                        <div class="clear"></div>
+                                        <div class="formItem mt20">
+                                            <div class="fw700 mb10">Documents de la mutuelle:</div>
 
-                                            <div class="formItem mt20">Bouton ou simple liste -> choisir prestataire lié % équipe de soin + link "doroute" pour aller directement dans tabview équipe de soins pour adapter</div>
-                                            <div class="formItem mt20">Bouton pour ouvrir documents mutuelle + liste de ceux déjà liés / style ehbox + icone delete (conserver dans {{_summaryForm.insuranceDocuments}} or something)</div>
+                                            <div class="documentsList p10 borderDashed borderW1px borderColorAppPrimaryLight mb20">
+                                                <div class="mb10">Documents liés au triptyque:</div>
+                                                <template is="dom-repeat" items="[[_insuranceLinkedDocuments]]" as="item" id="triptyqueLinkedInsuranceDocumentsDomRepeat">
+                                                    <paper-item class="linkedObjectTag" data-document-id="[[item.documentId]]">
+                                                        <div class="tagtype" data-document-id="[[item.documentId]]">DOCUMENT</div>
+                                                        <div class="one-line-menu list-title" data-document-id="[[item.documentId]]">[[item.documentName]]</div>
+                                                        <paper-icon-button class="deleteTag" icon="icons:delete" data-document-id="[[item.documentId]]" on-tap="_removeLinkedInsuranceDocument"></paper-icon-button>
+                                                    </paper-item>
+                                                </template>
+                                                <div class="clear"></div>
+                                            </div>
+
+                                            <div class="documentsList p10 borderDashed borderW1px borderColorAppPrimaryLight">
+                                                <div class="mb10">Documents disponibles:</div>
+                                                <template is="dom-repeat" items="[[_insuranceDocuments]]" as="item" id="triptyqueAvailableInsuranceDocumentsDomRepeat">
+                                                    <div class="singleDocumentContainer" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]">
+                                                        <div class="header p10">
+                                                            <span class="date">[[item.created]]</span>
+                                                            <paper-button class="p0 m0 fr" on-tap="_linkInsuranceDocument" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]"><iron-icon icon="icons:link" id$="link-insurance-[[item.documentId]]"></iron-icon></paper-button><paper-tooltip for$="link-insurance-[[item.documentId]]">[[localize('linkPdf','Link PDF',language)]]</paper-tooltip>
+                                                            <paper-button class="p0 m0 fr mr10" on-tap="_toggleCollapseInsuranceDocumentPreview" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]"><iron-icon icon="icons:visibility" id$="view-insurance-[[item.documentId]]"></iron-icon></paper-button><paper-tooltip for$="view-insurance-[[item.documentId]]">[[localize('ehb.view','View',language)]]</paper-tooltip>
+                                                        </div>
+                                                        <div class="body p5 fspoint9em"><iron-icon icon="image:picture-as-pdf" class="mr5 darkRed"></iron-icon> [[item.documentName]]</div>
+
+                                                        <template is="dom-if" if="[[_isEqual(_currentPreviewInsuranceDocumentId, item.documentId)]]">
+                                                            <dynamic-doc
+                                                                    id="insurance-document-preview-[[item.documentId]]"
+                                                                    api="[[api]]"
+                                                                    i18n="[[i18n]]"
+                                                                    user="[[user]]"
+                                                                    document-id="[[item.documentId]]"
+                                                                    title="[[item.documentName]]"
+                                                                    language="[[language]]"
+                                                                    preview="true"
+                                                                    downloadable="true"
+                                                                    fullwidth="true"
+                                                                    force-no-assignation="true"
+                                                                    force-no-document-header="true"
+                                                                    additional-css-class="tripTyque"
+                                                            ></dynamic-doc>
+                                                        </template>
+                                                    </div>
+                                                </template>
+                                            </div>
+
                                         </div>
                                     </div>
 
                                     <!--
                                     <div class="w100pc">
                                         Documents mutuelle ==> faire dialog à part dans lequel on liste this._insuranceDocuments + se passer ids de ceux déjà liés + faire render style prescription liste avec dyn doc pour préview & action "lier" / supprimer + faire lien vers tab view (dossier pat) pour importer new<br />
-                                        Prestataire lié % équipe soin (faire do route si besoin edit)<br />
                                         Valider tab summary lors du change tab (_gotoTabIfsAllowed)<br />
-                                        Faire système de toggle / collapse verticaux<br />
                                         Repasser sur les localize en dur dans form summary<br />
                                     </div>
                                     -->
@@ -460,6 +505,10 @@
                         type: String,
                         value: ""
                     },
+                    _currentPreviewInsuranceDocumentId: {
+                        type: String,
+                        value: ""
+                    },
                     _selectedPrescriptionObject: {
                         type: Object,
                         value: () => {}
@@ -517,8 +566,19 @@
                             careRehearseDate: "",
                             planOfActionsName: "",
                             numberOfCares: 1,
-                            careReason: ""
+                            careReason: "",
+                            careTeam: "",
+                            insuranceDocuments: []
                         }
+                    },
+                    _careTeamValues: {
+                        type: Array,
+                        value: ()=>[],
+                        noReset: true
+                    },
+                    _insuranceLinkedDocuments: {
+                        type: Array,
+                        value: () => []
                     },
                     _dialogParameters: {
                         type: Object,
@@ -708,10 +768,7 @@
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
 
                 return !_.trim(documentId) ? promResolve : promResolve
-                    .then(()=> _.trim(_.get(this,"_currentPdfPreviewDocumentId","")) === documentId ?
-                        this.set("_currentPdfPreviewDocumentId", "") :
-                        this.set("_currentPdfPreviewDocumentId", documentId)
-                    )
+                    .then(()=> _.trim(_.get(this,"_currentPdfPreviewDocumentId","")) === documentId ? this.set("_currentPdfPreviewDocumentId", "") : this.set("_currentPdfPreviewDocumentId", documentId) )
                     .then(()=>{
                         const targetPdfPreviewPdfElement = this.shadowRoot.querySelector("#pdf-preview-" + documentId) && this.shadowRoot.querySelector("#pdf-preview-" + documentId).shadowRoot.querySelector("pdf-element")
                         return typeof _.get(targetPdfPreviewPdfElement,"onWidthChange","") === "function" ? targetPdfPreviewPdfElement.onWidthChange() : false
@@ -889,6 +946,7 @@
                         this.set("patient", patientObject)
                         this.set("_currentPdfPreviewDocumentId", "")
                         this.set("_selectedPrescriptionObject", selectedPrescriptionObject)
+                        this.set("_summaryForm.careTeam", _.get(this,"_selectedPrescriptionObject.document.author"))
 
                     })
                     .finally(() => {
@@ -936,6 +994,64 @@
                 return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
 
             }
+
+            _toggleCollapseInsuranceDocumentPreview(e) {
+
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
+
+                return !_.trim(documentId) ? promResolve : promResolve
+                    .then(()=> _.trim(_.get(this,"_currentPreviewInsuranceDocumentId","")) === documentId ? this.set("_currentPreviewInsuranceDocumentId", "") : this.set("_currentPreviewInsuranceDocumentId", documentId) )
+                    .then(()=>{
+                        const targetPdfPreviewPdfElement = this.shadowRoot.querySelector("#insurance-document-preview-" + documentId) && this.shadowRoot.querySelector("#insurance-document-preview-" + documentId).shadowRoot.querySelector("pdf-element")
+                        return typeof _.get(targetPdfPreviewPdfElement,"onWidthChange","") === "function" ? targetPdfPreviewPdfElement.onWidthChange() : false
+                    })
+
+            }
+
+            _linkInsuranceDocument(e) {
+
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
+                const targetDocument = _.find(_.get(this,"_insuranceDocuments", []), {documentId:documentId})
+
+                _.remove(this._insuranceDocuments, {documentId:documentId})
+
+                promResolve.then(() => {
+                    this.push("_insuranceLinkedDocuments", {
+                        documentId: documentId,
+                        documentName: _.trim(_.get(targetDocument, "documentName", "document.pdf")),
+                    });
+                    setTimeout(() => {
+                        this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
+                        this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
+                        this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                    }, 100)
+                })
+
+            }
+
+            _removeLinkedInsuranceDocument(e) {
+
+                const promResolve = Promise.resolve();
+                const documentIdToDeleted = _.trim(_.get(e,"target.dataDocumentId",""))
+                const documentToBeDeleted = _.remove(this._insuranceDocuments, {documentId:documentIdToDeleted})
+
+                return !documentIdToDeleted || !_.size(documentToBeDeleted) ?
+                    false :
+                    promResolve.then(() => {
+                        this.set("_insuranceLinkedDocuments", this._insuranceDocuments)
+                        this.push("_insuranceDocuments",documentToBeDeleted)
+                        setTimeout(() => {
+                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
+                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                        }, 100)
+                    })
+
+            }
+
 
 
 
@@ -1052,11 +1168,7 @@
 
             _vaadinGridPlanOfActionActiveItemChanged(activeItem, isNew=false) {
 
-                console.log("Patient", this.patient)
-                console.log("GLOBAL active item", this._vaadinGridPlanOfActionActiveItem, " ==> Load toutes les datas liées")
-
                 this.set("_isLoading", true);
-                const promResolve = Promise.resolve();
 
                 return !!(activeItem instanceof Event) ? this.set("_isLoading", false) : !_.trim(_.get(activeItem,"id","")) && !isNew ?
                     this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
@@ -1094,6 +1206,27 @@
                             id: _.trim(_.get(i,"id","")),
                             labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
                         }})), ["labelHr"], ["asc"])))
+                        .then(()=>{
+                            const internalHcp = _.compact(_.keys(_.get(this,"patient.delegations",[])))
+                            const externalHcp = _.compact(_.map(_.get(this,"patient.patientHealthCareParties",[]),i=>_.get(i,"healthcarePartyId","")))
+                            return this.api.hcparty().getHealthcareParties( _.compact(_.uniq(_.concat(internalHcp, externalHcp))).join(",") )
+                                .then(resolvedHcps => _.map(resolvedHcps, hcp => { return {
+                                    id: _.trim(_.get(hcp, "id", "")),
+                                    name: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i))).join(" "),
+                                    nihiiHr: this.api.formatInamiNumber(_.trim(_.get(hcp, "nihii", ""))),
+                                    specialityCodes: _.compact(_.map(_.get(hcp, "specialityCodes", []), i => _.trim(_.get(i,"id","")))),
+                                    isInternal: internalHcp.indexOf(_.trim(_.get(hcp, "id", ""))) > -1
+                                }}))
+                        })
+                        .then(hcps => {
+                            const hcpSpecialityCodes = _.compact(_.uniq(_.flatten(_.map(hcps, i=>i.specialityCodes))))
+                            return !!_.size(hcpSpecialityCodes) ? this.api.code().getCodes( hcpSpecialityCodes.join(",") ).then(specialityCodes=>([hcps,specialityCodes])) : ([hcps,[]])
+                        })
+                        .then(([hcps,specialityCodes]) => _.map(hcps, hcp=>_.merge({},hcp,{specialityCodesHr:_.compact(_.map(hcp.specialityCodes, sc=>_.get(_.find(specialityCodes,{id:sc}),"label."+this.language, _.head(_.flatMap(_.get(_.find(specialityCodes,{id:sc}),"label",{}))) ))).join(", ")})))
+                        .then(hcps => this.set("_careTeamValues", _.map(_.sortBy(hcps, ["name"],["asc"]), hcp=>{ return {
+                            id: _.trim(_.get(hcp,"id","")),
+                            labelHr: _.compact([ "[" + this.localize((!!_.get(hcp,"isInternal","")?"internal":"external"),"Internal", this.language) + "]", _.trim(_.get(hcp,"name","")), _.trim(_.get(hcp,"nihiiHr","")), (_.trim(_.get(hcp,"specialityCodesHr","")) ? "(" + _.trim(_.get(hcp,"specialityCodesHr","")) + ")" : "") ]).join(" ")
+                        }})))
                         .finally(() => this.set("_isLoading", false))
 
             }
@@ -1174,6 +1307,8 @@
             //         -   Code générique pour imprimer tous les forms pdfs à la fois kine & infi
             //         -   Search procedures & packages procédures smart => coordonner avec travail de Maxime
             //         -   Action reload toutes datas SSI prescription / HE / plan of action existe déjà
+            //                  -   Repasser derrière toutes les datas à set (all tabviews & trigger)
+            //                  -   Exemple: this.set("_summaryForm.careTeam", _.get(this,"_selectedPrescriptionObject.document.author"))
             //         -   Revoir vaadin grid listing "mode list" + PTP + DP + columns + layout + bouger "Agenda" dans nouvelles tab view interne (une fois prescription liée) -> du coup revoir mécanique d'approbation de changement de tab
             //         -   Revoir lien avec Mikrono / intégration
             //         -   Quid gestion sub-forms (dans le cadre des infis) => actuellement pas géré

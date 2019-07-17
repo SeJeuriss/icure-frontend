@@ -1743,7 +1743,9 @@
     "choosePrescriptionForTriptyque": "Please choose a prescription to link to your triptyque",
     "linkedPrescriptionToYourTriptyque": "This prescription is linked to your triptyque",
     "pleaseLinkPrescriptionToTriptyqueFirst": "Please link a prescription to your triptyque first",
-    "linkedHealthElement": "Related health element"
+    "linkedHealthElement": "Related health element",
+    "internal": "Internal",
+    "external": "External"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3573,7 +3575,9 @@
     "choosePrescriptionForTriptyque": "Veuillez choisir une prescription à lier à votre triptyque",
     "linkedPrescriptionToYourTriptyque": "Cette prescription est liée à votre triptyque",
     "pleaseLinkPrescriptionToTriptyqueFirst": "Veuillez commencer par lier une prescription à votre triptyque",
-    "linkedHealthElement": "Elément de soin lié"
+    "linkedHealthElement": "Elément de soin lié",
+    "internal": "Interne",
+    "external": "Externe"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5364,6 +5368,8 @@
     "someFieldsAreEmpty": "Sommige verplichte velden zijn leeg.",
     "pleaseCompleteAllFields": "Gelieve alle velden in te vullen.",
     "patientAlreadyExists": "Deze patiënt bestaat al in uw databank.",
-    "referToManualAssignment": "Gelieve naar de manuele toewijzing te gaan."
+    "referToManualAssignment": "Gelieve naar de manuele toewijzing te gaan.",
+    "internal": "Internal",
+    "external": "External"
   }
 }

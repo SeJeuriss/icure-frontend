@@ -659,6 +659,20 @@
             .mh95 { max-height:95px!important; }
             .mh100 { max-height:100px!important; }
 
+			.borderSolid { border-style: solid; }
+			.borderDashed { border-style: dashed; }
+			.borderDotted { border-style: dotted; }
+
+			.borderW1px { border-width: 1px; }
+			.borderW2px { border-width: 2px; }
+			.borderW3px { border-width: 3px; }
+			.borderW4px { border-width: 4px; }
+			.borderW5px { border-width: 5px; }
+
+			.borderColorAppPrimary { border-color: var(--app-primary-color) }
+			.borderColorAppPrimaryDark { border-color: var(--app-primary-color-dark) }
+			.borderColorAppPrimaryLight { border-color: var(--app-primary-color-light) }
+
             #triptyqueDialog {
                 width:100%;
                 height:calc(100% - 83px);
@@ -857,21 +871,53 @@
 				overflow:hidden;
 			}
 
-			.singlePdfPrescription {
+			.singleDocumentContainer {
 				border:1px solid var(--app-primary-color);
 				margin-bottom:20px;
 				box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
-
 			}
 
-			.singlePdfPrescription .header {
+			.singleDocumentContainer .header {
 				background-color: var(--app-primary-color);
 				color:#ffffff;
 
 			}
 
-			#pdfPrescriptionsList .singlePdfPrescription paper-button {
+			.documentsList .singleDocumentContainer paper-button {
 				min-width:0;
+			}
+
+			.linkedObjectTag {
+				background: rgba(0,0,0,.1);
+				color: var(--exm-token-input-badge-text-color,--text-primary-color);
+				height: 24px;
+				min-height: 1px;
+				font-size: 12px;
+				min-width: initial;
+				padding: 0;
+				margin: 5px 10px 0 0;
+				border-radius: 5px;
+				overflow: hidden;
+				float:left;
+			}
+
+			.tagtype{
+				background: var(--app-secondary-color);
+				color: var(--app-text-color);
+				display: flex;
+				height: 100%;
+				flex-flow: row wrap;
+				padding: 0 4px;
+				box-sizing: border-box;
+				align-items: center;
+				margin-right: 8px;
+			}
+
+			.deleteTag{
+				height: 22px;
+				width: 22px;
+				margin: 0 4px 0 8px;
+				padding: 2px;
 			}
 
 		</style>
