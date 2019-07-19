@@ -854,66 +854,23 @@
                             codes: _.map(defaultCodes, dc =>{return{type: _.trim(_.get(dc,"type")), version: _.trim(_.get(dc,"version")), code: _.trim(_.get(dc,"code")), label: _.get(dc,"label",{}) }}),
                             subContacts: [],
                             services: []
-
-                        // }).then(contactInstance => ([defaultCodes,patientObject,contactInstance]))
                         }).then(contactInstance => ([patientObject,contactInstance]))
                     )
-
-                    // .then(([defaultCodes,patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([defaultCodes,patientObject,createdContact])))
                     .then(([patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([patientObject,createdContact])))
-
-                    // .then(([defaultCodes,patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
                     .then(([patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
                         .then(currentHcp => Promise.all([
                             this.api.form().getFormTemplatesByGuid( formTemplateGuid, "deptgeneralpractice" ),
                             this.api.form().getFormTemplatesByGuid( formTemplateGuid, _.trim(_.get(currentHcp,"specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
-
-                        // ]).then(promResults => ([defaultCodes,patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
                         ]).then(promResults => ([patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
-
                     )
-
-                    // FABIEN: pas créer ES, se baser sur existant
-                    // .then(([defaultCodes,patientObject,createdContact,formTemplate]) => this.api.helement().newInstance(this.user, patientObject, {
-                    //         tags: _.concat( _.get(createdContact,"tags",[]), [{ type: "CD-ITEM", version: "1", code: "healthcareelement" }]),
-                    //         idOpeningContact:_.trim(_.get(createdContact,"id","")),     // FZ: rajouter si pas encore existant mais ne pas overwrite (normalement doit tjs être set)
-                    //         relevant: true,
-                    //         codes: _.get(createdContact,"codes",[]),
-                    //         descr: _.get(_.find(defaultCodes, {type:"BE-THESAURUS-PROCEDURES"}),"label."+this.language,""),
-                    //         status: 0,
-                    //         idService: documentServiceId,       // FZ: rajouter si pas encore existant mais ne pas overwrite
-                    //         plansOfAction: [{
-                    //             id: this.api.crypto().randomUuid(),
-                    //             openingDate: parseInt(moment().format('YYYYMMDDHHmmss')),
-                    //             name: _.get(_.find(defaultCodes, {type:"BE-THESAURUS-PROCEDURES"}),"label."+this.language,""),
-                    //             idOpeningContact:_.trim(_.get(createdContact,"id","")),
-                    //             created: +new Date,
-                    //             modified: +new Date,
-                    //             codes: _.get(createdContact,"codes",[]),
-                    //             tags: _.get(createdContact,"tags",[]),
-                    //         }]
-                    //     }).then( helementInstance => ([patientObject,createdContact,formTemplate,helementInstance]))
-                    // )
-                    // .then(([patientObject,createdContact,formTemplate,helementInstance]) => this.api.helement().createHealthElement(helementInstance).then(createdHelement => ([patientObject,createdContact,formTemplate,createdHelement])))
-
-                    // FZ: healthElementId & planOfActionId pas encore existant lors création form car choisis après. Du coup repasser sur ce form pour mettre IDS une fois choisis.
-                    // .then(([patientObject,createdContact,formTemplate,createdHelement]) => this.api.form().newInstance(this.user, patientObject, {
-
                     .then(([patientObject,createdContact,formTemplate]) => this.api.form().newInstance(this.user, patientObject, {
                             contactId: _.trim(_.get(createdContact,"id","")),
                             formTemplateId: _.trim(_.get(formTemplate,"id","")),
                             descr: _.trim(_.get(formTemplate,"name","")),
                             tags: _.get(createdContact,"tags",[]),
-                            // healthElementId: _.trim(_.get(createdHelement,"id","")),
-                            // planOfActionId: _.trim(_.get(createdHelement,"plansOfAction[0].id",""))
-                        // }).then(formInstance => ([patientObject,createdContact,createdHelement, formInstance]))
                         }).then(formInstance => ([patientObject,createdContact,formInstance]))
                     )
-
-                    // .then(([patientObject,createdContact,createdHelement,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([patientObject,createdContact,createdHelement,createdForm])))
                     .then(([patientObject,createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([patientObject,createdContact,createdForm])))
-
-                    // .then(([patientObject,createdContact,createdHelement,createdForm]) => {
                     .then(([patientObject,createdContact,createdForm]) => {
 
                         const subContactServiceIds = _.compact(_.uniq(_.get(_.find(_.get(documentContactObject,"subContacts",[]), {formId: documentFormId}),"services",[]).map(i=>_.trim(_.get(i,"serviceId","")))))
@@ -929,19 +886,15 @@
                             services: _.map(newServicesData, sv => {return{serviceId: _.trim(_.get(sv,"id",""))/*, service:sv*/}})
                         }]
 
-                        // return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([patientObject,modifiedContact,createdHelement,createdForm]))
                         return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([patientObject,modifiedContact,createdForm]))
 
                     })
-
-                    // .then(([patientObject,modifiedContact,createdHelement,createdForm]) => {
                     .then(([patientObject,modifiedContact,createdForm]) => {
 
                         selectedPrescriptionObject.formId = _.trim(_.get(createdForm,"id",""))
                         selectedPrescriptionObject.contact = modifiedContact
                         selectedPrescriptionObject.contacts = [modifiedContact]
                         selectedPrescriptionObject.servicesMap = this._getServicesMap([modifiedContact])
-                        // selectedPrescriptionObject.createdHelement = createdHelement
 
                         this.set("patient", patientObject)
                         this.set("_currentPdfPreviewDocumentId", "")
@@ -1189,7 +1142,7 @@
                             documentName: _.trim(_.get(i, "document.name", "")),
                             documentType: _.trim(_.get(i, "metas.type", "")),
                         }})))
-                        .then(() => this.set("activeHealthElements", _.map(this.activeHealthElements, i => {
+                        .then(() => this.set("activeHealthElements", _.map(_.filter(this.activeHealthElements, ah => !!_.trim(_.get(ah,"id",""))), i => {
                             i.id = _.trim(_.get(i, "id", _.trim(_.get(i, "idService", ""))))
                             i.descrHr = _.compact([_.get(_.filter(_.get(i, "codes", ""), j => _.get(j, "type", "") === "ICPC"), "[0].code", ""), _.get(i, "descr", "")]).join(" - ")
                             return i
@@ -1231,6 +1184,7 @@
 
             _summaryFormDataGotChanged(summaryForm) {
 
+                const promResolve = Promise.resolve();
                 const careBeginningDate = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("careBeginDateServiceMapKey","Date intervention") + "][0].svc.content." + this.language + ".fuzzyDateValue", ""))
                 const numberOfCares = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("numberOfCaresServiceMapKey","Nombre de séances") + "][0].svc.content." + this.language + ".numberValue", ""))
 
@@ -1260,15 +1214,59 @@
                 if(!_.trim(_.get(this,"_summaryForm.valueDate","")) && !!_.trim(careBeginningDate)) this.set("_summaryForm.valueDate", _.trim(careBeginningDate).substr(0,8))
                 if(parseInt(_.get(this,"_summaryForm.numberOfCares","")) === 1 && !!_.trim(numberOfCares)) this.set("_summaryForm.numberOfCares", _.trim(numberOfCares))
 
-                console.log(summaryForm, this._summaryForm);
-
-                return;
-
                 const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
                 setTimeout(() => {
-                    return (reqIdx !== this._saveFormReqIdx || !_.size(contactObject)) ? false : this.api.contact().modifyContactWithUser(this.user, contactObject)
-                        .then(modifiedContact => this.api.register(modifiedContact, 'contact'))
-                        .then(modifiedContact => { return (reqIdx !== this._saveFormReqIdx) ? false : this.set("_selectedPrescriptionObject", _.merge({},_.get(this,"_selectedPrescriptionObject",{}), { contact: modifiedContact, contacts: [modifiedContact], servicesMap: this._getServicesMap([modifiedContact]) })) })
+                    return (reqIdx !== this._saveFormReqIdx || _.trim(_.get(summaryForm,"path","")) === "_summaryForm" || this._triptyqueDetailActiveTab !== "summary" || !_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))) ? false : promResolve
+                        .then(() => Promise.all([
+                            this.api.code().findPaginatedCodes('be', "CD-BVT-LATERALITY"),
+                            this.api.code().findPaginatedCodes('be', "care.topaz.customTransaction"),
+                            this.api.code().findPaginatedCodes('be', this._getConfig("careReasonsCode","CD-INCAPACITYREASON")),
+                            this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode","care.topaz.kinesitherapyPrescription"))
+                        ]))
+                        .then(codes => { return {lateralityCodes: _.get(codes,"[0].rows",[]), triptyqueCodes: _.filter(_.get(codes,"[1].rows",[]),{code: "triptyque"}), incapacityCodes: _.get(codes,"[2].rows",[]), prescriptionCodes: _.get(codes,"[3].rows",[]) }} )
+                        .then(codes => !_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) ? ([codes,{}]) : this.api.helement().getHealthElement(_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))).then(he=>([codes,he])))
+                        .then(([codes,he]) => {
+                            const lateralityCheckedCodes = _.compact(_.map(_.compact([ (!!_.get(this,"_summaryForm.lateralityLeft",false) ? "left" : false), (!!_.get(this,"_summaryForm.lateralityRight",false) ? "right" : false), (!!_.get(this,"_summaryForm.lateralityCenter",false) ? "odd" : false) ])))
+                            const codeKeysToImport = ["id", "code", "version", "type"]
+                            return _.merge({},he,{
+                                plansOfAction: [{
+                                    id: this.api.crypto().randomUuid(),
+                                    openingDate: _.trim(_.get(this,"_summaryForm.startDate","")) ? parseInt(_.trim(_.get(this,"_summaryForm.startDate",""))) : parseInt(moment().format('YYYYMMDDHHmmss')),
+                                    closingDate: parseInt(_.trim(_.get(this,"_summaryForm.endDate",""))),
+                                    valueDate: parseInt(_.trim(_.get(this,"_summaryForm.valueDate",""))),
+                                    endOfLife: parseInt(_.trim(_.get(this,"_summaryForm.careRehearseDate",""))),
+                                    name: _.trim(_.get(this,"_summaryForm.planOfActionsName","")),
+                                    idOpeningContact: _.trim(_.get(this,"_selectedPrescriptionObject.contact.id","")),
+                                    created: +new Date,
+                                    modified: +new Date,
+                                    codes: _.compact(_.uniqBy(_.filter(_.concat(
+                                        _.compact( _.map( codes.lateralityCodes, lateralityCode => lateralityCheckedCodes.indexOf(_.trim(_.get(lateralityCode,"code",""))) > -1 ? _.pick(lateralityCode, codeKeysToImport) : false )),
+                                        [_.pick(_.find( _.get(codes,"incapacityCodes",[]), {id:_.trim(_.get(this,"_summaryForm.careReason",""))}), codeKeysToImport)],
+                                        [_.pick(_.find( _.get(codes,"prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedParentPathology",""))}), codeKeysToImport)],
+                                        [_.pick(_.find( _.get(codes,"prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedChildrenPathology",""))}), codeKeysToImport)]
+                                    ), i => !!_.size(i)), "id")),
+                                    tags: _.filter(_.compact([
+                                        _.pick(_.get(codes,"triptyqueCodes",{}), codeKeysToImport),
+                                        _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentContactId"}), codeKeysToImport),
+                                        _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentId"}), codeKeysToImport),
+                                        _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentServiceId"}), codeKeysToImport),
+                                        _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentFormId"}), codeKeysToImport),
+                                        {type: "idOpeningContactOfContact", id: _.trim(_.get(this,"_selectedPrescriptionObject.contact.id",""))},
+                                        {type: "idOpeningContactOfHelement", id: _.trim(_.get(he,"idOpeningContact",""))}
+                                    ]), i => !!_.trim(i.id)),
+                                    documentIds: _.map(_.get(this,"_summaryForm.insuranceDocuments",[]), d => _.trim(d.documentId)),
+                                    prescriberId: _.trim(_.get(this,"_summaryForm.careTeam","")),
+                                    numberOfCares: parseInt(_.trim(_.get(this,"_summaryForm.numberOfCares","")))
+                                }]
+                            })
+                        })
+                        .then(he => !_.trim(_.get(he,"id","")) ? promResolve : this.api.helement().modifyHealthElement(he).then(he=>this.api.register(he, 'helement')))
+                        .then(modifiedHelement=>{
+
+                            // Fabien: garder modifiedHelement dans le composant (attention au reset)
+                            console.log("modifiedHelement",modifiedHelement);
+
+                        })
 
                 }, 2000)
 
@@ -1297,7 +1295,6 @@
             //         -   Bug placement / position dialog triptyque lors ouverture / si déjà ouvert && si navigate autres onglets
             //         -   Double check tout ok infirmières
             //         -   Target / search / link procedures proprement
-            //         -   Delete all linked objects lors de "délier" pdf ?
             //         -   Ne pas reset toutes les datas lors open / close triptyque -> là où ça à du sens
             //         -   SSI already existing HE => tout load / comme si just _linkPdfPrescription
             //         -   Menu "..." verticaux + quels actions ?
