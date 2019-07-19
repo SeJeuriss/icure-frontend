@@ -321,11 +321,11 @@
                                         <div class="formItem mt20">
                                             <div class="fw700 mb10">Documents de la mutuelle:</div>
 
-                                            <div class="documentsList p10 borderDashed borderW1px borderColorAppPrimaryLight mb20">
+                                            <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight mb20">
                                                 <div class="mb10">Documents liés au triptyque:</div>
                                                 <template is="dom-repeat" items="[[_insuranceLinkedDocuments]]" as="item" id="triptyqueLinkedInsuranceDocumentsDomRepeat">
                                                     <paper-item class="linkedObjectTag" data-document-id="[[item.documentId]]">
-                                                        <div class="tagtype" data-document-id="[[item.documentId]]">DOCUMENT</div>
+                                                        <div class="tagtype" data-document-id="[[item.documentId]]">[[item.created]]</div>
                                                         <div class="one-line-menu list-title" data-document-id="[[item.documentId]]">[[item.documentName]]</div>
                                                         <paper-icon-button class="deleteTag" icon="icons:delete" data-document-id="[[item.documentId]]" on-tap="_removeLinkedInsuranceDocument"></paper-icon-button>
                                                     </paper-item>
@@ -333,7 +333,7 @@
                                                 <div class="clear"></div>
                                             </div>
 
-                                            <div class="documentsList p10 borderDashed borderW1px borderColorAppPrimaryLight">
+                                            <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight">
                                                 <div class="mb10">Documents disponibles:</div>
                                                 <template is="dom-repeat" items="[[_insuranceDocuments]]" as="item" id="triptyqueAvailableInsuranceDocumentsDomRepeat">
                                                     <div class="singleDocumentContainer" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]">
@@ -1015,36 +1015,34 @@
                 const promResolve = Promise.resolve();
                 const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
-                const targetDocument = _.find(_.get(this,"_insuranceDocuments", []), {documentId:documentId})
+                const targetDocument = _.head(_.remove(this._insuranceDocuments, {documentId:documentId}))
 
-                _.remove(this._insuranceDocuments, {documentId:documentId})
-
-                promResolve.then(() => {
-                    this.push("_insuranceLinkedDocuments", {
-                        documentId: documentId,
-                        documentName: _.trim(_.get(targetDocument, "documentName", "document.pdf")),
-                    });
-                    setTimeout(() => {
-                        this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
-                        this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
-                        this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
-                    }, 100)
-                })
+                return !documentId || !_.size(targetDocument) ?
+                    false :
+                    promResolve.then(() => {
+                        this.push("_insuranceLinkedDocuments", targetDocument)
+                        setTimeout(() => {
+                            this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
+                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
+                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                        }, 100)
+                    })
 
             }
 
             _removeLinkedInsuranceDocument(e) {
 
                 const promResolve = Promise.resolve();
-                const documentIdToDeleted = _.trim(_.get(e,"target.dataDocumentId",""))
-                const documentToBeDeleted = _.remove(this._insuranceDocuments, {documentId:documentIdToDeleted})
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-ICON-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
+                const documentId = _.trim(_.get(targetButton,"dataDocumentId",_.trim(_.get(e,"target.dataDocumentId",""))))
+                const targetDocument = _.head(_.remove(this._insuranceLinkedDocuments, {documentId:documentId}))
 
-                return !documentIdToDeleted || !_.size(documentToBeDeleted) ?
+                return !documentId || !_.size(targetDocument) ?
                     false :
                     promResolve.then(() => {
-                        this.set("_insuranceLinkedDocuments", this._insuranceDocuments)
-                        this.push("_insuranceDocuments",documentToBeDeleted)
+                        this.push("_insuranceDocuments",targetDocument)
                         setTimeout(() => {
+                            this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
                             this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
                             this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
                         }, 100)
