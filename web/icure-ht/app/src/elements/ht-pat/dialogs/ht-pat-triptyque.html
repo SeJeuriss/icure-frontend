@@ -100,11 +100,6 @@
                             <template>[[item.heDescr]]</template>
                         </vaadin-grid-column>
 
-                        <vaadin-grid-column width="100px" flex-grow="0">
-                            <template class="header"><vaadin-grid-sorter path="documentIds">[[localize('prescription','Prescription',language)]]</vaadin-grid-sorter></template>
-                            <template>[[item.prescriptionExists]]</template>
-                        </vaadin-grid-column>
-
                         <vaadin-grid-column flex-grow="1">
                             <template class="header"><vaadin-grid-sorter path="name">[[localize('lab','Label',language)]]</vaadin-grid-sorter></template>
                             <template>[[item.label]]</template>
@@ -138,7 +133,7 @@
                     </vaadin-grid>
 
                     <div class="vaadinGridBottomActions mt20">
-                        <div class="grid-size-indicator hideOnMobile"> [[pageStart]] – [[pageEnd]] [[localize('sur','sur',language)]] [[_totalMessagesForCurrentFolderAndCurrentFilter]]</div>
+                        <div class="grid-size-indicator hideOnMobile"> [[_vaadinGridPageStart]] – [[_vaadinGridPageEnd]] [[localize('sur','sur',language)]] [[_vaadinGridTotalItems]]</div>
                         <paper-icon-button id="previous-page-change" icon="chevron-left" class="vaadinGridPageToPageNavigation" on-tap="_gotoPreviousGridPage"></paper-icon-button>
                         <paper-icon-button id="next-page-change" icon="chevron-right" class="vaadinGridPageToPageNavigation" on-tap="_gotoNextGridPage"></paper-icon-button>
                         <div class="hideOnMobile"><paper-icon-button class="vaadinGridScrollToTop" icon="arrow-upward" on-tap="_scrollToTop"></paper-icon-button></div>
@@ -477,6 +472,38 @@
                         noReset: true,
                         value: () => {}
                     },
+                    _dialogData: {
+                        type: Object,
+                        value: () => {return {
+                            currentHcp: {
+                                type: Object,
+                                value: () => {}
+                            },
+                            currentPatient: {
+                                type: Object,
+                                value: () => {}
+                            },
+                            hesAndPoas: {
+                                type: Array,
+                                value: () => []
+                            }
+                        }},
+                        noReset: true
+                    },
+
+
+                    _vaadinGridPlanOfActionMaxItemsPerPage: {
+                        type: Number,
+                        value: 2
+                    },
+                    _vaadinGridPageStart: {
+                        type: Number,
+                        value: 0
+                    },
+                    _vaadinGridPageEnd: {
+                        type: Number,
+                        value: 2
+                    },
                     _vaadinGridPlanOfActionDataToShow: {
                         type: Array,
                         value: () => []
@@ -485,10 +512,11 @@
                         type: Object,
                         value: () => {}
                     },
-                    _vaadinGridPlanOfActionMaxItemsPerPage: {
+                    _vaadinGridTotalItems: {
                         type: Number,
-                        value: 100
+                        value: 0
                     },
+
                     _triptyqueDetailActiveTab: {
                         type: String,
                         value: "prescriptionForm"
@@ -1003,6 +1031,92 @@
 
             }
 
+            _scrollToTop() {
+                const grid = this.shadowRoot.getElementById('vaadinGridPlanOfAction')
+                return grid && setTimeout(()=>grid._scrollToIndex(0),10)
+            }
+
+            _getDialogData() {
+
+                const promResolve = Promise.resolve();
+
+                return promResolve
+                    .then(() => this.api.hcparty().getCurrentHealthcareParty().then(hcp => this.set("_dialogData.currentHcp", _.merge({},hcp,{nameHr: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i).toLowerCase())).join(" ") }))))
+                    .then(() =>this.api.patient().getPatientWithUser(_.get(this,"user",{}), _.trim(_.get(this,"patient.id",""))).then(pat => this.set("_dialogData.currentPatient", pat)))
+                    .then(() =>this.api.helement().findBy(this.user.healthcarePartyId, this.patient))
+                    .then(hes => _
+                        .chain(hes)
+                        .filter(i => !!_.size(_.filter(_.get(i,"plansOfAction",[]), j =>  !!_.size(_.find(_.get(j,"tags",[]), {type:"originalDocumentId"})))))
+                        .orderBy(["desc","created"], ["asc","desc"])
+                        .map(i => _.merge({},{
+                            heId: _.trim(_.get(i, "id", "")),
+                            heClosingDate: parseInt(_.get(i, "closingDate"))||null,
+                            heCodes: _.get(i, "codes", []),
+                            heCreated: parseInt(_.get(i, "created"))||null,
+                            heDescr: _.trim(_.get(i, "descr", "")),
+                            heOpeningDate: parseInt(_.get(i, "openingDate"))||null,
+                            hePlansOfAction: _.get(i, "plansOfAction",[]),
+                            heStatus: parseInt(_.get(i, "status",0)),
+                            heTags: _.get(i, "tags",[]),
+                        }))
+                        .value()
+                    )
+                    .then(hes => _.flatten(_.map(hes, he => _.map(_.get(he,"hePlansOfAction",[]), poa => {
+                        return !_.size(_.filter(_.get(poa,"tags"), {type:"originalDocumentId"})) ? false : _.merge({}, he, {
+                            poaId: _.trim(_.get(poa, "id", "")),
+                            poaClosingDate: parseInt(_.get(poa, "closingDate"))||null,
+                            poaCodes: _.get(poa, "codes", []),
+                            poaCreated: parseInt(_.get(poa, "created"))||null,
+                            poaDocumentIds: _.compact(_.uniq(_.get(poa, "documentIds",[]))),
+                            poaEndOfLife: parseInt(_.get(poa, "endOfLife"))||null,
+                            poaIdOpeningContact: _.trim(_.get(poa, "idOpeningContact", "")),
+                            poaName: _.trim(_.get(poa, "name", "")),
+                            poaNumberOfCares: _.trim(_.get(poa, "numberOfCares", "")),
+                            poaOpeningDate: parseInt(_.get(poa, "openingDate"))||null,
+                            poaPrescriberId: _.trim(_.get(poa, "prescriberId", "")),
+                            poaStatus: parseInt(_.get(poa, "status",0)),
+                            poaTags: _.get(poa, "tags", []),
+                            poaValueDate: parseInt(_.get(poa, "valueDate"))||null,
+                        })
+                    }))))
+                    .then(hesAndPoas => this.set("_dialogData.hesAndPoas", _.compact(_.orderBy(hesAndPoas, ["heDescr", "poaName", "poaCreated"], ["asc","asc","desc"]))))
+                    .then(()=>{
+
+                        const internalHcp = _.compact(_.keys(_.get(this,"_dialogData.currentPatient.delegations",[])))
+                        const externalHcp = _.compact(_.map(_.get(this,"_dialogData.currentPatient.patientHealthCareParties",[]),i=>_.get(i,"healthcarePartyId","")))
+                        const hesAndPoasHcps = _.compact(_.map(_.get(this,"_dialogData.hesAndPoas",[]), i=>_.trim(_.get(i, "poaPrescriberId", ""))))
+
+                        return this.api.hcparty().getHealthcareParties( _.compact(_.uniq(_.concat(internalHcp, externalHcp, hesAndPoasHcps))).join(",") )
+                            .then(resolvedHcps => _.map(resolvedHcps, hcp => { return {
+                                id: _.trim(_.get(hcp, "id", "")),
+                                parentId: _.trim(_.get(hcp, "parentId", "")),
+                                name: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i).toLowerCase())).join(" "),
+                                nihii: _.trim(_.get(hcp, "nihii", "")),
+                                type: _.trim(_.get(hcp, "type", "")),
+                                nihiiHr: this.api.formatInamiNumber(_.trim(_.get(hcp, "nihii", ""))),
+                                specialityCodes: _.compact(_.map(_.get(hcp, "specialityCodes", []), i => _.trim(_.get(i,"id","")))),
+                                isInternal: internalHcp.indexOf(_.trim(_.get(hcp, "id", ""))) > -1
+                            }}))
+
+                    })
+                    .then(hcps => {
+                        const hcpSpecialityCodes = _.compact(_.uniq(_.flatten(_.map(hcps, i=>i.specialityCodes))))
+                        return !!_.size(hcpSpecialityCodes) ? this.api.code().getCodes( hcpSpecialityCodes.join(",") ).then(specialityCodes=>([hcps,specialityCodes])) : ([hcps,[]])
+                    })
+                    .then(([hcps,specialityCodes]) => _.map(hcps, hcp=>_.merge({},hcp,{specialityCodesHr:_.compact(_.map(hcp.specialityCodes, sc=>_.get(_.find(specialityCodes,{id:sc}),"label."+this.language, _.head(_.flatMap(_.get(_.find(specialityCodes,{id:sc}),"label",{}))) ))).join(", ")})))
+                    .then(hcps => this.set("_dialogData.availableHcps", _.map(_.sortBy(hcps, ["name"],["asc"]), hcp=> _.merge({}, hcp, { vaadinComboxBoxLabelHr: _.compact([ "[" + this.localize((!!_.get(hcp,"isInternal","")?"internal":"external"),"Internal", this.language) + "]", _.trim(_.get(hcp,"name","")), _.trim(_.get(hcp,"nihiiHr","")), (_.trim(_.get(hcp,"specialityCodesHr","")) ? "(" + _.trim(_.get(hcp,"specialityCodesHr","")) + ")" : "") ]).join(" ") }))))
+
+                    // Puis repasser sur hesAndPoas afin d'y injecter "poaPrescriberHr" & recipientHr = prestataire
+                    // puis loop hesAndPoas afin d'en extraire tous les tags & tous les codes
+                    // + Résolve tous les tags et tous les codes, garder dans var à part + revoir toutes l'app si besoin encore plus de codes % confg générale du dialog
+                    // Ensuite loop hesAndPoas afin d'en éval le nombre de prestations faites
+                    // Ensuite loop hesAndPoas ==> lors du GET data afin d'en eval le "statusHr"
+
+                    .then(() => console.log(this._dialogData))
+                    .finally(() => promResolve)
+
+            }
+
 
 
 
@@ -1027,13 +1141,28 @@
                 return promResolve
                     .then(() => this._resetComponentProperties())
                     .then(() => _.merge(this, dialogParameters) && this.$["triptyqueDialog"].open() && promResolve)
+                    .then(() => this._getDialogData())
                     .then(() => {
+
+                        // GRID
+                        //
+                        // items="[[_vaadinGridPlanOfActionDataToShow]]"
+                        // active-item="{{_vaadinGridPlanOfActionActiveItem}}"
+                        // pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]"
+                        // on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged"
+                        //
+                        //     [[_vaadinGridPageStart]] – [[_vaadinGridPageEnd]]
+                        //     [[_vaadinGridTotalItems]]
+                        //
+                        // on-tap="_gotoPreviousGridPage"
+                        // on-tap="_gotoNextGridPage"
+                        // on-tap="_scrollToTop"
 
                         this._clearGridCache()
                         this._resetGridSelectedItems()
                         this.set("_vaadinGridPlanOfActionDataToShow", [
                             {
-                                id: "123-456-789",
+                                id: "1",
                                 openingDate: "29/06/2019",
                                 heDescr: "Health element description",
                                 prescriptionExists: "Juste dire oui / non",
@@ -1045,7 +1174,31 @@
                                 statusHr: "En cours"
                             },
                             {
-                                id: "987-654-321",
+                                id: "2",
+                                openingDate: "25/06/2019",
+                                heDescr: "Health element description 2",
+                                prescriptionExists: "Juste dire oui / non 2",
+                                label: "Libellé du plan 2 (besoin dates ?)",
+                                prescriber: "Docteur Frankenstein 2",
+                                responsibleHr: "Docteur Jamoule",
+                                contactsCount: "0",
+                                numberOfCares: "8",
+                                statusHr: "En attente"
+                            },
+                            {
+                                id: "3",
+                                openingDate: "25/06/2019",
+                                heDescr: "Health element description 2",
+                                prescriptionExists: "Juste dire oui / non 2",
+                                label: "Libellé du plan 2 (besoin dates ?)",
+                                prescriber: "Docteur Frankenstein 2",
+                                responsibleHr: "Docteur Jamoule",
+                                contactsCount: "0",
+                                numberOfCares: "8",
+                                statusHr: "En attente"
+                            },
+                            {
+                                id: "4",
                                 openingDate: "25/06/2019",
                                 heDescr: "Health element description 2",
                                 prescriptionExists: "Juste dire oui / non 2",
@@ -1064,9 +1217,8 @@
                         this.set("_isLoading", false);
                         this._changeDialogAction("listing")
 
-                        console.log(this.user);
-                        console.log(this.patient);
                         console.log(this._dialogParameters);
+                        console.log(this._dialogData);
 
                     })
 
@@ -1204,12 +1356,7 @@
                 }
 
                 // Copy value of relatedhealthelementid (string) as plan of action's name
-                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedhealthelementid') > -1 && !!_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) && !_.trim(_.get(this,"_summaryForm.planOfActionsName",""))) {
-
-                    this.set("_summaryForm.planOfActionsName", _.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","") )
-
-                }
-
+                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedhealthelementid') > -1 && !!_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) && !_.trim(_.get(this,"_summaryForm.planOfActionsName",""))) this.set("_summaryForm.planOfActionsName", _.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","") )
                 if(!_.trim(_.get(this,"_summaryForm.startDate",""))) this.set("_summaryForm.startDate", _.trim(_.get(this,"_selectedPrescriptionObject.date")).substr(0,8))
                 if(!_.trim(_.get(this,"_summaryForm.valueDate","")) && !!_.trim(careBeginningDate)) this.set("_summaryForm.valueDate", _.trim(careBeginningDate).substr(0,8))
                 if(parseInt(_.get(this,"_summaryForm.numberOfCares","")) === 1 && !!_.trim(numberOfCares)) this.set("_summaryForm.numberOfCares", _.trim(numberOfCares))
