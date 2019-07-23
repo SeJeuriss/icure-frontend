@@ -91,8 +91,8 @@
                     <vaadin-grid id="vaadinGridPlanOfAction" class="m0 p0 vaadinGridPlanOfAction" items="[[_vaadinGridPlanOfActionDataToShow]]" active-item="{{_vaadinGridPlanOfActionActiveItem}}" pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]" on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged">
 
                         <vaadin-grid-column width="100px" flex-grow="0">
-                            <template class="header"><vaadin-grid-sorter path="openingDate"><b>[[localize('dat','Date',language)]]</b></vaadin-grid-sorter></template>
-                            <template>[[item.openingDate]]</template>
+                            <template class="header"><vaadin-grid-sorter path="poaOpeningDateHr"><b>[[localize('dat','Date',language)]]</b></vaadin-grid-sorter></template>
+                            <template>[[item.poaOpeningDateHr]]</template>
                         </vaadin-grid-column>
 
                         <vaadin-grid-column flex-grow="1">
@@ -101,28 +101,28 @@
                         </vaadin-grid-column>
 
                         <vaadin-grid-column flex-grow="1">
-                            <template class="header"><vaadin-grid-sorter path="name">[[localize('lab','Label',language)]]</vaadin-grid-sorter></template>
-                            <template>[[item.label]]</template>
+                            <template class="header"><vaadin-grid-sorter path="poaName">[[localize('lab','Label',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.poaName]]</template>
                         </vaadin-grid-column>
 
                         <vaadin-grid-column flex-grow="1">
-                            <template class="header"><vaadin-grid-sorter path="prescriber">[[localize('prescriber','Prescriber',language)]]</vaadin-grid-sorter></template>
-                            <template>[[item.prescriber]]</template>
+                            <template class="header"><vaadin-grid-sorter path="poaPrescriberHr">[[localize('prescriber','Prescriber',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.poaPrescriberHr]]</template>
                         </vaadin-grid-column>
 
                         <vaadin-grid-column flex-grow="1">
-                            <template class="header"><vaadin-grid-sorter path="responsibleHr">[[localize('persphysicianRole','Physician',language)]]</vaadin-grid-sorter></template>
-                            <template>[[item.responsibleHr]]</template>
+                            <template class="header"><vaadin-grid-sorter path="poaPrestataireHr">[[localize('persphysicianRole','Physician',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.poaPrestataireHr]]</template>
                         </vaadin-grid-column>
 
                         <vaadin-grid-column width="100px" flex-grow="0">
-                            <template class="header"><vaadin-grid-sorter path="contactsCount">[[localize('qua','Quantity',language)]]</vaadin-grid-sorter></template>
-                            <template>[[item.contactsCount]]/[[item.numberOfCares]]</template>
+                            <template class="header"><vaadin-grid-sorter path="poaNumberOfCares">[[localize('qua','Quantity',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.poaNumberOfCaresMade]]/[[item.poaNumberOfCares]]</template>
                         </vaadin-grid-column>
 
                         <vaadin-grid-column width="150px" flex-grow="0">
-                            <template class="header"><vaadin-grid-sorter path="statusHr">[[localize('sta','Status',language)]]</vaadin-grid-sorter></template>
-                            <template>[[item.statusHr]]</template>
+                            <template class="header"><vaadin-grid-sorter path="poaStatusHr">[[localize('sta','Status',language)]]</vaadin-grid-sorter></template>
+                            <template>[[item.poaStatusHr]]</template>
                         </vaadin-grid-column>
 
                         <vaadin-grid-column width="50px" flex-grow="0">
@@ -814,6 +814,10 @@
                 return parseInt(msTstamp) ? this.api.moment(parseInt(msTstamp)).format('DD/MM/YYYY') : ""
             }
 
+            _YYYYMMDDToDDMMYYYY(inputValue) {
+                return parseInt(inputValue) ? this.api.moment(parseInt(inputValue),"YYYYMMDD").format('DD/MM/YYYY') : ""
+            }
+
             _closePlanOfAction(e) {
 
                 return this.set("_vaadinGridPlanOfActionActiveItem", {})
@@ -1222,12 +1226,17 @@
                             poaStatus: parseInt(_.get(poa, "status",0)),
                             poaTags: _.get(poa, "tags", []),
                             poaValueDate: parseInt(_.get(poa, "valueDate"))||null,
+                            poaValueDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "valueDate"))||null),
+                            poaClosingDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "closingDate"))||null),
+                            poaCreatedHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "created"))||null),
+                            poaEndOfLifeHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "endOfLife"))||null),
+                            poaOpeningDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "openingDate"))||null),
                             poaStatusHr: this.localize(
                                 !!(_.get(poa,"status",0)&(1<<4)) ? "STATUS_CANCELED" :
-                                    !!(_.get(poa,"status",0)&(1<<3)) ? "STATUS_PROLONGED" :
-                                        !!(_.get(poa,"status",0)&(1<<2)) ? "STATUS_FINISHED" :
-                                            !!(_.get(poa,"status",0)&(1<<1)) ? "STATUS_ONGOING" :
-                                                "STATUS_PLANNED", // 1<<0
+                                !!(_.get(poa,"status",0)&(1<<3)) ? "STATUS_PROLONGED" :
+                                !!(_.get(poa,"status",0)&(1<<2)) ? "STATUS_FINISHED" :
+                                !!(_.get(poa,"status",0)&(1<<1)) ? "STATUS_ONGOING" :
+                                "STATUS_PLANNED", // 1<<0
                                 "",
                                 this.language
                             )
@@ -1305,6 +1314,37 @@
 
             _gotoNextGridPage() {
                 if ( parseInt(_.get(this,"_vaadinGridCurrentPageNumber",1)) < parseInt(_.get(this,"_vaadinGridTotalPages",1)) ) this.set('_vaadinGridCurrentPageNumber', ( parseInt(_.get(this,"_vaadinGridCurrentPageNumber",1)) + 1 ) )
+            }
+
+            open(dialogParameters) {
+
+                const promResolve = Promise.resolve();
+
+                return promResolve
+                    .then(() => this._resetComponentProperties())
+                    .then(() => this._initOpenDialogActions(dialogParameters))
+                    .then(() => this._getDialogData())
+                    .then(() => this._clearGridCache())
+                    .then(() => this._resetGridSelectedItems())
+                    .then(() => {
+                        this.set('_vaadinGridPageStart', parseInt(((_.get(this,"_vaadinGridCurrentPageNumber",1)-1)||0) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set('_vaadinGridPageEnd', parseInt((_.get(this,"_vaadinGridCurrentPageNumber",1)||1) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set('_vaadinGridTotalRecords', _.size(_.get(this,"_dialogData.hesAndPoas",[])))
+                        this.set('_vaadinGridTotalPages', Math.ceil(_.get(this,"_vaadinGridTotalRecords",0) / parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set("_vaadinGridPlanOfActionDataToShow", _.get(this,"_dialogData.hesAndPoas",[]).slice(parseInt(_.get(this,"_vaadinGridPageStart",0)), parseInt(_.get(this,"_vaadinGridPageEnd",0))))
+                        return promResolve
+                    })
+                    .then(() => {
+                        console.log(this._dialogParameters)
+                        console.log(this._dialogData)
+                        return null
+                    })
+                    .finally(() => this._changeDialogAction("listing")
+                        .then(() => this._triggerGridResize())
+                        .then(() => this._scrollToTop())
+                        .finally(() => this.set("_isLoading", false))
+                    )
+
             }
 
 
@@ -1481,65 +1521,19 @@
 
             _vaadinGridPageNumberChanged(vaadinGridCurrentPageNumber) {
 
-                console.log("");
-                console.log("vaadinGridCurrentPageNumber", vaadinGridCurrentPageNumber);
-                console.log("THIS._vaadinGridCurrentPageNumber", this._vaadinGridCurrentPageNumber);
-
-            }
-
-            open(dialogParameters) {
-
                 const promResolve = Promise.resolve();
 
-                return promResolve
-                    .then(() => this._resetComponentProperties())
-                    .then(() => this._initOpenDialogActions(dialogParameters))
-                    .then(() => this._getDialogData())
-                    .then(() => this._clearGridCache())
-                    .then(() => this._resetGridSelectedItems())
+                return !_.get(this,"_isOpened",false) ? promResolve : promResolve
                     .then(() => {
-
-                        this.set('_vaadinGridPageStart', parseInt(((_.get(this,"_vaadinGridCurrentPageNumber",1)-1)||0) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
-                        this.set('_vaadinGridPageEnd', parseInt((_.get(this,"_vaadinGridCurrentPageNumber",1)||1) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
-                        this.set('_vaadinGridTotalRecords', _.size(_.get(this,"_dialogData.hesAndPoas",[])))
-                        this.set('_vaadinGridTotalPages', Math.ceil(_.get(this,"_vaadinGridTotalRecords",0) / parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set('_vaadinGridPageStart', parseInt((parseInt(vaadinGridCurrentPageNumber)-1) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set('_vaadinGridPageEnd', parseInt(parseInt(vaadinGridCurrentPageNumber) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
                         this.set("_vaadinGridPlanOfActionDataToShow", _.get(this,"_dialogData.hesAndPoas",[]).slice(parseInt(_.get(this,"_vaadinGridPageStart",0)), parseInt(_.get(this,"_vaadinGridPageEnd",0))))
-
-                        console.log("_vaadinGridPageStart", this._vaadinGridPageStart);
-                        console.log("_vaadinGridPageEnd", this._vaadinGridPageEnd);
-                        console.log("_vaadinGridTotalRecords", this._vaadinGridTotalRecords);
-                        console.log("_vaadinGridTotalPages", this._vaadinGridTotalPages);
-                        console.log("_vaadinGridPlanOfActionDataToShow", this._vaadinGridPlanOfActionDataToShow);
-
-                            // {
-                            //     id: "1",
-                            //     openingDate: "29/06/2019",
-                            //     heDescr: "Health element description",
-                            //     prescriptionExists: "Juste dire oui / non",
-                            //     label: "Libellé du plan (besoin dates ?)",
-                            //     prescriber: "Docteur Frankenstein",
-                            //     responsibleHr: "Docteur Maboule",
-                            //     contactsCount: "2",
-                            //     numberOfCares: "7",
-                            //     statusHr: "En cours"
-                            // }
-
                         return promResolve
-
-                    })
-                    .finally(() => {
-
-                        console.log(this._dialogParameters);
-                        console.log(this._dialogData);
-
-                        return this._changeDialogAction("listing")
-                            .then(() => this._triggerGridResize())
-                            .then(() => this._scrollToTop())
-                            .finally(() => this.set("_isLoading", false))
-
                     })
 
             }
+
+
 
 
 
