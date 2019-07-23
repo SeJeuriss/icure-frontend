@@ -198,7 +198,7 @@
 
                                 <template is="dom-if" if="[[!_selectedPrescriptionBoolean]]">
                                     <h4 class="textaligncenter uppercase"><iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon> [[localize('choosePrescriptionForTriptyque','Please choose a prescription to link to your triptyque',language)]]:</h4>
-                                    <template is="dom-repeat" items="[[_pdfPrescriptionsList]]" as="singlePdfPrescription">
+                                    <template is="dom-repeat" items="[[_dialogData.pdfPrescriptionsList]]" as="singlePdfPrescription">
 
                                         <div class="singleDocumentContainer" data-service-id$="[[singlePdfPrescription.service.id]]" data-form-id$="[[singlePdfPrescription.formId]]" data-document-id$="[[singlePdfPrescription.document.id]]">
                                             <div class="header p10">
@@ -330,7 +330,7 @@
 
                                             <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight">
                                                 <div class="mb10">Documents disponibles:</div>
-                                                <template is="dom-repeat" items="[[_insuranceDocuments]]" as="item" id="triptyqueAvailableInsuranceDocumentsDomRepeat">
+                                                <template is="dom-repeat" items="[[_dialogData.insuranceDocuments]]" as="item" id="triptyqueAvailableInsuranceDocumentsDomRepeat">
                                                     <div class="singleDocumentContainer" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]">
                                                         <div class="header p10">
                                                             <span class="date">[[item.created]]</span>
@@ -362,14 +362,6 @@
 
                                         </div>
                                     </div>
-
-                                    <!--
-                                    <div class="w100pc">
-                                        Documents mutuelle ==> faire dialog à part dans lequel on liste this._insuranceDocuments + se passer ids de ceux déjà liés + faire render style prescription liste avec dyn doc pour préview & action "lier" / supprimer + faire lien vers tab view (dossier pat) pour importer new<br />
-                                        Valider tab summary lors du change tab (_gotoTabIfsAllowed)<br />
-                                        Repasser sur les localize en dur dans form summary<br />
-                                    </div>
-                                    -->
 
                                 </template>
 
@@ -897,152 +889,6 @@
                 return _.get(this,"_dialogParameters.configByType." + triptyqueType + "." + cfgKeyName, defaultValue)
             }
 
-            _getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription(inputConfig={}) {
-
-                const pdfDocumentsLabelKey = this._getConfig("pdfDocumentsLabelKey","")
-                const pdfDocumentsServiceStringValue = this.localize(pdfDocumentsLabelKey,"Prescription de kinésithérapie", this.language)
-
-                return this.api.contact().findBy( this.user.healthcarePartyId, this.patient )
-                    .then(patientContacts => _.compact(_.flatten(_.map(patientContacts, singleContact => _.map(singleContact.services, singleService => !_.trim(_.get(singleService,"content." + this.language + ".documentId")) ? false : {
-                        contact: singleContact,
-                        service: singleService,
-                        serviceTitle: _.trim(_.get(singleService,"content." + this.language + ".stringValue")),
-                        formId: _.trim(_.get(singleService,"formId")),
-                        date: parseInt(_.get(singleService,"valueDate")),
-                        dateAndTimeHr: moment(parseInt(_.trim(_.get(singleService,"valueDate")).substring(0,8)),"YYYYMMDD").format('DD/MM/YYYY') + " - " + _.trim(_.get(singleService,"valueDate")).substring(8,10) + ":" + _.trim(_.get(singleService,"valueDate")).substring(10,12),
-                        documentId: _.trim(_.get(singleService,"content." + this.language + ".documentId"))
-                    })))))
-                    .then(foundServicesWithPrescription => !_.size(foundServicesWithPrescription) ? false : this.api.document().getDocuments({ids:_.map(foundServicesWithPrescription,s=>s.documentId)}).then(foundDocuments=>[foundServicesWithPrescription,foundDocuments]))
-                    .then(([foundServicesWithPrescription,foundDocuments]) => _.compact(_.map(foundServicesWithPrescription, fswp => {
-                        const serviceDocument = _.find(foundDocuments, {id: _.trim(_.get(fswp, "documentId"))})
-                        const documentExtension = _.trim(_.last(_.trim(_.get(serviceDocument,"name","")).split("."))).toLowerCase()
-                        return (
-                            (
-                                fswp.serviceTitle !== pdfDocumentsServiceStringValue &&
-                                _.trim(_.get(serviceDocument, "documentType", "")).toLowerCase() !== "prescription"
-                            ) ||
-                            ['jpg','jpeg','pdf','png','tif','tiff'].indexOf(documentExtension) === -1 ||
-                            !_.trim(_.get(serviceDocument,"id","")) ||
-                            !_.trim(_.get(serviceDocument,"attachmentId","")) ||
-                            !_.trim(_.get(serviceDocument,"secretForeignKeys",""))
-                        ) ? false : _.merge({}, _.omit(fswp, ['documentId']), {document: serviceDocument})
-                    })))
-                    .then(servicesAndDocuments => Promise.all(servicesAndDocuments.map(sad => this.api.crypto().extractKeysFromDelegationsForHcpHierarchy(_.get(this, "user.healthcarePartyId", null), _.trim(_.get(sad.document, "id", "")), _.size(_.get(sad.document, "encryptionKeys", [])) ? _.get(sad.document, "encryptionKeys", []) : _.get(sad.document, "delegations", []))
-                            .then(({extractedKeys: enckeys}) => !!_.trim(_.get(sad.document,"id","")) && _.trim(_.get(sad.document,"attachmentId","")) ? this.api.document().getAttachment(_.trim(_.get(sad.document,"id","")), _.trim(_.get(sad.document,"attachmentId","")), enckeys.join(',')).then(decryptedContent=>(_.merge(sad, {document:{decryptedContent:decryptedContent}}))).catch(e=>{console.log("ERROR with getAttachment: ",e); }) : sad)
-                        )).then(servicesAndDocuments => servicesAndDocuments)
-                    )
-                    .then(servicesAndDocuments => _
-                        .chain(servicesAndDocuments)
-                        .filter(i => !!_.trim(_.get(i,"document.id")) && !!parseInt(_.get(i,"document.decryptedContent.byteLength")) )
-                        .orderBy(['date'], ['desc'])
-                        .value()
-                    )
-
-            }
-
-            _linkPdfPrescription(e) {
-
-                this.set("_isLoading", true);
-
-                const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
-                const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
-                const documentServiceId = _.trim(_.get(targetButton,"dataset.serviceId"))
-                const documentFormId = _.trim(_.get(targetButton,"dataset.formId"))
-                const formTemplateGuid = _.trim(this._getConfig("formTemplateGuid"))
-                const selectedPrescriptionObject = _.find(this._pdfPrescriptionsList, i=> i.service.id === documentServiceId && i.document.id === documentId)
-                const documentContactObject = _.get(selectedPrescriptionObject,"contact",{})
-
-                return promResolve
-                    .then(() => this.api.code().findPaginatedCodes('be', 'care.topaz.customTransaction', ''))
-                    .then(transactionCodes => _.find(transactionCodes.rows, tc => _.trim(_.get(tc,"code","")).toLowerCase() === "triptyque"))
-                    .then(existingTriptyqueTransactionCode => !!_.size(existingTriptyqueTransactionCode) ? existingTriptyqueTransactionCode : this.api.code().createCode({
-                        version: "1",
-                        code: "triptyque",
-                        regions: ["be","fr"],
-                        type: "care.topaz.customTransaction",
-                        id: "care.topaz.customTransaction|triptyque|1",
-                        label: {fr:"Triptyque",nl:"Triptyque",en:"Triptyque"}
-                    }))
-                    .then(triptyqueTransactionCode => this.api.code().getCodes( this._getConfig("defaultCodes",[]).map(i=>_.trim(_.get(i,"id",""))) ).then(defaultCodes => ([triptyqueTransactionCode,defaultCodes])))
-                    .then(([triptyqueTransactionCode,defaultCodes]) => this.api.patient().getPatientWithUser(this.user, _.trim(_.get(this,"patient.id",""))).then(patientObject => ([triptyqueTransactionCode,defaultCodes,patientObject])))
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject]) => this.api.contact().newInstance(this.user, patientObject, {
-                            groupId: documentId,
-                            created: +new Date,
-                            modified: +new Date,
-                            author: _.trim(_.get(this,"user.id","")),
-                            responsible: _.trim(_.get(this,"user.healthcarePartyId","")),
-                            openingDate: moment().format('YYYYMMDDHHmmss'),
-                            closingDate: moment().format('YYYYMMDDHHmmss'),
-                            encounterType: { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
-                            descr: _.trim(_.get(triptyqueTransactionCode,"label." + this.language,"Triptyque")) + ": " + _.trim(this.localize(this._getConfig("pdfDocumentsLabelKey",""),"Prescription de kinésithérapie", this.language)),
-                            tags: [
-                                { type: "BE-CONTACT-TYPE", version: "1", code: "1" },
-                                { type: "BE-CONTACT-TYPE", version: "1", code: "20" },
-                                { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
-                                { type: "originalDocumentId", id: documentId },
-                                { type: "originalDocumentContactId", id: _.trim(_.get(documentContactObject,"id",""))},
-                                { type: "originalDocumentServiceId", id: documentServiceId },
-                                { type: "originalDocumentFormId", id: documentFormId},
-                            ],
-                            codes: _.map(defaultCodes, dc =>{return{type: _.trim(_.get(dc,"type")), version: _.trim(_.get(dc,"version")), code: _.trim(_.get(dc,"code")), label: _.get(dc,"label",{}) }}),
-                            subContacts: [],
-                            services: []
-                        }).then(contactInstance => ([patientObject,contactInstance]))
-                    )
-                    .then(([patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([patientObject,createdContact])))
-                    .then(([patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
-                        .then(currentHcp => Promise.all([
-                            this.api.form().getFormTemplatesByGuid( formTemplateGuid, "deptgeneralpractice" ),
-                            this.api.form().getFormTemplatesByGuid( formTemplateGuid, _.trim(_.get(currentHcp,"specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
-                        ]).then(promResults => ([patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
-                    )
-                    .then(([patientObject,createdContact,formTemplate]) => this.api.form().newInstance(this.user, patientObject, {
-                            contactId: _.trim(_.get(createdContact,"id","")),
-                            formTemplateId: _.trim(_.get(formTemplate,"id","")),
-                            descr: _.trim(_.get(formTemplate,"name","")),
-                            tags: _.get(createdContact,"tags",[]),
-                        }).then(formInstance => ([patientObject,createdContact,formInstance]))
-                    )
-                    .then(([patientObject,createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([patientObject,createdContact,createdForm])))
-                    .then(([patientObject,createdContact,createdForm]) => {
-
-                        const subContactServiceIds = _.compact(_.uniq(_.get(_.find(_.get(documentContactObject,"subContacts",[]), {formId: documentFormId}),"services",[]).map(i=>_.trim(_.get(i,"serviceId","")))))
-                        const subContactServiceDatas = _.filter(_.get(documentContactObject,"services",[]), i=> subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) > -1 )
-                        const newServicesData = _.map(subContactServiceDatas, scsd => this.api.contact().service().newInstance(this.user, _.merge({}, _.omit(scsd, ["author","created","cryptedForeignKeys","delegations","encryptedSelf","encryptionKeys","id","modified","responsible","secretForeignKeys"]))))
-
-                        createdContact.services = newServicesData
-                        createdContact.subContacts = [{
-                            codes:[],
-                            descr:this.api.crypto().randomUuid(),
-                            formId:_.trim(_.get(createdForm,"id","")),
-                            hasBeenInitialized: false,
-                            services: _.map(newServicesData, sv => {return{serviceId: _.trim(_.get(sv,"id",""))/*, service:sv*/}})
-                        }]
-
-                        return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([patientObject,modifiedContact,createdForm]))
-
-                    })
-                    .then(([patientObject,modifiedContact,createdForm]) => {
-
-                        selectedPrescriptionObject.formId = _.trim(_.get(createdForm,"id",""))
-                        selectedPrescriptionObject.contact = modifiedContact
-                        selectedPrescriptionObject.contacts = [modifiedContact]
-                        selectedPrescriptionObject.servicesMap = this._getServicesMap([modifiedContact])
-
-                        this.set("patient", patientObject)
-                        this.set("_currentPdfPreviewDocumentId", "")
-                        this.set("_selectedPrescriptionObject", selectedPrescriptionObject)
-                        this.set("_summaryForm.careTeam", _.get(this,"_selectedPrescriptionObject.document.author"))
-
-                    })
-                    .finally(() => {
-                        console.log("selectedPrescriptionObject", selectedPrescriptionObject)
-                        this.set("_isLoading", false);
-                    })
-
-            }
-
             _addPlanOfAction() {
 
                 return this._vaadinGridPlanOfActionActiveItemChanged({},true)
@@ -1063,25 +909,6 @@
 
             }
 
-            _gotoTabIfsAllowed(e) {
-
-                // 1. prescriptionForm
-                // 2. summary
-                // 3. procedures
-
-                const currentTab = _.trim(_.get(this,"_triptyqueDetailActiveTab", "prescriptionForm"))
-                const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
-                const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
-                    currentTab === "procedures" ? targetTab :
-                    currentTab === "prescriptionForm" && targetTab === "summary" ? !!_.size(_.compact(_.map( this._selectedPrescriptionObject.contact.services, sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) ? targetTab : currentTab :
-                    currentTab === "prescriptionForm" && targetTab === "procedures" ? (true === true /* Validate BOTH prescriptionForm & summary tabs here */ ) ? targetTab : currentTab :
-                    currentTab === "summary" ? (true === true /* Validate summary tab here */ ) ? targetTab : currentTab :
-                    targetTab
-
-                return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
-
-            }
-
             _toggleCollapseInsuranceDocumentPreview(e) {
 
                 const promResolve = Promise.resolve();
@@ -1093,46 +920,6 @@
                     .then(()=>{
                         const targetPdfPreviewPdfElement = this.shadowRoot.querySelector("#insurance-document-preview-" + documentId) && this.shadowRoot.querySelector("#insurance-document-preview-" + documentId).shadowRoot.querySelector("pdf-element")
                         return typeof _.get(targetPdfPreviewPdfElement,"onWidthChange","") === "function" ? targetPdfPreviewPdfElement.onWidthChange() : false
-                    })
-
-            }
-
-            _linkInsuranceDocument(e) {
-
-                const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
-                const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
-                const targetDocument = _.head(_.remove(this._insuranceDocuments, {documentId:documentId}))
-
-                return !documentId || !_.size(targetDocument) ?
-                    false :
-                    promResolve.then(() => {
-                        this.push("_insuranceLinkedDocuments", targetDocument)
-                        setTimeout(() => {
-                            this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
-                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
-                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
-                        }, 100)
-                    })
-
-            }
-
-            _removeLinkedInsuranceDocument(e) {
-
-                const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-ICON-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
-                const documentId = _.trim(_.get(targetButton,"dataDocumentId",_.trim(_.get(e,"target.dataDocumentId",""))))
-                const targetDocument = _.head(_.remove(this._insuranceLinkedDocuments, {documentId:documentId}))
-
-                return !documentId || !_.size(targetDocument) ?
-                    false :
-                    promResolve.then(() => {
-                        this.push("_insuranceDocuments",targetDocument)
-                        setTimeout(() => {
-                            this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
-                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
-                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
-                        }, 100)
                     })
 
             }
@@ -1189,7 +976,7 @@
                         documentMainUti: _.trim(_.get(i, "mainUti", "")),
                         documentName: _.trim(_.get(i, "name", ""))
                     }}))))
-                    .then(()=> this._getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription().then(pdfPrescriptions => this.set("_dialogData.pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : [])))
+                    .then(()=> this._getPdfPrescriptionsList().then(pdfPrescriptions => this.set("_dialogData.pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : [])))
                     .then(() =>this.api.helement().findBy(this.user.healthcarePartyId, this.patient))
                     .then(hes => _
                         .chain(hes)
@@ -1300,10 +1087,14 @@
                             type: "care.topaz.customTransaction",
                             id: "care.topaz.customTransaction|triptyque|1",
                             label: {fr:"Triptyque",nl:"Triptyque",en:"Triptyque"}
-                        })
-                            .then(triptyqueTransactionCode => this.set("_dialogData.codes.triptyqueCodes", triptyqueTransactionCode))
+                        }).then(triptyqueTransactionCode => this.set("_dialogData.codes.triptyqueCodes", triptyqueTransactionCode))
 
                     })
+                    .then(() => this.set("activeHealthElements", _.map(_.filter(this.activeHealthElements, ah => !!_.trim(_.get(ah,"id",""))), i => {
+                        i.id = _.trim(_.get(i, "id", _.trim(_.get(i, "idService", ""))))
+                        i.descrHr = _.compact([_.get(_.filter(_.get(i, "codes", ""), j => _.get(j, "type", "") === "ICPC"), "[0].code", ""), _.get(i, "descr", "")]).join(" - ")
+                        return i
+                    })))
                     .finally(() => promResolve)
 
             }
@@ -1347,6 +1138,62 @@
 
             }
 
+            _vaadinGridPageNumberChanged(vaadinGridCurrentPageNumber) {
+
+                const promResolve = Promise.resolve();
+
+                return !_.get(this,"_isOpened",false) ? promResolve : promResolve
+                    .then(() => {
+                        this.set('_vaadinGridPageStart', parseInt((parseInt(vaadinGridCurrentPageNumber)-1) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set('_vaadinGridPageEnd', parseInt(parseInt(vaadinGridCurrentPageNumber) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set("_vaadinGridPlanOfActionDataToShow", _.get(this,"_dialogData.hesAndPoas",[]).slice(parseInt(_.get(this,"_vaadinGridPageStart",0)), parseInt(_.get(this,"_vaadinGridPageEnd",0))))
+                        return promResolve
+                    })
+
+            }
+
+            _getPdfPrescriptionsList() {
+
+                const pdfDocumentsLabelKey = this._getConfig("pdfDocumentsLabelKey","")
+                const pdfDocumentsServiceStringValue = this.localize(pdfDocumentsLabelKey,"Prescription de kinésithérapie", this.language)
+
+                return this.api.contact().findBy( this.user.healthcarePartyId, this.patient )
+                    .then(patientContacts => _.compact(_.flatten(_.map(patientContacts, singleContact => _.map(singleContact.services, singleService => !_.trim(_.get(singleService,"content." + this.language + ".documentId")) ? false : {
+                        contact: singleContact,
+                        service: singleService,
+                        serviceTitle: _.trim(_.get(singleService,"content." + this.language + ".stringValue")),
+                        formId: _.trim(_.get(singleService,"formId")),
+                        date: parseInt(_.get(singleService,"valueDate")),
+                        dateAndTimeHr: moment(parseInt(_.trim(_.get(singleService,"valueDate")).substring(0,8)),"YYYYMMDD").format('DD/MM/YYYY') + " - " + _.trim(_.get(singleService,"valueDate")).substring(8,10) + ":" + _.trim(_.get(singleService,"valueDate")).substring(10,12),
+                        documentId: _.trim(_.get(singleService,"content." + this.language + ".documentId"))
+                    })))))
+                    .then(foundServicesWithPrescription => !_.size(foundServicesWithPrescription) ? false : this.api.document().getDocuments({ids:_.map(foundServicesWithPrescription,s=>s.documentId)}).then(foundDocuments=>[foundServicesWithPrescription,foundDocuments]))
+                    .then(([foundServicesWithPrescription,foundDocuments]) => _.compact(_.map(foundServicesWithPrescription, fswp => {
+                        const serviceDocument = _.find(foundDocuments, {id: _.trim(_.get(fswp, "documentId"))})
+                        const documentExtension = _.trim(_.last(_.trim(_.get(serviceDocument,"name","")).split("."))).toLowerCase()
+                        return (
+                            (
+                                fswp.serviceTitle !== pdfDocumentsServiceStringValue &&
+                                _.trim(_.get(serviceDocument, "documentType", "")).toLowerCase() !== "prescription"
+                            ) ||
+                            ['jpg','jpeg','pdf','png','tif','tiff'].indexOf(documentExtension) === -1 ||
+                            !_.trim(_.get(serviceDocument,"id","")) ||
+                            !_.trim(_.get(serviceDocument,"attachmentId","")) ||
+                            !_.trim(_.get(serviceDocument,"secretForeignKeys",""))
+                        ) ? false : _.merge({}, _.omit(fswp, ['documentId']), {document: serviceDocument})
+                    })))
+                    .then(servicesAndDocuments => Promise.all(servicesAndDocuments.map(sad => this.api.crypto().extractKeysFromDelegationsForHcpHierarchy(_.get(this, "user.healthcarePartyId", null), _.trim(_.get(sad.document, "id", "")), _.size(_.get(sad.document, "encryptionKeys", [])) ? _.get(sad.document, "encryptionKeys", []) : _.get(sad.document, "delegations", []))
+                            .then(({extractedKeys: enckeys}) => !!_.trim(_.get(sad.document,"id","")) && _.trim(_.get(sad.document,"attachmentId","")) ? this.api.document().getAttachment(_.trim(_.get(sad.document,"id","")), _.trim(_.get(sad.document,"attachmentId","")), enckeys.join(',')).then(decryptedContent=>(_.merge(sad, {document:{decryptedContent:decryptedContent}}))).catch(e=>{console.log("ERROR with getAttachment: ",e); }) : sad)
+                        )).then(servicesAndDocuments => servicesAndDocuments)
+                    )
+                    .then(servicesAndDocuments => _
+                        .chain(servicesAndDocuments)
+                        .filter(i => !!_.trim(_.get(i,"document.id")) && !!parseInt(_.get(i,"document.decryptedContent.byteLength")) )
+                        .orderBy(['date'], ['desc'])
+                        .value()
+                    )
+
+            }
 
 
 
@@ -1361,73 +1208,127 @@
 
 
 
+            _gotoTabIfsAllowed(e) {
 
+                // 1. prescriptionForm
+                // 2. summary
+                // 3. procedures
 
-            _vaadinGridPlanOfActionActiveItemChanged(activeItem, isNew=false) {
+                const currentTab = _.trim(_.get(this,"_triptyqueDetailActiveTab", "prescriptionForm"))
+                const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
+                const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
+                    currentTab === "procedures" ? targetTab :
+                        currentTab === "prescriptionForm" && targetTab === "summary" ? !!_.size(_.compact(_.map( this._selectedPrescriptionObject.contact.services, sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) ? targetTab : currentTab :
+                            currentTab === "prescriptionForm" && targetTab === "procedures" ? (true === true /* Validate BOTH prescriptionForm & summary tabs here */ ) ? targetTab : currentTab :
+                                currentTab === "summary" ? (true === true /* Validate summary tab here */ ) ? targetTab : currentTab :
+                                    targetTab
 
-                // Should not yet ?
-                if(activeItem instanceof Event || !_.get(this,"_isOpened",false)) return
+                return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
 
-                this.set("_isLoading", true)
+            }
 
-                return !_.trim(_.get(activeItem,"id","")) && !isNew ?
-                    this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
-                    this._changeDialogAction("detail")
+            _linkPdfPrescription(e) {
 
-                        // Fabien : Soit pdf déjà lié -> get juste celui-là (%activeItem) || Soit get la liste des PDF qui existent déjà
-                        .then(()=> this._getPdfPrescriptionsListOrAlreadyLinkedPdfPrescription())
-                        .then(pdfPrescriptions => pdfPrescriptions) /* IF activeItem ==> invoke / get / load cuisine de this._linkPdfPrescription */
-                        .then(pdfPrescriptions => this.set("_pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : []))
+                this.set("_isLoading", true);
 
-                        // Fabien: load doc mutuelle % transportGuid SSI !activeItem sinon get depuis this.patient ==> encryptedAdministrativesDocuments
-                        .then(() => this.api.message().findMessagesByTransportGuid(_.trim(this._getConfig("insuranceMessagesDocumentsTransportGuid","")), null, null, null, 1000).then(foundMessages => _.filter(foundMessages.rows, m => m && !parseInt(_.get(m,"deletionDate",0)))))
-                        .then(foundMessages => Promise.all(_.map(foundMessages, singleMessage => this.api.document().findByMessage(_.get(this,"user.healthcarePartyId",""), singleMessage).then(foundDocument => _.merge({},singleMessage,{document:_.head(foundDocument)})))))
-                        .then(messagesAndDocuments => this.set("_insuranceDocuments", _.map(messagesAndDocuments, i => {return {
-                            messageId: _.trim(_.get(i, "id", "")),
-                            created: moment(parseInt(_.get(i, "created", 0))).format('DD/MM/YYYY - HH:mm'),
-                            documentId: _.trim(_.get(i, "document.id", "")),
-                            attachmentId: _.trim(_.get(i, "document.attachmentId", "")),
-                            documentMainUti: _.trim(_.get(i, "document.mainUti", "")),
-                            documentName: _.trim(_.get(i, "document.name", "")),
-                            documentType: _.trim(_.get(i, "metas.type", "")),
-                        }})))
-                        .then(() => this.set("activeHealthElements", _.map(_.filter(this.activeHealthElements, ah => !!_.trim(_.get(ah,"id",""))), i => {
-                            i.id = _.trim(_.get(i, "id", _.trim(_.get(i, "idService", ""))))
-                            i.descrHr = _.compact([_.get(_.filter(_.get(i, "codes", ""), j => _.get(j, "type", "") === "ICPC"), "[0].code", ""), _.get(i, "descr", "")]).join(" - ")
-                            return i
-                        })))
-                        .then(() => this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode",""), ''))
-                        .then(prescriptionCodes => {
-                            this.set("_relatedChildrenPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
-                            this.set("_relatedParentPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(this._relatedChildrenPathologies, j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
-                        })
-                        .then(() => this.api.code().findCodes('be', this._getConfig("careReasonsCode",""), ''))
-                        .then(careReasonsData => this.set("_careReasons", _.orderBy(_.compact(_.map(_.filter(careReasonsData,i=>!_.get(i,"disabled",false)), i => { return {
-                            id: _.trim(_.get(i,"id","")),
-                            labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
-                        }})), ["labelHr"], ["asc"])))
-                        .then(()=>{
-                            const internalHcp = _.compact(_.keys(_.get(this,"patient.delegations",[])))
-                            const externalHcp = _.compact(_.map(_.get(this,"patient.patientHealthCareParties",[]),i=>_.get(i,"healthcarePartyId","")))
-                            return this.api.hcparty().getHealthcareParties( _.compact(_.uniq(_.concat(internalHcp, externalHcp))).join(",") )
-                                .then(resolvedHcps => _.map(resolvedHcps, hcp => { return {
-                                    id: _.trim(_.get(hcp, "id", "")),
-                                    name: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i))).join(" "),
-                                    nihiiHr: this.api.formatInamiNumber(_.trim(_.get(hcp, "nihii", ""))),
-                                    specialityCodes: _.compact(_.map(_.get(hcp, "specialityCodes", []), i => _.trim(_.get(i,"id","")))),
-                                    isInternal: internalHcp.indexOf(_.trim(_.get(hcp, "id", ""))) > -1
-                                }}))
-                        })
-                        .then(hcps => {
-                            const hcpSpecialityCodes = _.compact(_.uniq(_.flatten(_.map(hcps, i=>i.specialityCodes))))
-                            return !!_.size(hcpSpecialityCodes) ? this.api.code().getCodes( hcpSpecialityCodes.join(",") ).then(specialityCodes=>([hcps,specialityCodes])) : ([hcps,[]])
-                        })
-                        .then(([hcps,specialityCodes]) => _.map(hcps, hcp=>_.merge({},hcp,{specialityCodesHr:_.compact(_.map(hcp.specialityCodes, sc=>_.get(_.find(specialityCodes,{id:sc}),"label."+this.language, _.head(_.flatMap(_.get(_.find(specialityCodes,{id:sc}),"label",{}))) ))).join(", ")})))
-                        .then(hcps => this.set("_careTeamValues", _.map(_.sortBy(hcps, ["name"],["asc"]), hcp=>{ return {
-                            id: _.trim(_.get(hcp,"id","")),
-                            labelHr: _.compact([ "[" + this.localize((!!_.get(hcp,"isInternal","")?"internal":"external"),"Internal", this.language) + "]", _.trim(_.get(hcp,"name","")), _.trim(_.get(hcp,"nihiiHr","")), (_.trim(_.get(hcp,"specialityCodesHr","")) ? "(" + _.trim(_.get(hcp,"specialityCodesHr","")) + ")" : "") ]).join(" ")
-                        }})))
-                        .finally(() => this.set("_isLoading", false))
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
+                const documentServiceId = _.trim(_.get(targetButton,"dataset.serviceId"))
+                const documentFormId = _.trim(_.get(targetButton,"dataset.formId"))
+                const formTemplateGuid = _.trim(this._getConfig("formTemplateGuid"))
+
+                // this._pdfPrescriptionsList should be this._dialogData.pdfPrescriptionsList
+                const selectedPrescriptionObject = _.find(this._pdfPrescriptionsList, i=> i.service.id === documentServiceId && i.document.id === documentId)
+                const documentContactObject = _.get(selectedPrescriptionObject,"contact",{})
+
+                return promResolve
+                    .then(() => this.api.code().findPaginatedCodes('be', 'care.topaz.customTransaction', ''))
+                    .then(transactionCodes => _.find(transactionCodes.rows, tc => _.trim(_.get(tc,"code","")).toLowerCase() === "triptyque"))
+                    .then(existingTriptyqueTransactionCode => !!_.size(existingTriptyqueTransactionCode) ? existingTriptyqueTransactionCode : this.api.code().createCode({
+                        version: "1",
+                        code: "triptyque",
+                        regions: ["be","fr"],
+                        type: "care.topaz.customTransaction",
+                        id: "care.topaz.customTransaction|triptyque|1",
+                        label: {fr:"Triptyque",nl:"Triptyque",en:"Triptyque"}
+                    }))
+                    .then(triptyqueTransactionCode => this.api.code().getCodes( this._getConfig("defaultCodes",[]).map(i=>_.trim(_.get(i,"id",""))) ).then(defaultCodes => ([triptyqueTransactionCode,defaultCodes])))
+                    .then(([triptyqueTransactionCode,defaultCodes]) => this.api.patient().getPatientWithUser(this.user, _.trim(_.get(this,"patient.id",""))).then(patientObject => ([triptyqueTransactionCode,defaultCodes,patientObject])))
+                    .then(([triptyqueTransactionCode,defaultCodes,patientObject]) => this.api.contact().newInstance(this.user, patientObject, {
+                            groupId: documentId,
+                            created: +new Date,
+                            modified: +new Date,
+                            author: _.trim(_.get(this,"user.id","")),
+                            responsible: _.trim(_.get(this,"user.healthcarePartyId","")),
+                            openingDate: moment().format('YYYYMMDDHHmmss'),
+                            closingDate: moment().format('YYYYMMDDHHmmss'),
+                            encounterType: { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
+                            descr: _.trim(_.get(triptyqueTransactionCode,"label." + this.language,"Triptyque")) + ": " + _.trim(this.localize(this._getConfig("pdfDocumentsLabelKey",""),"Prescription de kinésithérapie", this.language)),
+                            tags: [
+                                { type: "BE-CONTACT-TYPE", version: "1", code: "1" },
+                                { type: "BE-CONTACT-TYPE", version: "1", code: "20" },
+                                { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
+                                { type: "originalDocumentId", id: documentId },
+                                { type: "originalDocumentContactId", id: _.trim(_.get(documentContactObject,"id",""))},
+                                { type: "originalDocumentServiceId", id: documentServiceId },
+                                { type: "originalDocumentFormId", id: documentFormId},
+                            ],
+                            codes: _.map(defaultCodes, dc =>{return{type: _.trim(_.get(dc,"type")), version: _.trim(_.get(dc,"version")), code: _.trim(_.get(dc,"code")), label: _.get(dc,"label",{}) }}),
+                            subContacts: [],
+                            services: []
+                        }).then(contactInstance => ([patientObject,contactInstance]))
+                    )
+                    .then(([patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([patientObject,createdContact])))
+                    .then(([patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
+                        .then(currentHcp => Promise.all([
+                            this.api.form().getFormTemplatesByGuid( formTemplateGuid, "deptgeneralpractice" ),
+                            this.api.form().getFormTemplatesByGuid( formTemplateGuid, _.trim(_.get(currentHcp,"specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
+                        ]).then(promResults => ([patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
+                    )
+                    .then(([patientObject,createdContact,formTemplate]) => this.api.form().newInstance(this.user, patientObject, {
+                            contactId: _.trim(_.get(createdContact,"id","")),
+                            formTemplateId: _.trim(_.get(formTemplate,"id","")),
+                            descr: _.trim(_.get(formTemplate,"name","")),
+                            tags: _.get(createdContact,"tags",[]),
+                        }).then(formInstance => ([patientObject,createdContact,formInstance]))
+                    )
+                    .then(([patientObject,createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([patientObject,createdContact,createdForm])))
+                    .then(([patientObject,createdContact,createdForm]) => {
+
+                        const subContactServiceIds = _.compact(_.uniq(_.get(_.find(_.get(documentContactObject,"subContacts",[]), {formId: documentFormId}),"services",[]).map(i=>_.trim(_.get(i,"serviceId","")))))
+                        const subContactServiceDatas = _.filter(_.get(documentContactObject,"services",[]), i=> subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) > -1 )
+                        const newServicesData = _.map(subContactServiceDatas, scsd => this.api.contact().service().newInstance(this.user, _.merge({}, _.omit(scsd, ["author","created","cryptedForeignKeys","delegations","encryptedSelf","encryptionKeys","id","modified","responsible","secretForeignKeys"]))))
+
+                        createdContact.services = newServicesData
+                        createdContact.subContacts = [{
+                            codes:[],
+                            descr:this.api.crypto().randomUuid(),
+                            formId:_.trim(_.get(createdForm,"id","")),
+                            hasBeenInitialized: false,
+                            services: _.map(newServicesData, sv => {return{serviceId: _.trim(_.get(sv,"id",""))/*, service:sv*/}})
+                        }]
+
+                        return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([patientObject,modifiedContact,createdForm]))
+
+                    })
+                    .then(([patientObject,modifiedContact,createdForm]) => {
+
+                        selectedPrescriptionObject.formId = _.trim(_.get(createdForm,"id",""))
+                        selectedPrescriptionObject.contact = modifiedContact
+                        selectedPrescriptionObject.contacts = [modifiedContact]
+                        selectedPrescriptionObject.servicesMap = this._getServicesMap([modifiedContact])
+
+                        this.set("patient", patientObject)
+                        this.set("_currentPdfPreviewDocumentId", "")
+                        this.set("_selectedPrescriptionObject", selectedPrescriptionObject)
+                        this.set("_summaryForm.careTeam", _.get(this,"_selectedPrescriptionObject.document.author"))
+
+                    })
+                    .finally(() => {
+                        console.log("selectedPrescriptionObject", selectedPrescriptionObject)
+                        this.set("_isLoading", false);
+                    })
 
             }
 
@@ -1519,17 +1420,99 @@
 
             }
 
-            _vaadinGridPageNumberChanged(vaadinGridCurrentPageNumber) {
+            _linkInsuranceDocument(e) {
 
                 const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
+                const targetDocument = _.head(_.remove(this._insuranceDocuments, {documentId:documentId}))
 
-                return !_.get(this,"_isOpened",false) ? promResolve : promResolve
-                    .then(() => {
-                        this.set('_vaadinGridPageStart', parseInt((parseInt(vaadinGridCurrentPageNumber)-1) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
-                        this.set('_vaadinGridPageEnd', parseInt(parseInt(vaadinGridCurrentPageNumber) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
-                        this.set("_vaadinGridPlanOfActionDataToShow", _.get(this,"_dialogData.hesAndPoas",[]).slice(parseInt(_.get(this,"_vaadinGridPageStart",0)), parseInt(_.get(this,"_vaadinGridPageEnd",0))))
-                        return promResolve
+                return !documentId || !_.size(targetDocument) ?
+                    false :
+                    promResolve.then(() => {
+                        this.push("_insuranceLinkedDocuments", targetDocument)
+                        setTimeout(() => {
+                            this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
+                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
+                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                        }, 100)
                     })
+
+            }
+
+            _removeLinkedInsuranceDocument(e) {
+
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-ICON-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
+                const documentId = _.trim(_.get(targetButton,"dataDocumentId",_.trim(_.get(e,"target.dataDocumentId",""))))
+                const targetDocument = _.head(_.remove(this._insuranceLinkedDocuments, {documentId:documentId}))
+
+                return !documentId || !_.size(targetDocument) ?
+                    false :
+                    promResolve.then(() => {
+                        this.push("_insuranceDocuments",targetDocument)
+                        setTimeout(() => {
+                            this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
+                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
+                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                        }, 100)
+                    })
+
+            }
+
+            _vaadinGridPlanOfActionActiveItemChanged(activeItem, isNew=false) {
+
+                // Should not yet ?
+                if(activeItem instanceof Event || !_.get(this,"_isOpened",false)) return
+
+                this.set("_isLoading", true)
+                const heId = _.trim(_.get(activeItem,"heId",""))
+                const poaId = _.trim(_.get(activeItem,"poaId",""))
+
+                return !_.trim(_.get(activeItem,"poaId","")) && !isNew ?
+                    this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
+                    this._changeDialogAction("detail")
+
+                        // ==> this._dialogData.pdfPrescriptionsList
+                        // IF activeItem ==> invoke / get / load cuisine de this._linkPdfPrescription
+
+                        // ==> this._dialogData.insuranceDocuments
+                            // Quid jump remove / push documents mutuelles si change he&poa ==> documents déjà assigned / pushed du coup travailler avec var à part ?
+
+                        // FZ: continue here
+
+                        .then(() => this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode",""), ''))
+                        .then(prescriptionCodes => {
+                            this.set("_relatedChildrenPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
+                            this.set("_relatedParentPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(this._relatedChildrenPathologies, j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
+                        })
+                        .then(() => this.api.code().findCodes('be', this._getConfig("careReasonsCode",""), ''))
+                        .then(careReasonsData => this.set("_careReasons", _.orderBy(_.compact(_.map(_.filter(careReasonsData,i=>!_.get(i,"disabled",false)), i => { return {
+                            id: _.trim(_.get(i,"id","")),
+                            labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
+                        }})), ["labelHr"], ["asc"])))
+                        .then(()=>{
+                            const internalHcp = _.compact(_.keys(_.get(this,"patient.delegations",[])))
+                            const externalHcp = _.compact(_.map(_.get(this,"patient.patientHealthCareParties",[]),i=>_.get(i,"healthcarePartyId","")))
+                            return this.api.hcparty().getHealthcareParties( _.compact(_.uniq(_.concat(internalHcp, externalHcp))).join(",") )
+                                .then(resolvedHcps => _.map(resolvedHcps, hcp => { return {
+                                    id: _.trim(_.get(hcp, "id", "")),
+                                    name: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i))).join(" "),
+                                    nihiiHr: this.api.formatInamiNumber(_.trim(_.get(hcp, "nihii", ""))),
+                                    specialityCodes: _.compact(_.map(_.get(hcp, "specialityCodes", []), i => _.trim(_.get(i,"id","")))),
+                                    isInternal: internalHcp.indexOf(_.trim(_.get(hcp, "id", ""))) > -1
+                                }}))
+                        })
+                        .then(hcps => {
+                            const hcpSpecialityCodes = _.compact(_.uniq(_.flatten(_.map(hcps, i=>i.specialityCodes))))
+                            return !!_.size(hcpSpecialityCodes) ? this.api.code().getCodes( hcpSpecialityCodes.join(",") ).then(specialityCodes=>([hcps,specialityCodes])) : ([hcps,[]])
+                        })
+                        .then(([hcps,specialityCodes]) => _.map(hcps, hcp=>_.merge({},hcp,{specialityCodesHr:_.compact(_.map(hcp.specialityCodes, sc=>_.get(_.find(specialityCodes,{id:sc}),"label."+this.language, _.head(_.flatMap(_.get(_.find(specialityCodes,{id:sc}),"label",{}))) ))).join(", ")})))
+                        .then(hcps => this.set("_careTeamValues", _.map(_.sortBy(hcps, ["name"],["asc"]), hcp=>{ return {
+                            id: _.trim(_.get(hcp,"id","")),
+                            labelHr: _.compact([ "[" + this.localize((!!_.get(hcp,"isInternal","")?"internal":"external"),"Internal", this.language) + "]", _.trim(_.get(hcp,"name","")), _.trim(_.get(hcp,"nihiiHr","")), (_.trim(_.get(hcp,"specialityCodesHr","")) ? "(" + _.trim(_.get(hcp,"specialityCodesHr","")) + ")" : "") ]).join(" ")
+                        }})))
+                        .finally(() => this.set("_isLoading", false))
 
             }
 
