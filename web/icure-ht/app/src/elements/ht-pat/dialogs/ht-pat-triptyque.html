@@ -289,9 +289,13 @@
 
                                     <div class="summaryFormContainer w100pc">
                                         <div class="fl50">
+
+                                            _summaryForm.relatedHealthElementId: [[_summaryForm.relatedHealthElementId]]
+                                            <template is="dom-if" if="[[_summaryForm.relatedHealthElementId]]">Dom if OK</template>
+
                                             <div class="formItem"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[activeHealthElements]]" item-label-path="descrHr" item-value-path="id" value="{{_summaryForm.relatedHealthElementId}}" label="[[localize('linkedHealthElement','Related health element',language)]]"></vaadin-combo-box></div>
-                                            <div class="formItem"><vaadin-combo-box id="relatedParentPathology" class="triptyqueVaadinComboBox" filtered-items="[[_relatedParentPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedParentPathology}}" label="Type de pathologie"></vaadin-combo-box></div>
-                                            <div class="formItem"><vaadin-combo-box id="relatedChildrenPathology" class="triptyqueVaadinComboBox displaynone" filtered-items="[[_relatedChildrenPathologiesForSelectedParent]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedChildrenPathology}}" label="Affection"></vaadin-combo-box></div>
+                                            <div class="formItem"><vaadin-combo-box id="relatedParentPathology" class="triptyqueVaadinComboBox" filtered-items="[[_dialogData.relatedParentPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedParentPathology}}" label="Type de pathologie"></vaadin-combo-box></div>
+                                            <div class="formItem"><vaadin-combo-box id="relatedChildrenPathology" class="triptyqueVaadinComboBox displaynone" filtered-items="[[_dialogData.relatedChildrenPathologiesForSelectedParent]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedChildrenPathology}}" label="Affection"></vaadin-combo-box></div>
                                             <div class="formItem mt8">
                                                 <vaadin-checkbox checked="{{_summaryForm.lateralityLeft}}"> Gauche</vaadin-checkbox>
                                                 <vaadin-checkbox checked="{{_summaryForm.lateralityRight}}"> Droite</vaadin-checkbox>
@@ -309,8 +313,8 @@
                                         <div class="fr50">
                                             <div class="formItem mt2"><dynamic-text-field class="m0" value="{{_summaryForm.planOfActionsName}}" label="Nom du plan d'action"></dynamic-text-field></div>
                                             <div class="formItem mt6"><dynamic-text-field class="m0" value="{{_summaryForm.numberOfCares}}" label="Nombre de séances" type="number"></dynamic-text-field></div>
-                                            <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_careTeamValues]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.careTeam}}" label="Prestataire lié"></vaadin-combo-box></div>
-                                            <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_careReasons]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.careReason}}" label="Justificatif de soins"></vaadin-combo-box></div>
+                                            <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_dialogData.availableHcps]]" item-label-path="vaadinComboxBoxLabelHr" item-value-path="id" value="{{_summaryForm.careTeam}}" label="Prestataire lié"></vaadin-combo-box></div>
+                                            <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_dialogData.codes.incapacityCodes]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.careReason}}" label="Justificatif de soins"></vaadin-combo-box></div>
                                         </div>
                                         <div class="clear"></div>
                                         <div class="formItem mt20">
@@ -318,7 +322,7 @@
 
                                             <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight mb20">
                                                 <div class="mb10">Documents liés au triptyque:</div>
-                                                <template is="dom-repeat" items="[[_insuranceLinkedDocuments]]" as="item" id="triptyqueLinkedInsuranceDocumentsDomRepeat">
+                                                <template is="dom-repeat" items="[[_dialogData.insuranceLinkedDocuments]]" as="item" id="triptyqueLinkedInsuranceDocumentsDomRepeat">
                                                     <paper-item class="linkedObjectTag" data-document-id="[[item.documentId]]">
                                                         <div class="tagtype" data-document-id="[[item.documentId]]">[[item.created]]</div>
                                                         <div class="one-line-menu list-title" data-document-id="[[item.documentId]]">[[item.documentName]]</div>
@@ -476,6 +480,10 @@
                                 type: Object,
                                 value: () => {}
                             },
+                            availableHcps: {
+                                type: Array,
+                                value: ()=>[]
+                            },
                             currentPatient: {
                                 type: Object,
                                 value: () => {}
@@ -496,6 +504,10 @@
                                 type: Array,
                                 value: ()=>[],
                             },
+                            insuranceLinkedDocuments: {
+                                type: Array,
+                                value: ()=>[],
+                            },
                             relatedChildrenPathologies: {
                                 type: Array,
                                 value: ()=>[],
@@ -503,6 +515,10 @@
                             relatedParentPathologies: {
                                 type: Array,
                                 value: ()=>[],
+                            },
+                            relatedChildrenPathologiesForSelectedParent: {
+                                type: Array,
+                                value: ()=>[]
                             },
                             codes: {
                                 type: Object,
@@ -579,29 +595,7 @@
                         value: ()=>[],
                         noReset: true
                     },
-                    _relatedParentPathologies: {
-                        type: Array,
-                        value: ()=>[],
-                        noReset: true
-                    },
-                    _relatedChildrenPathologies: {
-                        type: Array,
-                        value: ()=>[],
-                        noReset: true
-                    },
-                    _relatedChildrenPathologiesForSelectedParent: {
-                        type: Array,
-                        value: ()=>[],
-                        noReset: true
-                    },
 
-
-
-                    _insuranceDocuments: {
-                        type: Array,
-                        value: ()=>[],
-                        noReset: true
-                    },
                     _summaryForm: {
                         type: Object,
                         value: {
@@ -1073,12 +1067,14 @@
                     .then(() => {
 
                         this.set("_dialogData.relatedChildrenPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
-                        this.set("_dialogData.relatedParentPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(this._relatedChildrenPathologies, j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
-
+                        this.set("_dialogData.relatedParentPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(_.get(this,"_dialogData.relatedChildrenPathologies",[]), j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
                         this.set("_dialogData.codes.incapacityCodes", _.orderBy(_.compact(_.map(_.filter(_.get(this, "_dialogData.codes.incapacityCodes", []),i=>!_.get(i,"disabled",false)), i => _.merge({}, i, {
                             id: _.trim(_.get(i,"id","")),
                             labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
                         }))), ["labelHr"], ["asc"]))
+
+                        // Make sure properties of component (that aren't set yet) actually are a variable rather than an object with a value key representing their value. (Vaadin combo-boxes would crash without this)
+                        _.map(_.get(this,"_dialogData",{}), (propValue,propKey) => typeof _.get(propValue,"value",null) !== "function" ? null : this.set("_dialogData." + propKey, _.get(propValue,"value",null)()))
 
                         return !!_.size(_.get(this,"_dialogData.codes.triptyqueCodes")) ? true : this.api.code().createCode({
                             version: "1",
@@ -1195,38 +1191,6 @@
 
             }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-            _gotoTabIfsAllowed(e) {
-
-                // 1. prescriptionForm
-                // 2. summary
-                // 3. procedures
-
-                const currentTab = _.trim(_.get(this,"_triptyqueDetailActiveTab", "prescriptionForm"))
-                const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
-                const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
-                    currentTab === "procedures" ? targetTab :
-                        currentTab === "prescriptionForm" && targetTab === "summary" ? !!_.size(_.compact(_.map( this._selectedPrescriptionObject.contact.services, sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) ? targetTab : currentTab :
-                            currentTab === "prescriptionForm" && targetTab === "procedures" ? (true === true /* Validate BOTH prescriptionForm & summary tabs here */ ) ? targetTab : currentTab :
-                                currentTab === "summary" ? (true === true /* Validate summary tab here */ ) ? targetTab : currentTab :
-                                    targetTab
-
-                return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
-
-            }
-
             _linkPdfPrescription(e) {
 
                 this.set("_isLoading", true);
@@ -1236,26 +1200,17 @@
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
                 const documentServiceId = _.trim(_.get(targetButton,"dataset.serviceId"))
                 const documentFormId = _.trim(_.get(targetButton,"dataset.formId"))
-                const formTemplateGuid = _.trim(this._getConfig("formTemplateGuid"))
 
-                // this._pdfPrescriptionsList should be this._dialogData.pdfPrescriptionsList
-                const selectedPrescriptionObject = _.find(this._pdfPrescriptionsList, i=> i.service.id === documentServiceId && i.document.id === documentId)
+                const selectedPrescriptionObject = _.find(_.get(this,"_dialogData.pdfPrescriptionsList",[]), i=> _.trim(_.get(i,"service.id","whatever")) === documentServiceId && _.trim(_.get(i,"document.id","whatever")) === documentId)
                 const documentContactObject = _.get(selectedPrescriptionObject,"contact",{})
 
+                const formTemplate = _.get(this,"_dialogData.formTemplate",{})
+                const patientObject = _.get(this,"_dialogData.currentPatient",{})
+                const defaultCodes = _.get(this,"_dialogData.codes.defaultCodes",{})
+                const triptyqueTransactionCode = _.get(this,"_dialogData.codes.triptyqueCodes",{})
+
                 return promResolve
-                    .then(() => this.api.code().findPaginatedCodes('be', 'care.topaz.customTransaction', ''))
-                    .then(transactionCodes => _.find(transactionCodes.rows, tc => _.trim(_.get(tc,"code","")).toLowerCase() === "triptyque"))
-                    .then(existingTriptyqueTransactionCode => !!_.size(existingTriptyqueTransactionCode) ? existingTriptyqueTransactionCode : this.api.code().createCode({
-                        version: "1",
-                        code: "triptyque",
-                        regions: ["be","fr"],
-                        type: "care.topaz.customTransaction",
-                        id: "care.topaz.customTransaction|triptyque|1",
-                        label: {fr:"Triptyque",nl:"Triptyque",en:"Triptyque"}
-                    }))
-                    .then(triptyqueTransactionCode => this.api.code().getCodes( this._getConfig("defaultCodes",[]).map(i=>_.trim(_.get(i,"id",""))) ).then(defaultCodes => ([triptyqueTransactionCode,defaultCodes])))
-                    .then(([triptyqueTransactionCode,defaultCodes]) => this.api.patient().getPatientWithUser(this.user, _.trim(_.get(this,"patient.id",""))).then(patientObject => ([triptyqueTransactionCode,defaultCodes,patientObject])))
-                    .then(([triptyqueTransactionCode,defaultCodes,patientObject]) => this.api.contact().newInstance(this.user, patientObject, {
+                    .then(() => this.api.contact().newInstance(this.user, patientObject, {
                             groupId: documentId,
                             created: +new Date,
                             modified: +new Date,
@@ -1277,24 +1232,18 @@
                             codes: _.map(defaultCodes, dc =>{return{type: _.trim(_.get(dc,"type")), version: _.trim(_.get(dc,"version")), code: _.trim(_.get(dc,"code")), label: _.get(dc,"label",{}) }}),
                             subContacts: [],
                             services: []
-                        }).then(contactInstance => ([patientObject,contactInstance]))
+                        }).then(contactInstance => contactInstance)
                     )
-                    .then(([patientObject,contactInstance]) => this.api.contact().createContactWithUser(this.user, contactInstance).then(createdContact => ([patientObject,createdContact])))
-                    .then(([patientObject,createdContact]) => this.api.hcparty().getCurrentHealthcareParty()
-                        .then(currentHcp => Promise.all([
-                            this.api.form().getFormTemplatesByGuid( formTemplateGuid, "deptgeneralpractice" ),
-                            this.api.form().getFormTemplatesByGuid( formTemplateGuid, _.trim(_.get(currentHcp,"specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
-                        ]).then(promResults => ([patientObject,createdContact,_.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value()])))
-                    )
-                    .then(([patientObject,createdContact,formTemplate]) => this.api.form().newInstance(this.user, patientObject, {
+                    .then(contactInstance => this.api.contact().createContactWithUser(this.user, contactInstance))
+                    .then(createdContact => this.api.form().newInstance(this.user, patientObject, {
                             contactId: _.trim(_.get(createdContact,"id","")),
                             formTemplateId: _.trim(_.get(formTemplate,"id","")),
                             descr: _.trim(_.get(formTemplate,"name","")),
                             tags: _.get(createdContact,"tags",[]),
-                        }).then(formInstance => ([patientObject,createdContact,formInstance]))
+                        }).then(formInstance => ([createdContact,formInstance]))
                     )
-                    .then(([patientObject,createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([patientObject,createdContact,createdForm])))
-                    .then(([patientObject,createdContact,createdForm]) => {
+                    .then(([createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([createdContact,createdForm])))
+                    .then(([createdContact,createdForm]) => {
 
                         const subContactServiceIds = _.compact(_.uniq(_.get(_.find(_.get(documentContactObject,"subContacts",[]), {formId: documentFormId}),"services",[]).map(i=>_.trim(_.get(i,"serviceId","")))))
                         const subContactServiceDatas = _.filter(_.get(documentContactObject,"services",[]), i=> subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) > -1 )
@@ -1309,25 +1258,25 @@
                             services: _.map(newServicesData, sv => {return{serviceId: _.trim(_.get(sv,"id",""))/*, service:sv*/}})
                         }]
 
-                        return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([patientObject,modifiedContact,createdForm]))
+                        return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([modifiedContact,createdForm]))
 
                     })
-                    .then(([patientObject,modifiedContact,createdForm]) => {
+                    .then(([modifiedContact,createdForm]) => {
 
-                        selectedPrescriptionObject.formId = _.trim(_.get(createdForm,"id",""))
-                        selectedPrescriptionObject.contact = modifiedContact
-                        selectedPrescriptionObject.contacts = [modifiedContact]
-                        selectedPrescriptionObject.servicesMap = this._getServicesMap([modifiedContact])
-
-                        this.set("patient", patientObject)
                         this.set("_currentPdfPreviewDocumentId", "")
-                        this.set("_selectedPrescriptionObject", selectedPrescriptionObject)
-                        this.set("_summaryForm.careTeam", _.get(this,"_selectedPrescriptionObject.document.author"))
+                        this.set("_selectedPrescriptionObject", _.merge({}, selectedPrescriptionObject, {
+                            formId: _.trim(_.get(createdForm,"id","")),
+                            contact: modifiedContact,
+                            contacts: [modifiedContact],
+                            servicesMap: this._getServicesMap([modifiedContact])
+                        }))
+                        this.set("_summaryForm.careTeam", _.trim(_.get(this,"_selectedPrescriptionObject.document.author")))
 
                     })
                     .finally(() => {
-                        console.log("selectedPrescriptionObject", selectedPrescriptionObject)
+                        console.log("this._selectedPrescriptionObject", this._selectedPrescriptionObject)
                         this.set("_isLoading", false);
+                        return promResolve
                     })
 
             }
@@ -1342,12 +1291,12 @@
                 if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedparentpathology') > -1 ) {
 
                     const parentValue = _.trim(_.get(this,"_summaryForm.relatedParentPathology",""))
-                    const parentChildren = _.filter(this._relatedChildrenPathologies, i => _.trim(_.get(i,"parent","")) === parentValue )
+                    const parentChildren = _.filter(_.get(this,"_dialogData.relatedChildrenPathologies",[]), i => _.trim(_.get(i,"parent","")) === parentValue )
                     const childrenPathologiesForSelectedParent = !!_.trim(parentValue) && !!_.size(parentChildren) ? parentChildren : []
                     const relatedChildrenPathologyVaadinComboBoxClassList = this.shadowRoot.querySelector('#relatedChildrenPathology').classList
 
                     this.set("_summaryForm.relatedChildrenPathology", "")
-                    this.set("_relatedChildrenPathologiesForSelectedParent", !!_.size(childrenPathologiesForSelectedParent) ? childrenPathologiesForSelectedParent : [])
+                    this.set("_dialogData.relatedChildrenPathologiesForSelectedParent", !!_.size(childrenPathologiesForSelectedParent) ? childrenPathologiesForSelectedParent : [])
                     relatedChildrenPathologyVaadinComboBoxClassList && !!_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.remove("displaynone")
                     relatedChildrenPathologyVaadinComboBoxClassList && !_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.add("displaynone")
 
@@ -1362,15 +1311,8 @@
                 const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
                 setTimeout(() => {
                     return (reqIdx !== this._saveFormReqIdx || _.trim(_.get(summaryForm,"path","")) === "_summaryForm" || this._triptyqueDetailActiveTab !== "summary" || !_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))) ? false : promResolve
-                        .then(() => Promise.all([
-                            this.api.code().findPaginatedCodes('be', "CD-BVT-LATERALITY"),
-                            this.api.code().findPaginatedCodes('be', "care.topaz.customTransaction"),
-                            this.api.code().findPaginatedCodes('be', this._getConfig("careReasonsCode","CD-INCAPACITYREASON")),
-                            this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode","care.topaz.kinesitherapyPrescription"))
-                        ]))
-                        .then(codes => { return {lateralityCodes: _.get(codes,"[0].rows",[]), triptyqueCodes: _.filter(_.get(codes,"[1].rows",[]),{code: "triptyque"}), incapacityCodes: _.get(codes,"[2].rows",[]), prescriptionCodes: _.get(codes,"[3].rows",[]) }} )
-                        .then(codes => !_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) ? ([codes,{}]) : this.api.helement().getHealthElement(_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))).then(he=>([codes,he])))
-                        .then(([codes,he]) => {
+                        .then(()=> !_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) ? {} : this.api.helement().getHealthElement(_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))))
+                        .then(he => {
                             const lateralityCheckedCodes = _.compact(_.map(_.compact([ (!!_.get(this,"_summaryForm.lateralityLeft",false) ? "left" : false), (!!_.get(this,"_summaryForm.lateralityRight",false) ? "right" : false), (!!_.get(this,"_summaryForm.lateralityCenter",false) ? "odd" : false) ])))
                             const codeKeysToImport = ["id", "code", "version", "type"]
                             return _.merge({},he,{
@@ -1387,13 +1329,13 @@
                                     created: +new Date,
                                     modified: +new Date,
                                     codes: _.compact(_.uniqBy(_.filter(_.concat(
-                                        _.compact( _.map( codes.lateralityCodes, lateralityCode => lateralityCheckedCodes.indexOf(_.trim(_.get(lateralityCode,"code",""))) > -1 ? _.pick(lateralityCode, codeKeysToImport) : false )),
-                                        [_.pick(_.find( _.get(codes,"incapacityCodes",[]), {id:_.trim(_.get(this,"_summaryForm.careReason",""))}), codeKeysToImport)],
-                                        [_.pick(_.find( _.get(codes,"prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedParentPathology",""))}), codeKeysToImport)],
-                                        [_.pick(_.find( _.get(codes,"prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedChildrenPathology",""))}), codeKeysToImport)]
+                                        _.compact( _.map( _.get(this,"_dialogData.codes.lateralityCodes",{}), lateralityCode => lateralityCheckedCodes.indexOf(_.trim(_.get(lateralityCode,"code",""))) > -1 ? _.pick(lateralityCode, codeKeysToImport) : false )),
+                                        [_.pick(_.find( _.get(this,"_dialogData.codes.incapacityCodes",[]), {id:_.trim(_.get(this,"_summaryForm.careReason",""))}), codeKeysToImport)],
+                                        [_.pick(_.find( _.get(this,"_dialogData.codes.prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedParentPathology",""))}), codeKeysToImport)],
+                                        [_.pick(_.find( _.get(this,"_dialogData.codes.prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedChildrenPathology",""))}), codeKeysToImport)]
                                     ), i => !!_.size(i)), "id")),
                                     tags: _.filter(_.compact([
-                                        _.pick(_.get(codes,"triptyqueCodes",{}), codeKeysToImport),
+                                        _.pick(_.get(this,"_dialogData.codes.triptyqueCodes",{}), codeKeysToImport),
                                         _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentContactId"}), codeKeysToImport),
                                         _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentId"}), codeKeysToImport),
                                         _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentServiceId"}), codeKeysToImport),
@@ -1420,12 +1362,44 @@
 
             }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+            _gotoTabIfsAllowed(e) {
+
+                // 1. prescriptionForm
+                // 2. summary
+                // 3. procedures
+
+                const currentTab = _.trim(_.get(this,"_triptyqueDetailActiveTab", "prescriptionForm"))
+                const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
+                const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
+                    currentTab === "procedures" ? targetTab :
+                    currentTab === "prescriptionForm" && targetTab === "summary" ? !!_.size(_.compact(_.map( _.get(this,"_selectedPrescriptionObject.contact.services",[]), sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) ? targetTab : currentTab :
+                    currentTab === "prescriptionForm" && targetTab === "procedures" ? (true === true /* Validate BOTH prescriptionForm & summary tabs here */ ) ? targetTab : currentTab :
+                    currentTab === "summary" ? (true === true /* Validate summary tab here */ ) ? targetTab : currentTab :
+                    targetTab
+
+                return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
+
+            }
+
             _linkInsuranceDocument(e) {
 
                 const promResolve = Promise.resolve();
                 const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
-                const targetDocument = _.head(_.remove(this._insuranceDocuments, {documentId:documentId}))
+                const targetDocument = _.head(_.remove(this._dialogData.insuranceDocuments, {documentId:documentId}))
 
                 return !documentId || !_.size(targetDocument) ?
                     false :
@@ -1450,7 +1424,7 @@
                 return !documentId || !_.size(targetDocument) ?
                     false :
                     promResolve.then(() => {
-                        this.push("_insuranceDocuments",targetDocument)
+                        this.push("_dialogData.insuranceDocuments",targetDocument)
                         setTimeout(() => {
                             this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
                             this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
@@ -1471,7 +1445,7 @@
 
                 return !_.trim(_.get(activeItem,"poaId","")) && !isNew ?
                     this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
-                    this._changeDialogAction("detail")
+                    this._changeDialogAction("detail").finally(() => this.set("_isLoading", false))
 
                         // ==> this._dialogData.pdfPrescriptionsList
                         // IF activeItem ==> invoke / get / load cuisine de this._linkPdfPrescription
@@ -1481,6 +1455,7 @@
 
                         // FZ: continue here
 
+                        /*
                         .then(() => this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode",""), ''))
                         .then(prescriptionCodes => {
                             this.set("_relatedChildrenPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
@@ -1513,6 +1488,7 @@
                             labelHr: _.compact([ "[" + this.localize((!!_.get(hcp,"isInternal","")?"internal":"external"),"Internal", this.language) + "]", _.trim(_.get(hcp,"name","")), _.trim(_.get(hcp,"nihiiHr","")), (_.trim(_.get(hcp,"specialityCodesHr","")) ? "(" + _.trim(_.get(hcp,"specialityCodesHr","")) + ")" : "") ]).join(" ")
                         }})))
                         .finally(() => this.set("_isLoading", false))
+                        */
 
             }
 
