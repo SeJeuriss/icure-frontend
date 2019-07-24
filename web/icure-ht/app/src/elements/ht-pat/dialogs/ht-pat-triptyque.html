@@ -289,82 +289,88 @@
 
                                     <div class="summaryFormContainer w100pc">
                                         <div class="fl50">
-
-                                            _summaryForm.relatedHealthElementId: [[_summaryForm.relatedHealthElementId]]
-                                            <template is="dom-if" if="[[_summaryForm.relatedHealthElementId]]">Dom if OK</template>
-
-                                            <div class="formItem"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[activeHealthElements]]" item-label-path="descrHr" item-value-path="id" value="{{_summaryForm.relatedHealthElementId}}" label="[[localize('linkedHealthElement','Related health element',language)]]"></vaadin-combo-box></div>
-                                            <div class="formItem"><vaadin-combo-box id="relatedParentPathology" class="triptyqueVaadinComboBox" filtered-items="[[_dialogData.relatedParentPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedParentPathology}}" label="Type de pathologie"></vaadin-combo-box></div>
-                                            <div class="formItem"><vaadin-combo-box id="relatedChildrenPathology" class="triptyqueVaadinComboBox displaynone" filtered-items="[[_dialogData.relatedChildrenPathologiesForSelectedParent]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedChildrenPathology}}" label="Affection"></vaadin-combo-box></div>
-                                            <div class="formItem mt8">
-                                                <vaadin-checkbox checked="{{_summaryForm.lateralityLeft}}"> Gauche</vaadin-checkbox>
-                                                <vaadin-checkbox checked="{{_summaryForm.lateralityRight}}"> Droite</vaadin-checkbox>
-                                                <vaadin-checkbox checked="{{_summaryForm.lateralityCenter}}"> Tronc central</vaadin-checkbox>
-                                            </div>
-                                            <div class="fl50">
-                                                <div class="formItem mt15"><dynamic-date-field class="dynamicDateField" label="Date de début de la prescription" value="{{_summaryForm.startDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
-                                                <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" label="Date de la première scéance" value="{{_summaryForm.valueDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
-                                            </div>
-                                            <div class="fr50">
-                                                <div class="formItem mt15"><dynamic-date-field class="dynamicDateField" label="Date de fin de la prescription" value="{{_summaryForm.endDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
-                                                <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" label="Date de rappel de la demande" value="{{_summaryForm.careRehearseDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
-                                            </div>
+                                            <div class="formItem"><vaadin-combo-box class="triptyqueVaadinComboBox validationRequired" filtered-items="[[activeHealthElements]]" item-label-path="descrHr" item-value-path="id" value="{{_summaryForm.relatedHealthElementId}}" label="[[localize('linkedHealthElement','Related health element',language)]]" auto-validate required></vaadin-combo-box></div>
+                                            <template is="dom-if" if="[[_summaryForm.relatedHealthElementId]]">
+                                                <div class="formItem"><vaadin-combo-box id="relatedParentPathology" class="triptyqueVaadinComboBox validationRequired" filtered-items="[[_dialogData.relatedParentPathologies]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedParentPathology}}" label="[[localize('pathologyKind','Type de pathologie',language)]]" auto-validate required></vaadin-combo-box></div>
+                                                <div class="formItem"><vaadin-combo-box id="relatedChildrenPathology" class="triptyqueVaadinComboBox displaynone" filtered-items="[[_dialogData.relatedChildrenPathologiesForSelectedParent]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.relatedChildrenPathology}}" label="[[localize('affection','Affection',language)]]"></vaadin-combo-box></div>
+                                                <div class="formItem mt8">
+                                                    <vaadin-checkbox checked="{{_summaryForm.lateralityLeft}}"> [[localize('left','Gauche',language)]]</vaadin-checkbox>
+                                                    <vaadin-checkbox checked="{{_summaryForm.lateralityRight}}"> [[localize('right','Droite',language)]]</vaadin-checkbox>
+                                                    <vaadin-checkbox checked="{{_summaryForm.lateralityCenter}}"> [[localize('odd','Tronc central',language)]]</vaadin-checkbox>
+                                                </div>
+                                                <div class="fl50">
+                                                    <div class="formItem mt15"><dynamic-date-field class="dynamicDateField validationRequired" label="[[localize('beginningOfPrescription','Date de début de la prescription',language)]]" value="{{_summaryForm.startDate}}" i18n="[[i18n]]" auto-validate required></dynamic-date-field></div>
+                                                    <div class="formItem mt10"><dynamic-date-field class="dynamicDateField validationRequired" label="[[localize('beginningOfCares','Date de la première scéance',language)]]" value="{{_summaryForm.valueDate}}" i18n="[[i18n]]" auto-validate required></dynamic-date-field></div>
+                                                </div>
+                                                <div class="fr50">
+                                                    <div class="formItem mt15"><dynamic-date-field class="dynamicDateField" label="[[localize('endOfPrescription','Date de fin de la prescription',language)]]" value="{{_summaryForm.endDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                                    <div class="formItem mt10"><dynamic-date-field class="dynamicDateField" label="[[localize('careRehearseDate','Date de rappel de la demande',language)]]" value="{{_summaryForm.careRehearseDate}}" i18n="[[i18n]]"></dynamic-date-field></div>
+                                                </div>
+                                            </template>
                                         </div>
                                         <div class="fr50">
-                                            <div class="formItem mt2"><dynamic-text-field class="m0" value="{{_summaryForm.planOfActionsName}}" label="Nom du plan d'action"></dynamic-text-field></div>
-                                            <div class="formItem mt6"><dynamic-text-field class="m0" value="{{_summaryForm.numberOfCares}}" label="Nombre de séances" type="number"></dynamic-text-field></div>
-                                            <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_dialogData.availableHcps]]" item-label-path="vaadinComboxBoxLabelHr" item-value-path="id" value="{{_summaryForm.careTeam}}" label="Prestataire lié"></vaadin-combo-box></div>
-                                            <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox" filtered-items="[[_dialogData.codes.incapacityCodes]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.careReason}}" label="Justificatif de soins"></vaadin-combo-box></div>
+                                            <template is="dom-if" if="[[_summaryForm.relatedHealthElementId]]">
+                                                <div class="formItem mt2"><dynamic-text-field class="m0 validationRequired" value="{{_summaryForm.planOfActionsName}}" label="[[localize('poaName','Nom du plan d\'action',language)]]" auto-validate required></dynamic-text-field></div>
+                                                <div class="formItem mt6"><dynamic-text-field class="m0 validationRequired" value="{{_summaryForm.numberOfCares}}" label="[[localize('numberOfCares','Nombre de séances',language)]]" type="number" auto-validate required></dynamic-text-field></div>
+                                                <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox validationRequired" filtered-items="[[_dialogData.availableHcps]]" item-label-path="vaadinComboxBoxLabelHr" item-value-path="id" value="{{_summaryForm.careTeam}}" label="[[localize('linkedPhysician','Prestataire lié',language)]]" auto-validate required></vaadin-combo-box></div>
+                                                <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox validationRequired" filtered-items="[[_dialogData.codes.incapacityCodes]]" item-label-path="labelHr" item-value-path="id" value="{{_summaryForm.careReason}}" label="[[localize('careReason','Justificatif de soins',language)]]" auto-validate required></vaadin-combo-box></div>
+                                            </template>
                                         </div>
                                         <div class="clear"></div>
-                                        <div class="formItem mt20">
-                                            <div class="fw700 mb10">Documents de la mutuelle:</div>
+                                        <template is="dom-if" if="[[_summaryForm.relatedHealthElementId]]">
+                                            <div class="formItem mt20">
+                                            <div class="fw700 mb10">[[localize('insuranceDocuments','Documents de la mutuelle',language)]]:</div>
 
-                                            <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight mb20">
-                                                <div class="mb10">Documents liés au triptyque:</div>
-                                                <template is="dom-repeat" items="[[_dialogData.insuranceLinkedDocuments]]" as="item" id="triptyqueLinkedInsuranceDocumentsDomRepeat">
-                                                    <paper-item class="linkedObjectTag" data-document-id="[[item.documentId]]">
-                                                        <div class="tagtype" data-document-id="[[item.documentId]]">[[item.created]]</div>
-                                                        <div class="one-line-menu list-title" data-document-id="[[item.documentId]]">[[item.documentName]]</div>
-                                                        <paper-icon-button class="deleteTag" icon="icons:delete" data-document-id="[[item.documentId]]" on-tap="_removeLinkedInsuranceDocument"></paper-icon-button>
-                                                    </paper-item>
-                                                </template>
-                                                <div class="clear"></div>
-                                            </div>
+                                            <template is="dom-if" if="[[_templateInsuranceLinkedDocuments]]">
+                                                <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight mb20">
+                                                    <div class="mb10">[[localize('linkedInsuranceDocuments','Documents liés au triptyque',language)]]:</div>
+                                                    <template is="dom-repeat" items="[[_templateInsuranceLinkedDocuments]]" as="item" id="triptyqueLinkedInsuranceDocumentsDomRepeat">
+                                                        <paper-item class="linkedObjectTag" data-document-id="[[item.documentId]]">
+                                                            <div class="tagtype" data-document-id="[[item.documentId]]">[[item.created]]</div>
+                                                            <div class="one-line-menu list-title" data-document-id="[[item.documentId]]">[[item.documentName]]</div>
+                                                            <paper-icon-button class="deleteTag" icon="icons:delete" data-document-id="[[item.documentId]]" on-tap="_removeLinkedInsuranceDocument"></paper-icon-button>
+                                                        </paper-item>
+                                                    </template>
+                                                    <div class="clear"></div>
+                                                </div>
+                                            </template>
 
-                                            <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight">
-                                                <div class="mb10">Documents disponibles:</div>
-                                                <template is="dom-repeat" items="[[_dialogData.insuranceDocuments]]" as="item" id="triptyqueAvailableInsuranceDocumentsDomRepeat">
-                                                    <div class="singleDocumentContainer" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]">
-                                                        <div class="header p10">
-                                                            <span class="date">[[item.created]]</span>
-                                                            <paper-button class="p0 m0 fr" on-tap="_linkInsuranceDocument" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]"><iron-icon icon="icons:link" id$="link-insurance-[[item.documentId]]"></iron-icon></paper-button><paper-tooltip for$="link-insurance-[[item.documentId]]">[[localize('linkPdf','Link PDF',language)]]</paper-tooltip>
-                                                            <paper-button class="p0 m0 fr mr10" on-tap="_toggleCollapseInsuranceDocumentPreview" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]"><iron-icon icon="icons:visibility" id$="view-insurance-[[item.documentId]]"></iron-icon></paper-button><paper-tooltip for$="view-insurance-[[item.documentId]]">[[localize('ehb.view','View',language)]]</paper-tooltip>
+                                            <template is="dom-if" if="[[_templateInsuranceDocuments]]">
+                                                <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight">
+                                                    <div class="mb10">[[localize('availableToBeLinkedDocuments','Documents disponibles / à lier',language)]]:</div>
+                                                    <template is="dom-repeat" items="[[_templateInsuranceDocuments]]" as="item" id="triptyqueAvailableInsuranceDocumentsDomRepeat">
+                                                        <div class="singleDocumentContainer" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]">
+                                                            <div class="header p10">
+                                                                <span class="date">[[item.created]]</span>
+                                                                <paper-button class="p0 m0 fr" on-tap="_linkInsuranceDocument" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]"><iron-icon icon="icons:link" id$="link-insurance-[[item.documentId]]"></iron-icon></paper-button><paper-tooltip for$="link-insurance-[[item.documentId]]">[[localize('linkPdf','Link PDF',language)]]</paper-tooltip>
+                                                                <paper-button class="p0 m0 fr mr10" on-tap="_toggleCollapseInsuranceDocumentPreview" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]"><iron-icon icon="icons:visibility" id$="view-insurance-[[item.documentId]]"></iron-icon></paper-button><paper-tooltip for$="view-insurance-[[item.documentId]]">[[localize('ehb.view','View',language)]]</paper-tooltip>
+                                                            </div>
+                                                            <div class="body p5 fspoint9em"><iron-icon icon="image:picture-as-pdf" class="mr5 darkRed"></iron-icon> [[item.documentName]]</div>
+
+                                                            <template is="dom-if" if="[[_isEqual(_currentPreviewInsuranceDocumentId, item.documentId)]]">
+                                                                <dynamic-doc
+                                                                        id="insurance-document-preview-[[item.documentId]]"
+                                                                        api="[[api]]"
+                                                                        i18n="[[i18n]]"
+                                                                        user="[[user]]"
+                                                                        document-id="[[item.documentId]]"
+                                                                        title="[[item.documentName]]"
+                                                                        language="[[language]]"
+                                                                        preview="true"
+                                                                        downloadable="true"
+                                                                        fullwidth="true"
+                                                                        force-no-assignation="true"
+                                                                        force-no-document-header="true"
+                                                                        additional-css-class="tripTyque"
+                                                                ></dynamic-doc>
+                                                            </template>
                                                         </div>
-                                                        <div class="body p5 fspoint9em"><iron-icon icon="image:picture-as-pdf" class="mr5 darkRed"></iron-icon> [[item.documentName]]</div>
-
-                                                        <template is="dom-if" if="[[_isEqual(_currentPreviewInsuranceDocumentId, item.documentId)]]">
-                                                            <dynamic-doc
-                                                                    id="insurance-document-preview-[[item.documentId]]"
-                                                                    api="[[api]]"
-                                                                    i18n="[[i18n]]"
-                                                                    user="[[user]]"
-                                                                    document-id="[[item.documentId]]"
-                                                                    title="[[item.documentName]]"
-                                                                    language="[[language]]"
-                                                                    preview="true"
-                                                                    downloadable="true"
-                                                                    fullwidth="true"
-                                                                    force-no-assignation="true"
-                                                                    force-no-document-header="true"
-                                                                    additional-css-class="tripTyque"
-                                                            ></dynamic-doc>
-                                                        </template>
-                                                    </div>
-                                                </template>
-                                            </div>
+                                                    </template>
+                                                </div>
+                                            </template>
 
                                         </div>
+                                        </template>
                                     </div>
 
                                 </template>
@@ -400,7 +406,12 @@
                 </div>
 
 
+
             </template>
+
+
+
+            <div id="failedLabel"><iron-icon icon="clear"></iron-icon> [[localize('fillInRequiredFields','Veuillez compléter les champs requis',language)]]</div>
 
 
 
@@ -473,62 +484,6 @@
                         type: Boolean,
                         value: false
                     },
-                    _dialogData: {
-                        type: Object,
-                        value: () => {return {
-                            currentHcp: {
-                                type: Object,
-                                value: () => {}
-                            },
-                            availableHcps: {
-                                type: Array,
-                                value: ()=>[]
-                            },
-                            currentPatient: {
-                                type: Object,
-                                value: () => {}
-                            },
-                            hesAndPoas: {
-                                type: Array,
-                                value: () => []
-                            },
-                            pdfPrescriptionsList: {
-                                type: Array,
-                                value: () => []
-                            },
-                            formTemplate: {
-                                type: Object,
-                                value: () => {}
-                            },
-                            insuranceDocuments: {
-                                type: Array,
-                                value: ()=>[],
-                            },
-                            insuranceLinkedDocuments: {
-                                type: Array,
-                                value: ()=>[],
-                            },
-                            relatedChildrenPathologies: {
-                                type: Array,
-                                value: ()=>[],
-                            },
-                            relatedParentPathologies: {
-                                type: Array,
-                                value: ()=>[],
-                            },
-                            relatedChildrenPathologiesForSelectedParent: {
-                                type: Array,
-                                value: ()=>[]
-                            },
-                            codes: {
-                                type: Object,
-                                value: ()=>{}
-                            }
-                        }},
-                        noReset: true
-                    },
-
-
                     _vaadinGridPlanOfActionMaxItemsPerPage: {
                         type: Number,
                         value: 2
@@ -561,7 +516,6 @@
                         type: Number,
                         value: 1
                     },
-
                     _triptyqueDetailActiveTab: {
                         type: String,
                         value: "prescriptionForm"
@@ -595,7 +549,14 @@
                         value: ()=>[],
                         noReset: true
                     },
-
+                    _templateInsuranceDocuments: {
+                        type: Array,
+                        value: () => []
+                    },
+                    _templateInsuranceLinkedDocuments: {
+                        type: Array,
+                        value: () => []
+                    },
                     _summaryForm: {
                         type: Object,
                         value: {
@@ -616,15 +577,7 @@
                             insuranceDocuments: []
                         }
                     },
-                    _careTeamValues: {
-                        type: Array,
-                        value: ()=>[],
-                        noReset: true
-                    },
-                    _insuranceLinkedDocuments: {
-                        type: Array,
-                        value: () => []
-                    },
+
                     _dialogParameters: {
                         type: Object,
                         value: () => {
@@ -668,7 +621,57 @@
                                 }
                             }
                         }
-                    }
+                    },
+                    _dialogData: {
+                        type: Object,
+                        value: () => {return {
+                            currentHcp: {
+                                type: Object,
+                                value: () => {}
+                            },
+                            availableHcps: {
+                                type: Array,
+                                value: ()=>[]
+                            },
+                            currentPatient: {
+                                type: Object,
+                                value: () => {}
+                            },
+                            hesAndPoas: {
+                                type: Array,
+                                value: () => []
+                            },
+                            pdfPrescriptionsList: {
+                                type: Array,
+                                value: () => []
+                            },
+                            formTemplate: {
+                                type: Object,
+                                value: () => {}
+                            },
+                            insuranceDocuments: {
+                                type: Array,
+                                value: ()=>[],
+                            },
+                            relatedChildrenPathologies: {
+                                type: Array,
+                                value: ()=>[],
+                            },
+                            relatedParentPathologies: {
+                                type: Array,
+                                value: ()=>[],
+                            },
+                            relatedChildrenPathologiesForSelectedParent: {
+                                type: Array,
+                                value: ()=>[]
+                            },
+                            codes: {
+                                type: Object,
+                                value: ()=>{}
+                            }
+                        }},
+                        noReset: true
+                    },
                 };
             }
 
@@ -970,6 +973,7 @@
                         documentMainUti: _.trim(_.get(i, "mainUti", "")),
                         documentName: _.trim(_.get(i, "name", ""))
                     }}))))
+                    .then(()=> this.set("_templateInsuranceDocuments", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.get(this, "_dialogData.insuranceDocuments",[]) : []))
                     .then(()=> this._getPdfPrescriptionsList().then(pdfPrescriptions => this.set("_dialogData.pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : [])))
                     .then(() =>this.api.helement().findBy(this.user.healthcarePartyId, this.patient))
                     .then(hes => _
@@ -1303,10 +1307,10 @@
                 }
 
                 // Copy value of relatedhealthelementid (string) as plan of action's name
-                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedhealthelementid') > -1 && !!_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) && !_.trim(_.get(this,"_summaryForm.planOfActionsName",""))) this.set("_summaryForm.planOfActionsName", _.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","") )
-                if(!_.trim(_.get(this,"_summaryForm.startDate",""))) this.set("_summaryForm.startDate", _.trim(_.get(this,"_selectedPrescriptionObject.date")).substr(0,8))
-                if(!_.trim(_.get(this,"_summaryForm.valueDate","")) && !!_.trim(careBeginningDate)) this.set("_summaryForm.valueDate", _.trim(careBeginningDate).substr(0,8))
-                if(parseInt(_.get(this,"_summaryForm.numberOfCares","")) === 1 && !!_.trim(numberOfCares)) this.set("_summaryForm.numberOfCares", _.trim(numberOfCares))
+                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedhealthelementid') > -1 && !!_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) && !_.trim(_.get(this,"_summaryForm.planOfActionsName","")) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.planOfActionsName") this.set("_summaryForm.planOfActionsName", _.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","") )
+                if(!_.trim(_.get(this,"_summaryForm.startDate","")) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.startDate") this.set("_summaryForm.startDate", _.trim(_.get(this,"_selectedPrescriptionObject.date")).substr(0,8))
+                if(!_.trim(_.get(this,"_summaryForm.valueDate","")) && !!_.trim(careBeginningDate) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.valueDate") this.set("_summaryForm.valueDate", _.trim(careBeginningDate).substr(0,8))
+                if(parseInt(_.get(this,"_summaryForm.numberOfCares","")) === 1 && !!_.trim(numberOfCares) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.numberOfCares" ) this.set("_summaryForm.numberOfCares", _.trim(numberOfCares))
 
                 const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
                 setTimeout(() => {
@@ -1362,18 +1366,20 @@
 
             }
 
+            _fieldsValidationByTab(tabName) {
 
+                const validationResult = tabName === "summary" ? !_.size(_.filter(_.map(this.shadowRoot.querySelectorAll('.validationRequired'), fieldToValidate => fieldToValidate && (typeof _.get(fieldToValidate, "validate", false) === "function" ? fieldToValidate.validate() : !!_.trim(_.get(fieldToValidate,"value","")))), i => !i)) :
+                   tabName === "prescription" ? !!_.size(_.compact(_.map( _.get(this,"_selectedPrescriptionObject.contact.services",[]), sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) :
+                   false
 
+               if( !validationResult && this.shadowRoot.querySelector("#failedLabel") && this.shadowRoot.querySelector("#failedLabel").classList ) {
+                    this.shadowRoot.querySelector("#failedLabel").classList.add('displayNotification')
+                    setTimeout(() => {this.shadowRoot.querySelector("#failedLabel").classList.remove('displayNotification')}, 6000)
+               }
 
+               return validationResult
 
-
-
-
-
-
-
-
-
+            }
 
             _gotoTabIfsAllowed(e) {
 
@@ -1385,28 +1391,43 @@
                 const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
                 const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
                     currentTab === "procedures" ? targetTab :
-                    currentTab === "prescriptionForm" && targetTab === "summary" ? !!_.size(_.compact(_.map( _.get(this,"_selectedPrescriptionObject.contact.services",[]), sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) ? targetTab : currentTab :
-                    currentTab === "prescriptionForm" && targetTab === "procedures" ? (true === true /* Validate BOTH prescriptionForm & summary tabs here */ ) ? targetTab : currentTab :
-                    currentTab === "summary" ? (true === true /* Validate summary tab here */ ) ? targetTab : currentTab :
+                    currentTab === "prescriptionForm" && targetTab === "summary" ? this._fieldsValidationByTab("prescription") ? targetTab : currentTab :
+                    currentTab === "prescriptionForm" && targetTab === "procedures" ? this._fieldsValidationByTab("prescription") && this._fieldsValidationByTab("summary") ? targetTab : currentTab :
+                    currentTab === "summary" ? this._fieldsValidationByTab("summary") ? targetTab : currentTab :
                     targetTab
 
                 return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
 
             }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             _linkInsuranceDocument(e) {
 
                 const promResolve = Promise.resolve();
                 const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
-                const targetDocument = _.head(_.remove(this._dialogData.insuranceDocuments, {documentId:documentId}))
+                const targetDocument = _.head(_.remove(this._templateInsuranceDocuments, {documentId:documentId}))
+                const finalLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceLinkedDocuments",[]), targetDocument)), "documentId")
 
                 return !documentId || !_.size(targetDocument) ?
                     false :
                     promResolve.then(() => {
-                        this.push("_insuranceLinkedDocuments", targetDocument)
+                        this.set("_summaryForm.insuranceDocuments", finalLinkedDocumentsList)
+                        this.set("_templateInsuranceLinkedDocuments", finalLinkedDocumentsList)
                         setTimeout(() => {
-                            this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
                             this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
                             this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
                         }, 100)
@@ -1419,16 +1440,19 @@
                 const promResolve = Promise.resolve();
                 const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-ICON-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataDocumentId",_.trim(_.get(e,"target.dataDocumentId",""))))
-                const targetDocument = _.head(_.remove(this._insuranceLinkedDocuments, {documentId:documentId}))
+                const targetDocument = _.head(_.remove(this._templateInsuranceLinkedDocuments, {documentId:documentId}))
+                const finalNotLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceDocuments",[]), targetDocument)), "documentId")
+
 
                 return !documentId || !_.size(targetDocument) ?
                     false :
                     promResolve.then(() => {
-                        this.push("_dialogData.insuranceDocuments",targetDocument)
+                        this.set("_summaryForm.insuranceDocuments", _.get(this,"_templateInsuranceLinkedDocuments",[]))
+                        this.set("_templateInsuranceDocuments", finalNotLinkedDocumentsList)
                         setTimeout(() => {
-                            this.set("_summaryForm.insuranceDocuments", _.get(this,"_insuranceLinkedDocuments",[]))
                             this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
                             this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                            this._summaryFormDataGotChanged(this._summaryForm)
                         }, 100)
                     })
 
@@ -1447,48 +1471,7 @@
                     this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
                     this._changeDialogAction("detail").finally(() => this.set("_isLoading", false))
 
-                        // ==> this._dialogData.pdfPrescriptionsList
-                        // IF activeItem ==> invoke / get / load cuisine de this._linkPdfPrescription
-
-                        // ==> this._dialogData.insuranceDocuments
-                            // Quid jump remove / push documents mutuelles si change he&poa ==> documents déjà assigned / pushed du coup travailler avec var à part ?
-
-                        // FZ: continue here
-
-                        /*
-                        .then(() => this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode",""), ''))
-                        .then(prescriptionCodes => {
-                            this.set("_relatedChildrenPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
-                            this.set("_relatedParentPathologies", _.chain(_.get(prescriptionCodes,"rows",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(this._relatedChildrenPathologies, j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
-                        })
-                        .then(() => this.api.code().findCodes('be', this._getConfig("careReasonsCode",""), ''))
-                        .then(careReasonsData => this.set("_careReasons", _.orderBy(_.compact(_.map(_.filter(careReasonsData,i=>!_.get(i,"disabled",false)), i => { return {
-                            id: _.trim(_.get(i,"id","")),
-                            labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
-                        }})), ["labelHr"], ["asc"])))
-                        .then(()=>{
-                            const internalHcp = _.compact(_.keys(_.get(this,"patient.delegations",[])))
-                            const externalHcp = _.compact(_.map(_.get(this,"patient.patientHealthCareParties",[]),i=>_.get(i,"healthcarePartyId","")))
-                            return this.api.hcparty().getHealthcareParties( _.compact(_.uniq(_.concat(internalHcp, externalHcp))).join(",") )
-                                .then(resolvedHcps => _.map(resolvedHcps, hcp => { return {
-                                    id: _.trim(_.get(hcp, "id", "")),
-                                    name: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i))).join(" "),
-                                    nihiiHr: this.api.formatInamiNumber(_.trim(_.get(hcp, "nihii", ""))),
-                                    specialityCodes: _.compact(_.map(_.get(hcp, "specialityCodes", []), i => _.trim(_.get(i,"id","")))),
-                                    isInternal: internalHcp.indexOf(_.trim(_.get(hcp, "id", ""))) > -1
-                                }}))
-                        })
-                        .then(hcps => {
-                            const hcpSpecialityCodes = _.compact(_.uniq(_.flatten(_.map(hcps, i=>i.specialityCodes))))
-                            return !!_.size(hcpSpecialityCodes) ? this.api.code().getCodes( hcpSpecialityCodes.join(",") ).then(specialityCodes=>([hcps,specialityCodes])) : ([hcps,[]])
-                        })
-                        .then(([hcps,specialityCodes]) => _.map(hcps, hcp=>_.merge({},hcp,{specialityCodesHr:_.compact(_.map(hcp.specialityCodes, sc=>_.get(_.find(specialityCodes,{id:sc}),"label."+this.language, _.head(_.flatMap(_.get(_.find(specialityCodes,{id:sc}),"label",{}))) ))).join(", ")})))
-                        .then(hcps => this.set("_careTeamValues", _.map(_.sortBy(hcps, ["name"],["asc"]), hcp=>{ return {
-                            id: _.trim(_.get(hcp,"id","")),
-                            labelHr: _.compact([ "[" + this.localize((!!_.get(hcp,"isInternal","")?"internal":"external"),"Internal", this.language) + "]", _.trim(_.get(hcp,"name","")), _.trim(_.get(hcp,"nihiiHr","")), (_.trim(_.get(hcp,"specialityCodesHr","")) ? "(" + _.trim(_.get(hcp,"specialityCodesHr","")) + ")" : "") ]).join(" ")
-                        }})))
-                        .finally(() => this.set("_isLoading", false))
-                        */
+                alert("Load data versus heId && poaId")
 
             }
 
