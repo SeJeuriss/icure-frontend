@@ -1229,6 +1229,13 @@
 
             }
 
+            _refreshInsuranceLinkedAndAvailableDocuments() {
+                return setTimeout(() => {
+                    this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
+                    this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                }, 100)
+            }
+
             _linkInsuranceDocument(e) {
 
                 const promResolve = Promise.resolve();
@@ -1237,16 +1244,10 @@
                 const targetDocument = _.head(_.remove(this._templateInsuranceDocuments_available, {documentId:documentId}))
                 const finalLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceDocuments_linked",[]), targetDocument)), "documentId")
 
-                return !documentId || !_.size(targetDocument) ?
-                    false :
-                    promResolve.then(() => {
-                        this.set("_summaryForm.insuranceDocuments_linked", _.cloneDeep(finalLinkedDocumentsList))
-                        this.set("_templateInsuranceDocuments_linked", _.cloneDeep(finalLinkedDocumentsList))
-                        setTimeout(() => {
-                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
-                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
-                        }, 100)
-                    })
+                return !documentId || !_.size(targetDocument) ? false : promResolve
+                    .then(() => this.set("_summaryForm.insuranceDocuments_linked", _.cloneDeep(finalLinkedDocumentsList)))
+                    .then(() => this.set("_templateInsuranceDocuments_linked", _.cloneDeep(finalLinkedDocumentsList)))
+                    .then(() => this._refreshInsuranceLinkedAndAvailableDocuments())
 
             }
 
@@ -1259,16 +1260,25 @@
                 const finalNotLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceDocuments_available",[]), targetDocument)), "documentId")
 
 
-                return !documentId || !_.size(targetDocument) ?
-                    false :
-                    promResolve.then(() => {
-                        this.set("_summaryForm.insuranceDocuments_linked", _.cloneDeep(_.get(this,"_templateInsuranceDocuments_linked",[])))
-                        this.set("_templateInsuranceDocuments_available", _.cloneDeep(finalNotLinkedDocumentsList))
-                        setTimeout(() => {
-                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
-                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
-                        }, 100)
-                    })
+                return !documentId || !_.size(targetDocument) ? false : promResolve
+                    .then(() => this.set("_summaryForm.insuranceDocuments_linked", _.cloneDeep(_.get(this,"_templateInsuranceDocuments_linked",[]))))
+                    .then(() => this.set("_templateInsuranceDocuments_available", _.cloneDeep(finalNotLinkedDocumentsList)))
+                    .then(() => this._refreshInsuranceLinkedAndAvailableDocuments())
+
+            }
+
+            _updateParentChildrenPathologiesDataAndComboBoxes(config={}) {
+
+                const parentValue = _.trim(_.get(this,"_summaryForm.relatedParentPathology",""))
+                const parentChildren = _.filter(_.get(this,"_dialogData.relatedChildrenPathologies",[]), i => _.trim(_.get(i,"parent","")) === parentValue )
+                const childrenPathologiesForSelectedParent = !!_.trim(parentValue) && !!_.size(parentChildren) ? parentChildren : []
+                const relatedChildrenPathologyVaadinComboBoxClassList = _.get(this.shadowRoot.querySelector('#relatedChildrenPathology'),"classList",null)
+
+                if( !!_.get(config,"resetChildrenPathologyValue", false)) this.set("_summaryForm.relatedChildrenPathology", "")
+
+                this.set("_dialogData.relatedChildrenPathologiesForSelectedParent", !!_.size(childrenPathologiesForSelectedParent) ? childrenPathologiesForSelectedParent : [])
+                relatedChildrenPathologyVaadinComboBoxClassList && !!_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.remove("displaynone")
+                relatedChildrenPathologyVaadinComboBoxClassList && !_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.add("displaynone")
 
             }
 
@@ -1291,19 +1301,7 @@
                 const numberOfCares = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("numberOfCaresServiceMapKey","Nombre de séances") + "][0].svc.content." + this.language + ".numberValue", ""))
 
                 // Show / hide children pathologies % parent pathologies
-                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedparentpathology') > -1 ) {
-
-                    const parentValue = _.trim(_.get(this,"_summaryForm.relatedParentPathology",""))
-                    const parentChildren = _.filter(_.get(this,"_dialogData.relatedChildrenPathologies",[]), i => _.trim(_.get(i,"parent","")) === parentValue )
-                    const childrenPathologiesForSelectedParent = !!_.trim(parentValue) && !!_.size(parentChildren) ? parentChildren : []
-                    const relatedChildrenPathologyVaadinComboBoxClassList = _.get(this.shadowRoot.querySelector('#relatedChildrenPathology'),"classList",null)
-
-                    this.set("_summaryForm.relatedChildrenPathology", "")
-                    this.set("_dialogData.relatedChildrenPathologiesForSelectedParent", !!_.size(childrenPathologiesForSelectedParent) ? childrenPathologiesForSelectedParent : [])
-                    relatedChildrenPathologyVaadinComboBoxClassList && !!_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.remove("displaynone")
-                    relatedChildrenPathologyVaadinComboBoxClassList && !_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.add("displaynone")
-
-                }
+                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedparentpathology') > -1 ) this._updateParentChildrenPathologiesDataAndComboBoxes({resetChildrenPathologyValue: true})
 
                 // Copy value of relatedhealthelementid (string) as plan of action's name
                 if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedhealthelementid') > -1 && !!_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) && !_.trim(_.get(this,"_summaryForm.planOfActionsName","")) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.planOfActionsName") this.set("_summaryForm.planOfActionsName", _.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","") )
@@ -1395,7 +1393,6 @@
                         .then(([poaOpeningContact,poaPrescriptionForm]) => {
 
                             this.set("_currentPdfPreviewDocumentId", "")
-
                             this.set("_selectedPrescriptionObject", _.merge({}, selectedPrescriptionObject, {
                                 formId: _.trim(_.get(poaPrescriptionForm,"id","")),
                                 contact: poaOpeningContact,
@@ -1424,8 +1421,16 @@
                                 insuranceDocuments_linked: _.get(selectedPlanOfAction,"poaDocumentIds",[])
                             }))
 
+                            // Reset to all
+                            this.set("_templateInsuranceDocuments_available", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.cloneDeep(_.get(this, "_dialogData.insuranceDocuments",[])) : [])
+                            this.set("_templateInsuranceDocuments_linked", _.remove( this._templateInsuranceDocuments_available, i => this._summaryForm.insuranceDocuments_linked.indexOf(_.trim(_.get(i,"documentId",""))) > -1 ))
+
                         })
                         .finally(() => {
+
+                            this._refreshInsuranceLinkedAndAvailableDocuments()
+                            this._updateParentChildrenPathologiesDataAndComboBoxes()
+
                             this.set("_isLoading", false);
                             return promResolve
                         })
@@ -1513,6 +1518,12 @@
                 return !_.trim(_.get(activeItem,"poaId","")) && !isNew ?
                     this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
                     this._changeDialogAction("detail")
+                        .then(() => {
+                            this.set("_triptyqueDetailActiveTab", "prescriptionForm")
+                            this.set("_templateInsuranceDocuments_available", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.cloneDeep(_.get(this, "_dialogData.insuranceDocuments",[])) : [])
+                            this.set("_templateInsuranceDocuments_linked", [])
+                            this._refreshInsuranceLinkedAndAvailableDocuments()
+                        })
                         .then(() => this._linkPdfPrescription(null, _.cloneDeep(_.get(this,"_vaadinGridPlanOfActionSelectedItem",{}))))
                         .finally(() => this.set("_isLoading", false))
 
