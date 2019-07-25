@@ -88,7 +88,7 @@
 
                     <h3 class="p0 mt0">[[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]] <span class="fspoint8em fw400">([[_formatTranslateGender(patient.gender)]] [[_ucFirst(patient.lastName)]] [[_ucFirst(patient.firstName)]] - [[_formatDateOfBirth(patient.dateOfBirth)]] - [[_dobToAge(patient.dateOfBirth)]] - [[patient.profession]])</span></h3>
 
-                    <vaadin-grid id="vaadinGridPlanOfAction" class="m0 p0 vaadinGridPlanOfAction" items="[[_vaadinGridPlanOfActionDataToShow]]" active-item="{{_vaadinGridPlanOfActionActiveItem}}" pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]" on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged">
+                    <vaadin-grid id="vaadinGridPlanOfAction" class="m0 p0 vaadinGridPlanOfAction" items="[[_vaadinGridPlanOfActionDataToShow]]" active-item="{{_vaadinGridPlanOfActionSelectedItem}}" pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]" on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged">
 
                         <vaadin-grid-column width="100px" flex-grow="0">
                             <template class="header"><vaadin-grid-sorter path="poaOpeningDateHr"><b>[[localize('dat','Date',language)]]</b></vaadin-grid-sorter></template>
@@ -321,10 +321,10 @@
                                             <div class="formItem mt20">
                                             <div class="fw700 mb10">[[localize('insuranceDocuments','Documents de la mutuelle',language)]]:</div>
 
-                                            <template is="dom-if" if="[[_templateInsuranceLinkedDocuments]]">
+                                            <template is="dom-if" if="[[_templateInsuranceDocuments_linked]]">
                                                 <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight mb20">
                                                     <div class="mb10">[[localize('linkedInsuranceDocuments','Documents liés au triptyque',language)]]:</div>
-                                                    <template is="dom-repeat" items="[[_templateInsuranceLinkedDocuments]]" as="item" id="triptyqueLinkedInsuranceDocumentsDomRepeat">
+                                                    <template is="dom-repeat" items="[[_templateInsuranceDocuments_linked]]" as="item" id="triptyqueLinkedInsuranceDocumentsDomRepeat">
                                                         <paper-item class="linkedObjectTag" data-document-id="[[item.documentId]]">
                                                             <div class="tagtype" data-document-id="[[item.documentId]]">[[item.created]]</div>
                                                             <div class="one-line-menu list-title" data-document-id="[[item.documentId]]">[[item.documentName]]</div>
@@ -335,10 +335,10 @@
                                                 </div>
                                             </template>
 
-                                            <template is="dom-if" if="[[_templateInsuranceDocuments]]">
+                                            <template is="dom-if" if="[[_templateInsuranceDocuments_available]]">
                                                 <div class="documentsList p10 pb0 borderDashed borderW1px borderColorAppPrimaryLight">
                                                     <div class="mb10">[[localize('availableToBeLinkedDocuments','Documents disponibles / à lier',language)]]:</div>
-                                                    <template is="dom-repeat" items="[[_templateInsuranceDocuments]]" as="item" id="triptyqueAvailableInsuranceDocumentsDomRepeat">
+                                                    <template is="dom-repeat" items="[[_templateInsuranceDocuments_available]]" as="item" id="triptyqueAvailableInsuranceDocumentsDomRepeat">
                                                         <div class="singleDocumentContainer" data-message-id$="[[item.messageId]]" data-document-id$="[[item.documentId]]" data-attachment-id$="[[item.attachmentId]]">
                                                             <div class="header p10">
                                                                 <span class="date">[[item.created]]</span>
@@ -486,7 +486,7 @@
                     },
                     _vaadinGridPlanOfActionMaxItemsPerPage: {
                         type: Number,
-                        value: 2
+                        value: 50
                     },
                     _vaadinGridPageStart: {
                         type: Number,
@@ -494,13 +494,13 @@
                     },
                     _vaadinGridPageEnd: {
                         type: Number,
-                        value: 2
+                        value: 50
                     },
                     _vaadinGridPlanOfActionDataToShow: {
                         type: Array,
                         value: () => []
                     },
-                    _vaadinGridPlanOfActionActiveItem: {
+                    _vaadinGridPlanOfActionSelectedItem: {
                         type: Object,
                         value: () => {}
                     },
@@ -549,11 +549,11 @@
                         value: ()=>[],
                         noReset: true
                     },
-                    _templateInsuranceDocuments: {
+                    _templateInsuranceDocuments_available: {
                         type: Array,
                         value: () => []
                     },
-                    _templateInsuranceLinkedDocuments: {
+                    _templateInsuranceDocuments_linked: {
                         type: Array,
                         value: () => []
                     },
@@ -574,7 +574,7 @@
                             numberOfCares: 1,
                             careReason: "",
                             careTeam: "",
-                            insuranceDocuments: []
+                            insuranceDocuments_linked: []
                         }
                     },
 
@@ -668,6 +668,10 @@
                             codes: {
                                 type: Object,
                                 value: ()=>{}
+                            },
+                            currentHeAndPoa: {
+                                type: Object,
+                                value: ()=>{}
                             }
                         }},
                         noReset: true
@@ -678,7 +682,7 @@
             static get observers() {
                 return [
                     '_loadingStatusChanged(_isLoading)',
-                    '_vaadinGridPlanOfActionActiveItemChanged(_vaadinGridPlanOfActionActiveItem)',
+                    '_vaadinGridPlanOfActionSelectedItemChanged(_vaadinGridPlanOfActionSelectedItem)',
                     '_selectedDocumentChanged(_selectedPrescriptionObject)',
                     '_summaryFormDataGotChanged(_summaryForm.*)',
                     '_vaadinGridPageNumberChanged(_vaadinGridCurrentPageNumber)',
@@ -809,7 +813,7 @@
 
             _closePlanOfAction(e) {
 
-                return this.set("_vaadinGridPlanOfActionActiveItem", {})
+                return this.set("_vaadinGridPlanOfActionSelectedItem", {})
 
             }
 
@@ -888,7 +892,7 @@
 
             _addPlanOfAction() {
 
-                return this._vaadinGridPlanOfActionActiveItemChanged({},true)
+                return this._vaadinGridPlanOfActionSelectedItemChanged({},true)
 
             }
 
@@ -945,8 +949,6 @@
 
             _getDialogData() {
 
-                const promResolve = Promise.resolve();
-
                 // const arrayOfDocumentIds = [ "fbd5f03a-7a1e-413d-ae79-8861e056757c",  "beaea1bb-cfe2-410f-9e4c-a76555d4202b" ]
                 // promResolve
                 //     .then(() =>this.api.patient().getPatientWithUser(_.get(this,"user",{}), _.trim(_.get(this,"patient.id",""))).then(pat => this.set("_dialogData.currentPatient", pat)))
@@ -957,6 +959,8 @@
                 //     "Oxocw4EIwrDDgRvCp8KIc2Aww4c3w4rDmHcmAx8mwq7DhcKCRcKLwrsQI2cbYcOpw58Mw60jwrp3ZsKZwp/CqHbDtsKPAxhgdMKsRVQXw77DosOkPVZJwosbCw==",
                 //     "ZMO+e8OWW3fCjQoCFG7Dj1cDw4vCgFdyw5TCncKRLcKfXlsbw5opRcKkYzHDqmXDisKqw68Tw7cbYMKUC8OwPxPCgnfDkzrCuDPCmzvCgT4ab8ONa0PCssK3dA=="
                 // ]
+
+                const promResolve = Promise.resolve();
 
                 return promResolve
                     .then(() => this.api.hcparty().getCurrentHealthcareParty().then(hcp => this.set("_dialogData.currentHcp", _.merge({},hcp,{nameHr: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i).toLowerCase())).join(" ") }))))
@@ -973,7 +977,7 @@
                         documentMainUti: _.trim(_.get(i, "mainUti", "")),
                         documentName: _.trim(_.get(i, "name", ""))
                     }}))))
-                    .then(()=> this.set("_templateInsuranceDocuments", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.get(this, "_dialogData.insuranceDocuments",[]) : []))
+                    .then(()=> this.set("_templateInsuranceDocuments_available", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.cloneDeep(_.get(this, "_dialogData.insuranceDocuments",[])) : []))
                     .then(()=> this._getPdfPrescriptionsList().then(pdfPrescriptions => this.set("_dialogData.pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : [])))
                     .then(() =>this.api.helement().findBy(this.user.healthcarePartyId, this.patient))
                     .then(hes => _
@@ -1125,11 +1129,7 @@
                         this.set("_vaadinGridPlanOfActionDataToShow", _.get(this,"_dialogData.hesAndPoas",[]).slice(parseInt(_.get(this,"_vaadinGridPageStart",0)), parseInt(_.get(this,"_vaadinGridPageEnd",0))))
                         return promResolve
                     })
-                    .then(() => {
-                        console.log(this._dialogParameters)
-                        console.log(this._dialogData)
-                        return null
-                    })
+                    .then(() => console.log(this._dialogData))
                     .finally(() => this._changeDialogAction("listing")
                         .then(() => this._triggerGridResize())
                         .then(() => this._scrollToTop())
@@ -1195,95 +1195,94 @@
 
             }
 
-            _linkPdfPrescription(e) {
+            _fieldsValidationByTab(tabName) {
 
-                this.set("_isLoading", true);
+                const validationResult = tabName === "summary" ? !_.size(_.filter(_.map(this.shadowRoot.querySelectorAll('.validationRequired'), fieldToValidate => fieldToValidate && (typeof _.get(fieldToValidate, "validate", false) === "function" ? fieldToValidate.validate() : !!_.trim(_.get(fieldToValidate,"value","")))), i => !i)) :
+                   tabName === "prescription" ? !!_.size(_.compact(_.map( _.get(this,"_selectedPrescriptionObject.contact.services",[]), sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) :
+                   false
+
+               if( !validationResult && this.shadowRoot.querySelector("#failedLabel") && this.shadowRoot.querySelector("#failedLabel").classList ) {
+                    this.shadowRoot.querySelector("#failedLabel").classList.add('displayNotification')
+                    setTimeout(() => {this.shadowRoot.querySelector("#failedLabel").classList.remove('displayNotification')}, 6000)
+               }
+
+               return validationResult
+
+            }
+
+            _gotoTabIfsAllowed(e) {
+
+                // 1. prescriptionForm
+                // 2. summary
+                // 3. procedures
+
+                const currentTab = _.trim(_.get(this,"_triptyqueDetailActiveTab", "prescriptionForm"))
+                const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
+                const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
+                    currentTab === "procedures" ? targetTab :
+                    currentTab === "prescriptionForm" && targetTab === "summary" ? this._fieldsValidationByTab("prescription") ? targetTab : currentTab :
+                    currentTab === "prescriptionForm" && targetTab === "procedures" ? this._fieldsValidationByTab("prescription") && this._fieldsValidationByTab("summary") ? targetTab : currentTab :
+                    currentTab === "summary" ? this._fieldsValidationByTab("summary") ? targetTab : currentTab :
+                    targetTab
+
+                return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
+
+            }
+
+            _linkInsuranceDocument(e) {
 
                 const promResolve = Promise.resolve();
                 const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
-                const documentServiceId = _.trim(_.get(targetButton,"dataset.serviceId"))
-                const documentFormId = _.trim(_.get(targetButton,"dataset.formId"))
+                const targetDocument = _.head(_.remove(this._templateInsuranceDocuments_available, {documentId:documentId}))
+                const finalLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceDocuments_linked",[]), targetDocument)), "documentId")
 
-                const selectedPrescriptionObject = _.find(_.get(this,"_dialogData.pdfPrescriptionsList",[]), i=> _.trim(_.get(i,"service.id","whatever")) === documentServiceId && _.trim(_.get(i,"document.id","whatever")) === documentId)
-                const documentContactObject = _.get(selectedPrescriptionObject,"contact",{})
-
-                const formTemplate = _.get(this,"_dialogData.formTemplate",{})
-                const patientObject = _.get(this,"_dialogData.currentPatient",{})
-                const defaultCodes = _.get(this,"_dialogData.codes.defaultCodes",{})
-                const triptyqueTransactionCode = _.get(this,"_dialogData.codes.triptyqueCodes",{})
-
-                return promResolve
-                    .then(() => this.api.contact().newInstance(this.user, patientObject, {
-                            groupId: documentId,
-                            created: +new Date,
-                            modified: +new Date,
-                            author: _.trim(_.get(this,"user.id","")),
-                            responsible: _.trim(_.get(this,"user.healthcarePartyId","")),
-                            openingDate: moment().format('YYYYMMDDHHmmss'),
-                            closingDate: moment().format('YYYYMMDDHHmmss'),
-                            encounterType: { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
-                            descr: _.trim(_.get(triptyqueTransactionCode,"label." + this.language,"Triptyque")) + ": " + _.trim(this.localize(this._getConfig("pdfDocumentsLabelKey",""),"Prescription de kinésithérapie", this.language)),
-                            tags: [
-                                { type: "BE-CONTACT-TYPE", version: "1", code: "1" },
-                                { type: "BE-CONTACT-TYPE", version: "1", code: "20" },
-                                { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
-                                { type: "originalDocumentId", id: documentId },
-                                { type: "originalDocumentContactId", id: _.trim(_.get(documentContactObject,"id",""))},
-                                { type: "originalDocumentServiceId", id: documentServiceId },
-                                { type: "originalDocumentFormId", id: documentFormId},
-                            ],
-                            codes: _.map(defaultCodes, dc =>{return{type: _.trim(_.get(dc,"type")), version: _.trim(_.get(dc,"version")), code: _.trim(_.get(dc,"code")), label: _.get(dc,"label",{}) }}),
-                            subContacts: [],
-                            services: []
-                        }).then(contactInstance => contactInstance)
-                    )
-                    .then(contactInstance => this.api.contact().createContactWithUser(this.user, contactInstance))
-                    .then(createdContact => this.api.form().newInstance(this.user, patientObject, {
-                            contactId: _.trim(_.get(createdContact,"id","")),
-                            formTemplateId: _.trim(_.get(formTemplate,"id","")),
-                            descr: _.trim(_.get(formTemplate,"name","")),
-                            tags: _.get(createdContact,"tags",[]),
-                        }).then(formInstance => ([createdContact,formInstance]))
-                    )
-                    .then(([createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([createdContact,createdForm])))
-                    .then(([createdContact,createdForm]) => {
-
-                        const subContactServiceIds = _.compact(_.uniq(_.get(_.find(_.get(documentContactObject,"subContacts",[]), {formId: documentFormId}),"services",[]).map(i=>_.trim(_.get(i,"serviceId","")))))
-                        const subContactServiceDatas = _.filter(_.get(documentContactObject,"services",[]), i=> subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) > -1 )
-                        const newServicesData = _.map(subContactServiceDatas, scsd => this.api.contact().service().newInstance(this.user, _.merge({}, _.omit(scsd, ["author","created","cryptedForeignKeys","delegations","encryptedSelf","encryptionKeys","id","modified","responsible","secretForeignKeys"]))))
-
-                        createdContact.services = newServicesData
-                        createdContact.subContacts = [{
-                            codes:[],
-                            descr:this.api.crypto().randomUuid(),
-                            formId:_.trim(_.get(createdForm,"id","")),
-                            hasBeenInitialized: false,
-                            services: _.map(newServicesData, sv => {return{serviceId: _.trim(_.get(sv,"id",""))/*, service:sv*/}})
-                        }]
-
-                        return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([modifiedContact,createdForm]))
-
-                    })
-                    .then(([modifiedContact,createdForm]) => {
-
-                        this.set("_currentPdfPreviewDocumentId", "")
-                        this.set("_selectedPrescriptionObject", _.merge({}, selectedPrescriptionObject, {
-                            formId: _.trim(_.get(createdForm,"id","")),
-                            contact: modifiedContact,
-                            contacts: [modifiedContact],
-                            servicesMap: this._getServicesMap([modifiedContact])
-                        }))
-                        this.set("_summaryForm.careTeam", _.trim(_.get(this,"_selectedPrescriptionObject.document.author")))
-
-                    })
-                    .finally(() => {
-                        console.log("this._selectedPrescriptionObject", this._selectedPrescriptionObject)
-                        this.set("_isLoading", false);
-                        return promResolve
+                return !documentId || !_.size(targetDocument) ?
+                    false :
+                    promResolve.then(() => {
+                        this.set("_summaryForm.insuranceDocuments_linked", _.cloneDeep(finalLinkedDocumentsList))
+                        this.set("_templateInsuranceDocuments_linked", _.cloneDeep(finalLinkedDocumentsList))
+                        setTimeout(() => {
+                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
+                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                        }, 100)
                     })
 
             }
+
+            _removeLinkedInsuranceDocument(e) {
+
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-ICON-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
+                const documentId = _.trim(_.get(targetButton,"dataDocumentId",_.trim(_.get(e,"target.dataDocumentId",""))))
+                const targetDocument = _.head(_.remove(this._templateInsuranceDocuments_linked, {documentId:documentId}))
+                const finalNotLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceDocuments_available",[]), targetDocument)), "documentId")
+
+
+                return !documentId || !_.size(targetDocument) ?
+                    false :
+                    promResolve.then(() => {
+                        this.set("_summaryForm.insuranceDocuments_linked", _.cloneDeep(_.get(this,"_templateInsuranceDocuments_linked",[])))
+                        this.set("_templateInsuranceDocuments_available", _.cloneDeep(finalNotLinkedDocumentsList))
+                        setTimeout(() => {
+                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
+                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
+                        }, 100)
+                    })
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
 
             _summaryFormDataGotChanged(summaryForm) {
 
@@ -1297,7 +1296,7 @@
                     const parentValue = _.trim(_.get(this,"_summaryForm.relatedParentPathology",""))
                     const parentChildren = _.filter(_.get(this,"_dialogData.relatedChildrenPathologies",[]), i => _.trim(_.get(i,"parent","")) === parentValue )
                     const childrenPathologiesForSelectedParent = !!_.trim(parentValue) && !!_.size(parentChildren) ? parentChildren : []
-                    const relatedChildrenPathologyVaadinComboBoxClassList = this.shadowRoot.querySelector('#relatedChildrenPathology').classList
+                    const relatedChildrenPathologyVaadinComboBoxClassList = _.get(this.shadowRoot.querySelector('#relatedChildrenPathology'),"classList",null)
 
                     this.set("_summaryForm.relatedChildrenPathology", "")
                     this.set("_dialogData.relatedChildrenPathologiesForSelectedParent", !!_.size(childrenPathologiesForSelectedParent) ? childrenPathologiesForSelectedParent : [])
@@ -1347,7 +1346,7 @@
                                         {type: "idOpeningContactOfContact", id: _.trim(_.get(this,"_selectedPrescriptionObject.contact.id",""))},
                                         {type: "idOpeningContactOfHelement", id: _.trim(_.get(he,"idOpeningContact",""))}
                                     ]), i => !!_.trim(i.id)),
-                                    documentIds: _.map(_.get(this,"_summaryForm.insuranceDocuments",[]), d => _.trim(d.documentId)),
+                                    documentIds: _.map(_.get(this,"_summaryForm.insuranceDocuments_linked",[]), d => _.trim(d.documentId)),
                                     prescriberId: _.trim(_.get(this,"_summaryForm.careTeam","")),
                                     numberOfCares: parseInt(_.trim(_.get(this,"_summaryForm.numberOfCares",""))),
                                     status: 0
@@ -1359,6 +1358,8 @@
 
                             // Fabien: garder modifiedHelement dans le composant (attention au reset)
                             console.log("modifiedHelement",modifiedHelement);
+                            console.log("Garder dans le composant / refresh le data grid / 'vaadingridpoatoshow' ==> slice de _dialogData.hesAndPoas ... ");
+                            console.log("Refoutre l'active element si refresh grid + force no trigger totue la cuisine again");
 
                         })
 
@@ -1366,112 +1367,154 @@
 
             }
 
-            _fieldsValidationByTab(tabName) {
+            _linkPdfPrescription(e, selectedPlanOfAction={}) {
 
-                const validationResult = tabName === "summary" ? !_.size(_.filter(_.map(this.shadowRoot.querySelectorAll('.validationRequired'), fieldToValidate => fieldToValidate && (typeof _.get(fieldToValidate, "validate", false) === "function" ? fieldToValidate.validate() : !!_.trim(_.get(fieldToValidate,"value","")))), i => !i)) :
-                   tabName === "prescription" ? !!_.size(_.compact(_.map( _.get(this,"_selectedPrescriptionObject.contact.services",[]), sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) :
-                   false
-
-               if( !validationResult && this.shadowRoot.querySelector("#failedLabel") && this.shadowRoot.querySelector("#failedLabel").classList ) {
-                    this.shadowRoot.querySelector("#failedLabel").classList.add('displayNotification')
-                    setTimeout(() => {this.shadowRoot.querySelector("#failedLabel").classList.remove('displayNotification')}, 6000)
-               }
-
-               return validationResult
-
-            }
-
-            _gotoTabIfsAllowed(e) {
-
-                // 1. prescriptionForm
-                // 2. summary
-                // 3. procedures
-
-                const currentTab = _.trim(_.get(this,"_triptyqueDetailActiveTab", "prescriptionForm"))
-                const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
-                const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
-                    currentTab === "procedures" ? targetTab :
-                    currentTab === "prescriptionForm" && targetTab === "summary" ? this._fieldsValidationByTab("prescription") ? targetTab : currentTab :
-                    currentTab === "prescriptionForm" && targetTab === "procedures" ? this._fieldsValidationByTab("prescription") && this._fieldsValidationByTab("summary") ? targetTab : currentTab :
-                    currentTab === "summary" ? this._fieldsValidationByTab("summary") ? targetTab : currentTab :
-                    targetTab
-
-                return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
-
-            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            _linkInsuranceDocument(e) {
+                this.set("_isLoading", true);
 
                 const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
-                const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
-                const targetDocument = _.head(_.remove(this._templateInsuranceDocuments, {documentId:documentId}))
-                const finalLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceLinkedDocuments",[]), targetDocument)), "documentId")
+                const haveSelectedPlanOfAction = !!_.size(selectedPlanOfAction) && !!_.trim(_.get(selectedPlanOfAction,"poaId",""))
 
-                return !documentId || !_.size(targetDocument) ?
-                    false :
-                    promResolve.then(() => {
-                        this.set("_summaryForm.insuranceDocuments", finalLinkedDocumentsList)
-                        this.set("_templateInsuranceLinkedDocuments", finalLinkedDocumentsList)
-                        setTimeout(() => {
-                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
-                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
-                        }, 100)
-                    })
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? _.get(e,"target",null) : _.find( _.get(e,"path",null), p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const documentId = !!haveSelectedPlanOfAction ? _.get(_.find(_.get(selectedPlanOfAction, "poaTags"), {type:"originalDocumentId"}),"id","") : _.trim(_.get(targetButton,"dataset.documentId"))
+                const documentServiceId = !!haveSelectedPlanOfAction ? _.get(_.find(_.get(selectedPlanOfAction, "poaTags"), {type:"originalDocumentServiceId"}),"id","") : _.trim(_.get(targetButton,"dataset.serviceId"))
+                const documentFormId = !!haveSelectedPlanOfAction ? _.get(_.find(_.get(selectedPlanOfAction, "poaTags"), {type:"originalDocumentFormId"}),"id","") : _.trim(_.get(targetButton,"dataset.formId"))
+
+                const selectedPrescriptionObject = _.find(_.get(this,"_dialogData.pdfPrescriptionsList",[]), i=> _.trim(_.get(i,"service.id","whatever")) === documentServiceId && _.trim(_.get(i,"document.id","whatever")) === documentId)
+                const documentContactObject = _.get(selectedPrescriptionObject,"contact",{})
+
+                const formTemplate = _.get(this,"_dialogData.formTemplate",{})
+                const patientObject = _.get(this,"_dialogData.currentPatient",{})
+                const defaultCodes = _.get(this,"_dialogData.codes.defaultCodes",{})
+                const triptyqueTransactionCode = _.get(this,"_dialogData.codes.triptyqueCodes",{})
+
+                return !!haveSelectedPlanOfAction ?
+
+                    promResolve
+                        .then(() => this.api.contact().getContactWithUser(this.user, _.trim(_.get(selectedPlanOfAction,"poaIdOpeningContact",""))))
+                        .then(poaOpeningContact => this.api.form().getForm(_.trim(_.get(poaOpeningContact,"subContacts[0].formId",""))).then(poaPrescriptionForm => ([poaOpeningContact,poaPrescriptionForm])))
+                        .then(([poaOpeningContact,poaPrescriptionForm]) => {
+
+                            this.set("_currentPdfPreviewDocumentId", "")
+
+                            this.set("_selectedPrescriptionObject", _.merge({}, selectedPrescriptionObject, {
+                                formId: _.trim(_.get(poaPrescriptionForm,"id","")),
+                                contact: poaOpeningContact,
+                                contacts: [poaOpeningContact],
+                                servicesMap: this._getServicesMap([poaOpeningContact])
+                            }))
+
+                            const selectedPoaPrescriptionCodes = _.filter(_.get(selectedPlanOfAction,"poaCodes",[]),{type: this._getConfig("prescriptionTypeCode","care.topaz.kinesitherapyPrescription")})
+                            const resolvedPoaPrescriptionCodes = _.map(selectedPoaPrescriptionCodes, poaPrescriptioCode => _.find(_.get(this,"_dialogData.codes.prescriptionCodes",[]),{type: _.trim(_.get(poaPrescriptioCode, "type","")), code: _.trim(_.get(poaPrescriptioCode, "code",""))}))
+
+                            this.set("_summaryForm", _.merge({}, _.get(this,"_summaryForm",{}), {
+                                relatedHealthElementId: _.trim(_.get(selectedPlanOfAction,"heId","")),
+                                relatedParentPathology: _.get(_.find(resolvedPoaPrescriptionCodes, i=>!_.trim(_.get(i,"parent",""))),"id",null),
+                                relatedChildrenPathology: _.get(_.find(resolvedPoaPrescriptionCodes, i=>!!_.trim(_.get(i,"parent",""))),"id",null),
+                                lateralityLeft: !!_.size(_.find(_.get(selectedPlanOfAction,"poaCodes",[]),{type: "CD-BVT-LATERALITY", code: "left"})),
+                                lateralityRight: !!_.size(_.find(_.get(selectedPlanOfAction,"poaCodes",[]),{type: "CD-BVT-LATERALITY", code: "right"})),
+                                lateralityCenter: !!_.size(_.find(_.get(selectedPlanOfAction,"poaCodes",[]),{type: "CD-BVT-LATERALITY", code: "odd"})),
+                                startDate: parseInt(_.trim(_.get(selectedPlanOfAction,"poaOpeningDate","")))||null,
+                                endDate: parseInt(_.trim(_.get(selectedPlanOfAction,"poaClosingDate","")))||null,
+                                valueDate: parseInt(_.trim(_.get(selectedPlanOfAction,"poaValueDate","")))||null,
+                                careRehearseDate: parseInt(_.trim(_.get(selectedPlanOfAction,"poaEndOfLife","")))||null,
+                                planOfActionsName: _.trim(_.get(selectedPlanOfAction,"poaName","")),
+                                numberOfCares: parseInt(_.trim(_.get(selectedPlanOfAction,"poaNumberOfCares","")))||1,
+                                careReason: _.trim(_.get(_.find(_.get(selectedPlanOfAction,"poaCodes",[]),{type: "CD-INCAPACITYREASON"}), "id","")),
+                                careTeam: _.trim(_.get(selectedPlanOfAction,"poaPrescriberId","")),
+                                insuranceDocuments_linked: _.get(selectedPlanOfAction,"poaDocumentIds",[])
+                            }))
+
+                        })
+                        .finally(() => {
+                            this.set("_isLoading", false);
+                            return promResolve
+                        })
+
+                    :
+
+                    promResolve
+                        .then(() => this.api.contact().newInstance(this.user, patientObject, {
+                                groupId: documentId,
+                                created: +new Date,
+                                modified: +new Date,
+                                author: _.trim(_.get(this,"user.id","")),
+                                responsible: _.trim(_.get(this,"user.healthcarePartyId","")),
+                                openingDate: moment().format('YYYYMMDDHHmmss'),
+                                closingDate: moment().format('YYYYMMDDHHmmss'),
+                                encounterType: { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
+                                descr: _.trim(_.get(triptyqueTransactionCode,"label." + this.language,"Triptyque")) + ": " + _.trim(this.localize(this._getConfig("pdfDocumentsLabelKey",""),"Prescription de kinésithérapie", this.language)),
+                                tags: [
+                                    { type: "BE-CONTACT-TYPE", version: "1", code: "1" },
+                                    { type: "BE-CONTACT-TYPE", version: "1", code: "20" },
+                                    { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
+                                    { type: "originalDocumentId", id: documentId },
+                                    { type: "originalDocumentContactId", id: _.trim(_.get(documentContactObject,"id",""))},
+                                    { type: "originalDocumentServiceId", id: documentServiceId },
+                                    { type: "originalDocumentFormId", id: documentFormId},
+                                ],
+                                codes: _.map(defaultCodes, dc =>{return{type: _.trim(_.get(dc,"type")), version: _.trim(_.get(dc,"version")), code: _.trim(_.get(dc,"code")), label: _.get(dc,"label",{}) }}),
+                                subContacts: [],
+                                services: []
+                            }).then(contactInstance => contactInstance)
+                        )
+                        .then(contactInstance => this.api.contact().createContactWithUser(this.user, contactInstance))
+                        .then(createdContact => this.api.form().newInstance(this.user, patientObject, {
+                                contactId: _.trim(_.get(createdContact,"id","")),
+                                formTemplateId: _.trim(_.get(formTemplate,"id","")),
+                                descr: _.trim(_.get(formTemplate,"name","")),
+                                tags: _.get(createdContact,"tags",[]),
+                            }).then(formInstance => ([createdContact,formInstance]))
+                        )
+                        .then(([createdContact,formInstance]) => this.api.form().createForm(formInstance).then(createdForm => ([createdContact,createdForm])))
+                        .then(([createdContact,createdForm]) => {
+
+                            const subContactServiceIds = _.compact(_.uniq(_.get(_.find(_.get(documentContactObject,"subContacts",[]), {formId: documentFormId}),"services",[]).map(i=>_.trim(_.get(i,"serviceId","")))))
+                            const subContactServiceDatas = _.filter(_.get(documentContactObject,"services",[]), i=> subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) > -1 )
+                            const newServicesData = _.map(subContactServiceDatas, scsd => this.api.contact().service().newInstance(this.user, _.merge({}, _.omit(scsd, ["author","created","cryptedForeignKeys","delegations","encryptedSelf","encryptionKeys","id","modified","responsible","secretForeignKeys"]))))
+
+                            createdContact.services = newServicesData
+                            createdContact.subContacts = [{
+                                codes:[],
+                                descr:this.api.crypto().randomUuid(),
+                                formId:_.trim(_.get(createdForm,"id","")),
+                                hasBeenInitialized: false,
+                                services: _.map(newServicesData, sv => {return{serviceId: _.trim(_.get(sv,"id",""))/*, service:sv*/}})
+                            }]
+
+                            return this.api.contact().modifyContactWithUser(this.user, createdContact).then(modifiedContact => ([modifiedContact,createdForm]))
+
+                        })
+                        .then(([modifiedContact,createdForm]) => {
+
+                            this.set("_currentPdfPreviewDocumentId", "")
+                            this.set("_selectedPrescriptionObject", _.merge({}, selectedPrescriptionObject, {
+                                formId: _.trim(_.get(createdForm,"id","")),
+                                contact: modifiedContact,
+                                contacts: [modifiedContact],
+                                servicesMap: this._getServicesMap([modifiedContact])
+                            }))
+                            this.set("_summaryForm.careTeam", _.trim(_.get(this,"_selectedPrescriptionObject.document.author")))
+
+                        })
+                        .finally(() => {
+                            this.set("_isLoading", false);
+                            return promResolve
+                        })
 
             }
 
-            _removeLinkedInsuranceDocument(e) {
-
-                const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-ICON-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
-                const documentId = _.trim(_.get(targetButton,"dataDocumentId",_.trim(_.get(e,"target.dataDocumentId",""))))
-                const targetDocument = _.head(_.remove(this._templateInsuranceLinkedDocuments, {documentId:documentId}))
-                const finalNotLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceDocuments",[]), targetDocument)), "documentId")
-
-
-                return !documentId || !_.size(targetDocument) ?
-                    false :
-                    promResolve.then(() => {
-                        this.set("_summaryForm.insuranceDocuments", _.get(this,"_templateInsuranceLinkedDocuments",[]))
-                        this.set("_templateInsuranceDocuments", finalNotLinkedDocumentsList)
-                        setTimeout(() => {
-                            this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueLinkedInsuranceDocumentsDomRepeat').render()
-                            this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat') && this.shadowRoot.querySelector('#triptyqueAvailableInsuranceDocumentsDomRepeat').render()
-                            this._summaryFormDataGotChanged(this._summaryForm)
-                        }, 100)
-                    })
-
-            }
-
-            _vaadinGridPlanOfActionActiveItemChanged(activeItem, isNew=false) {
+            _vaadinGridPlanOfActionSelectedItemChanged(activeItem, isNew=false) {
 
                 // Should not yet ?
                 if(activeItem instanceof Event || !_.get(this,"_isOpened",false)) return
 
                 this.set("_isLoading", true)
-                const heId = _.trim(_.get(activeItem,"heId",""))
-                const poaId = _.trim(_.get(activeItem,"poaId",""))
 
                 return !_.trim(_.get(activeItem,"poaId","")) && !isNew ?
                     this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
-                    this._changeDialogAction("detail").finally(() => this.set("_isLoading", false))
-
-                alert("Load data versus heId && poaId")
+                    this._changeDialogAction("detail")
+                        .then(() => this._linkPdfPrescription(null, _.cloneDeep(_.get(this,"_vaadinGridPlanOfActionSelectedItem",{}))))
+                        .finally(() => this.set("_isLoading", false))
 
             }
 
