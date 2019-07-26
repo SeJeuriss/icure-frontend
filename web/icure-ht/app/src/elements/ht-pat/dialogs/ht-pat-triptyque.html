@@ -676,10 +676,6 @@
                             codes: {
                                 type: Object,
                                 value: ()=>{}
-                            },
-                            currentHeAndPoa: {
-                                type: Object,
-                                value: ()=>{}
                             }
                         }},
                         noReset: true
@@ -900,6 +896,14 @@
             }
 
             _addPlanOfAction() {
+
+                this.set("_totalExistingProceduresForCurrentPlanOfAction", 0)
+                this.set("_currentPdfPreviewDocumentId", "")
+                this.set("_currentPreviewInsuranceDocumentId", "")
+                this.set("_selectedPrescriptionObject", {})
+                this.set("_selectedPrescriptionBoolean", false)
+                this.set("_dialogData.relatedChildrenPathologiesForSelectedParent", [])
+                _.map(this._summaryForm, (v,k) => this.set("_summaryForm." + k, typeof k === "string" ? "" : typeof k === "boolean" ? false : typeof k === "number" ? 1 : Array.isArray(v) ? [] : typeof k === "object" ? {} : null ))
 
                 return this._vaadinGridPlanOfActionSelectedItemChanged({},true)
 
@@ -1311,6 +1315,9 @@
                 const defaultCodes = _.get(this,"_dialogData.codes.defaultCodes",{})
                 const triptyqueTransactionCode = _.get(this,"_dialogData.codes.triptyqueCodes",{})
 
+                // Add new plan of action, take no action
+                if(e === null && !haveSelectedPlanOfAction) return;
+
                 return !!haveSelectedPlanOfAction ?
 
                     promResolve
@@ -1475,7 +1482,7 @@
                 const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
                 setTimeout(() => {
                     return (reqIdx !== this._saveFormReqIdx || _.trim(_.get(summaryForm,"path","")) === "_summaryForm" || this._triptyqueDetailActiveTab !== "summary" || !_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))) ? false : promResolve
-                        .then(()=> this.api.helement().getHealthElement(_.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId",""))))
+                        .then(()=> this.api.helement().getHealthElement( !!_.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId","")) ? _.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId","")) : _.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) ))
                         .then(he => {
                             // Drop current POA first, if any
                             const vaadingGridPoaId = _.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.poaId",""))
@@ -1496,9 +1503,9 @@
                                 author: _.trim(_.get(this,"user.id")),
                                 responsible: _.trim(_.get(this,"user.healthcarePartyId")),
                                 openingDate: _.trim(_.get(this,"_summaryForm.startDate","")) ? parseInt(_.trim(_.get(this,"_summaryForm.startDate",""))) : parseInt(moment().format('YYYYMMDDHHmmss')),
-                                closingDate: parseInt(_.trim(_.get(this,"_summaryForm.endDate",""))),
-                                valueDate: parseInt(_.trim(_.get(this,"_summaryForm.valueDate",""))),
-                                endOfLife: parseInt(_.trim(_.get(this,"_summaryForm.careRehearseDate",""))),
+                                closingDate: parseInt(_.trim(_.get(this,"_summaryForm.endDate","")))||null,
+                                valueDate: parseInt(_.trim(_.get(this,"_summaryForm.valueDate","")))||null,
+                                endOfLife: parseInt(_.trim(_.get(this,"_summaryForm.careRehearseDate","")))||null,
                                 name: _.trim(_.get(this,"_summaryForm.planOfActionsName","")),
                                 idOpeningContact: _.trim(_.get(this,"_selectedPrescriptionObject.contact.id","")),
                                 created: !!_.trim(_.get(removedPlanOfAction,"created","")) ? parseInt(_.trim(_.get(removedPlanOfAction,"created",""))) : +new Date,
@@ -1520,12 +1527,12 @@
                                 ]), i => !!_.trim(i.id)),
                                 documentIds: _.compact(_.map(_.get(this,"_summaryForm.insuranceDocuments_linked",[]), d => _.trim(_.get(d,"documentId","")))),
                                 prescriberId: _.trim(_.get(this,"_summaryForm.careTeam","")),
-                                numberOfCares: parseInt(_.trim(_.get(this,"_summaryForm.numberOfCares",""))),
+                                numberOfCares: parseInt(_.trim(_.get(this,"_summaryForm.numberOfCares","")))||1,
                                 status: !!_.trim(_.get(removedPlanOfAction,"status","")) ? parseInt(_.trim(_.get(removedPlanOfAction,"status",""))) : 0
                             }
 
-                            const alreadyHasPlanOfActions = _.keys(he).indexOf("plansOfAction") > -1 && Array.isArray(_.get(he,"plansOfAction","notOfTypeArray"))
-                            if(!!alreadyHasPlanOfActions) { he.plansOfAction.push(poaToAdd) } else { he = _.merge({},he, {plansOfAction: [poaToAdd]}) }
+                            const alreadyHasPlanOfActionsKey = _.keys(he).indexOf("plansOfAction") > -1 && Array.isArray(_.get(he,"plansOfAction","notOfTypeArray"))
+                            if(!!alreadyHasPlanOfActionsKey) { he.plansOfAction.push(poaToAdd) } else { he = _.merge({},he, {plansOfAction: [poaToAdd]}) }
                             return he
 
                         })
@@ -1577,18 +1584,13 @@
 
             //         FABIEN
             //
-            //         -   Bug placement / position dialog triptyque lors ouverture / si déjà ouvert && si navigate autres onglets
+            //         -   Revoir sauvegarde & re-load data => foire
+            //         -   Bug placement / position dialog triptyque lors ouverture / si déjà ouvert && si navigate autres onglets ==> zoom in/out triggers it
             //         -   Double check tout ok infirmières
             //         -   Target / search / link procedures proprement
-            //         -   Ne pas reset toutes les datas lors open / close triptyque -> là où ça à du sens
-            //         -   SSI already existing HE => tout load / comme si just _linkPdfPrescription
             //         -   Menu "..." verticaux + quels actions ?
-            //         -   Nice / smart callbacks pour save lors change tab / modify form ?
             //         -   Code générique pour imprimer tous les forms pdfs à la fois kine & infi
             //         -   Search procedures & packages procédures smart => coordonner avec travail de Maxime
-            //         -   Action reload toutes datas SSI prescription / HE / plan of action existe déjà
-            //                  -   Repasser derrière toutes les datas à set (all tabviews & trigger)
-            //                  -   Exemple: this.set("_summaryForm.careTeam", _.get(this,"_selectedPrescriptionObject.document.author"))
             //         -   Revoir vaadin grid listing "mode list" + PTP + DP + columns + layout + bouger "Agenda" dans nouvelles tab view interne (une fois prescription liée) -> du coup revoir mécanique d'approbation de changement de tab
             //         -   Revoir lien avec Mikrono / intégration
             //         -   Quid gestion sub-forms (dans le cadre des infis) => actuellement pas géré
