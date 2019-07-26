@@ -1767,7 +1767,8 @@
     "insuranceDocuments": "Insurance documents",
     "linkedInsuranceDocuments": "Linked insurance documents",
     "availableToBeLinkedDocuments": "Available documents / to be linked",
-    "fillInRequiredFields": "Please fill in required fields"
+    "fillInRequiredFields": "Please fill in required fields",
+    "changesSuccessfullySaved": "Changes successfully saved"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3621,7 +3622,8 @@
     "insuranceDocuments": "Documents de la mutuelle",
     "linkedInsuranceDocuments": "Documents liés au triptyque",
     "availableToBeLinkedDocuments": "Documents disponibles / à lier",
-    "fillInRequiredFields": "Veuillez compléter les champs requis"
+    "fillInRequiredFields": "Veuillez compléter les champs requis",
+    "changesSuccessfullySaved": "Changements enregistrés"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5436,6 +5438,7 @@
     "insuranceDocuments": "Insurance documents",
     "linkedInsuranceDocuments": "Linked insurance documents",
     "availableToBeLinkedDocuments": "Available documents / to be linked",
-    "fillInRequiredFields": "Please fill in required fields"
+    "fillInRequiredFields": "Please fill in required fields",
+    "changesSuccessfullySaved": "Changes successfully saved"
   }
 }

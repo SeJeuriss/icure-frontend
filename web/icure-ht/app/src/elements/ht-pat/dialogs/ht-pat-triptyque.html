@@ -157,7 +157,9 @@
                 <h3 class="p0 mt0">[[localize('detailsPlanOfActions','Details plan of actions',language)]] <span class="fspoint8em fw400">([[_formatTranslateGender(patient.gender)]] [[_ucFirst(patient.lastName)]] [[_ucFirst(patient.firstName)]] - [[_formatDateOfBirth(patient.dateOfBirth)]] - [[_dobToAge(patient.dateOfBirth)]] - [[patient.profession]])</span></h3>
 
                 <div class="panelNavigator m0 p0 hasTabViews" id="panelNavigator_2">
+
                     <div class="panelNavigatorAnchor"><paper-button on-tap="_closePlanOfAction"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]]</paper-button></div>
+
                     <div class="panelNavigatorContent p0 mt0">
 
 
@@ -397,7 +399,7 @@
 
                         <div class="buttons">
                             <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
-                            <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_XXXXXX" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--save"><iron-icon icon="icons:save" class=""></iron-icon>[[localize('save','Save',language)]]</paper-button>
+                            <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_savePlanOfActrionsData" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--save"><iron-icon icon="icons:save" class=""></iron-icon>[[localize('save','Save',language)]]</paper-button>
                             <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_XXXXXX" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--cancel minw0"><iron-icon icon="icons:more-vert" class="mr0"></iron-icon></paper-button>
                         </div>
 
@@ -411,7 +413,8 @@
 
 
 
-            <div id="failedLabel"><iron-icon icon="clear"></iron-icon> [[localize('fillInRequiredFields','Veuillez compléter les champs requis',language)]]</div>
+            <div class="failedLabel" id="requiredFieldsLabel"><iron-icon icon="clear"></iron-icon> [[localize('fillInRequiredFields','Veuillez compléter les champs requis',language)]]</div>
+            <div class="successLabel" id="confirmSaveLabel"><iron-icon icon="check"></iron-icon> [[localize('changesSuccessfullySaved','Changes successfully saved',language)]]</div>
 
 
 
@@ -482,7 +485,8 @@
                     },
                     _isOpened: {
                         type: Boolean,
-                        value: false
+                        value: false,
+                        noReset: true
                     },
                     _vaadinGridPlanOfActionMaxItemsPerPage: {
                         type: Number,
@@ -490,19 +494,23 @@
                     },
                     _vaadinGridPageStart: {
                         type: Number,
-                        value: 0
+                        value: 0,
+                        noReset: true
                     },
                     _vaadinGridPageEnd: {
                         type: Number,
-                        value: 50
+                        value: 50,
+                        noReset: true
                     },
                     _vaadinGridPlanOfActionDataToShow: {
                         type: Array,
-                        value: () => []
+                        value: () => [],
+                        noReset: true
                     },
                     _vaadinGridPlanOfActionSelectedItem: {
                         type: Object,
-                        value: () => {}
+                        value: () => {},
+                        noReset: true
                     },
                     _vaadinGridCurrentPageNumber: {
                         type: Number,
@@ -1201,9 +1209,9 @@
                    tabName === "prescription" ? !!_.size(_.compact(_.map( _.get(this,"_selectedPrescriptionObject.contact.services",[]), sv => !!_.size(_.get(sv,"content." + this.language )) && _.get(sv,"content." + this.language + ".booleanValue" ) !== false ))) :
                    false
 
-               if( !validationResult && this.shadowRoot.querySelector("#failedLabel") && this.shadowRoot.querySelector("#failedLabel").classList ) {
-                    this.shadowRoot.querySelector("#failedLabel").classList.add('displayNotification')
-                    setTimeout(() => {this.shadowRoot.querySelector("#failedLabel").classList.remove('displayNotification')}, 6000)
+               if( !validationResult && this.shadowRoot.querySelector("#requiredFieldsLabel") && this.shadowRoot.querySelector("#requiredFieldsLabel").classList ) {
+                    this.shadowRoot.querySelector("#requiredFieldsLabel").classList.add('displayNotification')
+                    setTimeout(() => {this.shadowRoot.querySelector("#requiredFieldsLabel").classList.remove('displayNotification')}, 5000)
                }
 
                return validationResult
@@ -1279,89 +1287,6 @@
                 this.set("_dialogData.relatedChildrenPathologiesForSelectedParent", !!_.size(childrenPathologiesForSelectedParent) ? childrenPathologiesForSelectedParent : [])
                 relatedChildrenPathologyVaadinComboBoxClassList && !!_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.remove("displaynone")
                 relatedChildrenPathologyVaadinComboBoxClassList && !_.size(childrenPathologiesForSelectedParent) && relatedChildrenPathologyVaadinComboBoxClassList.add("displaynone")
-
-            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-            _summaryFormDataGotChanged(summaryForm) {
-
-                const promResolve = Promise.resolve();
-                const careBeginningDate = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("careBeginDateServiceMapKey","Date intervention") + "][0].svc.content." + this.language + ".fuzzyDateValue", ""))
-                const numberOfCares = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("numberOfCaresServiceMapKey","Nombre de séances") + "][0].svc.content." + this.language + ".numberValue", ""))
-
-                // Show / hide children pathologies % parent pathologies
-                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedparentpathology') > -1 ) this._updateParentChildrenPathologiesDataAndComboBoxes({resetChildrenPathologyValue: true})
-
-                // Copy value of relatedhealthelementid (string) as plan of action's name
-                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedhealthelementid') > -1 && !!_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) && !_.trim(_.get(this,"_summaryForm.planOfActionsName","")) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.planOfActionsName") this.set("_summaryForm.planOfActionsName", _.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","") )
-                if(!_.trim(_.get(this,"_summaryForm.startDate","")) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.startDate") this.set("_summaryForm.startDate", _.trim(_.get(this,"_selectedPrescriptionObject.date")).substr(0,8))
-                if(!_.trim(_.get(this,"_summaryForm.valueDate","")) && !!_.trim(careBeginningDate) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.valueDate") this.set("_summaryForm.valueDate", _.trim(careBeginningDate).substr(0,8))
-                if(parseInt(_.get(this,"_summaryForm.numberOfCares","")) === 1 && !!_.trim(numberOfCares) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.numberOfCares" ) this.set("_summaryForm.numberOfCares", _.trim(numberOfCares))
-
-                const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
-                setTimeout(() => {
-                    return (reqIdx !== this._saveFormReqIdx || _.trim(_.get(summaryForm,"path","")) === "_summaryForm" || this._triptyqueDetailActiveTab !== "summary" || !_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))) ? false : promResolve
-                        .then(()=> !_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) ? {} : this.api.helement().getHealthElement(_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))))
-                        .then(he => {
-                            const lateralityCheckedCodes = _.compact(_.map(_.compact([ (!!_.get(this,"_summaryForm.lateralityLeft",false) ? "left" : false), (!!_.get(this,"_summaryForm.lateralityRight",false) ? "right" : false), (!!_.get(this,"_summaryForm.lateralityCenter",false) ? "odd" : false) ])))
-                            const codeKeysToImport = ["id", "code", "version", "type"]
-                            return _.merge({},he,{
-                                plansOfAction: [{
-                                    id: this.api.crypto().randomUuid(),
-                                    author: _.trim(_.get(this,"user.id")),
-                                    responsible: _.trim(_.get(this,"user.healthcarePartyId")),
-                                    openingDate: _.trim(_.get(this,"_summaryForm.startDate","")) ? parseInt(_.trim(_.get(this,"_summaryForm.startDate",""))) : parseInt(moment().format('YYYYMMDDHHmmss')),
-                                    closingDate: parseInt(_.trim(_.get(this,"_summaryForm.endDate",""))),
-                                    valueDate: parseInt(_.trim(_.get(this,"_summaryForm.valueDate",""))),
-                                    endOfLife: parseInt(_.trim(_.get(this,"_summaryForm.careRehearseDate",""))),
-                                    name: _.trim(_.get(this,"_summaryForm.planOfActionsName","")),
-                                    idOpeningContact: _.trim(_.get(this,"_selectedPrescriptionObject.contact.id","")),
-                                    created: +new Date,
-                                    modified: +new Date,
-                                    codes: _.compact(_.uniqBy(_.filter(_.concat(
-                                        _.compact( _.map( _.get(this,"_dialogData.codes.lateralityCodes",{}), lateralityCode => lateralityCheckedCodes.indexOf(_.trim(_.get(lateralityCode,"code",""))) > -1 ? _.pick(lateralityCode, codeKeysToImport) : false )),
-                                        [_.pick(_.find( _.get(this,"_dialogData.codes.incapacityCodes",[]), {id:_.trim(_.get(this,"_summaryForm.careReason",""))}), codeKeysToImport)],
-                                        [_.pick(_.find( _.get(this,"_dialogData.codes.prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedParentPathology",""))}), codeKeysToImport)],
-                                        [_.pick(_.find( _.get(this,"_dialogData.codes.prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedChildrenPathology",""))}), codeKeysToImport)]
-                                    ), i => !!_.size(i)), "id")),
-                                    tags: _.filter(_.compact([
-                                        _.pick(_.get(this,"_dialogData.codes.triptyqueCodes",{}), codeKeysToImport),
-                                        _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentContactId"}), codeKeysToImport),
-                                        _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentId"}), codeKeysToImport),
-                                        _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentServiceId"}), codeKeysToImport),
-                                        _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentFormId"}), codeKeysToImport),
-                                        {type: "idOpeningContactOfContact", id: _.trim(_.get(this,"_selectedPrescriptionObject.contact.id",""))},
-                                        {type: "idOpeningContactOfHelement", id: _.trim(_.get(he,"idOpeningContact",""))}
-                                    ]), i => !!_.trim(i.id)),
-                                    documentIds: _.map(_.get(this,"_summaryForm.insuranceDocuments_linked",[]), d => _.trim(d.documentId)),
-                                    prescriberId: _.trim(_.get(this,"_summaryForm.careTeam","")),
-                                    numberOfCares: parseInt(_.trim(_.get(this,"_summaryForm.numberOfCares",""))),
-                                    status: 0
-                                }]
-                            })
-                        })
-                        .then(he => !_.trim(_.get(he,"id","")) ? promResolve : this.api.helement().modifyHealthElement(he).then(he=>this.api.register(he, 'helement')))
-                        .then(modifiedHelement=>{
-
-                            // Fabien: garder modifiedHelement dans le composant (attention au reset)
-                            console.log("modifiedHelement",modifiedHelement);
-                            console.log("Garder dans le composant / refresh le data grid / 'vaadingridpoatoshow' ==> slice de _dialogData.hesAndPoas ... ");
-                            console.log("Refoutre l'active element si refresh grid + force no trigger totue la cuisine again");
-
-                        })
-
-                }, 2000)
 
             }
 
@@ -1505,6 +1430,106 @@
                             this.set("_isLoading", false);
                             return promResolve
                         })
+
+            }
+
+            _savePlanOfActrionsData() {
+
+                // We have an auto-save mechanism so we'll just confirm on screen
+                if( this.shadowRoot.querySelector("#confirmSaveLabel") && this.shadowRoot.querySelector("#confirmSaveLabel").classList ) {
+                    this.shadowRoot.querySelector("#confirmSaveLabel").classList.add('displayNotification')
+                    setTimeout(() => {this.shadowRoot.querySelector("#confirmSaveLabel").classList.remove('displayNotification')}, 5000)
+                }
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            _summaryFormDataGotChanged(summaryForm) {
+
+                const promResolve = Promise.resolve();
+                const careBeginningDate = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("careBeginDateServiceMapKey","Date intervention") + "][0].svc.content." + this.language + ".fuzzyDateValue", ""))
+                const numberOfCares = _.trim(_.get(this,"_selectedPrescriptionObject.servicesMap[" + this._getConfig("numberOfCaresServiceMapKey","Nombre de séances") + "][0].svc.content." + this.language + ".numberValue", ""))
+
+                // Show / hide children pathologies % parent pathologies
+                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedparentpathology') > -1 ) this._updateParentChildrenPathologiesDataAndComboBoxes({resetChildrenPathologyValue: true})
+
+                // Copy value of relatedhealthelementid (string) as plan of action's name
+                if(_.trim(_.get(summaryForm,"path","")).toLowerCase().indexOf('relatedhealthelementid') > -1 && !!_.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) && !_.trim(_.get(this,"_summaryForm.planOfActionsName","")) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.planOfActionsName") this.set("_summaryForm.planOfActionsName", _.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","") )
+                if(!_.trim(_.get(this,"_summaryForm.startDate","")) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.startDate") this.set("_summaryForm.startDate", _.trim(_.get(this,"_selectedPrescriptionObject.date")).substr(0,8))
+                if(!_.trim(_.get(this,"_summaryForm.valueDate","")) && !!_.trim(careBeginningDate) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.valueDate") this.set("_summaryForm.valueDate", _.trim(careBeginningDate).substr(0,8))
+                if(parseInt(_.get(this,"_summaryForm.numberOfCares","")) === 1 && !!_.trim(numberOfCares) && _.trim(_.get(summaryForm,"path","")) !== "_summaryForm.numberOfCares" ) this.set("_summaryForm.numberOfCares", _.trim(numberOfCares))
+
+                const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
+                setTimeout(() => {
+                    return (reqIdx !== this._saveFormReqIdx || _.trim(_.get(summaryForm,"path","")) === "_summaryForm" || this._triptyqueDetailActiveTab !== "summary" || !_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))) ? false : promResolve
+                        .then(()=> this.api.helement().getHealthElement(_.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId",""))))
+                        .then(he => {
+                            // Drop current POA first, if any
+                            const vaadingGridPoaId = _.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.poaId",""))
+                            const removedPlanOfAction = !!_.trim(vaadingGridPoaId) ? _.head(_.remove(_.get(he,"plansOfAction",[]), {id: vaadingGridPoaId})) : null
+                            return !!_.size(removedPlanOfAction) ? this.api.helement().modifyHealthElement(he).then(he=>this.api.register(he, 'helement')).then(he => ([he, removedPlanOfAction])) : ([he, null])
+                        })
+                        .then(([he, removedPlanOfAction]) => {
+                            const vaadingGridHeId = _.trim(_.get(he,"id",""))
+                            const formHeId = _.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))
+                            return formHeId === vaadingGridHeId ? ([he, removedPlanOfAction]) : this.api.helement().getHealthElement(_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))).then(he => ([he, removedPlanOfAction]))
+                        })
+                        .then(([he, removedPlanOfAction]) => {
+
+                            const lateralityCheckedCodes = _.compact(_.map(_.compact([ (!!_.get(this,"_summaryForm.lateralityLeft",false) ? "left" : false), (!!_.get(this,"_summaryForm.lateralityRight",false) ? "right" : false), (!!_.get(this,"_summaryForm.lateralityCenter",false) ? "odd" : false) ])))
+                            const codeKeysToImport = ["id", "code", "version", "type"]
+                            const poaToAdd = {
+                                id: !!_.trim(_.get(removedPlanOfAction,"id","")) ? _.trim(_.get(removedPlanOfAction,"id","")) : this.api.crypto().randomUuid(),
+                                author: _.trim(_.get(this,"user.id")),
+                                responsible: _.trim(_.get(this,"user.healthcarePartyId")),
+                                openingDate: _.trim(_.get(this,"_summaryForm.startDate","")) ? parseInt(_.trim(_.get(this,"_summaryForm.startDate",""))) : parseInt(moment().format('YYYYMMDDHHmmss')),
+                                closingDate: parseInt(_.trim(_.get(this,"_summaryForm.endDate",""))),
+                                valueDate: parseInt(_.trim(_.get(this,"_summaryForm.valueDate",""))),
+                                endOfLife: parseInt(_.trim(_.get(this,"_summaryForm.careRehearseDate",""))),
+                                name: _.trim(_.get(this,"_summaryForm.planOfActionsName","")),
+                                idOpeningContact: _.trim(_.get(this,"_selectedPrescriptionObject.contact.id","")),
+                                created: !!_.trim(_.get(removedPlanOfAction,"created","")) ? parseInt(_.trim(_.get(removedPlanOfAction,"created",""))) : +new Date,
+                                modified: +new Date,
+                                codes: _.compact(_.uniqBy(_.filter(_.concat(
+                                    _.compact( _.map( _.get(this,"_dialogData.codes.lateralityCodes",{}), lateralityCode => lateralityCheckedCodes.indexOf(_.trim(_.get(lateralityCode,"code",""))) > -1 ? _.pick(lateralityCode, codeKeysToImport) : false )),
+                                    [_.pick(_.find( _.get(this,"_dialogData.codes.incapacityCodes",[]), {id:_.trim(_.get(this,"_summaryForm.careReason",""))}), codeKeysToImport)],
+                                    [_.pick(_.find( _.get(this,"_dialogData.codes.prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedParentPathology",""))}), codeKeysToImport)],
+                                    [_.pick(_.find( _.get(this,"_dialogData.codes.prescriptionCodes",[]), {id:_.trim(_.get(this,"_summaryForm.relatedChildrenPathology",""))}), codeKeysToImport)]
+                                ), i => !!_.size(i)), "id")),
+                                tags: _.filter(_.compact([
+                                    _.pick(_.get(this,"_dialogData.codes.triptyqueCodes",{}), codeKeysToImport),
+                                    _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentContactId"}), codeKeysToImport),
+                                    _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentId"}), codeKeysToImport),
+                                    _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentServiceId"}), codeKeysToImport),
+                                    _.pick(_.find(_.get(this,"_selectedPrescriptionObject.contact.tags",[]),{type:"originalDocumentFormId"}), codeKeysToImport),
+                                    {type: "idOpeningContactOfContact", id: _.trim(_.get(this,"_selectedPrescriptionObject.contact.id",""))},
+                                    {type: "idOpeningContactOfHelement", id: _.trim(_.get(he,"idOpeningContact",""))}
+                                ]), i => !!_.trim(i.id)),
+                                documentIds: _.compact(_.map(_.get(this,"_summaryForm.insuranceDocuments_linked",[]), d => _.trim(_.get(d,"documentId","")))),
+                                prescriberId: _.trim(_.get(this,"_summaryForm.careTeam","")),
+                                numberOfCares: parseInt(_.trim(_.get(this,"_summaryForm.numberOfCares",""))),
+                                status: !!_.trim(_.get(removedPlanOfAction,"status","")) ? parseInt(_.trim(_.get(removedPlanOfAction,"status",""))) : 0
+                            }
+
+                            const alreadyHasPlanOfActions = _.keys(he).indexOf("plansOfAction") > -1 && Array.isArray(_.get(he,"plansOfAction","notOfTypeArray"))
+                            if(!!alreadyHasPlanOfActions) { he.plansOfAction.push(poaToAdd) } else { he = _.merge({},he, {plansOfAction: [poaToAdd]}) }
+                            return he
+
+                        })
+                        .then(he => !_.trim(_.get(he,"id","")) ? promResolve : this.api.helement().modifyHealthElement(he).then(he=>this.api.register(he, 'helement')))
+                }, 2000)
 
             }
 
