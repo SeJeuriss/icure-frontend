@@ -398,7 +398,7 @@
 
 
                         <div class="buttons">
-                            <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
+                            <paper-button on-tap="_closePlanOfAction" class="modal-button modal-button--cancel"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
                             <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_savePlanOfActrionsData" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--save"><iron-icon icon="icons:save" class=""></iron-icon>[[localize('save','Save',language)]]</paper-button>
                             <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_XXXXXX" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--cancel minw0"><iron-icon icon="icons:more-vert" class="mr0"></iron-icon></paper-button>
                         </div>
@@ -821,7 +821,8 @@
 
             _closePlanOfAction(e) {
 
-                return this.set("_vaadinGridPlanOfActionSelectedItem", {})
+                this.set("_vaadinGridPlanOfActionSelectedItem", {})
+                return this.open()
 
             }
 

@@ -1771,15 +1771,14 @@
     "linkedInsuranceDocuments": "Linked insurance documents",
     "availableToBeLinkedDocuments": "Available documents / to be linked",
     "fillInRequiredFields": "Please fill in required fields",
-    "changesSuccessfullySaved": "Changes successfully saved"
+    "changesSuccessfullySaved": "Changes successfully saved",
     "sortDirection": "Direction",
     "sortCriteria": "Criteria",
     "ascending": "Ascending",
     "descending": "Descending",
     "importedDocuments": "Imported documents",
     "contact-date": "Contact date",
-    "sort": "Sort",
-    "all": "All"
+    "sort": "Sort"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3637,15 +3636,14 @@
     "linkedInsuranceDocuments": "Documents liés au triptyque",
     "availableToBeLinkedDocuments": "Documents disponibles / à lier",
     "fillInRequiredFields": "Veuillez compléter les champs requis",
-    "changesSuccessfullySaved": "Changements enregistrés"
+    "changesSuccessfullySaved": "Changements enregistrés",
     "sortDirection": "Sens",
     "sortCriteria": "Critère",
     "ascending": "Croissant",
     "descending": "Décroissant",
     "importedDocuments": "Documents importés",
     "contact-date": "Date de contact",
-    "sort": "Tri",
-    "all": "Tous"
+    "sort": "Tri"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5464,14 +5462,13 @@
     "linkedInsuranceDocuments": "Linked insurance documents",
     "availableToBeLinkedDocuments": "Available documents / to be linked",
     "fillInRequiredFields": "Please fill in required fields",
-    "changesSuccessfullySaved": "Changes successfully saved"
+    "changesSuccessfullySaved": "Changes successfully saved",
     "sortDirection": "Direction",
     "sortCriteria": "Criteria",
     "ascending": "Ascending",
     "descending": "Descending",
     "importedDocuments": "Imported documents",
     "contact-date": "Contact date",
-    "sort": "Sort",
-    "all": "Alles"
+    "sort": "Sort"
   }
 }
