@@ -676,6 +676,10 @@
                             codes: {
                                 type: Object,
                                 value: ()=>{}
+                            },
+                            lastNewPoaId: {
+                                type: String,
+                                value: ""
                             }
                         }},
                         noReset: true
@@ -903,7 +907,9 @@
                 this.set("_selectedPrescriptionObject", {})
                 this.set("_selectedPrescriptionBoolean", false)
                 this.set("_dialogData.relatedChildrenPathologiesForSelectedParent", [])
-                _.map(this._summaryForm, (v,k) => this.set("_summaryForm." + k, typeof k === "string" ? "" : typeof k === "boolean" ? false : typeof k === "number" ? 1 : Array.isArray(v) ? [] : typeof k === "object" ? {} : null ))
+                this.set("_dialogData.lastNewPoaId", "")
+
+                _.map(this._summaryForm, (v,k) => this.set("_summaryForm." + k, typeof v === "string" ? "" : typeof v === "boolean" ? false : typeof v === "number" ? 1 : Array.isArray(v) ? [] : typeof v === "object" ? {} : null ))
 
                 return this._vaadinGridPlanOfActionSelectedItemChanged({},true)
 
@@ -982,7 +988,7 @@
                         this.api.form().getFormTemplatesByGuid( _.trim(this._getConfig("formTemplateGuid")), _.trim(_.get(this,"_dialogData.currentHcp.specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
                     ]).then(promResults => this.set("_dialogData.formTemplate", _.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value())))
                     .then(() =>this.api.patient().getPatientWithUser(_.get(this,"user",{}), _.trim(_.get(this,"patient.id",""))).then(pat => this.set("_dialogData.currentPatient", pat)))
-                    .then(() => !_.size( _.get(this,"_dialogData.currentPatient.encryptedAdministrativesDocuments",[]) ) ?  [] :  Promise.all( _.get(this,"_dialogData.currentPatient.encryptedAdministrativesDocuments",[]).map(encryptedAdminDocId => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("decrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.text2ua(Base64.decode(_.trim(encryptedAdminDocId)))).then(uaDecryptedContent => this.api.crypto().utils.ua2text(uaDecryptedContent)))) )
+                    .then(() => !_.size( _.get(this,"_dialogData.currentPatient.encryptedAdministrativesDocuments",[]) ) ?  [] :  Promise.all( _.get(this,"_dialogData.currentPatient.encryptedAdministrativesDocuments",[]).map(encryptedAdminDocId => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("decrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.text2ua(Base64.decode(_.trim(encryptedAdminDocId)))).then(uaDecryptedContent => this.api.crypto().utils.ua2text(uaDecryptedContent)).catch(()=>encryptedAdminDocId))) )
                     .then(insuranceDocumentIds => !_.size( insuranceDocumentIds ) ? promResolve : this.api.document().getDocuments({ids:insuranceDocumentIds}).then(foundDocuments => this.set("_dialogData.insuranceDocuments", _.map(foundDocuments, i => {return {
                         created: moment(parseInt(_.get(i, "modified", 0))).format('DD/MM/YYYY - HH:mm'),
                         documentId: _.trim(_.get(i, "id", "")),
@@ -1010,40 +1016,53 @@
                         }))
                         .value()
                     )
-                    .then(hes => _.flatten(_.map(hes, he => _.map(_.get(he,"hePlansOfAction",[]), poa => {
-                        return !_.size(_.filter(_.get(poa,"tags"), {type:"originalDocumentId"})) ? false : _.merge({}, he, {
-                            poaId: _.trim(_.get(poa, "id", "")),
-                            poaResponsible: _.trim(_.get(poa, "responsible", "")) ? _.trim(_.get(poa, "responsible", "")) : _.trim(_.get(this, "_dialogData.currentHcp.id", "")),
-                            poaClosingDate: parseInt(_.get(poa, "closingDate"))||null,
-                            poaCodes: _.get(poa, "codes", []),
-                            poaCreated: parseInt(_.get(poa, "created"))||null,
-                            poaDocumentIds: _.compact(_.uniq(_.get(poa, "documentIds",[]))),
-                            poaEndOfLife: parseInt(_.get(poa, "endOfLife"))||null,
-                            poaIdOpeningContact: _.trim(_.get(poa, "idOpeningContact", "")),
-                            poaName: _.trim(_.get(poa, "name", "")),
-                            poaNumberOfCares: _.trim(_.get(poa, "numberOfCares", "")),
-                            poaNumberOfCaresMade: "todo",
-                            poaOpeningDate: parseInt(_.get(poa, "openingDate"))||null,
-                            poaPrescriberId: _.trim(_.get(poa, "prescriberId", "")),
-                            poaStatus: parseInt(_.get(poa, "status",0)),
-                            poaTags: _.get(poa, "tags", []),
-                            poaValueDate: parseInt(_.get(poa, "valueDate"))||null,
-                            poaValueDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "valueDate"))||null),
-                            poaClosingDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "closingDate"))||null),
-                            poaCreatedHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "created"))||null),
-                            poaEndOfLifeHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "endOfLife"))||null),
-                            poaOpeningDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "openingDate"))||null),
-                            poaStatusHr: this.localize(
-                                !!(_.get(poa,"status",0)&(1<<4)) ? "STATUS_CANCELED" :
-                                !!(_.get(poa,"status",0)&(1<<3)) ? "STATUS_PROLONGED" :
-                                !!(_.get(poa,"status",0)&(1<<2)) ? "STATUS_FINISHED" :
-                                !!(_.get(poa,"status",0)&(1<<1)) ? "STATUS_ONGOING" :
-                                "STATUS_PLANNED", // 1<<0
-                                "",
-                                this.language
+                    .then(hes => _.flatten(_.map(hes, he => _.map(_.get(he,"hePlansOfAction",[]), poa => !_.size(_.filter(_.get(poa,"tags"), {type:"originalDocumentId"})) ? false : _.merge({}, he, {
+                        poaId: _.trim(_.get(poa, "id", "")),
+                        poaResponsible: _.trim(_.get(poa, "responsible", "")) ? _.trim(_.get(poa, "responsible", "")) : _.trim(_.get(this, "_dialogData.currentHcp.id", "")),
+                        poaClosingDate: parseInt(_.get(poa, "closingDate"))||null,
+                        poaCodes: _.get(poa, "codes", []),
+                        poaCreated: parseInt(_.get(poa, "created"))||null,
+                        poaDocumentIds: _.compact(_.uniq(_.get(poa, "documentIds",[]))),
+                        poaEndOfLife: parseInt(_.get(poa, "endOfLife"))||null,
+                        poaIdOpeningContact: _.trim(_.get(poa, "idOpeningContact", "")),
+                        poaName: _.trim(_.get(poa, "name", "")),
+                        poaNumberOfCares: _.trim(_.get(poa, "numberOfCares", "")),
+                        poaNumberOfCaresMade: "todo",
+                        poaOpeningDate: parseInt(_.get(poa, "openingDate"))||null,
+                        poaPrescriberId: _.trim(_.get(poa, "prescriberId", "")),
+                        poaStatus: parseInt(_.get(poa, "status",0)),
+                        poaTags: _.get(poa, "tags", []),
+                        poaValueDate: parseInt(_.get(poa, "valueDate"))||null,
+                        poaValueDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "valueDate"))||null),
+                        poaClosingDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "closingDate"))||null),
+                        poaCreatedHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "created"))||null),
+                        poaEndOfLifeHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "endOfLife"))||null),
+                        poaOpeningDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "openingDate"))||null),
+                        poaStatusHr: this.localize(
+                            !!(_.get(poa,"status",0)&(1<<4)) ? "STATUS_CANCELED" :
+                            !!(_.get(poa,"status",0)&(1<<3)) ? "STATUS_PROLONGED" :
+                            !!(_.get(poa,"status",0)&(1<<2)) ? "STATUS_FINISHED" :
+                            !!(_.get(poa,"status",0)&(1<<1)) ? "STATUS_ONGOING" :
+                            "STATUS_PLANNED", // 1<<0
+                            "",
+                            this.language
+                        )
+                    })))))
+                    .then(hesAndPoas => {
+
+                        let prom = Promise.resolve([]);
+                        const encryptedDocumentIds = _.uniq(_.compact(_.flatten(_.map(hesAndPoas, heAndPoa => _.get(heAndPoa ,"poaDocumentIds",[])))))
+
+                        _.map(encryptedDocumentIds, encryptedDocId => {
+                            prom = prom.then(promisesCarrier => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("decrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.text2ua(Base64.decode(_.trim(encryptedDocId))))
+                                .then(uaDecryptedContent => _.concat(promisesCarrier, {encryptedDocId: encryptedDocId, decryptedDocId: this.api.crypto().utils.ua2text(uaDecryptedContent)}))
+                                .catch(()=>_.concat(promisesCarrier, {encryptedDocId: encryptedDocId, decryptedDocId: encryptedDocId}))
                             )
                         })
-                    }))))
+
+                        return prom.then(decryptedDocIds => _.map(hesAndPoas, heAndPoa => _.merge({},heAndPoa,{poaDocumentIds:_.uniq(_.compact(_.map(_.get(heAndPoa,"poaDocumentIds",[]), poaSingleEncryptedDocumentId => _.get(_.find(decryptedDocIds, {encryptedDocId: poaSingleEncryptedDocumentId}),"decryptedDocId",poaSingleEncryptedDocumentId))))})))
+
+                    })
                     .then(hesAndPoas => this.set("_dialogData.hesAndPoas", _.compact(_.orderBy(hesAndPoas, ["heDescr", "poaName", "poaCreated"], ["asc","asc","desc"]))))
                     .then(()=>{
 
@@ -1238,7 +1257,7 @@
                     currentTab === "summary" ? this._fieldsValidationByTab("summary") ? targetTab : currentTab :
                     targetTab
 
-                return setTimeout(()=>{this.set("_triptyqueDetailActiveTab", gotoTab)})
+                return setTimeout(()=>{ this.set("_triptyqueDetailActiveTab", gotoTab)}) && ( gotoTab === "summary" ) ? setTimeout(()=>{this._updateParentChildrenPathologiesDataAndComboBoxes()},100) : null
 
             }
 
@@ -1351,12 +1370,12 @@
                                 numberOfCares: parseInt(_.trim(_.get(selectedPlanOfAction,"poaNumberOfCares","")))||1,
                                 careReason: _.trim(_.get(_.find(_.get(selectedPlanOfAction,"poaCodes",[]),{type: "CD-INCAPACITYREASON"}), "id","")),
                                 careTeam: _.trim(_.get(selectedPlanOfAction,"poaPrescriberId","")),
-                                insuranceDocuments_linked: _.get(selectedPlanOfAction,"poaDocumentIds",[])
+                                insuranceDocuments_linked: _.filter(_.get(this,"_dialogData.insuranceDocuments",[]), i => _.get(selectedPlanOfAction,"poaDocumentIds",[]).indexOf(_.trim(_.get(i,"documentId",""))) > -1)
                             }))
 
                             // Reset to all
                             this.set("_templateInsuranceDocuments_available", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.cloneDeep(_.get(this, "_dialogData.insuranceDocuments",[])) : [])
-                            this.set("_templateInsuranceDocuments_linked", _.remove( this._templateInsuranceDocuments_available, i => this._summaryForm.insuranceDocuments_linked.indexOf(_.trim(_.get(i,"documentId",""))) > -1 ))
+                            this.set("_templateInsuranceDocuments_linked", _.remove( this._templateInsuranceDocuments_available, i => _.map(this._summaryForm.insuranceDocuments_linked, j => _.trim(_.get(j,"documentId",""))).indexOf(_.trim(_.get(i,"documentId",""))) > -1 ))
 
                         })
                         .finally(() => {
@@ -1485,7 +1504,7 @@
                         .then(()=> this.api.helement().getHealthElement( !!_.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId","")) ? _.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId","")) : _.trim(_.get(this,"_summaryForm.relatedHealthElementId","")) ))
                         .then(he => {
                             // Drop current POA first, if any
-                            const vaadingGridPoaId = _.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.poaId",""))
+                            const vaadingGridPoaId = !!_.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.poaId","")) ? _.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.poaId","")) : _.trim(_.get(this,"_dialogData.lastNewPoaId",""))
                             const removedPlanOfAction = !!_.trim(vaadingGridPoaId) ? _.head(_.remove(_.get(he,"plansOfAction",[]), {id: vaadingGridPoaId})) : null
                             return !!_.size(removedPlanOfAction) ? this.api.helement().modifyHealthElement(he).then(he=>this.api.register(he, 'helement')).then(he => ([he, removedPlanOfAction])) : ([he, null])
                         })
@@ -1496,6 +1515,7 @@
                         })
                         .then(([he, removedPlanOfAction]) => {
 
+                            const alreadyHasPlanOfActionsKey = _.keys(he).indexOf("plansOfAction") > -1 && Array.isArray(_.get(he,"plansOfAction","notOfTypeArray"))
                             const lateralityCheckedCodes = _.compact(_.map(_.compact([ (!!_.get(this,"_summaryForm.lateralityLeft",false) ? "left" : false), (!!_.get(this,"_summaryForm.lateralityRight",false) ? "right" : false), (!!_.get(this,"_summaryForm.lateralityCenter",false) ? "odd" : false) ])))
                             const codeKeysToImport = ["id", "code", "version", "type"]
                             const poaToAdd = {
@@ -1531,9 +1551,15 @@
                                 status: !!_.trim(_.get(removedPlanOfAction,"status","")) ? parseInt(_.trim(_.get(removedPlanOfAction,"status",""))) : 0
                             }
 
-                            const alreadyHasPlanOfActionsKey = _.keys(he).indexOf("plansOfAction") > -1 && Array.isArray(_.get(he,"plansOfAction","notOfTypeArray"))
-                            if(!!alreadyHasPlanOfActionsKey) { he.plansOfAction.push(poaToAdd) } else { he = _.merge({},he, {plansOfAction: [poaToAdd]}) }
-                            return he
+                            this.set("_dialogData.lastNewPoaId", _.trim(_.get(poaToAdd,"id","")))
+
+                            return !_.size(_.get(poaToAdd,"documentIds",[])) ? he : Promise.all(_.map(poaToAdd.documentIds, docId => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject( "encrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(docId))).then(encryptedContent => Base64.encode(String.fromCharCode.apply(null, new Uint8Array(encryptedContent)))).catch(()=>null)))
+                                .then(encryptedDocumentIds => {
+                                    poaToAdd.documentIds = _.uniq(_.compact(encryptedDocumentIds))||[]
+                                    if(!!alreadyHasPlanOfActionsKey) { he.plansOfAction.push(poaToAdd) } else { he = _.merge({},he, {plansOfAction: [poaToAdd]}) }
+                                    return he
+                                })
+
 
                         })
                         .then(he => !_.trim(_.get(he,"id","")) ? promResolve : this.api.helement().modifyHealthElement(he).then(he=>this.api.register(he, 'helement')))
@@ -1584,17 +1610,16 @@
 
             //         FABIEN
             //
-            //         -   Revoir sauvegarde & re-load data => foire
-            //         -   Bug placement / position dialog triptyque lors ouverture / si déjà ouvert && si navigate autres onglets ==> zoom in/out triggers it
-            //         -   Double check tout ok infirmières
-            //         -   Target / search / link procedures proprement
-            //         -   Menu "..." verticaux + quels actions ?
-            //         -   Code générique pour imprimer tous les forms pdfs à la fois kine & infi
-            //         -   Search procedures & packages procédures smart => coordonner avec travail de Maxime
-            //         -   Revoir vaadin grid listing "mode list" + PTP + DP + columns + layout + bouger "Agenda" dans nouvelles tab view interne (une fois prescription liée) -> du coup revoir mécanique d'approbation de changement de tab
-            //         -   Revoir lien avec Mikrono / intégration
-            //         -   Quid gestion sub-forms (dans le cadre des infis) => actuellement pas géré
-            //         -   Eval number of cares (vaading grid) = nombre de séances minus celles déjà faites
+            //         -  Bug placement / position dialog triptyque lors ouverture / si déjà ouvert && si navigate autres onglets ==> zoom in/out triggers it
+            //         -  Double check tout ok infirmières
+            //         -  Target / search / link procedures proprement
+            //         -  Menu "..." verticaux + quels actions ?
+            //         -  Code générique pour imprimer tous les forms pdfs à la fois kine & infi
+            //         -  Search procedures & packages procédures smart => coordonner avec travail de Maxime
+            //         -  Revoir vaading grid layout + bouger "Agenda" dans nouvelles tab view interne (une fois prescription liée) -> du coup revoir mécanique d'approbation de changement de tab
+            //         -  Revoir lien avec Mikrono / intégration
+            //         -  Quid gestion sub-forms (dans le cadre des infis) => actuellement pas géré
+            //         -  Eval number of cares (vaading grid) = nombre de séances minus celles déjà faites
 
 
         }
