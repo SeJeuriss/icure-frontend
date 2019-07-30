@@ -542,7 +542,7 @@
             .uppercase { text-transform: uppercase; }
 
 			.bt0 {border-top:0!important;}
-			.br0 {border-righ:0!important;}
+			.br0 {border-right:0!important;}
 			.bb0 {border-bottom:0!important;}
 			.bl0 {border-left:0!important;}
 
@@ -672,81 +672,16 @@
 			.borderColorAppPrimaryDark { border-color: var(--app-primary-color-dark) }
 			.borderColorAppPrimaryLight { border-color: var(--app-primary-color-light) }
 
-            #triptyqueDialog {
-                width:100%;
-                height:calc(100% - 83px);
-                margin:63px 0 0 0;
-                top:0!important;
-                padding: 24px 10px 0 10px;
-            }
-
-			#triptyqueDialog .buttons {
-				padding-left:0;
-				padding-right:0;
+			@media screen and (max-width: 640px) {
+				.hideOnMobile {
+					display: none;
+				}
 			}
-
-            .vaadinGridBottomActions {
-                display: flex;
-                width: 100%;
-                justify-content: flex-end;
-                align-items: center;
-                padding:0;
-            }
-
-            @media screen and (max-width: 640px) {
-                .hideOnMobile {
-                    display: none;
-                }
-            }
-
-            .vaadinGridPageToPageNavigation {
-                cursor: pointer;
-                width: 24px;
-                height: 24px;
-                min-width: 0;
-                padding: 2px;
-                color: var(--app-text-color);
-                margin:0 4px;
-            }
-
-            .vaadinGridScrollToTop {
-                background: var(--app-secondary-color);
-                padding: 0 4px;
-                height: 24px;
-                width: 24px;
-                box-sizing: border-box;
-                border-radius: 50%;
-            }
-
-            .vaadinGridPlanOfAction {
-                height:calc(100% - 150px)
-            }
 
             .darkRed { color:#a00000!important; }
             .darkGreen { color:#41671e!important; }
             .darkBlue { color:var(--dark-primary-color)!important; }
             .materialSecondaryTextColor { color:var(--material-secondary-text-color)!important; }
-
-            .dialogTab {
-                border-top:1px solid var(--app-background-color-darker);
-                border-left:1px solid var(--app-background-color-darker);
-                border-bottom:1px solid var(--app-background-color-darker);
-                padding-left: 0;
-                padding-right: 0;
-                height: unset;
-            }
-
-            .dialogTab.iron-selected {
-                background-color: #eeeeee;
-            }
-
-            .dialogTab:last-child {
-                border-right:1px solid var(--app-background-color-darker);
-            }
-
-            #triptyqueDialog .dialogTab:first-child {
-                border-left:none;
-            }
 
             .batchNumber{
                 padding: 1px 5px;
@@ -765,109 +700,8 @@
             .greenBg { background-color: var(--paper-green-400); }
             .purpleBg { background-color: var(--paper-purple-300); }
 
-			.panelNavigator, .panelNavigatorContent {
-				position:relative;
-				width:100%;
-				height:100%;
-			}
-
-			.panelNavigator {
-				transition: all .2s ease-out;
-				margin-left:-100vw;
-			}
-
-			.panelNavigator.visible {
-				margin-left:0vw;
-			}
-
-			.panelNavigator.hasTabViews {
-				height:calc(100% - 36px)
-			}
-
-			.panelNavigatorAnchor {
-				width: 30px;
-				background-color: #eee;
-				border: 1px solid #ddd;
-				height: calc(100% - 46px);
-				text-align: center;
-				writing-mode: vertical-lr;
-				line-height: 30px;
-				float:left;
-				overflow: hidden;
-			}
-			
-			.panelNavigatorContent {
-				width:calc(100% - 35px);
-				float:left;
-			}
-
-			.panelNavigatorAnchor paper-button {
-				transform: rotate(180deg);
-				text-transform: uppercase;
-				margin:0;
-				padding:0;
-				min-width:0;
-				display:block;
-			}
-			.panelNavigatorAnchor paper-button iron-icon {
-				padding: 0;
-				margin: 0;
-				width: 22px;
-				height: 22px;
-				margin-bottom: 5px;
-				transform:rotate(180deg);
-				margin-left:-5px;
-				transition: all 1s ease-out;
-			}
-
-			#triptyqueDialog #pdfPanel {
-				float: left;
-				position: relative;
-				border: 1px solid #ddd;
-				height: calc(100% - 66px);
-				width: 30%;
-				padding:10px;
-				overflow: auto;
-				transition: all .2s ease-out;
-			}
-
-			#triptyqueDialog #pdfPanel.collapsed {
-				padding:10px 0 10px 0;
-				max-width: 0;
-			}
-
-			#triptyqueDialog .collapsedIcon {
-				transform: rotate(0);
-			}
-
-			#triptyqueDialog .dialogTabContent {
-				display:var(--layout_-_display);
-				overflow:auto;
-				height:calc(100% - 113px);
-				border-right: 1px solid #ddd;
-			}
-
-			#triptyqueDialog .dynamicDateField {
-				margin:0;
-			}
-
-			#triptyqueDialog vaadin-checkbox {
-				font-size:var(--font-size-normal);
-				color: var(--app-text-color);
-			}
-
-			#triptyqueDialog vaadin-checkbox [part="checkbox"] {
-				box-shadow: inset 0 0 0 2px #000
-			}
-
 			.modal-button.disabled {
 				opacity: 0.3;
-			}
-
-			.triptyqueVaadinComboBox {
-				width:100%;
-				height:40px;
-				overflow:hidden;
 			}
 
 			.singleDocumentContainer {
@@ -879,7 +713,6 @@
 			.singleDocumentContainer .header {
 				background-color: var(--app-primary-color);
 				color:#ffffff;
-
 			}
 
 			.documentsList .singleDocumentContainer paper-button {

@@ -1778,7 +1778,8 @@
     "descending": "Descending",
     "importedDocuments": "Imported documents",
     "contact-date": "Contact date",
-    "sort": "Sort"
+    "sort": "Sort",
+    "searchForProcedures": "Search for procedures"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3643,7 +3644,8 @@
     "descending": "Décroissant",
     "importedDocuments": "Documents importés",
     "contact-date": "Date de contact",
-    "sort": "Tri"
+    "sort": "Tri",
+    "searchForProcedures": "Rechercher une procédure"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5469,6 +5471,7 @@
     "descending": "Descending",
     "importedDocuments": "Imported documents",
     "contact-date": "Contact date",
-    "sort": "Sort"
+    "sort": "Sort",
+    "searchForProcedures": "Search for procedures"
   }
 }

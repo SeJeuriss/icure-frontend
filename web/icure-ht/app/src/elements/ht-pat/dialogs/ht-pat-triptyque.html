@@ -36,6 +36,7 @@
 <link rel="import" href="../../pdf-element/pdf-element.html">
 
 <link rel="import" href="../../../shared-styles.html">
+<link rel="import" href="../../../triptyque-styles.html">
 <link rel="import" href="../../../dialog-style.html">
 <link rel="import" href="../../../notification-style.html">
 <link rel="import" href="../../../spinner-style.html">
@@ -57,7 +58,7 @@
 
 
 
-        <style include="shared-styles dialog-style notification-style spinner-style scrollbar-style">
+        <style include="shared-styles dialog-style notification-style spinner-style scrollbar-style triptyque-styles">
 
         </style>
 
@@ -386,7 +387,31 @@
                                 <template is="dom-if" if="[[!_selectedPrescriptionBoolean]]"><iron-icon icon="warning" class="mr8 darkRed"></iron-icon> [[localize('pleaseLinkPrescriptionToTriptyqueFirst','Please link a prescription to your triptyque first',language)]].</template>
 
                                 <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
-                                    Procédures
+
+
+
+                                    <div id="existingProcedures">
+
+                                        <div id="existingProceduresList">
+                                            existingProceduresList
+                                        </div>
+
+                                        <div id="existingProceduresDetail">
+                                            existingProceduresDetail
+                                        </div>
+
+                                    </div>
+
+
+
+                                    <div class="panelNavigatorAnchor insideTab rightAnchror br0 bt0 bb0" id="panelNavigatorAnchorForProceduresSearch"><paper-button on-tap="_toggleCollapseProceduresSearch"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('searchForProcedures','Search for procedures',language)]]</paper-button></div>
+                                    <div id="proceduresSearch" class="collapsed">
+                                        proceduresSearch
+                                    </div>
+
+
+
+
                                 </template>
 
                             </template>
@@ -966,208 +991,12 @@
 
             }
 
-            _getDialogData() {
-
-                // const arrayOfDocumentIds = [ "fbd5f03a-7a1e-413d-ae79-8861e056757c",  "beaea1bb-cfe2-410f-9e4c-a76555d4202b" ]
-                // promResolve
-                //     .then(() =>this.api.patient().getPatientWithUser(_.get(this,"user",{}), _.trim(_.get(this,"patient.id",""))).then(pat => this.set("_dialogData.currentPatient", pat)))
-                //     .then(() =>this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject( "encrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(arrayOfDocumentIds[0])) ).then(encryptedContent => { console.log("arrayOfDocumentIds[0]", arrayOfDocumentIds[0]); console.log("encryptedContent AS string", Base64.encode(String.fromCharCode.apply(null, new Uint8Array(encryptedContent)))); }))
-                //     .then(() =>this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject( "encrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(arrayOfDocumentIds[1])) ).then(encryptedContent => { console.log("arrayOfDocumentIds[1]", arrayOfDocumentIds[1]); console.log("encryptedContent AS string", Base64.encode(String.fromCharCode.apply(null, new Uint8Array(encryptedContent)))); }))
-                //
-                // "encryptedAdministrativesDocuments": [
-                //     "Oxocw4EIwrDDgRvCp8KIc2Aww4c3w4rDmHcmAx8mwq7DhcKCRcKLwrsQI2cbYcOpw58Mw60jwrp3ZsKZwp/CqHbDtsKPAxhgdMKsRVQXw77DosOkPVZJwosbCw==",
-                //     "ZMO+e8OWW3fCjQoCFG7Dj1cDw4vCgFdyw5TCncKRLcKfXlsbw5opRcKkYzHDqmXDisKqw68Tw7cbYMKUC8OwPxPCgnfDkzrCuDPCmzvCgT4ab8ONa0PCssK3dA=="
-                // ]
-
-                const promResolve = Promise.resolve();
-
-                return promResolve
-                    .then(() => this.api.hcparty().getCurrentHealthcareParty().then(hcp => this.set("_dialogData.currentHcp", _.merge({},hcp,{nameHr: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i).toLowerCase())).join(" ") }))))
-                    .then(() => Promise.all([
-                        this.api.form().getFormTemplatesByGuid( _.trim(this._getConfig("formTemplateGuid")), "deptgeneralpractice" ),
-                        this.api.form().getFormTemplatesByGuid( _.trim(this._getConfig("formTemplateGuid")), _.trim(_.get(this,"_dialogData.currentHcp.specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
-                    ]).then(promResults => this.set("_dialogData.formTemplate", _.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value())))
-                    .then(() =>this.api.patient().getPatientWithUser(_.get(this,"user",{}), _.trim(_.get(this,"patient.id",""))).then(pat => this.set("_dialogData.currentPatient", pat)))
-                    .then(() => !_.size( _.get(this,"_dialogData.currentPatient.encryptedAdministrativesDocuments",[]) ) ?  [] :  Promise.all( _.get(this,"_dialogData.currentPatient.encryptedAdministrativesDocuments",[]).map(encryptedAdminDocId => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("decrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.text2ua(Base64.decode(_.trim(encryptedAdminDocId)))).then(uaDecryptedContent => this.api.crypto().utils.ua2text(uaDecryptedContent)).catch(()=>encryptedAdminDocId))) )
-                    .then(insuranceDocumentIds => !_.size( insuranceDocumentIds ) ? promResolve : this.api.document().getDocuments({ids:insuranceDocumentIds}).then(foundDocuments => this.set("_dialogData.insuranceDocuments", _.map(foundDocuments, i => {return {
-                        created: moment(parseInt(_.get(i, "modified", 0))).format('DD/MM/YYYY - HH:mm'),
-                        documentId: _.trim(_.get(i, "id", "")),
-                        attachmentId: _.trim(_.get(i, "attachmentId", "")),
-                        documentMainUti: _.trim(_.get(i, "mainUti", "")),
-                        documentName: _.trim(_.get(i, "name", ""))
-                    }}))))
-                    .then(()=> this.set("_templateInsuranceDocuments_available", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.cloneDeep(_.get(this, "_dialogData.insuranceDocuments",[])) : []))
-                    .then(()=> this._getPdfPrescriptionsList().then(pdfPrescriptions => this.set("_dialogData.pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : [])))
-                    .then(() =>this.api.helement().findBy(this.user.healthcarePartyId, this.patient))
-                    .then(hes => _
-                        .chain(hes)
-                        .filter(i => !!_.size(_.filter(_.get(i,"plansOfAction",[]), j =>  !!_.size(_.find(_.get(j,"tags",[]), {type:"originalDocumentId"})))))
-                        .orderBy(["desc","created"], ["asc","desc"])
-                        .map(i => _.merge({},{
-                            heId: _.trim(_.get(i, "id", "")),
-                            heClosingDate: parseInt(_.get(i, "closingDate"))||null,
-                            heCodes: _.get(i, "codes", []),
-                            heCreated: parseInt(_.get(i, "created"))||null,
-                            heDescr: _.trim(_.get(i, "descr", "")),
-                            heOpeningDate: parseInt(_.get(i, "openingDate"))||null,
-                            hePlansOfAction: _.get(i, "plansOfAction",[]),
-                            heStatus: parseInt(_.get(i, "status",0)),
-                            heTags: _.get(i, "tags",[]),
-                        }))
-                        .value()
-                    )
-                    .then(hes => _.flatten(_.map(hes, he => _.map(_.get(he,"hePlansOfAction",[]), poa => !_.size(_.filter(_.get(poa,"tags"), {type:"originalDocumentId"})) ? false : _.merge({}, he, {
-                        poaId: _.trim(_.get(poa, "id", "")),
-                        poaResponsible: _.trim(_.get(poa, "responsible", "")) ? _.trim(_.get(poa, "responsible", "")) : _.trim(_.get(this, "_dialogData.currentHcp.id", "")),
-                        poaClosingDate: parseInt(_.get(poa, "closingDate"))||null,
-                        poaCodes: _.get(poa, "codes", []),
-                        poaCreated: parseInt(_.get(poa, "created"))||null,
-                        poaDocumentIds: _.compact(_.uniq(_.get(poa, "documentIds",[]))),
-                        poaEndOfLife: parseInt(_.get(poa, "endOfLife"))||null,
-                        poaIdOpeningContact: _.trim(_.get(poa, "idOpeningContact", "")),
-                        poaName: _.trim(_.get(poa, "name", "")),
-                        poaNumberOfCares: _.trim(_.get(poa, "numberOfCares", "")),
-                        poaNumberOfCaresMade: "todo",
-                        poaOpeningDate: parseInt(_.get(poa, "openingDate"))||null,
-                        poaPrescriberId: _.trim(_.get(poa, "prescriberId", "")),
-                        poaStatus: parseInt(_.get(poa, "status",0)),
-                        poaTags: _.get(poa, "tags", []),
-                        poaValueDate: parseInt(_.get(poa, "valueDate"))||null,
-                        poaValueDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "valueDate"))||null),
-                        poaClosingDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "closingDate"))||null),
-                        poaCreatedHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "created"))||null),
-                        poaEndOfLifeHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "endOfLife"))||null),
-                        poaOpeningDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "openingDate"))||null),
-                        poaStatusHr: this.localize(
-                            !!(_.get(poa,"status",0)&(1<<4)) ? "STATUS_CANCELED" :
-                            !!(_.get(poa,"status",0)&(1<<3)) ? "STATUS_PROLONGED" :
-                            !!(_.get(poa,"status",0)&(1<<2)) ? "STATUS_FINISHED" :
-                            !!(_.get(poa,"status",0)&(1<<1)) ? "STATUS_ONGOING" :
-                            "STATUS_PLANNED", // 1<<0
-                            "",
-                            this.language
-                        )
-                    })))))
-                    .then(hesAndPoas => {
-
-                        let prom = Promise.resolve([]);
-                        const encryptedDocumentIds = _.uniq(_.compact(_.flatten(_.map(hesAndPoas, heAndPoa => _.get(heAndPoa ,"poaDocumentIds",[])))))
-
-                        _.map(encryptedDocumentIds, encryptedDocId => {
-                            prom = prom.then(promisesCarrier => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("decrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.text2ua(Base64.decode(_.trim(encryptedDocId))))
-                                .then(uaDecryptedContent => _.concat(promisesCarrier, {encryptedDocId: encryptedDocId, decryptedDocId: this.api.crypto().utils.ua2text(uaDecryptedContent)}))
-                                .catch(()=>_.concat(promisesCarrier, {encryptedDocId: encryptedDocId, decryptedDocId: encryptedDocId}))
-                            )
-                        })
-
-                        return prom.then(decryptedDocIds => _.map(hesAndPoas, heAndPoa => _.merge({},heAndPoa,{poaDocumentIds:_.uniq(_.compact(_.map(_.get(heAndPoa,"poaDocumentIds",[]), poaSingleEncryptedDocumentId => _.get(_.find(decryptedDocIds, {encryptedDocId: poaSingleEncryptedDocumentId}),"decryptedDocId",poaSingleEncryptedDocumentId))))})))
-
-                    })
-                    .then(hesAndPoas => this.set("_dialogData.hesAndPoas", _.compact(_.orderBy(hesAndPoas, ["heDescr", "poaName", "poaCreated"], ["asc","asc","desc"]))))
-                    .then(()=>{
-
-                        const internalHcp = _.compact(_.keys(_.get(this,"_dialogData.currentPatient.delegations",[])))
-                        const externalHcp = _.compact(_.map(_.get(this,"_dialogData.currentPatient.patientHealthCareParties",[]),i=>_.get(i,"healthcarePartyId","")))
-                        const hesAndPoasHcps = _.compact(_.map(_.get(this,"_dialogData.hesAndPoas",[]), i=>_.trim(_.get(i, "poaPrescriberId", ""))))
-
-                        return this.api.hcparty().getHealthcareParties( _.compact(_.uniq(_.concat(internalHcp, externalHcp, hesAndPoasHcps))).join(",") )
-                            .then(resolvedHcps => _.map(resolvedHcps, hcp => { return {
-                                id: _.trim(_.get(hcp, "id", "")),
-                                parentId: _.trim(_.get(hcp, "parentId", "")),
-                                name: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i).toLowerCase())).join(" "),
-                                nihii: _.trim(_.get(hcp, "nihii", "")),
-                                type: _.trim(_.get(hcp, "type", "")),
-                                nihiiHr: this.api.formatInamiNumber(_.trim(_.get(hcp, "nihii", ""))),
-                                specialityCodes: _.compact(_.map(_.get(hcp, "specialityCodes", []), i => _.trim(_.get(i,"id","")))),
-                                isInternal: internalHcp.indexOf(_.trim(_.get(hcp, "id", ""))) > -1
-                            }}))
-
-                    })
-                    .then(hcps => {
-                        const hcpSpecialityCodes = _.compact(_.uniq(_.flatten(_.map(hcps, i=>i.specialityCodes))))
-                        return !!_.size(hcpSpecialityCodes) ? this.api.code().getCodes( hcpSpecialityCodes.join(",") ).then(specialityCodes=>([hcps,specialityCodes])) : ([hcps,[]])
-                    })
-                    .then(([hcps,specialityCodes]) => _.map(hcps, hcp=>_.merge({},hcp,{specialityCodesHr:_.compact(_.map(hcp.specialityCodes, sc=>_.get(_.find(specialityCodes,{id:sc}),"label."+this.language, _.head(_.flatMap(_.get(_.find(specialityCodes,{id:sc}),"label",{}))) ))).join(", ")})))
-                    .then(hcps => this.set("_dialogData.availableHcps", _.map(_.sortBy(hcps, ["name"],["asc"]), hcp=> _.merge({}, hcp, { vaadinComboxBoxLabelHr: _.compact([ "[" + this.localize((!!_.get(hcp,"isInternal","")?"internal":"external"),"Internal", this.language) + "]", _.trim(_.get(hcp,"name","")), _.trim(_.get(hcp,"nihiiHr","")), (_.trim(_.get(hcp,"specialityCodesHr","")) ? "(" + _.trim(_.get(hcp,"specialityCodesHr","")) + ")" : "") ]).join(" ") }))))
-                    .then(() => this.set("_dialogData.hesAndPoas", _.map(_.get(this,"_dialogData.hesAndPoas",[]), heAndPoa => _.merge({},heAndPoa,{poaPrestataireHr: _.trim(_.get(_.find(_.get(this,"_dialogData.availableHcps",[]), {id:_.trim(_.get(heAndPoa,"poaResponsible",""))}), "name","")), poaPrescriberHr: _.trim(_.get(_.find(_.get(this,"_dialogData.availableHcps",[]), {id:_.trim(_.get(heAndPoa,"poaPrescriberId",""))}), "name",""))}))))
-                    .then(() => Promise.all([
-                        this.api.code().findPaginatedCodes('be', "CD-BVT-LATERALITY"),
-                        this.api.code().findPaginatedCodes('be', "care.topaz.customTransaction"),
-                        this.api.code().findPaginatedCodes('be', this._getConfig("careReasonsCode","CD-INCAPACITYREASON")),
-                        this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode","care.topaz.kinesitherapyPrescription")),
-                        this.api.code().getCodes( this._getConfig("defaultCodes",[]).map(i=>_.trim(_.get(i,"id",""))) )
-                    ]))
-                    .then(codes => this.set("_dialogData.codes", {
-                        lateralityCodes: _.get(codes,"[0].rows",[]),
-                        triptyqueCodes: _.find(_.get(codes,"[1].rows",[]),{code: "triptyque"}),
-                        incapacityCodes: _.get(codes,"[2].rows",[]),
-                        prescriptionCodes: _.get(codes,"[3].rows",[]),
-                        defaultCodes: _.get(codes,"[4]",[])
-                    }))
-                    .then(() => {
-
-                        this.set("_dialogData.relatedChildrenPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
-                        this.set("_dialogData.relatedParentPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(_.get(this,"_dialogData.relatedChildrenPathologies",[]), j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
-                        this.set("_dialogData.codes.incapacityCodes", _.orderBy(_.compact(_.map(_.filter(_.get(this, "_dialogData.codes.incapacityCodes", []),i=>!_.get(i,"disabled",false)), i => _.merge({}, i, {
-                            id: _.trim(_.get(i,"id","")),
-                            labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
-                        }))), ["labelHr"], ["asc"]))
-
-                        // Make sure properties of component (that aren't set yet) actually are a variable rather than an object with a value key representing their value. (Vaadin combo-boxes would crash without this)
-                        _.map(_.get(this,"_dialogData",{}), (propValue,propKey) => typeof _.get(propValue,"value",null) !== "function" ? null : this.set("_dialogData." + propKey, _.get(propValue,"value",null)()))
-
-                        return !!_.size(_.get(this,"_dialogData.codes.triptyqueCodes")) ? true : this.api.code().createCode({
-                            version: "1",
-                            code: "triptyque",
-                            regions: ["be","fr"],
-                            type: "care.topaz.customTransaction",
-                            id: "care.topaz.customTransaction|triptyque|1",
-                            label: {fr:"Triptyque",nl:"Triptyque",en:"Triptyque"}
-                        }).then(triptyqueTransactionCode => this.set("_dialogData.codes.triptyqueCodes", triptyqueTransactionCode))
-
-                    })
-                    .then(() => this.set("activeHealthElements", _.map(_.filter(this.activeHealthElements, ah => !!_.trim(_.get(ah,"id",""))), i => {
-                        i.id = _.trim(_.get(i, "id", _.trim(_.get(i, "idService", ""))))
-                        i.descrHr = _.compact([_.get(_.filter(_.get(i, "codes", ""), j => _.get(j, "type", "") === "ICPC"), "[0].code", ""), _.get(i, "descr", "")]).join(" - ")
-                        return i
-                    })))
-                    .finally(() => promResolve)
-
-            }
-
             _gotoPreviousGridPage() {
                 if ( parseInt(_.get(this,"_vaadinGridCurrentPageNumber",1)) > 1 ) this.set( '_vaadinGridCurrentPageNumber',( parseInt(_.get(this,"_vaadinGridCurrentPageNumber",2)) - 1 ) )
             }
 
             _gotoNextGridPage() {
                 if ( parseInt(_.get(this,"_vaadinGridCurrentPageNumber",1)) < parseInt(_.get(this,"_vaadinGridTotalPages",1)) ) this.set('_vaadinGridCurrentPageNumber', ( parseInt(_.get(this,"_vaadinGridCurrentPageNumber",1)) + 1 ) )
-            }
-
-            open(dialogParameters) {
-
-                const promResolve = Promise.resolve();
-
-                return promResolve
-                    .then(() => this._resetComponentProperties())
-                    .then(() => this._initOpenDialogActions(dialogParameters))
-                    .then(() => this._getDialogData())
-                    .then(() => this._clearGridCache())
-                    .then(() => this._resetGridSelectedItems())
-                    .then(() => {
-                        this.set('_vaadinGridPageStart', parseInt(((_.get(this,"_vaadinGridCurrentPageNumber",1)-1)||0) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
-                        this.set('_vaadinGridPageEnd', parseInt((_.get(this,"_vaadinGridCurrentPageNumber",1)||1) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
-                        this.set('_vaadinGridTotalRecords', _.size(_.get(this,"_dialogData.hesAndPoas",[])))
-                        this.set('_vaadinGridTotalPages', Math.ceil(_.get(this,"_vaadinGridTotalRecords",0) / parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
-                        this.set("_vaadinGridPlanOfActionDataToShow", _.get(this,"_dialogData.hesAndPoas",[]).slice(parseInt(_.get(this,"_vaadinGridPageStart",0)), parseInt(_.get(this,"_vaadinGridPageEnd",0))))
-                        return promResolve
-                    })
-                    .then(() => console.log(this._dialogData))
-                    .finally(() => this._changeDialogAction("listing")
-                        .then(() => this._triggerGridResize())
-                        .then(() => this._scrollToTop())
-                        .finally(() => this.set("_isLoading", false))
-                    )
-
             }
 
             _vaadinGridPageNumberChanged(vaadinGridCurrentPageNumber) {
@@ -1322,7 +1151,7 @@
                 const haveSelectedPlanOfAction = !!_.size(selectedPlanOfAction) && !!_.trim(_.get(selectedPlanOfAction,"poaId",""))
 
                 const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? _.get(e,"target",null) : _.find( _.get(e,"path",null), p => _.get(p,"nodeName","") === "PAPER-BUTTON")
-                const documentId = !!haveSelectedPlanOfAction ? _.get(_.find(_.get(selectedPlanOfAction, "poaTags"), {type:"originalDocumentId"}),"id","") : _.trim(_.get(targetButton,"dataset.documentId"))
+                const documentId = !!haveSelectedPlanOfAction ? _.get(_.find(_.get(selectedPlanOfAction, "poaTags"), {type:"originalDocumentId"}),"decryptedId","") : _.trim(_.get(targetButton,"dataset.documentId"))
                 const documentServiceId = !!haveSelectedPlanOfAction ? _.get(_.find(_.get(selectedPlanOfAction, "poaTags"), {type:"originalDocumentServiceId"}),"id","") : _.trim(_.get(targetButton,"dataset.serviceId"))
                 const documentFormId = !!haveSelectedPlanOfAction ? _.get(_.find(_.get(selectedPlanOfAction, "poaTags"), {type:"originalDocumentFormId"}),"id","") : _.trim(_.get(targetButton,"dataset.formId"))
 
@@ -1390,7 +1219,8 @@
                     :
 
                     promResolve
-                        .then(() => this.api.contact().newInstance(this.user, patientObject, {
+                        .then(() => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject( "encrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(documentId))).then(encryptedContent => Base64.encode(String.fromCharCode.apply(null, new Uint8Array(encryptedContent)))).catch(()=>documentId))
+                        .then(encryptedDocumentId => this.api.contact().newInstance(this.user, patientObject, {
                                 groupId: documentId,
                                 created: +new Date,
                                 modified: +new Date,
@@ -1404,7 +1234,7 @@
                                     { type: "BE-CONTACT-TYPE", version: "1", code: "1" },
                                     { type: "BE-CONTACT-TYPE", version: "1", code: "20" },
                                     { type: _.trim(_.get(triptyqueTransactionCode,"type","care.topaz.customTransaction")), version: _.trim(_.get(triptyqueTransactionCode,"version","1")), code: _.trim(_.get(triptyqueTransactionCode,"code","triptyque")) },
-                                    { type: "originalDocumentId", id: documentId },
+                                    { type: "originalDocumentId", id: encryptedDocumentId },
                                     { type: "originalDocumentContactId", id: _.trim(_.get(documentContactObject,"id",""))},
                                     { type: "originalDocumentServiceId", id: documentServiceId },
                                     { type: "originalDocumentFormId", id: documentFormId},
@@ -1470,18 +1300,53 @@
 
             }
 
+            _vaadinGridPlanOfActionSelectedItemChanged(activeItem, isNew=false) {
 
+                // Should not yet ?
+                if(activeItem instanceof Event || !_.get(this,"_isOpened",false)) return
 
+                this.set("_isLoading", true)
 
+                return !_.trim(_.get(activeItem,"poaId","")) && !isNew ?
+                    this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
+                    this._changeDialogAction("detail")
+                        .then(() => {
+                            this.set("_triptyqueDetailActiveTab", "prescriptionForm")
+                            this.set("_templateInsuranceDocuments_available", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.cloneDeep(_.get(this, "_dialogData.insuranceDocuments",[])) : [])
+                            this.set("_templateInsuranceDocuments_linked", [])
+                            this._refreshInsuranceLinkedAndAvailableDocuments()
+                        })
+                        .then(() => this._linkPdfPrescription(null, _.cloneDeep(_.get(this,"_vaadinGridPlanOfActionSelectedItem",{}))))
+                        .finally(() => this.set("_isLoading", false))
 
+            }
 
+            open(dialogParameters) {
 
+                const promResolve = Promise.resolve();
 
+                return promResolve
+                    .then(() => this._resetComponentProperties())
+                    .then(() => this._initOpenDialogActions(dialogParameters))
+                    .then(() => this._getDialogData())
+                    .then(() => this._clearGridCache())
+                    .then(() => this._resetGridSelectedItems())
+                    .then(() => {
+                        this.set('_vaadinGridPageStart', parseInt(((_.get(this,"_vaadinGridCurrentPageNumber",1)-1)||0) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set('_vaadinGridPageEnd', parseInt((_.get(this,"_vaadinGridCurrentPageNumber",1)||1) * parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set('_vaadinGridTotalRecords', _.size(_.get(this,"_dialogData.hesAndPoas",[])))
+                        this.set('_vaadinGridTotalPages', Math.ceil(_.get(this,"_vaadinGridTotalRecords",0) / parseInt(this._vaadinGridPlanOfActionMaxItemsPerPage)))
+                        this.set("_vaadinGridPlanOfActionDataToShow", _.get(this,"_dialogData.hesAndPoas",[]).slice(parseInt(_.get(this,"_vaadinGridPageStart",0)), parseInt(_.get(this,"_vaadinGridPageEnd",0))))
+                        return promResolve
+                    })
+                    .then(() => console.log(this._dialogData))
+                    .finally(() => this._changeDialogAction("listing")
+                        .then(() => this._triggerGridResize())
+                        .then(() => this._scrollToTop())
+                        .finally(() => this.set("_isLoading", false))
+                    )
 
-
-
-
-
+            }
 
             _summaryFormDataGotChanged(summaryForm) {
 
@@ -1515,7 +1380,6 @@
                         })
                         .then(([he, removedPlanOfAction]) => {
 
-                            const alreadyHasPlanOfActionsKey = _.keys(he).indexOf("plansOfAction") > -1 && Array.isArray(_.get(he,"plansOfAction","notOfTypeArray"))
                             const lateralityCheckedCodes = _.compact(_.map(_.compact([ (!!_.get(this,"_summaryForm.lateralityLeft",false) ? "left" : false), (!!_.get(this,"_summaryForm.lateralityRight",false) ? "right" : false), (!!_.get(this,"_summaryForm.lateralityCenter",false) ? "odd" : false) ])))
                             const codeKeysToImport = ["id", "code", "version", "type"]
                             const poaToAdd = {
@@ -1552,14 +1416,14 @@
                             }
 
                             this.set("_dialogData.lastNewPoaId", _.trim(_.get(poaToAdd,"id","")))
+                            return !_.size(_.get(poaToAdd,"documentIds",[])) ? ([he, poaToAdd]) : Promise.all(_.map(poaToAdd.documentIds, docId => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject( "encrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(docId))).then(encryptedContent => Base64.encode(String.fromCharCode.apply(null, new Uint8Array(encryptedContent)))).catch(()=>docId))).then(encryptedDocumentIds => ([he, _.merge({}, poaToAdd, {documentIds: _.uniq(_.compact(encryptedDocumentIds||[]))})]) )
 
-                            return !_.size(_.get(poaToAdd,"documentIds",[])) ? he : Promise.all(_.map(poaToAdd.documentIds, docId => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject( "encrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(docId))).then(encryptedContent => Base64.encode(String.fromCharCode.apply(null, new Uint8Array(encryptedContent)))).catch(()=>null)))
-                                .then(encryptedDocumentIds => {
-                                    poaToAdd.documentIds = _.uniq(_.compact(encryptedDocumentIds))||[]
-                                    if(!!alreadyHasPlanOfActionsKey) { he.plansOfAction.push(poaToAdd) } else { he = _.merge({},he, {plansOfAction: [poaToAdd]}) }
-                                    return he
-                                })
+                        })
+                        .then(([he, poaToAdd]) => {
 
+                            const alreadyHasPlanOfActionsKey = _.keys(he).indexOf("plansOfAction") > -1 && Array.isArray(_.get(he,"plansOfAction","notOfTypeArray"))
+                            if(!!alreadyHasPlanOfActionsKey) { he.plansOfAction.push(poaToAdd) } else { he = _.merge({},he, {plansOfAction: [poaToAdd]}) }
+                            return he
 
                         })
                         .then(he => !_.trim(_.get(he,"id","")) ? promResolve : this.api.helement().modifyHealthElement(he).then(he=>this.api.register(he, 'helement')))
@@ -1567,26 +1431,220 @@
 
             }
 
-            _vaadinGridPlanOfActionSelectedItemChanged(activeItem, isNew=false) {
+            _getDialogData() {
 
-                // Should not yet ?
-                if(activeItem instanceof Event || !_.get(this,"_isOpened",false)) return
+                // const arrayOfDocumentIds = [ "fbd5f03a-7a1e-413d-ae79-8861e056757c",  "beaea1bb-cfe2-410f-9e4c-a76555d4202b" ]
+                // promResolve
+                //     .then(() =>this.api.patient().getPatientWithUser(_.get(this,"user",{}), _.trim(_.get(this,"patient.id",""))).then(pat => this.set("_dialogData.currentPatient", pat)))
+                //     .then(() =>this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject( "encrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(arrayOfDocumentIds[0])) ).then(encryptedContent => { console.log("arrayOfDocumentIds[0]", arrayOfDocumentIds[0]); console.log("encryptedContent AS string", Base64.encode(String.fromCharCode.apply(null, new Uint8Array(encryptedContent)))); }))
+                //     .then(() =>this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject( "encrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(arrayOfDocumentIds[1])) ).then(encryptedContent => { console.log("arrayOfDocumentIds[1]", arrayOfDocumentIds[1]); console.log("encryptedContent AS string", Base64.encode(String.fromCharCode.apply(null, new Uint8Array(encryptedContent)))); }))
+                //
+                // "encryptedAdministrativesDocuments": [
+                //     "Oxocw4EIwrDDgRvCp8KIc2Aww4c3w4rDmHcmAx8mwq7DhcKCRcKLwrsQI2cbYcOpw58Mw60jwrp3ZsKZwp/CqHbDtsKPAxhgdMKsRVQXw77DosOkPVZJwosbCw==",
+                //     "ZMO+e8OWW3fCjQoCFG7Dj1cDw4vCgFdyw5TCncKRLcKfXlsbw5opRcKkYzHDqmXDisKqw68Tw7cbYMKUC8OwPxPCgnfDkzrCuDPCmzvCgT4ab8ONa0PCssK3dA=="
+                // ]
 
-                this.set("_isLoading", true)
+                const promResolve = Promise.resolve();
 
-                return !_.trim(_.get(activeItem,"poaId","")) && !isNew ?
-                    this._changeDialogAction("listing").finally(()=>this.set("_isLoading", false)) :
-                    this._changeDialogAction("detail")
-                        .then(() => {
-                            this.set("_triptyqueDetailActiveTab", "prescriptionForm")
-                            this.set("_templateInsuranceDocuments_available", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.cloneDeep(_.get(this, "_dialogData.insuranceDocuments",[])) : [])
-                            this.set("_templateInsuranceDocuments_linked", [])
-                            this._refreshInsuranceLinkedAndAvailableDocuments()
+                return promResolve
+                    .then(() => this.api.hcparty().getCurrentHealthcareParty().then(hcp => this.set("_dialogData.currentHcp", _.merge({},hcp,{nameHr: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i).toLowerCase())).join(" ") }))))
+                    .then(() => Promise.all([
+                        this.api.form().getFormTemplatesByGuid( _.trim(this._getConfig("formTemplateGuid")), "deptgeneralpractice" ),
+                        this.api.form().getFormTemplatesByGuid( _.trim(this._getConfig("formTemplateGuid")), _.trim(_.get(this,"_dialogData.currentHcp.specialityCodes[0].code", "deptgeneralpractice")).replace(/persphysician/, 'deptgeneralpractice'))
+                    ]).then(promResults => this.set("_dialogData.formTemplate", _.chain(promResults).flatten().filter(x=>!_.get(x,"disabled",false)).uniqBy("guid").compact().head().value())))
+                    .then(() =>this.api.patient().getPatientWithUser(_.get(this,"user",{}), _.trim(_.get(this,"patient.id",""))).then(pat => this.set("_dialogData.currentPatient", pat)))
+                    .then(() => !_.size( _.get(this,"_dialogData.currentPatient.encryptedAdministrativesDocuments",[]) ) ?  [] :  Promise.all( _.get(this,"_dialogData.currentPatient.encryptedAdministrativesDocuments",[]).map(encryptedAdminDocId => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("decrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.text2ua(Base64.decode(_.trim(encryptedAdminDocId)))).then(uaDecryptedContent => this.api.crypto().utils.ua2text(uaDecryptedContent)).catch(()=>encryptedAdminDocId))) )
+                    .then(insuranceDocumentIds => !_.size( insuranceDocumentIds ) ? promResolve : this.api.document().getDocuments({ids:insuranceDocumentIds}).then(foundDocuments => this.set("_dialogData.insuranceDocuments", _.map(foundDocuments, i => {return {
+                        created: moment(parseInt(_.get(i, "modified", 0))).format('DD/MM/YYYY - HH:mm'),
+                        documentId: _.trim(_.get(i, "id", "")),
+                        attachmentId: _.trim(_.get(i, "attachmentId", "")),
+                        documentMainUti: _.trim(_.get(i, "mainUti", "")),
+                        documentName: _.trim(_.get(i, "name", ""))
+                    }}))))
+                    .then(()=> this.set("_templateInsuranceDocuments_available", !!_.size(_.get(this, "_dialogData.insuranceDocuments",[])) ? _.cloneDeep(_.get(this, "_dialogData.insuranceDocuments",[])) : []))
+                    .then(()=> this._getPdfPrescriptionsList().then(pdfPrescriptions => this.set("_dialogData.pdfPrescriptionsList", !!_.size(pdfPrescriptions) ? pdfPrescriptions : [])))
+                    .then(() =>this.api.helement().findBy(this.user.healthcarePartyId, this.patient))
+                    .then(hes => _
+                        .chain(hes)
+                        .filter(i => !!_.size(_.filter(_.get(i,"plansOfAction",[]), j =>  !!_.size(_.find(_.get(j,"tags",[]), {type:"originalDocumentId"})))))
+                        .orderBy(["desc","created"], ["asc","desc"])
+                        .map(i => _.merge({},{
+                            heId: _.trim(_.get(i, "id", "")),
+                            heClosingDate: parseInt(_.get(i, "closingDate"))||null,
+                            heCodes: _.get(i, "codes", []),
+                            heCreated: parseInt(_.get(i, "created"))||null,
+                            heDescr: _.trim(_.get(i, "descr", "")),
+                            heOpeningDate: parseInt(_.get(i, "openingDate"))||null,
+                            hePlansOfAction: _.get(i, "plansOfAction",[]),
+                            heStatus: parseInt(_.get(i, "status",0)),
+                            heTags: _.get(i, "tags",[]),
+                        }))
+                        .value()
+                    )
+                    .then(hes => _.flatten(_.map(hes, he => _.map(_.get(he,"hePlansOfAction",[]), poa => !_.size(_.filter(_.get(poa,"tags"), {type:"originalDocumentId"})) ? false : _.merge({}, he, {
+                        poaId: _.trim(_.get(poa, "id", "")),
+                        poaResponsible: _.trim(_.get(poa, "responsible", "")) ? _.trim(_.get(poa, "responsible", "")) : _.trim(_.get(this, "_dialogData.currentHcp.id", "")),
+                        poaClosingDate: parseInt(_.get(poa, "closingDate"))||null,
+                        poaCodes: _.get(poa, "codes", []),
+                        poaCreated: parseInt(_.get(poa, "created"))||null,
+                        poaDocumentIds: _.compact(_.uniq(_.get(poa, "documentIds",[]))),
+                        poaEndOfLife: parseInt(_.get(poa, "endOfLife"))||null,
+                        poaIdOpeningContact: _.trim(_.get(poa, "idOpeningContact", "")),
+                        poaName: _.trim(_.get(poa, "name", "")),
+                        poaNumberOfCares: _.trim(_.get(poa, "numberOfCares", "")),
+                        poaNumberOfCaresMade: "todo",
+                        poaOpeningDate: parseInt(_.get(poa, "openingDate"))||null,
+                        poaPrescriberId: _.trim(_.get(poa, "prescriberId", "")),
+                        poaStatus: parseInt(_.get(poa, "status",0)),
+                        poaTags: _.get(poa, "tags", []),
+                        poaValueDate: parseInt(_.get(poa, "valueDate"))||null,
+                        poaValueDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "valueDate"))||null),
+                        poaClosingDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "closingDate"))||null),
+                        poaCreatedHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "created"))||null),
+                        poaEndOfLifeHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "endOfLife"))||null),
+                        poaOpeningDateHr: this._YYYYMMDDToDDMMYYYY(parseInt(_.get(poa, "openingDate"))||null),
+                        poaStatusHr: this.localize(
+                            !!(_.get(poa,"status",0)&(1<<4)) ? "STATUS_CANCELED" :
+                                !!(_.get(poa,"status",0)&(1<<3)) ? "STATUS_PROLONGED" :
+                                    !!(_.get(poa,"status",0)&(1<<2)) ? "STATUS_FINISHED" :
+                                        !!(_.get(poa,"status",0)&(1<<1)) ? "STATUS_ONGOING" :
+                                            "STATUS_PLANNED", // 1<<0
+                            "",
+                            this.language
+                        )
+                    })))))
+                    .then(hesAndPoas => {
+
+                        let prom = Promise.resolve([]);
+                        const encryptedDocumentIds = _.uniq(_.compact(_.flatten(_.map(hesAndPoas, heAndPoa => _.get(heAndPoa ,"poaDocumentIds",[])))))
+
+                        _.map(encryptedDocumentIds, encryptedDocId => {
+                            prom = prom.then(promisesCarrier => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("decrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.text2ua(Base64.decode(_.trim(encryptedDocId))))
+                                .then(uaDecryptedContent => _.concat(promisesCarrier, {encryptedDocId: encryptedDocId, decryptedDocId: this.api.crypto().utils.ua2text(uaDecryptedContent)}))
+                                .catch(()=>_.concat(promisesCarrier, {encryptedDocId: encryptedDocId, decryptedDocId: encryptedDocId}))
+                            )
                         })
-                        .then(() => this._linkPdfPrescription(null, _.cloneDeep(_.get(this,"_vaadinGridPlanOfActionSelectedItem",{}))))
-                        .finally(() => this.set("_isLoading", false))
+
+                        return prom.then(decryptedDocIds => _.map(hesAndPoas, heAndPoa => _.merge({},heAndPoa,{poaDocumentIds:_.uniq(_.compact(_.map(_.get(heAndPoa,"poaDocumentIds",[]), poaSingleEncryptedDocumentId => _.get(_.find(decryptedDocIds, {encryptedDocId: poaSingleEncryptedDocumentId}),"decryptedDocId",poaSingleEncryptedDocumentId))))})))
+
+                    })
+                    .then(hesAndPoas => {
+
+                        let prom = Promise.resolve([]);
+                        const encryptedDocumentIds = _.map(hesAndPoas, heAndPoa => _.get( _.find(_.get(heAndPoa ,"poaTags",[]),{type:"originalDocumentId"}),"id",null))
+
+                        _.map(encryptedDocumentIds, encryptedDocId => {
+                            prom = prom.then(promisesCarrier => this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("decrypt", _.get(this,"user",{}), _.get(this,"_dialogData.currentPatient",{}), this.api.crypto().utils.text2ua(Base64.decode(_.trim(encryptedDocId))))
+                                .then(uaDecryptedContent => _.concat(promisesCarrier, {encryptedDocId: encryptedDocId, decryptedDocId: this.api.crypto().utils.ua2text(uaDecryptedContent)}))
+                                .catch(()=>_.concat(promisesCarrier, {encryptedDocId: encryptedDocId, decryptedDocId: encryptedDocId}))
+                            )
+                        })
+
+                        return prom.then(decryptedDocIds => _.map(hesAndPoas, heAndPoa =>  _.merge({}, heAndPoa, { poaTags: _.map(_.get(heAndPoa ,"poaTags",[]), tag => _.trim(_.get(tag,"type","")) !== "originalDocumentId" ? tag : _.merge({}, tag, { id: _.trim(_.get(tag,"id","")), decryptedId: _.trim(_.get(_.find(decryptedDocIds,{encryptedDocId: _.trim(_.get(tag,"id",""))}),"decryptedDocId","")) })) })))
+
+                    })
+                    .then(hesAndPoas => this.set("_dialogData.hesAndPoas", _.compact(_.orderBy(hesAndPoas, ["heDescr", "poaName", "poaCreated"], ["asc","asc","desc"]))))
+                    .then(()=>{
+
+                        const internalHcp = _.compact(_.keys(_.get(this,"_dialogData.currentPatient.delegations",[])))
+                        const externalHcp = _.compact(_.map(_.get(this,"_dialogData.currentPatient.patientHealthCareParties",[]),i=>_.get(i,"healthcarePartyId","")))
+                        const hesAndPoasHcps = _.compact(_.map(_.get(this,"_dialogData.hesAndPoas",[]), i=>_.trim(_.get(i, "poaPrescriberId", ""))))
+
+                        return this.api.hcparty().getHealthcareParties( _.compact(_.uniq(_.concat(internalHcp, externalHcp, hesAndPoasHcps))).join(",") )
+                            .then(resolvedHcps => _.map(resolvedHcps, hcp => { return {
+                                id: _.trim(_.get(hcp, "id", "")),
+                                parentId: _.trim(_.get(hcp, "parentId", "")),
+                                name: _.map( (_.trim(_.get(hcp, "name", "")) ? _.trim(_.get(hcp, "name", "")) : _.trim(_.get(hcp, "lastName", "")) + " " + _.trim(_.get(hcp, "firstName", ""))).split(" "), i=>_.upperFirst(_.trim(i).toLowerCase())).join(" "),
+                                nihii: _.trim(_.get(hcp, "nihii", "")),
+                                type: _.trim(_.get(hcp, "type", "")),
+                                nihiiHr: this.api.formatInamiNumber(_.trim(_.get(hcp, "nihii", ""))),
+                                specialityCodes: _.compact(_.map(_.get(hcp, "specialityCodes", []), i => _.trim(_.get(i,"id","")))),
+                                isInternal: internalHcp.indexOf(_.trim(_.get(hcp, "id", ""))) > -1
+                            }}))
+
+                    })
+                    .then(hcps => {
+                        const hcpSpecialityCodes = _.compact(_.uniq(_.flatten(_.map(hcps, i=>i.specialityCodes))))
+                        return !!_.size(hcpSpecialityCodes) ? this.api.code().getCodes( hcpSpecialityCodes.join(",") ).then(specialityCodes=>([hcps,specialityCodes])) : ([hcps,[]])
+                    })
+                    .then(([hcps,specialityCodes]) => _.map(hcps, hcp=>_.merge({},hcp,{specialityCodesHr:_.compact(_.map(hcp.specialityCodes, sc=>_.get(_.find(specialityCodes,{id:sc}),"label."+this.language, _.head(_.flatMap(_.get(_.find(specialityCodes,{id:sc}),"label",{}))) ))).join(", ")})))
+                    .then(hcps => this.set("_dialogData.availableHcps", _.map(_.sortBy(hcps, ["name"],["asc"]), hcp=> _.merge({}, hcp, { vaadinComboxBoxLabelHr: _.compact([ "[" + this.localize((!!_.get(hcp,"isInternal","")?"internal":"external"),"Internal", this.language) + "]", _.trim(_.get(hcp,"name","")), _.trim(_.get(hcp,"nihiiHr","")), (_.trim(_.get(hcp,"specialityCodesHr","")) ? "(" + _.trim(_.get(hcp,"specialityCodesHr","")) + ")" : "") ]).join(" ") }))))
+                    .then(() => this.set("_dialogData.hesAndPoas", _.map(_.get(this,"_dialogData.hesAndPoas",[]), heAndPoa => _.merge({},heAndPoa,{poaPrestataireHr: _.trim(_.get(_.find(_.get(this,"_dialogData.availableHcps",[]), {id:_.trim(_.get(heAndPoa,"poaResponsible",""))}), "name","")), poaPrescriberHr: _.trim(_.get(_.find(_.get(this,"_dialogData.availableHcps",[]), {id:_.trim(_.get(heAndPoa,"poaPrescriberId",""))}), "name",""))}))))
+                    .then(() => Promise.all([
+                        this.api.code().findPaginatedCodes('be', "CD-BVT-LATERALITY"),
+                        this.api.code().findPaginatedCodes('be', "care.topaz.customTransaction"),
+                        this.api.code().findPaginatedCodes('be', this._getConfig("careReasonsCode","CD-INCAPACITYREASON")),
+                        this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode","care.topaz.kinesitherapyPrescription")),
+                        this.api.code().getCodes( this._getConfig("defaultCodes",[]).map(i=>_.trim(_.get(i,"id",""))) )
+                    ]))
+                    .then(codes => this.set("_dialogData.codes", {
+                        lateralityCodes: _.get(codes,"[0].rows",[]),
+                        triptyqueCodes: _.find(_.get(codes,"[1].rows",[]),{code: "triptyque"}),
+                        incapacityCodes: _.get(codes,"[2].rows",[]),
+                        prescriptionCodes: _.get(codes,"[3].rows",[]),
+                        defaultCodes: _.get(codes,"[4]",[])
+                    }))
+                    .then(() => {
+
+                        this.set("_dialogData.relatedChildrenPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !!_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
+                        this.set("_dialogData.relatedParentPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !_.trim(_.get(i,"parent","")) && !_.get(i,"disabled",false)).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(_.get(this,"_dialogData.relatedChildrenPathologies",[]), j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
+                        this.set("_dialogData.codes.incapacityCodes", _.orderBy(_.compact(_.map(_.filter(_.get(this, "_dialogData.codes.incapacityCodes", []),i=>!_.get(i,"disabled",false)), i => _.merge({}, i, {
+                            id: _.trim(_.get(i,"id","")),
+                            labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
+                        }))), ["labelHr"], ["asc"]))
+
+                        // Make sure properties of component (that aren't set yet) actually are a variable rather than an object with a value key representing their value. (Vaadin combo-boxes would crash without this)
+                        _.map(_.get(this,"_dialogData",{}), (propValue,propKey) => typeof _.get(propValue,"value",null) !== "function" ? null : this.set("_dialogData." + propKey, _.get(propValue,"value",null)()))
+
+                        return !!_.size(_.get(this,"_dialogData.codes.triptyqueCodes")) ? true : this.api.code().createCode({
+                            version: "1",
+                            code: "triptyque",
+                            regions: ["be","fr"],
+                            type: "care.topaz.customTransaction",
+                            id: "care.topaz.customTransaction|triptyque|1",
+                            label: {fr:"Triptyque",nl:"Triptyque",en:"Triptyque"}
+                        }).then(triptyqueTransactionCode => this.set("_dialogData.codes.triptyqueCodes", triptyqueTransactionCode))
+
+                    })
+                    .then(() => this.set("activeHealthElements", _.map(_.filter(this.activeHealthElements, ah => !!_.trim(_.get(ah,"id",""))), i => {
+                        i.id = _.trim(_.get(i, "id", _.trim(_.get(i, "idService", ""))))
+                        i.descrHr = _.compact([_.get(_.filter(_.get(i, "codes", ""), j => _.get(j, "type", "") === "ICPC"), "[0].code", ""), _.get(i, "descr", "")]).join(" - ")
+                        return i
+                    })))
+                    .finally(() => promResolve)
 
             }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            _toggleCollapseProceduresSearch(e) {
+
+                const relatedPanel = this.shadowRoot.querySelector('#existingProcedures')
+                const targetPanel = this.shadowRoot.querySelector('#proceduresSearch')
+                const panelNavigatorAnchorForProceduresSearch = this.shadowRoot.querySelector('#panelNavigatorAnchorForProceduresSearch')
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+
+                targetPanel && targetPanel.classList && targetPanel.classList.toggle("collapsed")
+                relatedPanel && relatedPanel.classList && relatedPanel.classList.toggle("collapsed")
+                panelNavigatorAnchorForProceduresSearch && panelNavigatorAnchorForProceduresSearch.classList && panelNavigatorAnchorForProceduresSearch.classList.toggle("opened")
+                targetButton && targetButton.firstElementChild && targetButton.firstElementChild.classList && targetButton.firstElementChild.classList.toggle("collapsedIcon")
+
+            }
+
+
+
 
 
 
