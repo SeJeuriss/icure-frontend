@@ -185,7 +185,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
         </div>
 
-        <ht-admin-management-procedures-dialog id="htAdminManagementProceduresDialog" selected-form="[[selectedProcedure]]" user="[[user]]" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"></ht-admin-management-procedures-dialog>
+        <ht-admin-management-procedures-dialog id="htAdminManagementProceduresDialog" selected-procedure="[[selectedProcedure]]" user="[[user]]" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"></ht-admin-management-procedures-dialog>
     </template>
 
     <script>
@@ -296,6 +296,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _selectedProcedureChanged(){
                 if(this.selectedProcedure){
                     console.log(this.selectedProcedure)
+                    this.$['htAdminManagementProceduresDialog']._openProcedureDialog()
                 }
             }
 
