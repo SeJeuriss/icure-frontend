@@ -135,7 +135,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             static get observers() {
-                return [];
+                return ['_proceduresDataProvider(user, api)'];
             }
 
             constructor() {
@@ -144,6 +144,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             ready() {
                 super.ready()
+            }
+
+            _proceduresDataProvider(){
+                this.api.code().getCode()
             }
 
 
