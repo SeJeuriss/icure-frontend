@@ -1,0 +1,154 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/iron-meta/iron-meta.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="../../../../bower_components/iron-iconset/iron-iconset.html">
+
+<link rel="import" href="../../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/device-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../../bower_components/iron-collapse-button/iron-collapse-button.html">
+<link rel="import" href="../../../../bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-column.html">
+<link rel="import" href="../../../../bower_components/vaadin-upload/vaadin-upload.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<dom-module id="ht-admin-management-procedures">
+
+    <template>
+
+        <style include="shared-styles">
+            :host {
+                display: block;
+                height: 100%;
+            }
+
+            :host *:focus{
+                outline:0!important;
+            }
+
+            .panel-title {
+                margin-bottom: 0;
+            }
+
+            .procedures-panel {
+                height: 100%;
+                width: 100%;
+                padding: 0 20px;
+                box-sizing: border-box;
+                position:relative;
+
+                display: flex;
+                flex-direction: column;
+            }
+
+            .procedures-panel .panel-content {
+                padding: 0 12px;
+                overflow: hidden;
+                border-bottom: 1px solid var(--app-background-color-dark);
+                box-sizing: border-box;
+                overflow-y: auto;
+            }
+
+            .grid {
+                min-height: 0;
+            }
+
+            .grids-section {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+            }
+
+            .line {
+                display: flex;
+            }
+
+            paper-toggle-button.status{
+                --paper-toggle-button-checked-bar-color:  var(--paper-green-500);
+                --paper-toggle-button-checked-button-color:  var(--paper-green-500);
+                --paper-toggle-button-checked-ink-color: var(--paper-green-500);
+                --paper-toggle-button-unchecked-bar-color:  var(--paper-red-900);
+                --paper-toggle-button-unchecked-button-color:  var(--paper-red-900);
+                --paper-toggle-button-unchecked-ink-color: var(--paper-red-900);
+            }
+
+        </style>
+
+        <div class="procedures-panel">
+            <h4 class="panel-title">[[localize('man_procs', 'Management - Procedures', language)]]</h4>
+        </div>
+    </template>
+
+    <script>
+
+        import moment from 'moment/src/moment';
+        import _ from 'lodash/lodash';
+
+        class HtAdminManagementProcedures extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'ht-admin-management-procedures'
+            }
+
+            static get properties() {
+                return {
+                    api: {
+                        type: Object,
+                        noReset: true
+                    },
+                    user: {
+                        type: Object,
+                        noReset: true
+                    }
+
+                }
+            }
+
+            static get observers() {
+                return [];
+            }
+
+            constructor() {
+                super()
+            }
+
+            ready() {
+                super.ready()
+            }
+
+
+        }
+
+        customElements.define(HtAdminManagementProcedures.is, HtAdminManagementProcedures)
+    </script>
+</dom-module>
