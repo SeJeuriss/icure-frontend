@@ -710,9 +710,17 @@
 				box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
 			}
 
+			.singleDocumentContainer.selected {
+				border:1px solid #136d10;
+			}
+
 			.singleDocumentContainer .header {
 				background-color: var(--app-primary-color);
 				color:#ffffff;
+			}
+
+			.singleDocumentContainer.selected .header {
+				background-color: #136d10;
 			}
 
 			.documentsList .singleDocumentContainer paper-button {
@@ -797,6 +805,11 @@
                 88% {transform: translate(0,-50%);}
                 100% {transform: translate(100vw,-50%);}
             }
+
+			.addIcon{
+				background-color: var(--app-secondary-color);
+				border-radius: 50%;
+			}
 
 		</style>
 	</template>

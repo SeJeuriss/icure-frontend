@@ -1768,6 +1768,7 @@
     "poaName": "Plan of actions name",
     "numberOfCares": "Number of cares",
     "linkedPhysician": "Related physician",
+    "linkedMainPhysician": "Main physician",
     "careReason": "Care reason",
     "insuranceDocuments": "Insurance documents",
     "linkedInsuranceDocuments": "Linked insurance documents",
@@ -1781,7 +1782,9 @@
     "importedDocuments": "Imported documents",
     "contact-date": "Contact date",
     "sort": "Sort",
-    "searchForProcedures": "Search for procedures"
+    "searchForProcedures": "Search for procedures",
+    "addProcedure": "Add procedure",
+    "linkedProcedures": "Linked procedure(s)"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3636,6 +3639,7 @@
     "poaName": "Nom du plan d'action",
     "numberOfCares": "Nombre de séances",
     "linkedPhysician": "Prestataire lié",
+    "linkedMainPhysician": "Prestataire principal",
     "careReason": "Justificatif de soins",
     "insuranceDocuments": "Documents de la mutuelle",
     "linkedInsuranceDocuments": "Documents liés au triptyque",
@@ -3649,7 +3653,9 @@
     "importedDocuments": "Documents importés",
     "contact-date": "Date de contact",
     "sort": "Tri",
-    "searchForProcedures": "Rechercher une procédure"
+    "searchForProcedures": "Rechercher une procédure",
+    "addProcedure": "Ajouter une procédure",
+    "linkedProcedures": "Procédure(s) liée(s)"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5465,6 +5471,7 @@
     "poaName": "Plan of actions name",
     "numberOfCares": "Number of cares",
     "linkedPhysician": "Related physician",
+    "linkedMainPhysician": "Main physician",
     "careReason": "Care reason",
     "insuranceDocuments": "Insurance documents",
     "linkedInsuranceDocuments": "Linked insurance documents",
@@ -5478,6 +5485,8 @@
     "importedDocuments": "Imported documents",
     "contact-date": "Contact date",
     "sort": "Sort",
-    "searchForProcedures": "Search for procedures"
+    "searchForProcedures": "Search for procedures",
+    "addProcedure": "Add procedure",
+    "linkedProcedures": "Linked procedure(s)"
   }
 }
