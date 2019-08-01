@@ -42,6 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../bower_components/paper-input/paper-input-container.html">
 <link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="./dialogs/ht-admin-management-procedures-dialog.html">
 
 <dom-module id="ht-admin-management-procedures">
 
@@ -103,11 +104,88 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 --paper-toggle-button-unchecked-ink-color: var(--paper-red-900);
             }
 
+            .procedures-list{
+                height: calc(100% - 50px);
+                width: 100%;
+            }
+
+            div.bottom-commands {
+                display: flex;
+                width: 100%;
+                justify-content: flex-end;
+                align-items: center;
+            }
+
+            div.bottom-commands > div.grid-size-indicator {
+                max-width: 208px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                color: var(--app-text-color);
+                font-size: 13px;
+                font-weight: 400;
+                letter-spacing: 0.3px;
+            }
+
+            paper-icon-button.change-page {
+                cursor: pointer;
+                width: 24px;
+                height: 24px;
+                min-width: 0;
+                padding: 2px;
+                color: var(--app-text-color);
+                margin:0 4px;
+            }
+
+            .scroll-top {
+                background: var(--app-secondary-color);
+                padding: 0 4px;
+                height: 24px;
+                width: 24px;
+                box-sizing: border-box;
+                border-radius: 50%;
+            }
+
+            #vaadinProceduresGrid{
+                height: calc(100% - 50px);
+                width: 100%;
+            }
+
         </style>
 
         <div class="procedures-panel">
             <h4 class="panel-title">[[localize('man_procs', 'Management - Procedures', language)]]</h4>
+            <div class="procedures-list">
+
+                <vaadin-grid id="vaadinProceduresGrid" class="material" width="100%" items="[[vaadinGridDataToShow]]" active-item="{{selectedProcedure}}" pageSize="[[_vaadinGridMaxItemsPerPage]]" on-selected-items-changed="_gridSelectedItemsChanged">
+                    <vaadin-grid-column>
+                        <template class="header"><vaadin-grid-sorter path="code">[[localize('code','Code',language)]]</vaadin-grid-sorter></template>
+                        <template><div>[[item.code]]</div></template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column flex-grow="2">
+                        <template class="header"><vaadin-grid-sorter path="proc">[[localize('proc','Procedures',language)]]</vaadin-grid-sorter></template>
+                        <template><div>[[_getLabel(item.label)]]</div></template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column flex-grow="1">
+                        <template class="header">[[localize('adm-pack-dept','Departement',language)]]</template>
+                            <template>
+                                <template is="dom-repeat" items="[[item.flags]]" as="flag">
+                                    <div>[[_localizeType(flag)]]</div>
+                                </template>
+                        </template>
+                    </vaadin-grid-column>
+                </vaadin-grid>
+
+                <div class="bottom-commands">
+                    <div class="grid-size-indicator hideOnMobile"> [[pageStart]] – [[pageEnd]] [[localize('sur','sur',language)]] [[totalProceduresForCurrentFolderAndCurrentFilter]]</div>
+                    <paper-icon-button id="previous-page-change" icon="chevron-left"class="change-page" on-tap="_gotoPreviousGridPage"></paper-icon-button>
+                    <paper-icon-button id="next-page-change" icon="chevron-right" class="change-page" on-tap="_gotoNextGridPage"></paper-icon-button>
+                    <div class="hideOnMobile"><paper-icon-button id="scrolltop" class="scroll-top" icon="arrow-upward" on-tap="_scrollToTop"></paper-icon-button></div>
+                </div>
+            </div>
         </div>
+
+        <ht-admin-management-procedures-dialog id="htAdminManagementProceduresDialog" selected-procedure="[[selectedProcedure]]" user="[[user]]" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"></ht-admin-management-procedures-dialog>
     </template>
 
     <script>
@@ -129,13 +207,49 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     user: {
                         type: Object,
                         noReset: true
+                    },
+                    currentPageNumber: {
+                        type: Number,
+                        value: 1
+                    },
+                    vaadinGridDataToShow:{
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedProcedure: {
+                        type: Object,
+                        value: null
+                    },
+                    pageStart: {
+                        type: Number,
+                        value: 0
+                    },
+                    pageEnd: {
+                        type: Number,
+                        value: 250
+                    },
+                    vaadinGridMaxItemsPerPage: {
+                        type: Number,
+                        value: 250
+                    },
+                    allProcedures:{
+                        type: Array,
+                        value: () => []
+                    },
+                    totalPagesForCurrentFolderAndCurrentFilter:{
+                        type: Number,
+                        value: 0
+                    },
+                    totalProceduresForCurrentFolderAndCurrentFilter:{
+                        type: Number,
+                        value: 0
                     }
 
                 }
             }
 
             static get observers() {
-                return ['_proceduresDataProvider(user, api)'];
+                return ['_proceduresDataProvider(user, api)', '_currentPageChanged(currentPageNumber)', '_selectedProcedureChanged(selectedProcedure)'];
             }
 
             constructor() {
@@ -147,7 +261,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _proceduresDataProvider(){
-                this.api.code().getCode()
+                this.api.code().findPaginatedCodes('be', 'BE-THESAURUS-PROCEDURES', '', '', '', 3000).then(proc => {
+                    console.log(proc)
+                    this.set('allProcedures', proc.rows)
+                    this.set('totalPagesForCurrentFolderAndCurrentFilter', parseInt(proc.rows.length / this.vaadinGridMaxItemsPerPage))
+                    this.set('vaadinGridDataToShow', _.get(_.chunk(proc.rows, this.vaadinGridMaxItemsPerPage), 0))
+                    this.set('totalProceduresForCurrentFolderAndCurrentFilter', _.size(proc.rows))
+                })
+            }
+
+            _currentPageChanged(){
+                this.set('vaadinGridDataToShow', _.get(_.chunk(this.allProcedures, this.vaadinGridMaxItemsPerPage), parseInt(this.currentPageNumber - 1)))
+                this.set('pageStart', parseInt((this.currentPageNumber - 1) * this.vaadinGridMaxItemsPerPage))
+                this.set('pageEnd', parseInt(this.currentPageNumber * this.vaadinGridMaxItemsPerPage))
+
+            }
+
+            _gotoPreviousGridPage() {
+               parseInt(_.get(this,"currentPageNumber",1)) > 1  ? this.set( 'currentPageNumber',( parseInt(_.get(this,"currentPageNumber",2)) - 1 )) : null
+            }
+
+            _gotoNextGridPage() {
+               parseInt(_.get(this,"currentPageNumber",1)) <= parseInt(_.get(this,"totalPagesForCurrentFolderAndCurrentFilter",1))  ?  this.set('currentPageNumber', ( parseInt(_.get(this,"currentPageNumber",1)) + 1 )) : null
+            }
+
+            _getLabel(label){
+                return label[this.language]
+            }
+
+            _localizeType(flag){
+                return this.localize('cd-hcp-'+flag, flag, this.language)
+            }
+
+            _selectedProcedureChanged(){
+                if(this.selectedProcedure){
+                    console.log(this.selectedProcedure)
+                    this.$['htAdminManagementProceduresDialog']._openProcedureDialog()
+                }
             }
 
 

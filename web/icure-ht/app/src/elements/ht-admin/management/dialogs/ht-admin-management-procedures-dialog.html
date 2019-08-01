@@ -1,0 +1,421 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../../bower_components/iron-meta/iron-meta.html">
+<link rel="import" href="../../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../../bower_components/iron-iconset-svg/iron-iconset-svg.html">
+<link rel="import" href="../../../../../bower_components/iron-iconset/iron-iconset.html">
+
+<link rel="import" href="../../../../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/device-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/hardware-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/editor-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icons/maps-icons.html">
+<link rel="import" href="../../../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../../../bower_components/iron-collapse-button/iron-collapse-button.html">
+<link rel="import" href="../../../../../bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="../../../../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../../../../bower_components/vaadin-grid/vaadin-grid-column.html">
+<link rel="import" href="../../../../../bower_components/vaadin-upload/vaadin-upload.html">
+<link rel="import" href="../../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../../../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../../../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<dom-module id="ht-admin-management-procedures-dialog">
+
+    <template>
+
+        <style include="shared-styles">
+            :host {
+                display: block;
+                height: 100%;
+            }
+
+            :host *:focus{
+                outline:0!important;
+            }
+
+            #procedureManagementDialog{
+                height: calc(98% - 12vh);
+                width: 98%;
+                max-height: calc(100% - 64px - 48px - 20px); /* 100% - header - margin - footer*/
+                min-height: 400px;
+                min-width: 800px;
+                top: 64px;
+            }
+
+            .procedure-container{
+                display: flex;
+                height: calc(100% - 45px);
+                width: auto;
+                margin: 0;
+                padding: 0;
+            }
+
+            .procedure-list-container{
+                height: 100%;
+                width: 30%;
+                background-color: var(--app-background-color-dark);
+                border-right: 1px solid var(--app-background-color-dark);
+                position: relative;
+            }
+
+            .procedure-list-container-title{
+                height: 48px;
+                width: 100%;
+                border-bottom: 1px solid var(--app-background-color-darker);
+                background-color: var(--app-background-color-dark);
+                padding: 0 12px;
+                display: flex;
+                flex-flow: row wrap;
+                justify-content: flex-start;
+                align-items: center;
+                box-sizing: border-box;
+            }
+
+            .procedure-detail-container{
+                height: 100%;
+                width: 70%;
+                border-bottom: 1px solid var(--app-background-color-darker);
+            }
+
+            .buttons{
+                position: initial;
+                display: flex;
+                background: var(--app-background-color);
+                z-index: 10;
+                bottom: 0;
+                right: 0;
+                box-sizing: border-box;
+            }
+
+            .tabIcon{
+                padding-right: 10px;
+            }
+
+            paper-tabs {
+                --paper-tabs-selection-bar-color: var(--app-text-color);
+            }
+
+            paper-tab {
+                --paper-tab-ink: var(--app-secondary-color-dark);
+                color: var(--app-text-color);
+            }
+
+            paper-tab iron-icon{
+                color: var(--app-text-color-disabled);
+            }
+
+            paper-tab.iron-selected {
+                font-weight: bold;
+            }
+
+            paper-tab.iron-selected > iron-icon {
+                color: var(--app-text-color);
+            }
+
+            .tab-selector {
+                height: 48px;
+                background: var(--app-secondary-color);
+            }
+
+            .container-line{
+                display: flex;
+            }
+
+            .container-line-field{
+                margin: 2px;
+                padding: 2px;
+            }
+
+            .w-50{
+                width: 50%;
+            }
+
+            .w-100{
+                width: 100%;
+            }
+
+            #newNmclCode{
+                width: 100%;
+            }
+
+            .horizontal {
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                flex-basis: 100%;
+                align-items: center;
+            }
+
+            .nmcls-list {
+                overflow-x: auto;
+            }
+
+            .nmcl-tag {
+                background: rgba(0,0,0,.1);
+                color: var(--exm-token-input-badge-text-color,--text-primary-color);
+                height: 24px;
+                min-height: 1px;
+                font-size: 12px;
+                min-width: initial;
+                padding: 0;
+                margin: 5px 10px 0 0;
+                border-radius: 5px;
+                overflow: hidden;
+                float:left;
+            }
+
+            .nmcl-type{
+                background: var(--app-secondary-color);
+                color: var(--app-text-color);
+                display: flex;
+                height: 100%;
+                flex-flow: row wrap;
+                padding: 0 4px;
+                box-sizing: border-box;
+                align-items: center;
+                margin-right: 8px;
+            }
+
+            .del-destination {
+                height: 22px;
+                width: 22px;
+                margin: 0 4px 0 8px;
+                padding: 2px;
+            }
+
+        </style>
+
+        <paper-dialog id="procedureManagementDialog">
+            <div class="procedure-container">
+                <div class="procedure-list-container">
+                    <div class="procedure-list-container-title">
+                        [[_getLabel(selectedProcedure.label)]]
+                    </div>
+                </div>
+                <div class="procedure-detail-container">
+                    <paper-tabs class="tab-selector" selected="{{selectedTab}}">
+                        <paper-tab id="tab-proc-info"><iron-icon icon="vaadin:tools" class="tabIcon"></iron-icon><span class="nomobile">[[localize('proc','Procedure',language)]]</span></paper-tab>
+                    </paper-tabs>
+                    <iron-pages selected="[[selectedTab]]">
+                        <page>
+                            <div class="page-container">
+                                <div class="container-line">
+                                    <paper-input class="container-line-field w-100" label="Nom de la procédure (fr)" value="{{selectedProcedure.label.fr}}"></paper-input>
+                                </div>
+
+                                <div class="container-line">
+                                    <paper-input class="container-line-field w-100" label="Nom de la procédure (nl)" value="{{selectedProcedure.label.nl}}"></paper-input>
+                                </div>
+
+                                <div class="container-line">
+                                    <paper-input class="container-line-field w-100" label="Nom de la procédure (en)" value="{{selectedProcedure.label.en}}"></paper-input>
+                                </div>
+
+                                <div class="container-line">
+                                    <paper-input class="container-line-field w-100" label="Infobulle" value="{{selectedProcedure.appendices.description}}"></paper-input>
+                                </div>
+
+                                <div class="container-line">
+                                    <paper-input class="container-line-field w-50" label="Url externe" value="{{selectedProcedure.appendices.externalLink}}"></paper-input>
+                                    <paper-input class="container-line-field w-50" label="Support vidéo" value="{{selectedProcedure.appendices.video}}"></paper-input>
+                                </div>
+
+                                <div class="">
+                                    Nomenclature liée
+                                </div>
+                                <div class="container-line">
+                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newNmclCode" label="[[localize('inputYourSearchQuery','Linked nomenclature code',language)]]" filter="{{nmclFilter}}" filtered-items="[[filteredNmclList]]" item-label-path="displayName" selected-item="{{selectedNmcl}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
+                                </div>
+                                <div class="container-line">
+                                    <div class="horizontal nmcls-list w-100">
+                                        <template is="dom-if" if="[[selectedField.links]]">
+                                            <template is="dom-repeat" items="[[selectedField.links]]" as="singleNmcl" id="nmclList">
+                                                <paper-item class="nmcl-tag" id="[[singleNmcl]]">
+                                                    <div class="nmcl-type"></div>
+                                                    <div class="one-line-menu-nmcl list-title-nmcl">[[singleNmcl]]</div>
+                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleNmcl]]" on-tap="_removeNmcl"></paper-icon-button>
+                                                </paper-item>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <div class="">
+                                    Département lié
+                                </div>
+                                <div class="container-line">
+                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newDepartementCode" label="[[localize('inputYourSearchQuery','Linked profession code',language)]]" filter="{{departementFilter}}" filtered-items="[[departementList]]" item-label-path="displayName" selected-item="{{selectedDepartement}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
+                                </div>
+                                <div class="container-line">
+                                    <div class="horizontal nmcls-list w-100">
+                                        <template is="dom-if" if="[[selectedField.flags]]">
+                                            <template is="dom-repeat" items="[[selectedField.flags]]" as="singleDepartement" id="departementList">
+                                                <paper-item class="nmcl-tag" id="[[singleDepartement]]">
+                                                    <div class="nmcl-type"></div>
+                                                    <div class="one-line-menu-nmcl list-title-nmcl">[[singleNmcl]]</div>
+                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleDepartement]]" on-tap="_removeDepartement"></paper-icon-button>
+                                                </paper-item>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </page>
+                    </iron-pages>
+                </div>
+            </div>
+            <div class="buttons">
+                <paper-button class="modal-button" on-tap="_closeFormDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+                <paper-button class="modal-button" on-tap="_saveForm"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
+            </div>
+        </paper-dialog>
+
+
+    </template>
+
+    <script>
+
+        import moment from 'moment/src/moment';
+        import _ from 'lodash/lodash';
+
+        class HtAdminManagementProceduresDialog extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'ht-admin-management-procedures-dialog'
+            }
+
+            static get properties() {
+                return {
+                    api: {
+                        type: Object,
+                        noReset: true
+                    },
+                    user: {
+                        type: Object,
+                        noReset: true
+                    },
+                    selectedProcedure:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    selectedTab:{
+                        type: Number,
+                        value: 0
+                    },
+                    nmclFilter:{
+                        type: String,
+                        value: null
+                    },
+                    filteredNmclList:{
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedNmcl:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    departementFilter:{
+                        type: String,
+                        value: null
+                    },
+                    departementList:{
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedDepartement:{
+                        type: Object,
+                        value: () => {}
+                    }
+                }
+            }
+
+            static get observers() {
+                return ['_nmclFilterChanged(nmclFilter)', '_departementFilterChanged(departementFilter)', '_selectedNmclChanged(selectedNmcl)', 'selectedDepartementChanged(selectedDepartement)'];
+            }
+
+            constructor() {
+                super()
+            }
+
+            ready() {
+                super.ready()
+            }
+
+            _openProcedureDialog(){
+                this.api.tarification().findPaginatedTarificationsByLabel('be', 'INAMI-RIZIV', this.language, 'dept', null, 100).then(dept => {
+                    this.set('departementList', dept.rows)
+                    this.$['procedureManagementDialog'].open()
+                })
+            }
+
+            _closeFormDialog(){
+                this.$['procedureManagementDialog'].close()
+            }
+
+            _getLabel(label){
+                return label && label[this.language]
+            }
+
+            _nmclFilterChanged(nmclFilter){
+                if( _.trim(nmclFilter).length < 3){this.set("filteredNmclList",[]); return;}
+                setTimeout(() => {
+                    this.api.tarification().findPaginatedTarificationsByLabel('be', 'INAMI-RIZIV', this.language, nmclFilter, null, 100).then(codes => {
+                        this.set("filteredNmclList", codes.rows.map(code => _.assign(code, {displayedName: code.code+' '+code.label[this.language]})))
+                    })
+                        .catch(e=>{console.log("ERROR with _nmclFilterChanged: ", e);})
+                }, 300)
+            }
+
+            _selectedNmclChanged(){
+                if(this.selectedNmcl){
+                    this.push('selectedProcedure.flags', _.get(this.selectedNmcl, 'id', null))
+                    this.shadowRoot.querySelector('#newNmclCode')._clear() || false
+                }
+            }
+
+            _departementFilterChanged(){
+
+            }
+
+            _selectedDepartementChanged(){
+
+            }
+
+            _removeNmcl(e){
+                this.splice('selectedField.links', _.indexOf(this.selectedField.links, this.selectedField.code.links.find(l => l === e.target.id)), 1)
+            }
+
+            _removeDepartement(e){
+                this.splice('selectedField.flags', _.indexOf(this.selectedField.flags, this.selectedField.flags.find(l => l === e.target.id)), 1)
+            }
+
+
+        }
+
+        customElements.define(HtAdminManagementProceduresDialog.is, HtAdminManagementProceduresDialog)
+    </script>
+</dom-module>
