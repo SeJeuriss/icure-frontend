@@ -413,27 +413,39 @@
 
 
 
-                                    <div class="panelNavigatorAnchor insideTab rightAnchror br0 bt0 bb0" id="panelNavigatorAnchorForProceduresSearch"><paper-button on-tap="_toggleCollapseProceduresSearch" id="panelNavigatorAnchorForProceduresSearchPaperButton"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('searchForProcedures','Search for procedures',language)]]</paper-button></div>
+                                    <div class="panelNavigatorAnchor insideTab rightAnchror br0 bt0 bb0" id="panelNavigatorAnchorForProceduresSearch"><paper-button on-tap="_toggleCollapseProceduresSearch" id="panelNavigatorAnchorForProceduresSearchPaperButton"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon> [[localize('addProcedure','Add procedure',language)]]</paper-button></div>
                                     <div id="proceduresSearch" class="collapsed">
 
-                                        <div class="formItem mt2">
-                                            <dynamic-text-field class="m0" value="{{_searchProcedureKeyword}}" on-field-changed="_triggerSearchProcedures" label="[[localize('inputYourSearchQuery','What are you looking for ?',language)]]"></dynamic-text-field>
-                                            <vaadin-checkbox checked="{{_allDepartmentIsChecked}}"> [[localize('adm-pack-all-dept', 'All departments', language)]]</vaadin-checkbox>
+                                        <div class="formItem displayFlex mb20">
+                                            <div class="mr10 pt15">[[localize('search','Search',language)]]: </div>
+                                            <dynamic-text-field class="m0 mr10" on-field-changed="_triggerSearchProcedures" value="{{_procedureSearchQuery}}"></dynamic-text-field>
+                                            <vaadin-checkbox class="pt10" checked="{{_allDepartmentIsChecked}}" on-checked-changed="_triggerSearchProcedures"> [[localize('adm-pack-all-dept', 'All departments', language)]]</vaadin-checkbox>
                                         </div>
 
-                                        listing proc correspondantes + bouton +<br />
+                                        <paper-button on-tap="_toggleCollapseProceduresSearch" data-target-id="panelNavigatorAnchorForProceduresSearchPaperButton" class="modal-button"><iron-icon icon="vaadin:angle-left" class=""></iron-icon>[[localize('backToProceduresList','Back to procedures list',language)]]</paper-button>
 
-                                        <div id="procedurePackages">
-                                            boucler : this._dialogData.codes.packagesCodes et aller chercher proc liées
-                                            <template is="dom-repeat" items="[[_dialogData.codes.packagesCodes]]" as="item">
-                                                item.code<br />
-                                                item.labelHr<br />
-                                                item.links -> boucler et remonter data procedure<br />
-                                            </template>
-                                        </div>
+                                        <template is="dom-if" if="[[_proceduresHasSearchResultsBoolean]]">
+                                            <h4 class="m0 mt20 mb10">[[localize('searchResults', 'Search results', language)]]:</h4>
+                                            <div id="searchResultsProcedureContainer" class="p10 borderSolid borderW1px borderColorAppBackgroundDarker">
+                                                <template is="dom-repeat" items="[[_proceduresSearchResults]]" as="item">
+                                                    <div class="singleProcedureContainer mb3 pb3"><iron-icon icon="vaadin:plus" class="addIcon p2 mw15 mh15 m0 mr5 cursorPointer" on-tap="_addProcedures" data-procedure-id$="[[item.id]]"></iron-icon> [[[item.code]]] - [[item.labelHr]] <span class="fontstyleitalic fspoint9em">[[item.flagsHr]]</span></div>
+                                                </template>
+                                            </div>
+                                        </template>
 
-                                        bouton + sur package & procs liées<br />
-                                        bouton valider -> pour effectivement ajouter les procs
+                                        <template is="dom-if" if="[[_dialogData.codes.packagesCodes]]">
+                                            <div id="procedurePackages">
+                                                <h4 class="m0 mb10 mt20">[[localize('list-of-packages', 'List of packages', language)]]:</h4>
+                                                <template is="dom-repeat" items="[[_dialogData.codes.packagesCodes]]" as="item">
+                                                    <div class="horizontalToggleCollapse mb20">
+                                                        <div class="toggleCollapseHeader"><iron-icon icon="vaadin:plus" class="addIcon p2 mw15 mh15 m0 mr5 cursorPointer" on-tap="_addPackageOfProcedures" data-package-id$="[[item.id]]"></iron-icon> [[item.labelHr]] - [[item.flagsHr]] <iron-icon icon="vaadin:angle-double-up" class="mw15 mh15 m0 ml10 mr10 fr transition cursorpointer" on-tap="_doToggleCollapse"></iron-icon></div>
+                                                        <div class="toggleCollapseBody transition"><template is="dom-repeat" items="[[item.linkedProcedures]]" as="proc"><div class="singleProcedureContainer mb4"><iron-icon icon="vaadin:plus" class="addIcon p2 mw15 mh15 m0 mr5 cursorPointer" on-tap="_addProcedures" data-procedure-id$="[[proc.id]]"></iron-icon> [[[proc.code]]] - [[proc.labelHr]] <span class="fontstyleitalic fspoint9em">[[proc.flagsHr]]</span></div></template></div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+
+                                        <paper-button on-tap="_toggleCollapseProceduresSearch" data-target-id="panelNavigatorAnchorForProceduresSearchPaperButton" class="modal-button"><iron-icon icon="vaadin:angle-left" class=""></iron-icon>[[localize('backToProceduresList','Back to procedures list',language)]]</paper-button>
 
                                     </div>
 
@@ -468,6 +480,7 @@
 
             <div class="failedLabel" id="requiredFieldsLabel"><iron-icon icon="clear"></iron-icon> [[localize('fillInRequiredFields','Veuillez compléter les champs requis',language)]]</div>
             <div class="successLabel" id="confirmSaveLabel"><iron-icon icon="check"></iron-icon> [[localize('changesSuccessfullySaved','Changes successfully saved',language)]]</div>
+            <div class="successLabel" id="confirmProcedureAdded"><iron-icon icon="check"></iron-icon> [[localize('proceduresSuccessfullyAdded','Procedures successfully added',language)]]</div>
 
 
 
@@ -638,11 +651,19 @@
                             insuranceDocuments_linked: []
                         }
                     },
-                    _searchProcedureKeyword: {
+                    _allDepartmentIsChecked: {
+                        type: Boolean,
+                        value: false
+                    },
+                    _procedureSearchQuery: {
                         type: String,
                         value: ""
                     },
-                    _allDepartmentIsChecked: {
+                    _proceduresSearchResults: {
+                        type: Array,
+                        value: () => []
+                    },
+                    _proceduresHasSearchResultsBoolean: {
                         type: Boolean,
                         value: false
                     },
@@ -1462,20 +1483,6 @@
 
             }
 
-            _toggleCollapseProceduresSearch(e) {
-
-                const relatedPanel = this.shadowRoot.querySelector('#existingProcedures')
-                const targetPanel = this.shadowRoot.querySelector('#proceduresSearch')
-                const panelNavigatorAnchorForProceduresSearch = this.shadowRoot.querySelector('#panelNavigatorAnchorForProceduresSearch')
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : ( !!_.trim(_.get(e,"target.dataset.targetId","")) ? this.shadowRoot.querySelector('#'+_.trim(_.get(e,"target.dataset.targetId",""))) : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON") )
-
-                targetPanel && targetPanel.classList && targetPanel.classList.toggle("collapsed")
-                relatedPanel && relatedPanel.classList && relatedPanel.classList.toggle("collapsed")
-                panelNavigatorAnchorForProceduresSearch && panelNavigatorAnchorForProceduresSearch.classList && panelNavigatorAnchorForProceduresSearch.classList.toggle("opened")
-                targetButton && targetButton.firstElementChild && targetButton.firstElementChild.classList && targetButton.firstElementChild.classList.toggle("collapsedIcon")
-
-            }
-
             _scrollToTop() {
 
                 const promResolve = Promise.resolve();
@@ -1632,16 +1639,8 @@
                         this.api.code().findPaginatedCodes('be', this._getConfig("careReasonsCode","CD-INCAPACITYREASON")),
                         this.api.code().findPaginatedCodes('be', this._getConfig("prescriptionTypeCode","care.topaz.kinesitherapyPrescription")),
                         this.api.code().getCodes( this._getConfig("defaultCodes",[]).map(i=>_.trim(_.get(i,"id",""))) ),
-                        this.api.code().findPaginatedCodes('be', 'care.topaz.procedurepackage')
-
-
-
-
-                        this.api.code().findPaginatedCodes('be', "CD-HCPARTY").... => continuer
-
-
-
-
+                        this.api.code().findPaginatedCodes('be', 'care.topaz.procedurepackage'),
+                        this.api.code().findPaginatedCodes('be', "CD-HCPARTY")
                     ]))
                     .then(codes => this.set("_dialogData.codes", {
                         lateralityCodes: _.get(codes,"[0].rows",[]),
@@ -1649,49 +1648,29 @@
                         incapacityCodes: _.filter(_.get(codes,"[2].rows",[]), i=> !_.get(i,"disabled",false)),
                         prescriptionCodes: _.filter(_.get(codes,"[3].rows",[]), i=> !_.get(i,"disabled",false)),
                         defaultCodes: _.get(codes,"[4]",[]),
-                        packagesCodes: _.chain(_.get(codes,"[5].rows",[])).filter(i=> !_.get(i,"disabled",false)).map(i=>_.merge({},i,{
-                            labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
-
-
-
-
-                            // Fabien: remonter le this.api.code().findPaginatedCodes('be', "CD-HCPARTY") ici ==> prendre tout
-                            // Sauvegarder dans les codes (+mappings comme il faut)
-                            // Et adapter la partie de résolution du flagsHr des procédures sur base this._dialogData.codes.hcpCodes
-
-                            Ensuite mettre à jour listing packages dans la search
-
-
-
-                            flagsHr: _.compact(_.map(_.get(i,"flags",[]), flag => _.get(_.find(hcpSpecialityCodes,{code:_.trim(flag)}),"labelHr",""))).join(", ")
-                        })).value()
+                        packagesCodes: _.chain(_.get(codes,"[5].rows",[])).filter(i=> !_.get(i,"disabled",false)).map(i=>_.merge({},i,{ labelHr: _.trim(_.get(i,"label." + this.language,"")) ? _.upperFirst(_.trim(_.get(i,"label." + this.language,"")).toLowerCase()) : _.upperFirst(_.trim(_.head(_.flatMap(_.get(i,"label","")))).toLowerCase())})).value(),
+                        hcpCodes: _.chain(_.get(codes,"[6].rows",[])).filter(i => !_.get(i,"disabled",false)).map(i => _.merge({},i,{labelHr:_.trim(_.get(i,"label." + this.language,"")) ? _.upperFirst(_.trim(_.get(i,"label." + this.language,"")).toLowerCase()) : _.upperFirst(_.trim(_.head(_.flatMap(_.get(i,"label","")))).toLowerCase())})).value()
                     }))
-                    .then(() => !!_.size(_.get(this,"_dialogData.codes.procedureCodes",[])) ? promResolve : promResolve
-                        .then(() => this.api.code().findPaginatedCodes('be', 'BE-THESAURUS-PROCEDURES', null, null, null, 5000))
-                        .then(procedureCodes=> this.set("_dialogData.codes.procedureCodes", _
-                            .chain(_.get(procedureCodes,"rows",[]))
-                            .filter(i=> !_.get(i,"disabled",false))
-                            .map(i=>_.merge({},i,{
-                                labelHr:_.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),
-                                searchTermsHr: _.trim(_.get(i,"searchTerms." + this.language + ".[0]","")) ? _.get(i,"searchTerms." + this.language,"") : _.get(_.toPairs(_.get(i,"searchTerms",{})),"[0][1]","")
-                            }))
-                            .value()
-                        ))
-                        .then(()=>{
-                            const hcpSpecialityCodes = _.compact(_.uniq(_.flatten(_.map(_.get(this,"_dialogData.codes.procedureCodes",[]), i=>i.flags))))
-                            return !_.size(hcpSpecialityCodes) ? null : this.api.code().findPaginatedCodes('be', "CD-HCPARTY").then(hcPartyCodes => _.chain(_.get(hcPartyCodes,"rows",[])).filter(i => !_.get(i,"disabled",false) && hcpSpecialityCodes.indexOf(_.trim(_.get(i,"code","")))>-1).map(i => _.merge({},i,{labelHr:_.trim(_.get(i,"label." + this.language,"")) ? _.trim(_.get(i,"label." + this.language,"")) : _.trim(_.head(_.flatMap(_.get(i,"label","")))),})).value())
-                        })
-                        .then(hcpSpecialityCodes => {
-                            this.set("_dialogData.codes.procedureCodes", _
-                                .chain(_.get(this,"_dialogData.codes.procedureCodes",[]))
-                                .map(i=>_.merge({},i, {
-                                    flagsHr: _.compact(_.map(_.get(i,"flags",[]), flag => _.get(_.find(hcpSpecialityCodes,{code:_.trim(flag)}),"labelHr",""))).join(", "),
-                                    labelHr: _.upperFirst(_.trim(_.get(i,"labelHr","")).toLowerCase())
-                                }))
-                                .value()
-                            )
-                        })
-                    )
+                    .then(() => this.api.code().findPaginatedCodes('be', 'BE-THESAURUS-PROCEDURES', null, null, null, 5000))
+                    .then(procedureCodes=> this.set("_dialogData.codes.procedureCodes", _
+                        .chain(_.get(procedureCodes,"rows",[]))
+                        .filter(i=> !_.get(i,"disabled",false))
+                        .map(i=>_.merge({},i,{
+                            labelHr:_.trim(_.get(i,"label." + this.language,"")) ? _.upperFirst(_.trim(_.get(i,"label." + this.language,"")).toLowerCase()) : _.upperFirst(_.trim(_.head(_.flatMap(_.get(i,"label","")))).toLowerCase()),
+                            flagsHr: _.compact(_.map(_.get(i,"flags",[]), flag => _.get(_.find(_.get(this,"_dialogData.codes.hcpCodes"),{code:_.trim(flag)}),"labelHr",""))).join(", ")
+                        }))
+                        .map(i=>_.merge({},i,{
+                            normalizedSearchTerms: _.map(_.uniq(_.compact(_.flatten(_.concat(
+                                _.trim(_.get(i,"searchTerms." + this.language + ".[0]","")) ? _.compact(_.get(i,"searchTerms." + this.language,"")) : _.compact(_.get(_.toPairs(_.get(i,"searchTerms",{})),"[0][1]","")),
+                                [_.get(i,"flagsHr",""), _.get(i,"code",""), _.get(i,"labelHr",""), ]
+                            )))), i => _.trim(i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'')).join(" ")
+                        }))
+                        .value()
+                    ))
+                    .then(()=> this.set("_dialogData.codes.packagesCodes", _.map(_.get(this,"_dialogData.codes.packagesCodes",[]), i=>_.merge({},i,{
+                        flagsHr: _.compact(_.map(_.get(i,"flags",[]), flag => _.get(_.find(_.get(this,"_dialogData.codes.hcpCodes"),{code:_.trim(flag)}),"labelHr",""))).join(", "),
+                        linkedProcedures: _.compact(_.map(_.get(i,"links",[]),j => _.find(_.get(this,"_dialogData.codes.procedureCodes"),{id:_.trim(j)})))
+                    }))))
                     .then(() => {
                         this.set("_dialogData.relatedChildrenPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !!_.trim(_.get(i,"parent",""))).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")) })).orderBy(["parent", "label." + this.language],["asc","asc"]).value())
                         this.set("_dialogData.relatedParentPathologies", _.chain(_.get(this, "_dialogData.codes.prescriptionCodes",[])).filter(i => !_.trim(_.get(i,"parent",""))).map(i => _.merge({}, i, { labelHr: _.trim(_.get(i,"label." + this.language,"")),hasChildren: !!_.size(_.filter(_.get(this,"_dialogData.relatedChildrenPathologies",[]), j => _.trim(_.get(j,"parent","")) === _.trim(_.get(i,"id","")))) })).orderBy(["label." + this.language],["asc"]).value())
@@ -1721,6 +1700,114 @@
                     .finally(() => promResolve)
 
             }
+
+            _doToggleCollapse(e) {
+
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "IRON-ICON")
+                const tlContainer = targetButton.closest(".horizontalToggleCollapse")
+                const bodyContainer = _.head(tlContainer.getElementsByClassName("toggleCollapseBody"))
+
+                if(_.get(bodyContainer,"classList",false)) bodyContainer.classList.toggle("collapsed")
+                if(_.get(targetButton,"classList",false)) targetButton.classList.toggle("rot180")
+
+            }
+
+            _addPackageOfProcedures(e) {
+
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "IRON-ICON")
+                const packageId = _.trim(_.get(targetButton,"dataset.packageId"))
+                const procedureIdsToAdd = _.uniq(_.compact(_.flatten(_.map(_.filter(_.get(this,"_dialogData.codes.packagesCodes"),{id:packageId}), i => _.get(i,"links",[])))))
+                const tlContainer = targetButton.closest(".horizontalToggleCollapse")
+
+                // Visual confirmations
+                if( !!_.size(procedureIdsToAdd) && _.get(tlContainer,"classList",false)) {
+                    tlContainer.classList.toggle("displaynone")
+                    if( this.shadowRoot.querySelector("#confirmProcedureAdded") && this.shadowRoot.querySelector("#confirmProcedureAdded").classList ) {
+                        this.shadowRoot.querySelector("#confirmProcedureAdded").classList.add('displayNotification')
+                        setTimeout(() => {this.shadowRoot.querySelector("#confirmProcedureAdded").classList.remove('displayNotification')}, 5000)
+                    }
+                }
+
+                return !!_.size(procedureIdsToAdd) ? this._doAddProcedures(procedureIdsToAdd) : null
+
+            }
+
+            _addProcedures(e) {
+
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "IRON-ICON")
+                const procedureId = _.trim(_.get(targetButton,"dataset.procedureId"))
+                const tlContainer = targetButton.closest(".singleProcedureContainer")
+
+                // Visual confirmations
+                if( !!_.trim(procedureId) && _.get(tlContainer,"classList",false)) {
+                    tlContainer.classList.toggle("displaynone")
+                    if( this.shadowRoot.querySelector("#confirmProcedureAdded") && this.shadowRoot.querySelector("#confirmProcedureAdded").classList ) {
+                        this.shadowRoot.querySelector("#confirmProcedureAdded").classList.add('displayNotification')
+                        setTimeout(() => {this.shadowRoot.querySelector("#confirmProcedureAdded").classList.remove('displayNotification')}, 5000)
+                    }
+                }
+
+                return !!_.trim(procedureId) ? this._doAddProcedures([procedureId]) : null
+
+            }
+
+            _toggleCollapseProceduresSearch(e) {
+
+                const relatedPanel = this.shadowRoot.querySelector('#existingProcedures')
+                const targetPanel = this.shadowRoot.querySelector('#proceduresSearch')
+                const panelNavigatorAnchorForProceduresSearch = this.shadowRoot.querySelector('#panelNavigatorAnchorForProceduresSearch')
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? ( !!_.trim(_.get(e,"target.dataset.targetId","")) ? this.shadowRoot.querySelector('#'+_.trim(_.get(e,"target.dataset.targetId",""))) : e.target ) : ( !!_.trim(_.get(e,"target.dataset.targetId","")) ? this.shadowRoot.querySelector('#'+_.trim(_.get(e,"target.dataset.targetId",""))) : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON") )
+                const packagesAndProceduresContainersToRestore = _.concat(_.map(this.shadowRoot.querySelectorAll(".singleProcedureContainer.displaynone"), i=>i), _.map(this.shadowRoot.querySelectorAll(".horizontalToggleCollapse.displaynone"), i=>i))
+
+                targetPanel && targetPanel.classList && targetPanel.classList.toggle("collapsed")
+                relatedPanel && relatedPanel.classList && relatedPanel.classList.toggle("collapsed")
+                panelNavigatorAnchorForProceduresSearch && panelNavigatorAnchorForProceduresSearch.classList && panelNavigatorAnchorForProceduresSearch.classList.toggle("opened")
+                targetButton && targetButton.firstElementChild && targetButton.firstElementChild.classList && targetButton.firstElementChild.classList.toggle("collapsedIcon")
+
+                _.map( packagesAndProceduresContainersToRestore, i => !!_.get(i,"classList",false) ? i.classList.remove("displaynone") : null)
+
+            }
+
+            _triggerSearchProcedures(e) {
+
+                const keyword = !!_.trim(_.get(e,"detail.value","")) && _.trim(_.get(e,"target.nodeName","")) !== "VAADIN-CHECKBOX" ? _.trim(_.get(e,"detail.value","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'') : _.trim(_.get(this,"_procedureSearchQuery","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'')
+                const mySpecialities = _.uniq(_.compact(_.map(_.get(this,"_dialogData.currentHcp.specialityCodes"), i=>_.trim(_.get(i,"code","")))))
+
+                setTimeout(() => {
+                    const proceduresSearchResults = parseInt(_.get(keyword,"length",0)) < 2 ? [] : _
+                        .chain(_.get(this,"_dialogData.codes.procedureCodes",[]))
+                        .filter(i => !!_.trim(_.get(i,"normalizedSearchTerms","")) && _.trim(_.get(i,"normalizedSearchTerms","")).indexOf(keyword) > -1 && (!_.get(this,"_allDepartmentIsChecked",false) ? !!_.some(_.get(i,"flags",[]), j => mySpecialities.indexOf(j) > -1) : true ) )
+                        .orderBy(['labelHr','code','id'],['asc','asc','asc'])
+                        .slice(0,50)
+                        .value()
+
+                    this.set("_proceduresHasSearchResultsBoolean", !!_.size(proceduresSearchResults))
+                    this.set("_proceduresSearchResults", proceduresSearchResults)
+                },100)
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             _getlinkedProcedures(currentPoa) {
 
@@ -1774,18 +1861,14 @@
 
             }
 
-            _triggerSearchProcedures(a,b,c) {
+            _doAddProcedures(procedureIds) {
 
-                console.log("--- _triggerSearchProcedures ---", a, b, c)
-
-                // this._searchProcedureKeyword
-                // this._allDepartmentIsChecked
-
-                // Créer dynamiquement valeur _proceduresSearchResults[] => + foutre dans déclaration composant
-                // Set la var
-                // #id-du-dom-repeat => force render / refresh render
+                console.log("--- _doAddProcedures ---", procedureIds)
+                console.log(this._dialogData)
 
             }
+
+
 
 
 

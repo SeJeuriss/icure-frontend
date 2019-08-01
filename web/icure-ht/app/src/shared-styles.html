@@ -535,6 +535,7 @@
             .displayblock {display:block}
             .displayinlineblock {display:inline-block}
             .displaynone {display:none}
+			.displayFlex {display: flex}
 
             .fontstyleitalic {font-style:italic;}
             .fontstylenormal {font-style:normal;}
@@ -671,6 +672,13 @@
 			.borderColorAppPrimary { border-color: var(--app-primary-color) }
 			.borderColorAppPrimaryDark { border-color: var(--app-primary-color-dark) }
 			.borderColorAppPrimaryLight { border-color: var(--app-primary-color-light) }
+			.borderColorAppBackground { border-color: var(--app-background-color) }
+			.borderColorAppBackgroundDarker { border-color: var(--app-background-color-darker) }
+			.borderColorAppBackgroundLight { border-color: var(--app-background-color-light) }
+
+			.rot90 {transform: rotate(90deg); transition: all .5s ease-out;}
+			.rot180 {transform: rotate(180deg);transition: all .5s ease-out;}
+			.rot270 {transform: rotate(270deg);transition: all .5s ease-out;}
 
 			@media screen and (max-width: 640px) {
 				.hideOnMobile {
@@ -810,6 +818,36 @@
 				background-color: var(--app-secondary-color);
 				border-radius: 50%;
 			}
+
+			.transition {
+				transition: all .5s ease-out;
+			}
+
+			.horizontalToggleCollapse {
+				border:1px solid var(--app-background-color-darker);
+			}
+
+			.toggleCollapseHeader {
+				background-color: var(--app-background-color);
+				font-weight: 700;
+				padding:10px;
+			}
+
+			.toggleCollapseBody {
+				padding:10px 10px 6px 30px;
+				overflow:hidden;
+				height:auto;
+				border-top: 1px solid var(--app-background-color-darker)
+			}
+
+			.toggleCollapseBody.collapsed {
+				height:0;
+				padding:0;
+				margin:0;
+				transition: all .5s ease-out;
+				border:0;
+			}
+
 
 		</style>
 	</template>

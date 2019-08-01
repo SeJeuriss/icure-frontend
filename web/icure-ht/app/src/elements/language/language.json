@@ -1784,7 +1784,11 @@
     "sort": "Sort",
     "searchForProcedures": "Search for procedures",
     "addProcedure": "Add procedure",
-    "linkedProcedures": "Linked procedure(s)"
+    "linkedProcedures": "Linked procedure(s)",
+    "proceduresSuccessfullyAdded": "Procedures successfully added",
+    "backToProceduresList": "Back to procedures list",
+    "proceduresList": "Procedures list",
+    "searchResults": "Search results"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -1890,7 +1894,7 @@
     "adm-pack-nb-proc": "Nombre de procédure",
     "adm-pack-dept" : "Département",
     "adm-pack-avai": "Packages disponibles",
-    "adm-pack-proc-search" : "Rechercher une procédure",
+    "adm-pack-proc-search" : "Chercher une procédure",
     "adm-pack-code" : "Code",
     "adm-pack-proc" : "Procédure",
     "adm-pack-search" : "Recherche",
@@ -3655,7 +3659,11 @@
     "sort": "Tri",
     "searchForProcedures": "Rechercher une procédure",
     "addProcedure": "Ajouter une procédure",
-    "linkedProcedures": "Procédure(s) liée(s)"
+    "linkedProcedures": "Procédure(s) liée(s)",
+    "proceduresSuccessfullyAdded": "Procedure(s) ajoutée(s)",
+    "backToProceduresList": "Retour à la liste des procedures",
+    "proceduresList": "Liste des procedures",
+    "searchResults": "Résultats de la recherche"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5487,6 +5495,10 @@
     "sort": "Sort",
     "searchForProcedures": "Search for procedures",
     "addProcedure": "Add procedure",
-    "linkedProcedures": "Linked procedure(s)"
+    "linkedProcedures": "Linked procedure(s)",
+    "proceduresSuccessfullyAdded": "Procedures successfully added",
+    "backToProceduresList": "Back to procedures list",
+    "proceduresList": "Procedures list",
+    "searchResults": "Search results"
   }
 }
