@@ -200,6 +200,66 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin-right: 8px;
             }
 
+            .depts-list {
+                overflow-x: auto;
+            }
+
+            .dept-tag {
+                background: rgba(0,0,0,.1);
+                color: var(--exm-token-input-badge-text-color,--text-primary-color);
+                height: 24px;
+                min-height: 1px;
+                font-size: 12px;
+                min-width: initial;
+                padding: 0;
+                margin: 5px 10px 0 0;
+                border-radius: 5px;
+                overflow: hidden;
+                float:left;
+            }
+
+            .dept-type{
+                background: var(--app-secondary-color);
+                color: var(--app-text-color);
+                display: flex;
+                height: 100%;
+                flex-flow: row wrap;
+                padding: 0 4px;
+                box-sizing: border-box;
+                align-items: center;
+                margin-right: 8px;
+            }
+
+            .es-list {
+                overflow-x: auto;
+            }
+
+            .es-tag {
+                background: rgba(0,0,0,.1);
+                color: var(--exm-token-input-badge-text-color,--text-primary-color);
+                height: 24px;
+                min-height: 1px;
+                font-size: 12px;
+                min-width: initial;
+                padding: 0;
+                margin: 5px 10px 0 0;
+                border-radius: 5px;
+                overflow: hidden;
+                float:left;
+            }
+
+            .es-type{
+                background: var(--app-secondary-color);
+                color: var(--app-text-color);
+                display: flex;
+                height: 100%;
+                flex-flow: row wrap;
+                padding: 0 4px;
+                box-sizing: border-box;
+                align-items: center;
+                margin-right: 8px;
+            }
+
             .del-destination {
                 height: 22px;
                 width: 22px;
@@ -245,19 +305,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </div>
 
                                 <div class="">
-                                    Nomenclature liée
+                                    Eléments de soin liés
                                 </div>
                                 <div class="container-line">
-                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newNmclCode" label="[[localize('inputYourSearchQuery','Linked nomenclature code',language)]]" filter="{{nmclFilter}}" filtered-items="[[filteredNmclList]]" item-label-path="displayName" selected-item="{{selectedNmcl}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
+                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newEsCode" label="[[localize('inputYourSearchQuery','Linked health element code',language)]]" filter="{{esFilter}}" filtered-items="[[filteredEsList]]" item-label-path="displayName" selected-item="{{selectedEs}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
                                 </div>
                                 <div class="container-line">
-                                    <div class="horizontal nmcls-list w-100">
-                                        <template is="dom-if" if="[[selectedField.links]]">
-                                            <template is="dom-repeat" items="[[selectedField.links]]" as="singleNmcl" id="nmclList">
-                                                <paper-item class="nmcl-tag" id="[[singleNmcl]]">
-                                                    <div class="nmcl-type"></div>
-                                                    <div class="one-line-menu-nmcl list-title-nmcl">[[singleNmcl]]</div>
-                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleNmcl]]" on-tap="_removeNmcl"></paper-icon-button>
+                                    <div class="horizontal depts-list w-100">
+                                        <template is="dom-if" if="[[selectedProcedure.flags, selectedProcedure.*]]">
+                                            <template is="dom-repeat" items="[[_getEs(selectedProcedure.links, selectedProcedure.*)]]" as="singleEs" id="esList">
+                                                <paper-item class="es-tag" id="[[singleEs]]">
+                                                    <div class="es-type"></div>
+                                                    <div class="one-line-menu-dept list-title-dept">[[singleEs]]</div>
+                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleEs]]" on-tap="_removeLink"></paper-icon-button>
                                                 </paper-item>
                                             </template>
                                         </template>
@@ -265,19 +325,39 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </div>
 
                                 <div class="">
-                                    Département lié
+                                    Nomenclatures liées
                                 </div>
                                 <div class="container-line">
-                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newDepartementCode" label="[[localize('inputYourSearchQuery','Linked profession code',language)]]" filter="{{departementFilter}}" filtered-items="[[departementList]]" item-label-path="displayName" selected-item="{{selectedDepartement}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
+                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newNmclCode" label="[[localize('inputYourSearchQuery','Linked nomenclature code',language)]]" filter="{{nmclFilter}}" filtered-items="[[filteredNmclList]]" item-label-path="displayName" selected-item="{{selectedNmcl}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
                                 </div>
                                 <div class="container-line">
-                                    <div class="horizontal nmcls-list w-100">
-                                        <template is="dom-if" if="[[selectedField.flags]]">
-                                            <template is="dom-repeat" items="[[selectedField.flags]]" as="singleDepartement" id="departementList">
-                                                <paper-item class="nmcl-tag" id="[[singleDepartement]]">
+                                    <div class="horizontal es-list w-100">
+                                        <template is="dom-if" if="[[selectedProcedure.links, selectedProcedure.*]]">
+                                            <template is="dom-repeat" items="[[_getNmcl(selectedProcedure.links, selectedProcedure.*)]]" as="singleNmcl" id="nmclList">
+                                                <paper-item class="nmcl-tag" id="[[singleNmcl]]">
                                                     <div class="nmcl-type"></div>
                                                     <div class="one-line-menu-nmcl list-title-nmcl">[[singleNmcl]]</div>
-                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleDepartement]]" on-tap="_removeDepartement"></paper-icon-button>
+                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleNmcl]]" on-tap="_removeLink"></paper-icon-button>
+                                                </paper-item>
+                                            </template>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <div class="">
+                                    Départements liés
+                                </div>
+                                <div class="container-line">
+                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newDepartementCode" label="[[localize('inputYourSearchQuery','Linked profession code',language)]]" filter="{{departementFilter}}" filtered-items="[[filteredDepartementList]]" item-label-path="displayName" selected-item="{{selectedDepartement}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
+                                </div>
+                                <div class="container-line">
+                                    <div class="horizontal depts-list w-100">
+                                        <template is="dom-if" if="[[selectedProcedure.flags, selectedProcedure.*]]">
+                                            <template is="dom-repeat" items="[[selectedProcedure.flags]]" as="singleDepartement" id="departementList">
+                                                <paper-item class="dept-tag" id="[[singleDepartement]]">
+                                                    <div class="dept-type"></div>
+                                                    <div class="one-line-menu-dept list-title-dept">[[singleDepartement]]</div>
+                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleDepartement]]" on-tap="_removeFlag"></paper-icon-button>
                                                 </paper-item>
                                             </template>
                                         </template>
@@ -342,11 +422,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         value: null
                     },
-                    departementList:{
+                    filteredDepartementList:{
                         type: Array,
                         value: () => []
                     },
                     selectedDepartement:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    esFilter:{
+                        type: String,
+                        value: null
+                    },
+                   filteredEsList:{
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedEs:{
                         type: Object,
                         value: () => {}
                     }
@@ -354,7 +446,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             static get observers() {
-                return ['_nmclFilterChanged(nmclFilter)', '_departementFilterChanged(departementFilter)', '_selectedNmclChanged(selectedNmcl)', 'selectedDepartementChanged(selectedDepartement)'];
+                return ['_nmclFilterChanged(nmclFilter)', '_departementFilterChanged(departementFilter)', '_esFilterChanged(esFilter)', '_selectedNmclChanged(selectedNmcl)', '_selectedDepartementChanged(selectedDepartement)', '_selectedEsChanged(selectedEs)'];
             }
 
             constructor() {
@@ -366,18 +458,37 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _openProcedureDialog(){
-                this.api.tarification().findPaginatedTarificationsByLabel('be', 'INAMI-RIZIV', this.language, 'dept', null, 100).then(dept => {
-                    this.set('departementList', dept.rows)
-                    this.$['procedureManagementDialog'].open()
-                })
+                this.$['procedureManagementDialog'].open()
             }
 
             _closeFormDialog(){
+                this.set('filteredNmclList', [])
+                this.set('filteredDepartementList', [])
+                this.set('filteredEsList', [])
+                this.set('selectedProcedure', {})
                 this.$['procedureManagementDialog'].close()
             }
 
             _getLabel(label){
                 return label && label[this.language]
+            }
+
+            _esFilterChanged(esFilter){
+                if( _.trim(esFilter).length < 3){this.set("filteredEsList",[]); return;}
+                setTimeout(() => {
+                    this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS', this.language, esFilter, null, 100).then(codes => {
+                        this.set("filteredEsList", codes.rows.map(code => _.assign(code, {displayedName: code.label[this.language]})))
+                    })
+                        .catch(e=>{console.log("ERROR with _esFilterChanged: ", e);})
+                }, 300)
+            }
+
+            _selectedEsChanged(){
+                if(this.selectedEs){
+                    !_.get(this.selectedEs, 'links', null) ? _.assign(this.selectedEs, {links : []}) :null
+                    this.push('selectedProcedure.links', _.get(this.selectedEs, 'id', null))
+                    this.shadowRoot.querySelector('#newEsCode')._clear() || false
+                }
             }
 
             _nmclFilterChanged(nmclFilter){
@@ -392,25 +503,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _selectedNmclChanged(){
                 if(this.selectedNmcl){
-                    this.push('selectedProcedure.flags', _.get(this.selectedNmcl, 'id', null))
+                    !_.get(this.selectedProcedure, 'links', null) ? _.assign(this.selectedProcedure, {links : []}) :null
+                    this.push('selectedProcedure.links', _.get(this.selectedNmcl, 'id', null))
                     this.shadowRoot.querySelector('#newNmclCode')._clear() || false
                 }
             }
 
-            _departementFilterChanged(){
-
+            _departementFilterChanged(departementFilter){
+                if( _.trim(departementFilter).length < 3){this.set("filteredDepartementList",[]); return;}
+                setTimeout(() => {
+                    this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, departementFilter).then(codes => {
+                        this.set("filteredDepartementList", codes.rows.map(code => _.assign(code, {displayedName: code.label[this.language]})))
+                    }).catch(e=>{console.log("ERROR with _departementFilterChanged: ", e);})
+                }, 300)
             }
 
             _selectedDepartementChanged(){
-
+                if(this.selectedDepartement){
+                    this.push('selectedProcedure.flags', _.get(this.selectedDepartement, 'code', null))
+                    this.shadowRoot.querySelector('#newDepartementCode')._clear() || false
+                }
             }
 
-            _removeNmcl(e){
-                this.splice('selectedField.links', _.indexOf(this.selectedField.links, this.selectedField.code.links.find(l => l === e.target.id)), 1)
+            _removeFlag(e){
+                this.splice('selectedProcedure.flags', _.indexOf(this.selectedProcedure.flags, this.selectedProcedure.flags.find(l => l === e.target.id)), 1)
             }
 
-            _removeDepartement(e){
-                this.splice('selectedField.flags', _.indexOf(this.selectedField.flags, this.selectedField.flags.find(l => l === e.target.id)), 1)
+            _removeLink(e){
+                this.splice('selectedProcedure.links', _.indexOf(this.selectedProcedure.links, this.selectedProcedure.links.find(l => l === e.target.id)), 1)
+            }
+
+            _getNmcl(links){
+                return links && links.filter(link => /^INAMI-RIZIV/.test(link))
+            }
+
+            _getEs(links){
+                return links && links.filter(link => /^BE-THESAURUS/.test(link))
             }
 
 
