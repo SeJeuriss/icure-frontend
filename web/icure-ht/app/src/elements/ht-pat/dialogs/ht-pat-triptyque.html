@@ -1770,13 +1770,27 @@
 
             _triggerSearchProcedures(e) {
 
-                const keyword = !!_.trim(_.get(e,"detail.value","")) && _.trim(_.get(e,"target.nodeName","")) !== "VAADIN-CHECKBOX" ? _.trim(_.get(e,"detail.value","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'') : _.trim(_.get(this,"_procedureSearchQuery","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'')
+                const keywordsString = !!_.trim(_.get(e,"detail.value","")) && _.trim(_.get(e,"target.nodeName","")) !== "VAADIN-CHECKBOX" ? _.trim(_.get(e,"detail.value","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'') : _.trim(_.get(this,"_procedureSearchQuery","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'')
+                const keywordsArray = _.compact(_.uniq(_.map(keywordsString.split(" "), i=>_.trim(i))))
                 const mySpecialities = _.uniq(_.compact(_.map(_.get(this,"_dialogData.currentHcp.specialityCodes"), i=>_.trim(_.get(i,"code","")))))
 
                 setTimeout(() => {
-                    const proceduresSearchResults = parseInt(_.get(keyword,"length",0)) < 2 ? [] : _
+                    const proceduresSearchResults = parseInt(_.get(keywordsString,"length",0)) < 2 ? [] : _
                         .chain(_.get(this,"_dialogData.codes.procedureCodes",[]))
-                        .filter(i => !!_.trim(_.get(i,"normalizedSearchTerms","")) && _.trim(_.get(i,"normalizedSearchTerms","")).indexOf(keyword) > -1 && (!_.get(this,"_allDepartmentIsChecked",false) ? !!_.some(_.get(i,"flags",[]), j => mySpecialities.indexOf(j) > -1) : true ) )
+
+
+                        // .filter(i => !!_.trim(_.get(i,"normalizedSearchTerms","")) && _.trim(_.get(i,"normalizedSearchTerms","")).indexOf(keywordsString) > -1 && (!_.get(this,"_allDepartmentIsChecked",false) ? !!_.some(_.get(i,"flags",[]), j => mySpecialities.indexOf(j) > -1) : true ) )
+                        .filter(i => !!_.trim(_.get(i,"normalizedSearchTerms","")) && (!_.get(this,"_allDepartmentIsChecked",false) ? !!_.some(_.get(i,"flags",[]), j => mySpecialities.indexOf(j) > -1) : true ) )
+
+
+
+
+                        .map(i => _.size(_.compact(_.map(keywordsArray, keyword => _.trim(_.get(i,"normalizedSearchTerms","")).indexOf(keyword) > -1))) === _.size(keywordsArray) ? i : null)
+
+
+
+
+                        .compact()
                         .orderBy(['labelHr','code','id'],['asc','asc','asc'])
                         .slice(0,50)
                         .value()
