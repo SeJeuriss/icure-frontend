@@ -1768,6 +1768,7 @@
     "poaName": "Plan of actions name",
     "numberOfCares": "Number of cares",
     "linkedPhysician": "Related physician",
+    "linkedMainPhysician": "Main physician",
     "careReason": "Care reason",
     "insuranceDocuments": "Insurance documents",
     "linkedInsuranceDocuments": "Linked insurance documents",
@@ -1780,7 +1781,14 @@
     "descending": "Descending",
     "importedDocuments": "Imported documents",
     "contact-date": "Contact date",
-    "sort": "Sort"
+    "sort": "Sort",
+    "searchForProcedures": "Search for procedures",
+    "addProcedure": "Add procedure",
+    "linkedProcedures": "Linked procedure(s)",
+    "proceduresSuccessfullyAdded": "Procedures successfully added",
+    "backToProceduresList": "Back to procedures list",
+    "proceduresList": "Procedures list",
+    "searchResults": "Search results"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -1886,7 +1894,7 @@
     "adm-pack-nb-proc": "Nombre de procédure",
     "adm-pack-dept" : "Département",
     "adm-pack-avai": "Packages disponibles",
-    "adm-pack-proc-search" : "Rechercher une procédure",
+    "adm-pack-proc-search" : "Chercher une procédure",
     "adm-pack-code" : "Code",
     "adm-pack-proc" : "Procédure",
     "adm-pack-search" : "Recherche",
@@ -3635,6 +3643,7 @@
     "poaName": "Nom du plan d'action",
     "numberOfCares": "Nombre de séances",
     "linkedPhysician": "Prestataire lié",
+    "linkedMainPhysician": "Prestataire principal",
     "careReason": "Justificatif de soins",
     "insuranceDocuments": "Documents de la mutuelle",
     "linkedInsuranceDocuments": "Documents liés au triptyque",
@@ -3647,7 +3656,14 @@
     "descending": "Décroissant",
     "importedDocuments": "Documents importés",
     "contact-date": "Date de contact",
-    "sort": "Tri"
+    "sort": "Tri",
+    "searchForProcedures": "Rechercher une procédure",
+    "addProcedure": "Ajouter une procédure",
+    "linkedProcedures": "Procédure(s) liée(s)",
+    "proceduresSuccessfullyAdded": "Procedure(s) ajoutée(s)",
+    "backToProceduresList": "Retour à la liste des procedures",
+    "proceduresList": "Liste des procedures",
+    "searchResults": "Résultats de la recherche"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5463,6 +5479,7 @@
     "poaName": "Plan of actions name",
     "numberOfCares": "Number of cares",
     "linkedPhysician": "Related physician",
+    "linkedMainPhysician": "Main physician",
     "careReason": "Care reason",
     "insuranceDocuments": "Insurance documents",
     "linkedInsuranceDocuments": "Linked insurance documents",
@@ -5475,6 +5492,13 @@
     "descending": "Descending",
     "importedDocuments": "Imported documents",
     "contact-date": "Contact date",
-    "sort": "Sort"
+    "sort": "Sort",
+    "searchForProcedures": "Search for procedures",
+    "addProcedure": "Add procedure",
+    "linkedProcedures": "Linked procedure(s)",
+    "proceduresSuccessfullyAdded": "Procedures successfully added",
+    "backToProceduresList": "Back to procedures list",
+    "proceduresList": "Procedures list",
+    "searchResults": "Search results"
   }
 }
