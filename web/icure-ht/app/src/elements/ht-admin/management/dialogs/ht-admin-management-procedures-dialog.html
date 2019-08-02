@@ -458,7 +458,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _openProcedureDialog(){
-                this.$['procedureManagementDialog'].open()
+
+                const listOfLinks = _.get(this.selectedProcedure, "links", [])
+                const listOfFlags = _.get(this.selectedProcedure, "flags", [])
+
+                ;(listOfLinks.length > 0 ? this.api.code().getCode(listOfLinks.join(',')) : Promise.resolve([]))
+                .then(listOfCodes => this.set("selectedProcedure", _.assign(this.selectedProcedure, {linksHr: listOfCodes})))
+                .then(() => this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, 'dept', null, null, 200))
+                .then(listOfCdHcParty => this.set("selectedProcedure", _.assign(this.selectedProcedure, {flagsHr: listOfFlags.map(flag => listOfCdHcParty.rows.find(hcp => hcp.code === flag))})))
+                .finally(() => {
+                    this.$['procedureManagementDialog'].open()
+                    console.log(this.selectedProcedure)
+                })
+
             }
 
             _closeFormDialog(){
