@@ -185,7 +185,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
         </div>
 
-        <ht-admin-management-procedures-dialog id="htAdminManagementProceduresDialog" selected-procedure="[[selectedProcedure]]" user="[[user]]" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"></ht-admin-management-procedures-dialog>
+        <ht-admin-management-procedures-dialog id="htAdminManagementProceduresDialog" selected-procedure="[[selectedProcedure]]" user="[[user]]" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" on-refresh-proc-list="_refreshProcList"></ht-admin-management-procedures-dialog>
     </template>
 
     <script>
@@ -298,6 +298,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     console.log(this.selectedProcedure)
                     this.$['htAdminManagementProceduresDialog']._openProcedureDialog()
                 }
+            }
+
+            _refreshProcList(e){
+                console.log(e)
+                this.splice('allProcedures', _.indexOf(this.allProcedures, this.allProcedures.find(f => f.id === e.detail.procedure.id)), 1)
+                this.push('allProcedures', e.detail.procedure)
+                if(this.vaadinGridDataToShow.find(f => f.id === e.detail.procedure.id)){
+                    this.splice('vaadinGridDataToShow', _.indexOf(this.vaadinGridDataToShow, this.vaadinGridDataToShow.find(f => f.id === e.detail.procedure.id)), 1)
+                    this.push('vaadinGridDataToShow', e.detail.procedure)
+                }
+                this.$['vaadinProceduresGrid'].clearCache()
+                this.$['htAdminManagementProceduresDialog']._closeFormDialog()
             }
 
 
