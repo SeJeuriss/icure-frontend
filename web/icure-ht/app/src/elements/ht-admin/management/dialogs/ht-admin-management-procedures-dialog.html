@@ -172,6 +172,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             .nmcls-list {
                 overflow-x: auto;
+                padding: 5px;
             }
 
             .nmcl-tag {
@@ -200,11 +201,77 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 margin-right: 8px;
             }
 
+            .depts-list {
+                overflow-x: auto;
+                padding: 5px;
+            }
+
+            .dept-tag {
+                background: rgba(0,0,0,.1);
+                color: var(--exm-token-input-badge-text-color,--text-primary-color);
+                height: 24px;
+                min-height: 1px;
+                font-size: 12px;
+                min-width: initial;
+                padding: 0;
+                margin: 5px 10px 0 0;
+                border-radius: 5px;
+                overflow: hidden;
+                float:left;
+            }
+
+            .dept-type{
+                background: var(--app-secondary-color);
+                color: var(--app-text-color);
+                display: flex;
+                height: 100%;
+                flex-flow: row wrap;
+                padding: 0 4px;
+                box-sizing: border-box;
+                align-items: center;
+                margin-right: 8px;
+            }
+
+            .es-list {
+                overflow-x: auto;
+                padding: 5px;
+            }
+
+            .es-tag {
+                background: rgba(0,0,0,.1);
+                color: var(--exm-token-input-badge-text-color,--text-primary-color);
+                height: 24px;
+                min-height: 1px;
+                font-size: 12px;
+                min-width: initial;
+                padding: 0;
+                margin: 5px 10px 0 0;
+                border-radius: 5px;
+                overflow: hidden;
+                float:left;
+            }
+
+            .es-type{
+                background: var(--app-secondary-color);
+                color: var(--app-text-color);
+                display: flex;
+                height: 100%;
+                flex-flow: row wrap;
+                padding: 0 4px;
+                box-sizing: border-box;
+                align-items: center;
+                margin-right: 8px;
+            }
+
             .del-destination {
                 height: 22px;
                 width: 22px;
                 margin: 0 4px 0 8px;
                 padding: 2px;
+            }
+
+            .tokenListTitleLine{
+                padding: 5px;
             }
 
         </style>
@@ -218,7 +285,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
                 <div class="procedure-detail-container">
                     <paper-tabs class="tab-selector" selected="{{selectedTab}}">
-                        <paper-tab id="tab-proc-info"><iron-icon icon="vaadin:tools" class="tabIcon"></iron-icon><span class="nomobile">[[localize('proc','Procedure',language)]]</span></paper-tab>
+                        <paper-tab id="tab-proc-info"><iron-icon icon="vaadin:info-circle-o" class="tabIcon"></iron-icon><span class="nomobile">[[localize('info','Information',language)]]</span></paper-tab>
                     </paper-tabs>
                     <iron-pages selected="[[selectedTab]]">
                         <page>
@@ -244,42 +311,56 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     <paper-input class="container-line-field w-50" label="Support vidéo" value="{{selectedProcedure.appendices.video}}"></paper-input>
                                 </div>
 
-                                <div class="">
-                                    Nomenclature liée
+                                <div class="tokenListTitleLine">
+                                    Eléments de soin liés
+                                </div>
+                                <div class="container-line">
+                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newEsCode" label="[[localize('inputYourSearchQuery','Linked health element code',language)]]" filter="{{esFilter}}" filtered-items="[[filteredEsList]]" item-label-path="displayName" selected-item="{{selectedEs}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
+                                </div>
+                                <div class="container-line">
+                                    <div class="horizontal es-list w-100">
+                                        <template is="dom-repeat" items="[[_getEsList(selectedProcedure.linksCode,  selectedProcedure.*)]]" as="singleEs" id="esList">
+                                            <paper-item class="es-tag" id="[[singleEs]]">
+                                                <div class="es-type"></div>
+                                                <div class="one-line-menu-dept list-title-dept">[[_localizeLabel(singleEs)]]</div>
+                                                <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleEs.id]]" on-tap="_removeLink"></paper-icon-button>
+                                            </paper-item>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <div class="tokenListTitleLine">
+                                    Nomenclatures liées
                                 </div>
                                 <div class="container-line">
                                     <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newNmclCode" label="[[localize('inputYourSearchQuery','Linked nomenclature code',language)]]" filter="{{nmclFilter}}" filtered-items="[[filteredNmclList]]" item-label-path="displayName" selected-item="{{selectedNmcl}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
                                 </div>
                                 <div class="container-line">
                                     <div class="horizontal nmcls-list w-100">
-                                        <template is="dom-if" if="[[selectedField.links]]">
-                                            <template is="dom-repeat" items="[[selectedField.links]]" as="singleNmcl" id="nmclList">
-                                                <paper-item class="nmcl-tag" id="[[singleNmcl]]">
-                                                    <div class="nmcl-type"></div>
-                                                    <div class="one-line-menu-nmcl list-title-nmcl">[[singleNmcl]]</div>
-                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleNmcl]]" on-tap="_removeNmcl"></paper-icon-button>
-                                                </paper-item>
-                                            </template>
+                                        <template is="dom-repeat" items="[[_getNmclList(selectedProcedure.linksCode,  selectedProcedure.*)]]" as="singleNmcl" id="nmclList">
+                                            <paper-item class="nmcl-tag" id="[[singleNmcl]]">
+                                                <div class="nmcl-type"></div>
+                                                <div class="one-line-menu-nmcl list-title-nmcl">[[_localizeLabel(singleNmcl)]]</div>
+                                                <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleNmcl.id]]" on-tap="_removeLink"></paper-icon-button>
+                                            </paper-item>
                                         </template>
                                     </div>
                                 </div>
 
-                                <div class="">
-                                    Département lié
+                                <div class="tokenListTitleLine">
+                                    Départements liés
                                 </div>
                                 <div class="container-line">
-                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newDepartementCode" label="[[localize('inputYourSearchQuery','Linked profession code',language)]]" filter="{{departementFilter}}" filtered-items="[[departementList]]" item-label-path="displayName" selected-item="{{selectedDepartement}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
+                                    <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newDepartementCode" label="[[localize('inputYourSearchQuery','Linked profession code',language)]]" filter="{{departementFilter}}" filtered-items="[[filteredDepartementList]]" item-label-path="displayName" selected-item="{{selectedDepartement}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
                                 </div>
                                 <div class="container-line">
-                                    <div class="horizontal nmcls-list w-100">
-                                        <template is="dom-if" if="[[selectedField.flags]]">
-                                            <template is="dom-repeat" items="[[selectedField.flags]]" as="singleDepartement" id="departementList">
-                                                <paper-item class="nmcl-tag" id="[[singleDepartement]]">
-                                                    <div class="nmcl-type"></div>
-                                                    <div class="one-line-menu-nmcl list-title-nmcl">[[singleNmcl]]</div>
-                                                    <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleDepartement]]" on-tap="_removeDepartement"></paper-icon-button>
-                                                </paper-item>
-                                            </template>
+                                    <div class="horizontal depts-list w-100">
+                                        <template is="dom-repeat" items="[[selectedProcedure.flagsCode]]" as="singleDepartement" id="departementList">
+                                            <paper-item class="dept-tag" id="[[singleDepartement]]">
+                                                <div class="dept-type"></div>
+                                                <div class="one-line-menu-dept list-title-dept">[[_localizeLabel(singleDepartement)]]</div>
+                                                <paper-icon-button class="del-destination" icon="icons:delete" id="[[singleDepartement.id]]" on-tap="_removeFlag"></paper-icon-button>
+                                            </paper-item>
                                         </template>
                                     </div>
                                 </div>
@@ -291,7 +372,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
             <div class="buttons">
                 <paper-button class="modal-button" on-tap="_closeFormDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
-                <paper-button class="modal-button" on-tap="_saveForm"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
+                <paper-button class="modal-button" on-tap="_modifyProcedure"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
             </div>
         </paper-dialog>
 
@@ -342,11 +423,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         value: null
                     },
-                    departementList:{
+                    filteredDepartementList:{
                         type: Array,
                         value: () => []
                     },
                     selectedDepartement:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    esFilter:{
+                        type: String,
+                        value: null
+                    },
+                   filteredEsList:{
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedEs:{
                         type: Object,
                         value: () => {}
                     }
@@ -354,7 +447,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             static get observers() {
-                return ['_nmclFilterChanged(nmclFilter)', '_departementFilterChanged(departementFilter)', '_selectedNmclChanged(selectedNmcl)', 'selectedDepartementChanged(selectedDepartement)'];
+                return ['_nmclFilterChanged(nmclFilter)', '_departementFilterChanged(departementFilter)', '_esFilterChanged(esFilter)', '_selectedNmclChanged(selectedNmcl)', '_selectedDepartementChanged(selectedDepartement)', '_selectedEsChanged(selectedEs)'];
             }
 
             constructor() {
@@ -366,18 +459,45 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _openProcedureDialog(){
-                this.api.tarification().findPaginatedTarificationsByLabel('be', 'INAMI-RIZIV', this.language, 'dept', null, 100).then(dept => {
-                    this.set('departementList', dept.rows)
-                    this.$['procedureManagementDialog'].open()
-                })
+                const listOfLinks = _.get(this.selectedProcedure, "links", [])
+                const listOfFlags = _.get(this.selectedProcedure, "flags", [])
+
+                ;(listOfLinks.length > 0 ? this.api.code().getCodes(listOfLinks.join(',')) : Promise.resolve([]))
+                .then(listOfCodes =>  Promise.all([listOfCodes, this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, 'dept', null, null, 200)]))
+                .then(([listOfCodes, listOfCdHcParty]) => {
+                    this.set('selectedProcedure.flagsCode', _.compact(listOfFlags.map(flag => listOfCdHcParty.rows.find(hcp => hcp.code === flag))) || [])
+                    this.set('selectedProcedure.linksCode', listOfCodes || [])
+                    !_.get(this.selectedProcedure, 'appendices', null) ? this.set('selectedProcedure.appendices', {}) : null
+                }).finally(() => this.$['procedureManagementDialog'].open())
             }
 
             _closeFormDialog(){
+                this.set('filteredNmclList', [])
+                this.set('filteredDepartementList', [])
+                this.set('filteredEsList', [])
+                this.set('selectedProcedure', {})
                 this.$['procedureManagementDialog'].close()
             }
 
             _getLabel(label){
                 return label && label[this.language]
+            }
+
+            _esFilterChanged(esFilter){
+                if( _.trim(esFilter).length < 3){this.set("filteredEsList",[]); return;}
+                setTimeout(() => {
+                    this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS', this.language, esFilter, null, 100).then(codes => {
+                        this.set("filteredEsList", codes.rows.map(code => _.assign(code, {displayedName: code.label[this.language]})))
+                    })
+                    .catch(e=>{console.log("ERROR with _esFilterChanged: ", e);})
+                }, 300)
+            }
+
+            _selectedEsChanged(){
+                if(this.selectedEs){
+                    this.push('selectedProcedure.linksCode', this.selectedEs)
+                    this.shadowRoot.querySelector('#newEsCode')._clear() || false
+                }
             }
 
             _nmclFilterChanged(nmclFilter){
@@ -386,33 +506,62 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.api.tarification().findPaginatedTarificationsByLabel('be', 'INAMI-RIZIV', this.language, nmclFilter, null, 100).then(codes => {
                         this.set("filteredNmclList", codes.rows.map(code => _.assign(code, {displayedName: code.code+' '+code.label[this.language]})))
                     })
-                        .catch(e=>{console.log("ERROR with _nmclFilterChanged: ", e);})
+                    .catch(e=>{console.log("ERROR with _nmclFilterChanged: ", e);})
                 }, 300)
             }
 
             _selectedNmclChanged(){
                 if(this.selectedNmcl){
-                    this.push('selectedProcedure.flags', _.get(this.selectedNmcl, 'id', null))
+                    this.push('selectedProcedure.linksCode', this.selectedNmcl)
                     this.shadowRoot.querySelector('#newNmclCode')._clear() || false
                 }
             }
 
-            _departementFilterChanged(){
-
+            _departementFilterChanged(departementFilter){
+                if( _.trim(departementFilter).length < 3){this.set("filteredDepartementList",[]); return;}
+                setTimeout(() => {
+                    this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, departementFilter).then(codes => {
+                        this.set("filteredDepartementList", codes.rows.map(code => _.assign(code, {displayedName: code.label[this.language]})))
+                    })
+                    .catch(e=>{console.log("ERROR with _departementFilterChanged: ", e);})
+                }, 300)
             }
 
             _selectedDepartementChanged(){
-
+                if(this.selectedDepartement){
+                    this.push('selectedProcedure.flagsCode', this.selectedDepartement)
+                    this.shadowRoot.querySelector('#newDepartementCode')._clear() || false
+                }
             }
 
-            _removeNmcl(e){
-                this.splice('selectedField.links', _.indexOf(this.selectedField.links, this.selectedField.code.links.find(l => l === e.target.id)), 1)
+            _removeFlag(e){
+                this.splice('selectedProcedure.flagsCode', _.indexOf(_.get(this.selectedProcedure, 'flagsCode', []), _.get(this.selectedProcedure, 'flagsCode', []).find(f => f.id === e.target.id)), 1)
             }
 
-            _removeDepartement(e){
-                this.splice('selectedField.flags', _.indexOf(this.selectedField.flags, this.selectedField.flags.find(l => l === e.target.id)), 1)
+            _removeLink(e){
+                this.splice('selectedProcedure.linksCode', _.indexOf(_.get(this.selectedProcedure, 'linksCode', []), _.get(this.selectedProcedure, 'linksCode', []).find(f => f.id === e.target.id)), 1)
             }
 
+            _getEsList(listOfLinkedCode){
+                return listOfLinkedCode && _.compact(listOfLinkedCode.filter(link => /^BE-THESAURUS/.test(link.type))) || []
+            }
+
+            _getNmclList(listOfLinkedCode){
+                return listOfLinkedCode && _.compact(listOfLinkedCode.filter(link => /^INAMI-RIZIV/.test(link.type))) || []
+            }
+
+            _localizeLabel(data){
+                return _.get(data, 'label.'+this.language, _.head(data.label))
+            }
+
+            _modifyProcedure(){
+                this.set('selectedProcedure.links', _.get(this.selectedProcedure, 'linksCode', []).map(code => code.id))
+                this.set('selectedProcedure.flags', _.get(this.selectedProcedure, 'flagsCode', []).map(code => code.code))
+
+                this.api.code().modifyCode(this.selectedProcedure).then(proc => {
+                    this.dispatchEvent(new CustomEvent("refresh-proc-list", {detail: {procedure: proc}, composed: true, bubbles: true}))
+                })
+            }
 
         }
 
