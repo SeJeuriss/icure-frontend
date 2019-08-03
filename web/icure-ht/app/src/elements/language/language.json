@@ -1788,7 +1788,9 @@
     "proceduresSuccessfullyAdded": "Procedures successfully added",
     "backToProceduresList": "Back to procedures list",
     "proceduresList": "Procedures list",
-    "searchResults": "Search results"
+    "searchResults": "Search results",
+    "removeProcedure": "Remove procedure",
+    "pleaseAddAProcedure": "Please add a procedure"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -3663,7 +3665,9 @@
     "proceduresSuccessfullyAdded": "Procedure(s) ajoutée(s)",
     "backToProceduresList": "Retour à la liste des procedures",
     "proceduresList": "Liste des procedures",
-    "searchResults": "Résultats de la recherche"
+    "searchResults": "Résultats de la recherche",
+    "removeProcedure": "Supprimer la procédure",
+    "pleaseAddAProcedure": "Veuillez ajouter unen procédure"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -5499,6 +5503,8 @@
     "proceduresSuccessfullyAdded": "Procedures successfully added",
     "backToProceduresList": "Back to procedures list",
     "proceduresList": "Procedures list",
-    "searchResults": "Search results"
+    "searchResults": "Search results",
+    "removeProcedure": "Remove procedure",
+    "pleaseAddAProcedure": "Please add a procedure"
   }
 }
