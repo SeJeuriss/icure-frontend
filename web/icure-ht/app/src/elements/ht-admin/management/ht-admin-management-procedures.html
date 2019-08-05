@@ -42,6 +42,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../bower_components/paper-input/paper-input-container.html">
 <link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../../paper-input-style.html">
 <link rel="import" href="./dialogs/ht-admin-management-procedures-dialog.html">
 
 <dom-module id="ht-admin-management-procedures">
@@ -147,7 +148,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             #vaadinProceduresGrid{
-                height: calc(100% - 50px);
+                height: calc(100% - 130px);
                 width: 100%;
             }
 
@@ -156,7 +157,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="procedures-panel">
             <h4 class="panel-title">[[localize('man_procs', 'Management - Procedures', language)]]</h4>
             <div class="procedures-list">
-
+                <div>
+                    <div class="mr10 pt15">[[localize('search','Search',language)]]: </div>
+                    <paper-input class="m0 mr10" value="{{procedureFilter}}"></paper-input>
+                </div>
                 <vaadin-grid id="vaadinProceduresGrid" class="material" width="100%" items="[[vaadinGridDataToShow]]" active-item="{{selectedProcedure}}" pageSize="[[_vaadinGridMaxItemsPerPage]]" on-selected-items-changed="_gridSelectedItemsChanged">
                     <vaadin-grid-column>
                         <template class="header"><vaadin-grid-sorter path="code">[[localize('code','Code',language)]]</vaadin-grid-sorter></template>
@@ -243,13 +247,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     totalProceduresForCurrentFolderAndCurrentFilter:{
                         type: Number,
                         value: 0
+                    },
+                    procedureFilter:{
+                        type: String,
+                        value: null
                     }
 
                 }
             }
 
             static get observers() {
-                return ['_proceduresDataProvider(user, api)', '_currentPageChanged(currentPageNumber)', '_selectedProcedureChanged(selectedProcedure)'];
+                return ['_proceduresDataProvider(user, api)', '_currentPageChanged(currentPageNumber)', '_selectedProcedureChanged(selectedProcedure)', '_procedureFilterChanged(procedureFilter)'];
             }
 
             constructor() {
@@ -261,17 +269,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _proceduresDataProvider(){
-                this.api.code().findPaginatedCodes('be', 'BE-THESAURUS-PROCEDURES', '', '', '', 3000).then(proc => {
-                    console.log(proc)
-                    this.set('allProcedures', proc.rows)
-                    this.set('totalPagesForCurrentFolderAndCurrentFilter', parseInt(proc.rows.length / this.vaadinGridMaxItemsPerPage))
-                    this.set('vaadinGridDataToShow', _.get(_.chunk(proc.rows, this.vaadinGridMaxItemsPerPage), 0))
-                    this.set('totalProceduresForCurrentFolderAndCurrentFilter', _.size(proc.rows))
-                })
+
+                this.api.code().findPaginatedCodes('be', 'BE-THESAURUS-PROCEDURES', '', '', '', 3000)
+                    .then(proc =>  Promise.all([proc, this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, 'dept', null, null, 200)]))
+                    .then(([proc, listOfCdHcParty]) => {
+                        this.set('allProcedures', proc.rows.map(proc =>
+                            _.assign(proc, {
+                                normalizedSearchTerms: _.map(_.uniq(_.compact(_.flatten(_.concat([_.get(proc, _.trim('label.'+this.language), ""), _.get(proc, 'code', ""), _.get(proc, 'searchTerms.'+this.language, ""), _.compact(_.get(proc, 'flags', []).map(flag => _.get(listOfCdHcParty.rows.find(hcp => hcp.code === flag), 'label.'+this.language, "")))])))), i =>  _.trim(i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")).join(" ")
+                            })
+                        ))
+                        this.set('totalPagesForCurrentFolderAndCurrentFilter', parseInt(proc.rows.length / this.vaadinGridMaxItemsPerPage))
+                        this.set('vaadinGridDataToShow', _.sortBy(_.get(_.chunk(proc.rows, this.vaadinGridMaxItemsPerPage), 0), ['code', 'label.'+this.language, 'id'], ['asc', 'asc', 'asc']))
+                        this.set('totalProceduresForCurrentFolderAndCurrentFilter', _.size(proc.rows))
+                    })
             }
 
             _currentPageChanged(){
-                this.set('vaadinGridDataToShow', _.get(_.chunk(this.allProcedures, this.vaadinGridMaxItemsPerPage), parseInt(this.currentPageNumber - 1)))
+                this.set('vaadinGridDataToShow', _.sortBy(_.get(_.chunk(this.allProcedures, this.vaadinGridMaxItemsPerPage), parseInt(this.currentPageNumber - 1)), ['code', 'label.'+this.language], ['asc', 'asc']))
                 this.set('pageStart', parseInt((this.currentPageNumber - 1) * this.vaadinGridMaxItemsPerPage))
                 this.set('pageEnd', parseInt(this.currentPageNumber * this.vaadinGridMaxItemsPerPage))
 
@@ -307,9 +321,43 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 if(this.vaadinGridDataToShow.find(f => f.id === e.detail.procedure.id)){
                     this.splice('vaadinGridDataToShow', _.indexOf(this.vaadinGridDataToShow, this.vaadinGridDataToShow.find(f => f.id === e.detail.procedure.id)), 1)
                     this.push('vaadinGridDataToShow', e.detail.procedure)
+                    this.set('vaadinGridDataToShow', _.sortBy(this.allProcedures, ['code', 'label.'+this.language, 'id'], ['asc', 'asc', 'asc']))
                 }
                 this.$['vaadinProceduresGrid'].clearCache()
                 this.$['htAdminManagementProceduresDialog']._closeFormDialog()
+            }
+
+            _procedureFilterChanged(){
+                if(this.procedureFilter){
+                    const keywordsString = _.trim(_.get(this,"procedureFilter","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+                    const keywordsArray = _.compact(_.uniq(_.map(keywordsString.split(" "), i=>_.trim(i))))
+
+                    setTimeout(() => {
+                        if(parseInt(_.get(keywordsString,"length",0)) > 2) {
+                            const proceduresSearchResults =  _.chain(_.get(this, "allProcedures", []))
+                                .chain(_.get(this, "procedureFilter", []))
+                                .filter(i => _.size(keywordsArray) === _.size(_.compact(_.map(keywordsArray, keyword => _.trim(_.get(i, "normalizedSearchTerms", "")).indexOf(keyword) > -1))))
+                                .compact()
+                                .uniq()
+                                .orderBy(['code', 'label.' + this.language, 'id'], ['asc', 'asc', 'asc'])
+                                .value()
+
+                            this.set('currentPageNumber', 1)
+                            this.set('pageStart', 0)
+                            this.set('pageEnd', _.size(proceduresSearchResults) <= this.vaadinGridMaxItemsPerPage ? _.size(proceduresSearchResults) : this.vaadinGridMaxItemsPerPage)
+                            this.set('totalPagesForCurrentFolderAndCurrentFilter', parseInt(_.size(proceduresSearchResults) / this.vaadinGridMaxItemsPerPage))
+                            this.set('totalProceduresForCurrentFolderAndCurrentFilter', _.size(proceduresSearchResults))
+                            this.set('vaadinGridDataToShow', _.sortBy(_.get(_.chunk(proceduresSearchResults, this.vaadinGridMaxItemsPerPage), 0), ['code', 'label.' + this.language, 'id'], ['asc', 'asc', 'asc']))
+                        }else{
+                            this.set('currentPageNumber', 1)
+                            this.set('pageStart', 0)
+                            this.set('pageEnd', _.size(this.allProcedures) <= this.vaadinGridMaxItemsPerPage ? _.size(this.allProcedures) : this.vaadinGridMaxItemsPerPage)
+                            this.set('totalPagesForCurrentFolderAndCurrentFilter', parseInt(_.size(this.allProcedures) / this.vaadinGridMaxItemsPerPage))
+                            this.set('vaadinGridDataToShow', _.sortBy(_.get(_.chunk(this.allProcedures, this.vaadinGridMaxItemsPerPage), 0), ['code', 'label.'+this.language, 'id'], ['asc', 'asc', 'asc']))
+                            this.set('totalProceduresForCurrentFolderAndCurrentFilter', _.size(this.allProcedures))
+                        }
+                    }, 100)
+                }
             }
 
 
