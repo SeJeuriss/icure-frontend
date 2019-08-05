@@ -395,18 +395,52 @@
                                         <div id="existingProceduresList">
                                             <h4 class="m0 mb15">[[localize('linkedProcedures','Linked procedures',language)]]: <iron-icon icon="vaadin:plus" class="addIcon p2 mw20 mh20 m0 fr cursorPointer" on-tap="_toggleCollapseProceduresSearch" data-target-id="panelNavigatorAnchorForProceduresSearchPaperButton" id="addProcedureIcon"></iron-icon><paper-tooltip for="addProcedureIcon" position="left">[[localize('addProcedure','Add procedure',language)]]</paper-tooltip></h4>
                                             <template is="dom-repeat" items="[[_linkedProcedureForCurrentPao]]" as="item">
-                                                <div class="singleDocumentContainer" data-procedure-id$="[[item.procId]]" data-poa-id$="[[item.poaId]]">
+                                                <div class$="singleDocumentContainer [[item.selected]]" data-procedure-id$="[[item.procedureObject.id]]" data-poa-id$="[[item.poaId]]" data-sub-contact-id$="[[item.subContactId]]">
                                                     <div class="header p5">
-                                                        <span class="date">[[item.procedureObject.labelHr]] - <span class="fspoint9em">[[item.procedureObject.code]]</span></span>
-                                                        <paper-button class="p0 m0 fr minw0" on-tap="_selectProcedure" data-procedure-id$="[[item.procId]]" data-poa-id$="[[item.poaId]]"><iron-icon icon="icons:visibility" id$="view-[[item._templateUuid]]"></iron-icon></paper-button><paper-tooltip for$="view-[[item._templateUuid]]">[[localize('ehb.view','View',language)]]</paper-tooltip>
+                                                        <paper-button class="p0 m0 minw0 fl mr5 mtminus1" on-tap="_deleteProcedure" data-procedure-id$="[[item.procedureObject.id]]" data-poa-id$="[[item.poaId]]" data-sub-contact-id$="[[item.subContactId]]"><iron-icon icon="icons:delete" class="mw20 mh20" id$="delete-[[item.subContactId]]"></iron-icon></paper-button><paper-tooltip for$="delete-[[item.subContactId]]" position="right">[[localize('removeProcedure','Remove procedure',language)]]</paper-tooltip> [[item.procedureObject.labelHr]] - <span class="fspoint9em">[[item.procedureObject.code]]</span>
+                                                        <paper-button class="p0 m0 fr minw0" on-tap="_selectProcedure" data-procedure-id$="[[item.procedureObject.id]]" data-poa-id$="[[item.poaId]]" data-sub-contact-id$="[[item.subContactId]]"><iron-icon icon="vaadin:pencil" class="mw20 mh20" id$="view-[[item.subContactId]]"></iron-icon></paper-button><paper-tooltip for$="view-[[item.subContactId]]">[[localize('ehb.view','View',language)]]</paper-tooltip>
                                                     </div>
-                                                    <div class="body p5"><p class="fspoint9em m0">[[item.careDeadlineHr]]<br />[[item.descr]]<br />[[item.procedureObject.flagsHr]]</p></div>
+                                                    <div class="body p5"><p class="fspoint9em m0">
+                                                        <template is="dom-if" if="[[item.careDeadlineHr]]">[[item.careDeadlineHr]]<br /></template>
+                                                        <template is="dom-if" if="[[item.descr]]">[[item.descr]]<br /></template>
+                                                        [[item.procedureObject.flagsHr]]
+                                                    </p></div>
                                                 </div>
                                             </template>
                                         </div>
 
                                         <div id="existingProceduresDetail">
-                                            existingProceduresDetail
+
+                                            <template is="dom-if" if="[[!_totalExistingProceduresForCurrentPlanOfAction]]"><iron-icon icon="warning" class="mr8 darkRed"></iron-icon> [[localize('pleaseAddAProcedure','Please add a procedure',language)]].</template>
+
+                                            <template is="dom-if" if="[[_totalExistingProceduresForCurrentPlanOfAction]]">
+                                                <div class="procedureFormContainer w100pc">
+
+                                                    <div class="fl50">
+                                                        <div class="formItem mt3"><dynamic-text-field class="m0" read-only="true" disabled="true" label="[[localize('linkedHealthElement','Related health element',language)]]" value="[[_procedureForm.heHr]]"></dynamic-text-field></div>
+
+                                                        <div class="formItem mt5 displayFlex">
+                                                            <dynamic-text-field class="m0 mr5" read-only="true" disabled="true" label="[[localize('proc','Procedure',language)]]" value="[[_procedureForm.procedureHr]]"></dynamic-text-field>
+                                                            <template is="dom-if" if="[[_procedureForm.procedureObject.description]]"><div class="procedureAppendix mr5 mt10"><iron-icon icon="icons:info-outline" class="mw20 mh20 darkGreen" id$="description-[[_procedureForm.subContactId]]"></iron-icon><paper-tooltip for$="description-[[_procedureForm.subContactId]]" position="left">[[_procedureForm.procedureObject.description]]</paper-tooltip></div></template>
+                                                            <template is="dom-if" if="[[_procedureForm.procedureObject.externalLink]]"><div class="procedureAppendix mr5 mt10"><a href="[[_procedureForm.procedureObject.externalLink]]" target="_blank" class="darkGreen"><iron-icon icon="vaadin:external-link" class="mw20 mh20"></iron-icon></a></div></template>
+                                                            <template is="dom-if" if="[[_procedureForm.procedureObject.video]]"><div class="procedureAppendix mt10"><a href="[[_procedureForm.procedureObject.video]]" target="_blank" class="darkGreen"><iron-icon icon="av:play-circle-outline" class="mw20 mh20"></iron-icon></a></div></template>
+                                                        </div>
+
+                                                        <div class="formItem mt6"><dynamic-text-field class="m0" read-only="true" disabled="true" value="[[_procedureForm.linkedSpecialities]]" label="[[localize('speciality','Speciality',language)]]"></dynamic-text-field></div>
+                                                    </div>
+                                                    <div class="fr50">
+                                                        <div class="formItem mt1"><vaadin-combo-box class="triptyqueVaadinComboBox validationRequired" filtered-items="[[_dialogData.procedureFormAvailableStatuses]]" item-label-path="descrHr" item-value-path="id" value="{{_procedureForm.status}}" label="[[localize('status','Status',language)]]" auto-validate required></vaadin-combo-box></div>
+                                                        <div class="formItem mt1"><dynamic-date-field class="dynamicDateField validationRequired" label="[[localize('deadline','Deadline',language)]]" value="{{_procedureForm.deadline}}" i18n="[[i18n]]" auto-validate required></dynamic-date-field></div>
+                                                        <div class="formItem mt4"><vaadin-combo-box class="triptyqueVaadinComboBox validationRequired" filtered-items="[[_dialogData.availableHcps]]" item-label-path="vaadinComboxBoxLabelHr" item-value-path="id" value="{{_procedureForm.linkedPhysician}}" label="[[localize('linkedPhysician','Related physician',language)]]" auto-validate required></vaadin-combo-box></div>
+                                                    </div>
+                                                    <div class="clear"></div>
+
+                                                    <div class="formItem"><dynamic-text-area class="m0" value="{{_procedureForm.description}}" label="[[localize('des','Description',language)]]" additional-css-classes="fullWidth"></dynamic-text-area></div>
+                                                    <div class="formItem mt5"><vaadin-checkbox checked="{{_procedureForm.customRehearsal}}"> [[localize('unlimitedRepetitions','Unlimited repetitions',language)]]</vaadin-checkbox></div>
+
+                                                </div>
+                                            </template>
+
                                         </div>
 
                                     </div>
@@ -438,8 +472,8 @@
                                                 <h4 class="m0 mb10 mt20">[[localize('list-of-packages', 'List of packages', language)]]:</h4>
                                                 <template is="dom-repeat" items="[[_dialogData.codes.packagesCodes]]" as="item">
                                                     <div class="horizontalToggleCollapse mb20">
-                                                        <div class="toggleCollapseHeader"><iron-icon icon="vaadin:plus" class="addIcon p2 mw15 mh15 m0 mr5 cursorPointer" on-tap="_addPackageOfProcedures" data-package-id$="[[item.id]]"></iron-icon> [[item.labelHr]] - [[item.flagsHr]] <iron-icon icon="vaadin:angle-double-up" class="mw15 mh15 m0 ml10 mr10 fr transition cursorpointer" on-tap="_doToggleCollapse"></iron-icon></div>
-                                                        <div class="toggleCollapseBody transition"><template is="dom-repeat" items="[[item.linkedProcedures]]" as="proc"><div class="singleProcedureContainer mb4"><iron-icon icon="vaadin:plus" class="addIcon p2 mw15 mh15 m0 mr5 cursorPointer" on-tap="_addProcedures" data-procedure-id$="[[proc.id]]"></iron-icon> [[[proc.code]]] - [[proc.labelHr]] <span class="fontstyleitalic fspoint9em">[[proc.flagsHr]]</span></div></template></div>
+                                                        <div class="toggleCollapseHeader"><iron-icon icon="vaadin:plus" class="addIcon p2 mw15 mh15 m0 mr5 cursorPointer" on-tap="_addPackageOfProcedures" data-package-id$="[[item.id]]"></iron-icon> [[item.labelHr]] - [[item.flagsHr]] <iron-icon icon="vaadin:angle-double-up" class="mw15 mh15 m0 ml10 mr10 fr transition cursorpointer rot180" on-tap="_doToggleCollapse"></iron-icon></div>
+                                                        <div class="toggleCollapseBody transition collapsed"><template is="dom-repeat" items="[[item.linkedProcedures]]" as="proc"><div class="singleProcedureContainer mb4"><iron-icon icon="vaadin:plus" class="addIcon p2 mw15 mh15 m0 mr5 cursorPointer" on-tap="_addProcedures" data-procedure-id$="[[proc.id]]"></iron-icon> [[[proc.code]]] - [[proc.labelHr]] <span class="fontstyleitalic fspoint9em">[[proc.flagsHr]]</span></div></template></div>
                                                     </div>
                                                 </template>
                                             </div>
@@ -448,7 +482,6 @@
                                         <paper-button on-tap="_toggleCollapseProceduresSearch" data-target-id="panelNavigatorAnchorForProceduresSearchPaperButton" class="modal-button"><iron-icon icon="vaadin:angle-left" class=""></iron-icon>[[localize('backToProceduresList','Back to procedures list',language)]]</paper-button>
 
                                     </div>
-
 
 
 
@@ -667,10 +700,25 @@
                         type: Boolean,
                         value: false
                     },
-
                     _linkedProcedureForCurrentPao: {
                         type: Array,
                         value: () => []
+                    },
+                    _procedureForm: {
+                        type: Object,
+                        value: {
+                            heHr: "",
+                            procedureHr: "",
+                            status: 1,
+                            deadline: null,
+                            description: "",
+                            linkedPhysician: "",
+                            customRehearsal: false,
+                            linkedSpecialities: "",
+                            heId: "",
+                            poaId: "",
+                            procedureObject: {}
+                        }
                     },
 
                     _dialogParameters: {
@@ -767,7 +815,11 @@
                             lastNewPoaId: {
                                 type: String,
                                 value: ""
-                            }
+                            },
+                            procedureFormAvailableStatuses: {
+                                type: Array,
+                                value: () => []
+                            },
                         }},
                         noReset: true
                     },
@@ -781,6 +833,8 @@
                     '_selectedDocumentChanged(_selectedPrescriptionObject)',
                     '_summaryFormDataGotChanged(_summaryForm.*)',
                     '_vaadinGridPageNumberChanged(_vaadinGridCurrentPageNumber)',
+                    '_linkedProcedureForCurrentPaoChanged(_linkedProcedureForCurrentPao)',
+                    '_procedureFormDataGotChanged(_procedureForm.*)',
                 ]
             }
 
@@ -934,7 +988,7 @@
             _toggleCollapsePdfPanel(e) {
 
                 const pdfPanel = this.shadowRoot.querySelector('#pdfPanel')
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-BUTTON")
 
                 pdfPanel && pdfPanel.classList && pdfPanel.classList.toggle("collapsed")
                 targetButton && targetButton.firstElementChild && targetButton.firstElementChild.classList && targetButton.firstElementChild.classList.toggle("collapsedIcon")
@@ -944,7 +998,7 @@
             _toggleCollapsePdfPreview(e) {
 
                 const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
 
                 return !_.trim(documentId) ? promResolve : promResolve
@@ -1019,7 +1073,7 @@
             _toggleCollapseInsuranceDocumentPreview(e) {
 
                 const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
 
                 return !_.trim(documentId) ? promResolve : promResolve
@@ -1129,7 +1183,7 @@
                 // 3. procedures
 
                 const currentTab = _.trim(_.get(this,"_triptyqueDetailActiveTab", "prescriptionForm"))
-                const targetTab = _.trim(_.find( e.path, p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
+                const targetTab = _.trim(_.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-TAB").getAttribute('name'))
                 const gotoTab = !_.size(_.get(this,"_selectedPrescriptionObject",{})) ? "prescriptionForm" :
                     currentTab === "procedures" ? targetTab :
                     currentTab === "prescriptionForm" && targetTab === "summary" ? this._fieldsValidationByTab("prescription") ? targetTab : currentTab :
@@ -1151,7 +1205,7 @@
             _linkInsuranceDocument(e) {
 
                 const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataset.documentId"))
                 const targetDocument = _.head(_.remove(this._templateInsuranceDocuments_available, {documentId:documentId}))
                 const finalLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceDocuments_linked",[]), targetDocument)), "documentId")
@@ -1166,7 +1220,7 @@
             _removeLinkedInsuranceDocument(e) {
 
                 const promResolve = Promise.resolve();
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-ICON-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-ICON-BUTTON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
                 const documentId = _.trim(_.get(targetButton,"dataDocumentId",_.trim(_.get(e,"target.dataDocumentId",""))))
                 const targetDocument = _.head(_.remove(this._templateInsuranceDocuments_linked, {documentId:documentId}))
                 const finalNotLinkedDocumentsList = _.uniqBy(_.compact(_.concat(_.get(this,"_templateInsuranceDocuments_available",[]), targetDocument)), "documentId")
@@ -1221,7 +1275,9 @@
 
                     promResolve
                         .then(() => this.api.contact().getContactWithUser(this.user, _.trim(_.get(selectedPlanOfAction,"poaIdOpeningContact",""))))
-                        .then(poaOpeningContact => this.api.form().getForm(_.trim(_.get(poaOpeningContact,"subContacts[0].formId",""))).then(poaPrescriptionForm => ([poaOpeningContact,poaPrescriptionForm])))
+                        // May only have ONE subcontact with a form id = prescription summary form
+                        // .then(poaOpeningContact => this.api.form().getForm(_.trim(_.get(poaOpeningContact,"subContacts[0].formId",""))).then(poaPrescriptionForm => ([poaOpeningContact,poaPrescriptionForm])))
+                        .then(poaOpeningContact => this.api.form().getForm(_.trim(_.get(_.find(_.get(poaOpeningContact,"subContacts",[]),i => !!_.trim(_.get(i,"formId",""))),"formId",""))).then(poaPrescriptionForm => ([poaOpeningContact,poaPrescriptionForm])))
                         .then(([poaOpeningContact,poaPrescriptionForm]) => {
 
                             this.set("_currentPdfPreviewDocumentId", "")
@@ -1368,7 +1424,7 @@
                             this._refreshInsuranceLinkedAndAvailableDocuments()
                         })
                         .then(() => this._linkPdfPrescription(null, _.cloneDeep(_.get(this,"_vaadinGridPlanOfActionSelectedItem",{}))))
-                        .then(() => this._getlinkedProcedures(_.cloneDeep(_.get(this,"_vaadinGridPlanOfActionSelectedItem",{}))))
+                        .then(() => this._getSetLinkedProcedures(_.cloneDeep(_.get(this,"_vaadinGridPlanOfActionSelectedItem",{}))))
                         .finally(() => this.set("_isLoading", false))
 
             }
@@ -1663,7 +1719,10 @@
                             normalizedSearchTerms: _.map(_.uniq(_.compact(_.flatten(_.concat(
                                 _.trim(_.get(i,"searchTerms." + this.language + ".[0]","")) ? _.compact(_.get(i,"searchTerms." + this.language,"")) : _.compact(_.get(_.toPairs(_.get(i,"searchTerms",{})),"[0][1]","")),
                                 [_.get(i,"flagsHr",""), _.get(i,"code",""), _.get(i,"labelHr",""), ]
-                            )))), i => _.trim(i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'')).join(" ")
+                            )))), i => _.trim(i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")).join(" "),
+                            description: "[Test description] " + _.trim(_.get(i,"labelHr","")),
+                            externalLink: "http://www.google.com",
+                            video: "http://www.youtube.com"
                         }))
                         .value()
                     ))
@@ -1697,13 +1756,20 @@
                         i.descrHr = _.compact([_.get(_.filter(_.get(i, "codes", ""), j => _.get(j, "type", "") === "ICPC"), "[0].code", ""), _.get(i, "descr", "")]).join(" - ")
                         return i
                     })))
+                    .then(() => this.set("_dialogData.procedureFormAvailableStatuses",[
+                        {id:1, descrHr:this.localize("STATUS_PLANNED","",this.language)},    // 1<<0
+                        {id:2, descrHr:this.localize("STATUS_ONGOING","",this.language)},    // 1<<1
+                        {id:4, descrHr:this.localize("STATUS_FINISHED","",this.language)},   // 1<<2
+                        {id:8, descrHr:this.localize("STATUS_PROLONGED","",this.language)},  // 1<<3
+                        {id:16, descrHr:this.localize("STATUS_CANCELED","",this.language)}   // 1<<4
+                    ]))
                     .finally(() => promResolve)
 
             }
 
             _doToggleCollapse(e) {
 
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "IRON-ICON")
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "IRON-ICON")
                 const tlContainer = targetButton.closest(".horizontalToggleCollapse")
                 const bodyContainer = _.head(tlContainer.getElementsByClassName("toggleCollapseBody"))
 
@@ -1714,7 +1780,7 @@
 
             _addPackageOfProcedures(e) {
 
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "IRON-ICON")
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "IRON-ICON")
                 const packageId = _.trim(_.get(targetButton,"dataset.packageId"))
                 const procedureIdsToAdd = _.uniq(_.compact(_.flatten(_.map(_.filter(_.get(this,"_dialogData.codes.packagesCodes"),{id:packageId}), i => _.get(i,"links",[])))))
                 const tlContainer = targetButton.closest(".horizontalToggleCollapse")
@@ -1734,7 +1800,7 @@
 
             _addProcedures(e) {
 
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "IRON-ICON")
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "IRON-ICON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "IRON-ICON")
                 const procedureId = _.trim(_.get(targetButton,"dataset.procedureId"))
                 const tlContainer = targetButton.closest(".singleProcedureContainer")
 
@@ -1756,7 +1822,7 @@
                 const relatedPanel = this.shadowRoot.querySelector('#existingProcedures')
                 const targetPanel = this.shadowRoot.querySelector('#proceduresSearch')
                 const panelNavigatorAnchorForProceduresSearch = this.shadowRoot.querySelector('#panelNavigatorAnchorForProceduresSearch')
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? ( !!_.trim(_.get(e,"target.dataset.targetId","")) ? this.shadowRoot.querySelector('#'+_.trim(_.get(e,"target.dataset.targetId",""))) : e.target ) : ( !!_.trim(_.get(e,"target.dataset.targetId","")) ? this.shadowRoot.querySelector('#'+_.trim(_.get(e,"target.dataset.targetId",""))) : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON") )
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? ( !!_.trim(_.get(e,"target.dataset.targetId","")) ? this.shadowRoot.querySelector('#'+_.trim(_.get(e,"target.dataset.targetId",""))) : _.get(e,"target",{}) ) : ( !!_.trim(_.get(e,"target.dataset.targetId","")) ? this.shadowRoot.querySelector('#'+_.trim(_.get(e,"target.dataset.targetId",""))) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-BUTTON") )
                 const packagesAndProceduresContainersToRestore = _.concat(_.map(this.shadowRoot.querySelectorAll(".singleProcedureContainer.displaynone"), i=>i), _.map(this.shadowRoot.querySelectorAll(".horizontalToggleCollapse.displaynone"), i=>i))
 
                 targetPanel && targetPanel.classList && targetPanel.classList.toggle("collapsed")
@@ -1770,27 +1836,17 @@
 
             _triggerSearchProcedures(e) {
 
-                const keywordsString = !!_.trim(_.get(e,"detail.value","")) && _.trim(_.get(e,"target.nodeName","")) !== "VAADIN-CHECKBOX" ? _.trim(_.get(e,"detail.value","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'') : _.trim(_.get(this,"_procedureSearchQuery","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "").replace(/\s+/,'')
+                const keywordsString = !!_.trim(_.get(e,"detail.value","")) && _.trim(_.get(e,"target.nodeName","")) !== "VAADIN-CHECKBOX" ? _.trim(_.get(e,"detail.value","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "") : _.trim(_.get(this,"_procedureSearchQuery","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")
                 const keywordsArray = _.compact(_.uniq(_.map(keywordsString.split(" "), i=>_.trim(i))))
                 const mySpecialities = _.uniq(_.compact(_.map(_.get(this,"_dialogData.currentHcp.specialityCodes"), i=>_.trim(_.get(i,"code","")))))
 
                 setTimeout(() => {
                     const proceduresSearchResults = parseInt(_.get(keywordsString,"length",0)) < 2 ? [] : _
                         .chain(_.get(this,"_dialogData.codes.procedureCodes",[]))
-
-
-                        // .filter(i => !!_.trim(_.get(i,"normalizedSearchTerms","")) && _.trim(_.get(i,"normalizedSearchTerms","")).indexOf(keywordsString) > -1 && (!_.get(this,"_allDepartmentIsChecked",false) ? !!_.some(_.get(i,"flags",[]), j => mySpecialities.indexOf(j) > -1) : true ) )
                         .filter(i => !!_.trim(_.get(i,"normalizedSearchTerms","")) && (!_.get(this,"_allDepartmentIsChecked",false) ? !!_.some(_.get(i,"flags",[]), j => mySpecialities.indexOf(j) > -1) : true ) )
-
-
-
-
-                        .map(i => _.size(_.compact(_.map(keywordsArray, keyword => _.trim(_.get(i,"normalizedSearchTerms","")).indexOf(keyword) > -1))) === _.size(keywordsArray) ? i : null)
-
-
-
-
+                        .filter(i => _.size(keywordsArray) === _.size(_.compact(_.map(keywordsArray, keyword => _.trim(_.get(i,"normalizedSearchTerms","")).indexOf(keyword) > -1))) )
                         .compact()
+                        .uniq()
                         .orderBy(['labelHr','code','id'],['asc','asc','asc'])
                         .slice(0,50)
                         .value()
@@ -1801,6 +1857,68 @@
 
             }
 
+            _doAddProcedures(procedureIds) {
+
+                return this._getSetLinkedProcedures(_.cloneDeep(_.get(this,"_vaadinGridPlanOfActionSelectedItem",{})), procedureIds)
+
+            }
+
+            _selectProcedure(e) {
+
+                const linkedProcedureForCurrentPao = _.get(this,"_linkedProcedureForCurrentPao",[])
+                const firstAvailableProcedure = _.head(linkedProcedureForCurrentPao)
+                const isProcedureAlreadySelected = !!_.size(_.find(linkedProcedureForCurrentPao, {selected:"selected"}))
+
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+                const subContactId = e instanceof Event ? _.trim(_.get(targetButton,"dataset.subContactId","")) : _.trim(_.get(firstAvailableProcedure,"subContactId",""))
+
+                if(!(e instanceof Event) && !!isProcedureAlreadySelected) return
+
+                this.set("_linkedProcedureForCurrentPao", _
+                    .chain(linkedProcedureForCurrentPao)
+                    .map(i=> _.merge({},i,{selected:""}) )
+                    .map(i=> _.trim(_.get(i,"subContactId","")) !== subContactId ? i : _.merge({},i,{selected:"selected"}) )
+                    .value()
+                )
+
+                this._loadProcedureDetails(_.find(_.get(this,"_linkedProcedureForCurrentPao",[]),{selected:"selected"}))
+
+            }
+
+            _deleteProcedure(e) {
+
+                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? _.get(e,"target",{}) : _.find( _.get(e,"path",[]), p => _.get(p,"nodeName","") === "PAPER-BUTTON")
+
+                this.set("_linkedProcedureForCurrentPao", _.filter(_.get(this,"_linkedProcedureForCurrentPao",[]), i=> _.trim(_.get(i,"subContactId","")) !== _.trim(_.get(targetButton,"dataset.subContactId",""))))
+
+                return this._selectProcedure()
+
+            }
+
+            _linkedProcedureForCurrentPaoChanged(linkedProcedureForCurrentPao) {
+
+                this.set("_totalExistingProceduresForCurrentPlanOfAction", _.size(linkedProcedureForCurrentPao))
+
+            }
+
+            _loadProcedureDetails(procedureToLoad) {
+
+                this.set("_procedureForm",{
+                    heHr: _.get(procedureToLoad,"heHr",{}),
+                    heId: _.trim(_.get(procedureToLoad,"heId",{})),
+                    poaId: _.trim(_.get(procedureToLoad,"poaId",{})),
+                    subContactId: _.trim(_.get(procedureToLoad,"subContactId",{})),
+                    procedureObject: _.get(procedureToLoad,"procedureObject",{}),
+                    procedureHr: _.trim(_.get(procedureToLoad,"procedureObject.labelHr","")),
+                    status: parseInt(_.get(procedureToLoad,"status",""))||1,
+                    deadline: parseInt(_.get(procedureToLoad,"careDeadline",null))||null,
+                    description: _.trim(_.get(procedureToLoad,"descr","")),
+                    linkedPhysician: _.trim(_.get(procedureToLoad,"linkedPhysician","")),
+                    customRehearsal: !!_.get(procedureToLoad,"customRehearsal",false),
+                    linkedSpecialities: _.trim(_.get(procedureToLoad,"procedureObject.flagsHr",""))
+                })
+
+            }
 
 
 
@@ -1823,64 +1941,146 @@
 
 
 
-            _getlinkedProcedures(currentPoa) {
+
+            _getSetLinkedProcedures(currentPoa, procedureIdsToAdd = null) {
 
                 this.set("_isLoading", true);
                 const promResolve = Promise.resolve();
 
                 // Get linked procedures (selected prescription -> contact -> subcontact type X -> services) of currentPoa
                 // Relire ceci lors create new -> currentPoa not defined % vaadin grid
-                // _.trim(_.get(currentPoa,"poaId","")) : _.trim(_.get(this,"_dialogData.lastNewPoaId",""))
-
-                // set class"selected" si aucune actuellement sélectionnée => pour trigger load data de la première procédure
 
                 return promResolve
-                    .then(() => [
-                        {procId: "BE-THESAURUS-PROCEDURES|A57.013|3.1.0", careDeadline: 20190901, status:0, linkedPhysician:"5604e553-2227-4df5-81d6-cc2b9d96788c", descr:"Etirement des cheveux", customRehearsal:false },
-                        {procId: "BE-THESAURUS-PROCEDURES|A56.004|3.1.0", careDeadline: 20190903, status:2, linkedPhysician:"4b76f90b-fddc-49a8-b6f9-0bfddc69a8cc", descr:"Bandage des yeux", customRehearsal:true },
-                        {procId: "BE-THESAURUS-PROCEDURES|A57.025|3.1.0", careDeadline: 20190906, status:4, linkedPhysician:"c0081cce-3996-4f05-881c-ce39969f05cb", descr:"Mécanothérapie, what ?", customRehearsal:false },
-                        {procId: "BE-THESAURUS-PROCEDURES|A57.035|3.1.0", careDeadline: 20190909, status:8, linkedPhysician:"0db6818b-b8e6-470e-8be7-66e4ff0963d4", descr:"Gymnastique hypopressive olymique", customRehearsal:true}
+                    .then(() => !!_.size(procedureIdsToAdd) ? _.get(this,"_linkedProcedureForCurrentPao",[]) : [
+                        {subContactId: this.api.crypto().randomUuid(), procedureId: "BE-THESAURUS-PROCEDURES|A57.013|3.1.0", careDeadline: 20190901, status:0, linkedPhysician:"5604e553-2227-4df5-81d6-cc2b9d96788c", descr:"Etirement des cheveux", customRehearsal:false },
+                        {subContactId: this.api.crypto().randomUuid(), procedureId: "BE-THESAURUS-PROCEDURES|A56.004|3.1.0", careDeadline: 20190903, status:2, linkedPhysician:"4b76f90b-fddc-49a8-b6f9-0bfddc69a8cc", descr:"Bandage des yeux", customRehearsal:true },
+                        {subContactId: this.api.crypto().randomUuid(), procedureId: "BE-THESAURUS-PROCEDURES|A57.025|3.1.0", careDeadline: 20190906, status:4, linkedPhysician:"c0081cce-3996-4f05-881c-ce39969f05cb", descr:"Mécanothérapie, what ?", customRehearsal:false },
+                        {subContactId: this.api.crypto().randomUuid(), procedureId: "BE-THESAURUS-PROCEDURES|A57.035|3.1.0", careDeadline: 20190909, status:8, linkedPhysician:"0db6818b-b8e6-470e-8be7-66e4ff0963d4", descr:"Gymnastique hypopressive olymique", customRehearsal:true}
                     ])
-                    .then(linkedProcedureForCurrentPao => this.set("_linkedProcedureForCurrentPao", _.map(linkedProcedureForCurrentPao, proc => _.merge({},proc,{
-                        procedureObject: _.find(_.get(this,"_dialogData.codes.procedureCodes",[]),{id: _.trim(_.get(proc,"procId",""))}),
-                        hcpObject: _.find(_.get(this,"_dialogData.availableHcps",[]),{id: _.trim(_.get(proc,"linkedPhysician",""))}),
-                        careDeadlineHr: parseInt(_.trim(_.get(proc,"procId",""))) ? moment(parseInt(_.trim(_.get(proc,"procId",""))),"YYYYMMDD").format("DD/MM/YYYY") : moment().format("DD/MM/YYYY"),
-                        poaId: !!_.trim(_.get(currentPoa,"poaId","")) ? _.trim(_.get(currentPoa,"poaId","")) : _.trim(_.get(this,"_dialogData.lastNewPoaId","")),
-                        _templateUuid: this.api.crypto().randomUuid()
+
+
+
+
+                    // .then(() => !!_.size(procedureIdsToAdd) ? _.get(this,"_linkedProcedureForCurrentPao",[]) : _.filter(_.get(this,"_selectedPrescriptionObject.contact.subContacts",[]), {descr:_.trim(_.get(,"subContactId",""))}
+
+
+
+                    .then(linkedProcedureForCurrentPao => !_.size(procedureIdsToAdd) ? linkedProcedureForCurrentPao : _.concat(linkedProcedureForCurrentPao, _.map(procedureIdsToAdd, procedureIdToAdd => _.merge({},{
+                        subContactId: this.api.crypto().randomUuid(),
+                        procedureId: _.trim(procedureIdToAdd),
+                        careDeadline: parseInt(moment().format("YYYYMMDD")),
+                        status:0,
+                        linkedPhysician:_.trim(_.get(this,"_dialogData.currentHcp.id",""))
                     }))))
+                    .then(linkedProcedureForCurrentPao => {
+                        linkedProcedureForCurrentPao = _.orderBy(linkedProcedureForCurrentPao,['careDeadline'],['desc'])
+                        if(!!_.size(_.find(linkedProcedureForCurrentPao, i=>!!_.trim(_.get(i,"selected",""))))) return linkedProcedureForCurrentPao
+                        if(!!_.size(linkedProcedureForCurrentPao)) linkedProcedureForCurrentPao[0] = _.merge({},linkedProcedureForCurrentPao[0],{selected:"selected"})
+                        return linkedProcedureForCurrentPao
+                    })
+                    .then(linkedProcedureForCurrentPao => this.set("_linkedProcedureForCurrentPao", _.map(linkedProcedureForCurrentPao, procedure => _.merge({},procedure,{
+                        heId: _.trim(_.get(this,"_summaryForm.relatedHealthElementId","")),
+                        heHr: _.trim(_.get(_.find(this.activeHealthElements, {id:_.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))}),"descrHr","")),
+                        poaId: !!_.trim(_.get(currentPoa,"poaId","")) ? _.trim(_.get(currentPoa,"poaId","")) : _.trim(_.get(this,"_dialogData.lastNewPoaId","")),
+                        procedureObject: _.find(_.get(this,"_dialogData.codes.procedureCodes",[]),{id: _.trim(_.get(procedure,"procedureId",""))}),
+                        careDeadlineHr: parseInt(_.trim(_.get(procedure,"procedureId",""))) ? moment(parseInt(_.trim(_.get(procedure,"procedureId",""))),"YYYYMMDD").format("DD/MM/YYYY") : moment().format("DD/MM/YYYY"),
+                    }))))
+                    .then(() => this._loadProcedureDetails(_.find(_.get(this,"_linkedProcedureForCurrentPao",[]),{selected:"selected"})))
                     .finally(() => {
-
-                        console.log(this._dialogData)
-                        console.log(this._linkedProcedureForCurrentPao)
-
                         this.set("_isLoading", false)
                         return promResolve
                     })
 
             }
 
-            _selectProcedure(e) {
+            _procedureFormDataGotChanged(procedureForm) {
+                
+                // Ok pour save form en services
+                // Mais du coup trigger un refresh de la liste OU : SET la liste (pour trigger le refresh) - Attention à élément actif => conserver
 
-                const targetButton = !!_.size(_.get(e,"target","")) && _.get(e,"target.nodeName","") === "PAPER-BUTTON" ? e.target : _.find( e.path, p => _.get(p,"nodeName","") === "PAPER-BUTTON")
-                const poaId = _.trim(_.get(targetButton,"dataset.poaId",""))
-                const procedureId = _.trim(_.get(targetButton,"dataset.procedureId",""))
-                const procedureListItems = this.shadowRoot.querySelectorAll('#existingProceduresList .singleDocumentContainer')
-                const targetProcedureListItem = _.find(procedureListItems, i=> _.trim(_.get(i,"dataset.poaId","")) === poaId && _.trim(_.get(i,"dataset.procedureId","")) === procedureId)
+                // const isEdit = !!_.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId",""))
+                // const currentHeId = !!_.trim(_.get(this,"_procedureForm.heId","")) ? _.trim(_.get(this,"_procedureForm.heId","")) : !!_.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId","")) ? _.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.heId","")) : _.trim(_.get(this,"_summaryForm.relatedHealthElementId",""))
+                // const currentPoaId = !!_.trim(_.get(this,"_procedureForm.poaId","")) ? _.trim(_.get(this,"_procedureForm.poaId","")) : !!_.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.poaId","")) ? _.trim(_.get(this,"_vaadinGridPlanOfActionSelectedItem.poaId","")) : _.trim(_.get(this,"_dialogData.lastNewPoaId",""))
 
-                _.map(procedureListItems, i=> _.get(i,"classList",false) && i.classList.remove("selected"))
-                targetProcedureListItem && _.get(targetProcedureListItem,"classList",false) && targetProcedureListItem.classList.add("selected")
+                const promResolve = Promise.resolve();
+                const reqIdx = (this._saveFormReqIdx = (this._saveFormReqIdx || 0) + 1)
+                return setTimeout(() => {
+                    return (reqIdx !== this._saveFormReqIdx || _.trim(_.get(procedureForm,"path","")) === "_procedureForm" || this._triptyqueDetailActiveTab !== "procedures") ? false : promResolve
+                        // .then(() => !!isEdit ? _.find(_.get(this,"_dialogData.hesAndPoas",[]),{heId:currentHeId, poaId:currentPoaId}) : this.api.helement().getHealthElement(currentHeId))
+                        // .then(he => !!isEdit ? _.find(_.get(he,"hePlansOfAction",[]),{id:currentPoaId}) : _.find(_.get(he,"plansOfAction",[]),{id:currentPoaId}))
+                        // .then(poa => ......)
+                        .then(() => {
 
-                console.log("poaId", poaId);
-                console.log("procedureId", procedureId);
+                            const sourceSelectedPrescriptionObject = _.get(this,"_selectedPrescriptionObject",{})
+                            const sourceContact = _.get(sourceSelectedPrescriptionObject,"contact",{})
+                            const subContactToUpdate = _.find(_.get(sourceContact,"subContacts",[]),{descr:_.trim(_.get(this,"_procedureForm.subContactId",""))})
+                            const subContactServiceIds = _.compact(_.map(_.get(subContactToUpdate,"services",[]),i=>_.trim(_.get(i,"serviceId",""))))
+                            const subContactServiceData = _.compact(_.filter(_.get(sourceContact, "services",[]), i => subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) > -1))
 
-            }
+                            console.log("BEFORE sourceSelectedPrescriptionObject", _.cloneDeep(sourceSelectedPrescriptionObject))
+                            console.log("BEFORE sourceContact", _.cloneDeep(sourceContact))
+                            console.log("BEFORE subContactToUpdate", _.cloneDeep(subContactToUpdate))
+                            console.log("BEFORE subContactServiceIds", _.cloneDeep(subContactServiceIds))
+                            console.log("BEFORE subContactServiceData", _.cloneDeep(subContactServiceData))
 
-            _doAddProcedures(procedureIds) {
+                            // Drop data related to THIS procedure
+                            sourceContact.services = _.filter(_.get(sourceContact,"services",[]), i => subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) === -1 )
+                            sourceContact.subContacts = _.filter(_.get(sourceContact,"subContacts",[]), i => _.trim(_.get(i,"descr","something")) !==_.trim(_.get(subContactToUpdate,"descr","else")) )
 
-                console.log("--- _doAddProcedures ---", procedureIds)
-                console.log(this._dialogData)
+                            console.log("AFTER sourceContact", _.cloneDeep(sourceContact))
 
-            }
+
+
+
+                            const newServicesData = _.map(_.merge({}, {procedureId: _.trim(_.get(this,"_procedureForm.procedureObject.id",""))}, _.pick(_.get(this,"_procedureForm",{}), ["customRehearsal","deadline","description","linkedPhysician","status"])), (v,k) => this.api.contact().service().newInstance(this.user, {
+                                label: _.trim(k),
+                                content: _.merge({},
+                                    typeof v === "boolean" ? _.fromPairs([[this.language,{booleanValue:!!v}]]) :
+                                    typeof v === "number" ? _.fromPairs([[this.language,{numberValue:parseInt(v)||0}]]) :
+                                    _.fromPairs([[this.language,{stringValue:_.trim(v)}]])
+                                )
+                            }))
+                            console.log("newServicesData", newServicesData);
+
+
+
+
+
+                            sourceContact.services = _.concat(sourceContact.services, newServicesData)
+                            console.log("AFTER sourceContact PUSH NEW SERVICES", _.cloneDeep(sourceContact))
+
+                            sourceContact.subContacts.push({
+                                descr:_.trim(_.get(this,"_procedureForm.subContactId",_.trim(this.api.crypto().randomUuid()))),
+                                hasBeenInitialized: false,
+                                services: _.map(newServicesData, sv => {return{serviceId: _.trim(_.get(sv,"id",""))}})
+                            })
+                            console.log("AFTER sourceContact PUSH NEW subContact", _.cloneDeep(sourceContact))
+
+
+
+                            return this.api.contact().modifyContactWithUser(this.user, sourceContact).then(modifiedContact => ([this.api.register(modifiedContact, 'contact'), sourceSelectedPrescriptionObject]))
+
+
+                        })
+                        .then(([modifiedContact,sourceSelectedPrescriptionObject])=>  this.set("_selectedPrescriptionObject", _.merge({}, sourceSelectedPrescriptionObject, {
+                            contact: modifiedContact,
+                            contacts: [modifiedContact],
+                            servicesMap: this._getServicesMap([modifiedContact])
+                        })))
+                        .then(()=> {
+
+                            console.log("_procedureForm", this._procedureForm)
+                            console.log("_dialogData", this._dialogData)
+                            console.log("AFTER sourceSelectedPrescriptionObject", _.cloneDeep(this._selectedPrescriptionObject))
+                            console.log("this", this)
+
+                        })
+                }, 2000)
+
+            }            
+
+
+
 
 
 
@@ -1925,17 +2125,21 @@
 
             //         FABIEN
             //
-            //         -  Bug placement / position dialog triptyque lors ouverture / si déjà ouvert && si navigate autres onglets ==> zoom in/out triggers it
-            //         -  Double check tout ok infirmières
-            //         -  Target / search / link procedures proprement
-            //         -  Menu "..." verticaux + quels actions ?
-            //         -  Code générique pour imprimer tous les forms pdfs à la fois kine & infi
-            //         -  Search procedures & packages procédures smart => coordonner avec travail de Maxime
-            //         -  Revoir vaading grid layout + bouger "Agenda" dans nouvelles tab view interne (une fois prescription liée) -> du coup revoir mécanique d'approbation de changement de tab
-            //         -  Revoir lien avec Mikrono / intégration
-            //         -  Quid gestion sub-forms (dans le cadre des infis) => actuellement pas géré
-            //         -  Eval number of cares (vaading grid) = nombre de séances minus celles déjà faites
+            //         - Repasser sur les endroits qui dépendent de _.get(this,"_vaadinGridPlanOfActionSelectedItem",{}) ==> won't be set when adding new POA
+            //              ==> Qqch du genre !!_.trim(_.get(currentPoa,"poaId","")) ? _.trim(_.get(currentPoa,"poaId","")) : _.trim(_.get(this,"_dialogData.lastNewPoaId","")),
+            //              ==> Idem dans _loadProcedureDetails
 
+            //         - Bug placement / position dialog triptyque lors ouverture / si déjà ouvert && si navigate autres onglets ==> zoom in/out triggers it
+            //         - Repasser sur procédures: obtention de .description + .externalLink + .video
+            //         - Double check tout ok infirmières
+            //         - Bouton fermer: par défaut le vertical-tab actif, cascase jusqu'à close detail, listing, dialog
+            //         - Menu "..." verticaux + quels actions ?
+            //         - Search procedures & packages procédures smart => coordonner avec travail de Maxime
+            //         - Revoir vaading grid layout + bouton "Agenda" (et faire fonctionner % mikrono)
+            //         - Revoir lien avec Mikrono / intégration
+            //         - Quid gestion sub-forms (dans le cadre des infis) => actuellement pas géré
+            //         - Eval number of cares (vaading grid) = nombre de séances minus celles déjà faites
+            //         - Code générique pour imprimer tous les forms pdfs à la fois kine & infi
 
         }
 

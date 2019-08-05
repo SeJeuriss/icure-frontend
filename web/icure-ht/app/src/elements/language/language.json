@@ -735,6 +735,7 @@
     "ht": "HT",
     "icp": "Internal Care Providers",
     "imp": "Import",
+    "imp-data" : "Import data",
     "imp_my_ehe_key": "Import my eHealth keychain",
     "imp_ep_app" : "Import Epicure appointments",
     "import_mf" : "Import PMF/SMF",
@@ -977,7 +978,7 @@
     "nxt-bat-num": "Next batch number",
     "formGroupName" : "Group form name",
     "formName" : "Form name",
-    "specialityFormName" : "Speciality form name",
+    "specialityFormName" : "Speciality",
     "new_con": "New Contact",
     "new_mes": "New Message",
     "new_win" : "New window",
@@ -1788,7 +1789,11 @@
     "proceduresSuccessfullyAdded": "Procedures successfully added",
     "backToProceduresList": "Back to procedures list",
     "proceduresList": "Procedures list",
-    "searchResults": "Search results"
+    "searchResults": "Search results",
+    "removeProcedure": "Remove procedure",
+    "pleaseAddAProcedure": "Please add a procedure",
+    "deadline": "Deadline",
+    "unlimitedRepetitions": "Unlimited repetitions"
   },
   "fr": {
     "AFF": "N° d'affiliation",
@@ -2573,6 +2578,7 @@
     "ht": "HT",
     "icp": "Prestataires de soins internes",
     "imp": "Importer",
+    "imp-data" : "Importer données",
     "imp_my_ehe_key": "Importer mon trousseau eHealth",
     "imp_ep_app" : "Importer mes rdv Epicure",
     "import_mf" : "Importation PMF/SMF",
@@ -3663,7 +3669,11 @@
     "proceduresSuccessfullyAdded": "Procedure(s) ajoutée(s)",
     "backToProceduresList": "Retour à la liste des procedures",
     "proceduresList": "Liste des procedures",
-    "searchResults": "Résultats de la recherche"
+    "searchResults": "Résultats de la recherche",
+    "removeProcedure": "Supprimer la procédure",
+    "pleaseAddAProcedure": "Veuillez ajouter unen procédure",
+    "deadline": "Echéance",
+    "unlimitedRepetitions": "Récurrence libre"
   },
   "nl": {
     "AFF": "Lidnummer",
@@ -4424,6 +4434,7 @@
     "hub-upl" : "Opladen",
     "icp": "Interne zorgverstrekkers",
     "imp": "Importeer",
+    "imp-data" : "Importeer data",
     "imp_my_ehe_key": "Importeer mijn eHealth certificaat",
     "imp_ep_app" : "Importeer Epicure-afspraken",
     "import_mf" : "Importeer PMF/SMF",
@@ -5499,6 +5510,10 @@
     "proceduresSuccessfullyAdded": "Procedures successfully added",
     "backToProceduresList": "Back to procedures list",
     "proceduresList": "Procedures list",
-    "searchResults": "Search results"
+    "searchResults": "Search results",
+    "removeProcedure": "Remove procedure",
+    "pleaseAddAProcedure": "Please add a procedure",
+    "deadline": "Deadline",
+    "unlimitedRepetitions": "Unlimited repetitions"
   }
 }
