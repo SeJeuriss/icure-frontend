@@ -1,0 +1,163 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+
+
+
+<dom-module id="dynamic-info">
+    <template>
+        <style include="icpc-styles">
+            paper-menu-button {
+                padding: 0;
+                color: grey;
+            }
+
+            paper-icon-button {
+                padding: 0 4px 8px 4px;
+                width: 20px;
+                height: 20px;
+            }
+
+            .link .colour-code span {
+                content: '';
+                display: inline-block;
+                height: 6px;
+                width: 6px;
+                border-radius: 3px;
+                margin-right: 3px;
+                margin-bottom: 1px;
+            }
+
+            paper-item {
+                font-size: 14px;
+                min-height: 30px;
+            }
+
+            .dropdown_icon{
+                height: 12px;
+            }
+
+            .status_icon{
+                height: 8px;
+            }
+
+            .stat_act{
+                color: var( --paper-green-400);
+            }
+
+            .stat_pass_rev{
+                color: var(--paper-orange-400);
+            }
+
+            .stat_pass_n_rev{
+                color: var( --paper-red-400);
+            }
+
+            .stat_not_pres{
+                color: var(--paper-grey-400);
+            }
+
+
+        </style>
+
+
+        <template is="dom-if" if="[[_display(linkables, initialised)]]">
+            <template is="dom-if" if="[[!readOnly]]">
+                <template is="dom-if" if="[[!noStatus]]">
+                    <paper-menu-button id="stat" horizontal-align="left" dynamic-align="true" opened="{{statusOpened}}" allow-outside-scroll>
+                        <paper-icon-button id="stat_menu" class="form-title-bar-btn" icon="more-horiz" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content">
+
+                        </paper-listbox>
+                    </paper-menu-button>
+                </template>
+            </template>
+        </template>
+    </template>
+    <script>
+
+        class DynamicInfo extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'dynamic-info';
+            }
+
+            static get properties() {
+                return {
+                    api: {
+                        type: Object
+                    },
+                    linkables: {
+                        type: Array
+                    },
+                    representedObject: {
+                        type: Object
+                    },
+                    noStatus: {
+                        type: Boolean,
+                        value: false
+                    },
+                    opened: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_opened'
+                    },
+                    statusOpened: {
+                        type: Boolean,
+                        value: false
+                    },
+                    openedOnce: {
+                        type: Boolean,
+                        value: false
+                    },
+                    initialised: {
+                        type: Boolean,
+                        value: false
+                    },
+                    delayed: {
+                        type: Boolean,
+                        value: true
+                    }
+                };
+            }
+
+            static get observers() {
+                return [];
+            }
+
+            ready() {
+                super.ready();
+                if (this.delayed) {
+                    setTimeout(() => this.set('initialised', true), 100)
+                }
+            }
+
+            _opened(b) {
+                this.set('openedOnce', b || this.openedOnce)
+            }
+
+            _linkables(links,b) {
+                return b ? links: []
+            }
+
+            _show(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if(e.target.id === "stat_menu"){
+                    this.root.querySelector('#stat').open();
+                }else{
+                    this.root.querySelector('#mb').open();
+                }
+
+            }
+
+            _display(linkables, initialised) {
+                return linkables && linkables.length && (!this.delayed || initialised)
+            }
+
+        }
+        customElements.define(DynamicInfo.is, DynamicInfo);
+    </script>
+</dom-module>
