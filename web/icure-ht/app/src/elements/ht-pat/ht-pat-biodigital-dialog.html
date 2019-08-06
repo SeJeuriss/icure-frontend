@@ -1,0 +1,781 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../icpc-styles.html">
+<link rel="import" href="../collapse-button/collapse-button.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../icons/medical-icon.html">
+
+<dom-module id="ht-pat-biodigital-dialog">
+    <template>
+        <style include="icpc-styles">
+
+            .human-popup > .header:after, .human-tour > .tour-header:after {
+                width: 100%;
+                content: '';
+                clear: both;
+                display: table;
+            }
+
+            .human-popup .close-btn, .human-tour .close-btn {
+                float: right;
+                display: inline-block;
+                margin: 0 5px;
+                font-size: 1.25em;
+                cursor: pointer;
+            }
+
+            .human-popup iframe, .human-tour iframe {
+                border: none;
+            }
+
+            .human-popup {
+                display: none;
+                position: absolute;
+                background-color: #fff;
+                border: 1px solid #999;
+                padding: 0 5px 5px 5px;
+                border-radius: 3px;
+                z-index: 1000;
+                box-shadow: 1px 1px 3px rgba(100,100,100,.3);
+            }
+
+            .human-popup.popup-open {
+                display: block;
+            }
+
+            .human-popup > .arrow,
+            .human-popup > .arrow:after {
+                position: absolute;
+                display: block;
+                width: 0;
+                height: 0;
+                border-color: transparent;
+                border-style: solid;
+            }
+
+            .human-popup > .arrow {
+                border-width: 11px;
+            }
+
+            .human-popup > .arrow:after {
+                content: "";
+                border-width: 10px;
+            }
+
+            .human-popup.right > .arrow {
+                bottom: 10px;
+                left: -11px;
+                border-right-color: #999;
+                border-left-width: 0;
+            }
+
+            .human-popup.right > .arrow:after {
+                bottom: -10px;
+                left: 1px;
+                border-right-color: #fff;
+                border-left-width: 0;
+            }
+
+            .human-popup.bottom > .arrow {
+                left: 11px;
+                top: -11px;
+                border-bottom-color: #999;
+                border-top-width: 0;
+            }
+
+            .human-popup.bottom > .arrow:after {
+                left: -10px;
+                top: 1px;
+                border-bottom-color: #fff;
+                border-top-width: 0;
+            }
+
+            .human-popup.left > .arrow {
+                bottom: 10px;
+                right: -11px;
+                border-left-color: #999;
+                border-right-width: 0;
+            }
+
+            .human-popup.left > .arrow:after {
+                bottom: -10px;
+                right: 1px;
+                border-left-color: #fff;
+                border-right-width: 0;
+            }
+
+            .human-popup.top > .arrow {
+                left: 11px;
+                bottom: -11px;
+                border-top-color: #999;
+                border-bottom-width: 0;
+            }
+
+            .human-popup.top > .arrow:after {
+                left: -10px;
+                bottom: 1px;
+                border-top-color: #fff;
+                border-bottom-width: 0;
+            }
+
+            /*========
+              TOUR
+            ========*/
+
+            .tour-open {
+                overflow: hidden;
+            }
+
+            .human-tour, .human-tour-backdrop {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+
+            .human-tour {
+                display: none;
+                z-index: 1010;
+            }
+
+            .tour-open .human-tour.open {
+                display: block;
+            }
+
+            .human-tour-backdrop {
+                background-color: #000;
+                opacity: .8;
+                z-index: 1000;
+            }
+
+            .tour-dialog {
+                position: fixed;
+                box-sizing: border-box;
+                top: 7%;
+                left: 50%;
+                width: 760px;
+                margin-left: -380px;
+                background-color: #fff;
+                border: 1px solid #999;
+                border: 1px solid rgba(0,0,0,0.3);
+
+                outline: none;
+                z-index: 1020;
+
+                -webkit-border-radius: 8px;
+                -moz-border-radius: 8px;
+                border-radius: 8px;
+
+                -webkit-box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+                -moz-box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+                box-shadow: 0 3px 7px rgba(0,0,0,0.3);
+            }
+
+            .tour-header, .tour-content {
+                padding: 0 15px;
+            }
+
+            .tour-header {
+                min-height: 45px;
+            }
+
+            .tour-header > h1 {
+                font-size: 20px;
+                padding: 10px 0;
+            }
+
+            .tour-header > .close-btn {
+                padding-top: 10px;
+            }
+
+            .tour-content {
+                position: relative;
+                padding-bottom: 15px;
+            }
+
+            .human-tour iframe {
+                width: 100%;
+                height: 500px;
+            }
+
+            .nav-container {
+                text-align: center;
+            }
+
+            .chapters-list {
+                display: inline-block;
+                padding-top: 15px;
+                list-style-type: none;
+            }
+
+            .chapters-list > li {
+                display: inherit;
+                height: 25px;
+                width: 25px;
+                margin-right: 15px;
+                border: 1px solid #666;
+                float: inherit;
+                cursor: pointer;
+                text-align: center;
+                line-height: 1.7em;
+
+                -webkit-border-radius: 50%;
+                -moz-border-radius: 50%;
+                border-radius: 50%;
+
+                -webkit-transition: background-color .2s;
+                transition: background-color .2s;
+            }
+
+            .chapters-list > li:last-child {
+                margin-right: 0;
+            }
+
+            .chapters-list > li:hover {
+                background-color: rgba(100,100,100,.5);
+                border-color: #333;
+            }
+
+            .chapters-list > li.active {
+                background-color: rgba(50,50,50,.5);
+                border-color: #333;
+            }
+
+            .tour-panel {
+                position: absolute;
+                top: 10px;
+                right: 25px;
+                width: 25%;
+                color: #fff;
+                max-height: 300px;
+                overflow: auto;
+                padding: 5px;
+            }
+
+            .tour-panel > h1 {
+                padding: 3px 0;
+                font-size: 17px;
+                border-bottom: 1px solid #fff;
+            }
+
+            .tour-panel > p {
+                font-size: 13px;
+            }
+
+            #biodigitalDialog{
+                height: calc(98% - 12vh);
+                width: 98%;
+                max-height: calc(100% - 64px - 48px - 20px); /* 100% - header - margin - footer*/
+                min-height: 400px;
+                min-width: 800px;
+                top: 64px;
+            }
+
+            .biodigitalDialog{
+                display: flex;
+                height: calc(100% - 45px);;
+                width: auto;
+                margin: 0;
+                padding: 0;
+            }
+
+            #biodigitalWidget{
+                height: 100%;
+                width: 100%;
+            }
+
+            .biodigital-menu-list{
+                height: 100%;
+                width: 30%;
+                background-color: var(--app-background-color-dark);
+                border-right: 1px solid var(--app-background-color-dark);
+                overflow: auto;
+                position: relative;
+            }
+
+            .biodigital-scene{
+                height: 100%;
+                width: 70%;
+            }
+
+            .buttons{
+                position: absolute;
+                right: 0;
+                bottom: 0;
+                margin: 0;
+            }
+
+            .biodigital-scene-filter{
+                background-color: var(--app-secondary-color);
+                height: 40px;
+                width: auto;
+                padding: 4px;
+            }
+
+            .biodigital-scene-iframe{
+                height: calc(98% - 9vh);
+                width: 98%;
+                margin: 1%;
+            }
+
+            #systemFilterPanel{
+                z-index: 999;
+            }
+
+            .filters-bar--small-icon.selected {
+                /*color: var(--app-primary-color-dark);*/
+            }
+
+            .filters-bar--small-icon{
+                color: var(--app-text-color-disabled);
+            }
+
+        </style>
+
+
+        <paper-dialog id="biodigitalDialog">
+            <div class="biodigitalDialog">
+                <div class="biodigital-menu-list">
+
+                </div>
+                <div class="biodigital-scene">
+                    <div class="biodigital-scene-filter">
+                        <div class="filters-bar--small">
+                            <div>
+                                <template is="dom-repeat" items="[[filtersSystem]]" as="sys">
+                                    <paper-icon-button id="[[sys.id]]" class$="filters-bar--small-icon [[_isFilterSelected(sys.id, selectedFilters, selectedFilters.*)]]" icon="[[sys.icon]]" on-tap="_selectedSystemFilter"></paper-icon-button>
+                                    <paper-tooltip for="[[sys.id]]">[[_localizeFilter(filtersSystem.title)]]</paper-tooltip>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="biodigital-scene-iframe">
+                        <iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?[[view]]&dk=[[token]]"></iframe>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <paper-button class="modal-button" on-tap="_saveModele"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
+                    <paper-button class="modal-button" on-tap="_closeDialogs"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+                </div>
+            </div>
+
+            <!--<iframe id="biodigitalWidget" src="https://human.biodigital.com/widget?s=male&b=53162&dk=76155af1ee3500e3769fc78d3561636154723b42"></iframe>-->
+
+<!--
+            <paper-button on-tap="_zoomIn">Zoom in</paper-button>
+            <paper-button on-tap="_zoomOut">Zoom out</paper-button>
+
+            <paper-button on-tap="_rotateLeft">Rotate Left</paper-button>
+            <paper-button on-tap="_rotateRight">Rotate Right</paper-button>
+
+            <paper-button on-tap="_gotoHead">Go to head</paper-button>
+            <paper-button on-tap="_gotoFoot">Go to foot</paper-button>
+-->
+        </paper-dialog>
+
+    </template>
+
+
+    <script>
+
+        !function() {
+
+            "use strict";
+            window.HumanAPI = function a(b, polymerContext) {
+                var c = this;
+
+                "string" == typeof b && (b = {
+                    iframeId: b,
+                    polymerContext: polymerContext
+                }),
+                    b.onReady = function() {
+                        c._ready = !0;
+                        for (var a = 0, b = c._readyCallbacks.length; b > a; a++)
+                            c._readyCallbacks[a](),
+                                c._readyCallbacks.length = 0;
+                    }
+                    ,
+                    c._rpc = new a.WindowRPCClient(b),
+                    c._ready = !1,
+                    c._readyCallbacks = [];
+            }
+                ,
+                HumanAPI.prototype.send = function(a, b, c) {
+                    return "function" == typeof b && (c = b,
+                        b = {}),
+                    "function" == typeof c && (c = c.bind(this)),
+                        this._rpc.call(a, b || {}, c),
+                        this;
+                }
+                ,
+                HumanAPI.prototype.on = function(a, b) {
+                    return "function" == typeof b && (b = b.bind(this)),
+                        "human.ready" === a ? (this._ready ? b() : this._readyCallbacks.push(b),
+                            this) : (this._rpc.call("apiEvents.on", a, b, !1),
+                            this);
+                }
+                ,
+                HumanAPI.prototype.once = function(a, b) {
+                    return "function" == typeof b && (b = b.bind(this)),
+                        "human.ready" === a ? (this._ready ? b() : this._readyCallbacks.push(b),
+                            this) : (this._rpc.call("apiEvents.once", a, b, !0),
+                            this);
+                }
+            ;
+        }(),
+         function() {
+                "use strict";
+                HumanAPI.Map = function(a, b) {
+                    this.items = a || [];
+                    var c = b || 0
+                        , d = c + 1;
+                    this.addItem = function() {
+                        var a;
+                        if (2 === arguments.length) {
+                            var b = arguments[0];
+                            if (a = arguments[1],
+                                this.items[b])
+                                throw "ID clash: '" + b + "'";
+                            return this.items[b] = a,
+                                b;
+                        }
+                        for (; ; ) {
+                            a = arguments[0];
+                            var c = d++;
+                            if (!this.items[c])
+                                return this.items[c] = a,
+                                    c;
+                        }
+                    }
+                        ,
+                        this.removeItem = function(a) {
+                            delete this.items[a];
+                        }
+                    ;
+                }
+                ;
+            }(),
+         function() {
+                "use strict";
+                HumanAPI.WindowRPCClient = function(a) {
+
+                    if (!a.iframeId)
+                        throw "config expected: iframeId";
+                    // if (this._iframe = document.getElementById(a.iframeId),
+                    if (this._iframe = a.polymerContext.$[a.iframeId],
+                        !this._iframe)
+                        throw "iframe not found: '" + a.iframeId + "'";
+                    if (!this._iframe.contentWindow)
+                        throw "element is not an iframe: '" + a.iframeId + "'";
+                    this.destroyed = !1,
+                        this._handleMap = new HumanAPI.Map({},Date.now()),
+                        this._subs = {},
+                        this._ready = !1,
+                        this._messageBuffer = [],
+                        this._messageBufferConnected = [],
+                        this._connect(a.onUnsupported, a.onConnected, a.onReady);
+                }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype._connect = function(a, b, c) {
+                        var d = null
+                            , e = this
+                            , f = 100
+                            , g = function() {
+                            h(),
+                                d = setInterval(function() {
+                                    return !e.destroyed && e._iframe && e._iframe.contentWindow ? void e._iframe.contentWindow.postMessage(JSON.stringify({
+                                        action: "connect"
+                                    }), "*") : void h();
+                                }, f);
+                        }
+                            , h = function() {
+                            d && (clearInterval(d),
+                                d = null);
+                        };
+                        window.addEventListener("message", function(d) {
+                            var f = d.data;
+                            switch (f) {
+                                case "unsupported":
+                                    "function" == typeof a && a(d.data);
+                                    break;
+                                default:
+                                    var g;
+                                    try {
+                                        g = JSON.parse(f);
+                                    } catch (i) {
+                                        return;
+                                    }
+                                    if (g.message) {
+                                        var j = g.message;
+                                        switch (j) {
+                                            case "connected":
+                                                e._connected = !0,
+                                                    e._sendQueuedMessages(!0),
+                                                "function" == typeof b && b();
+                                                break;
+                                            case "status":
+                                                switch (g.status) {
+                                                    case "ready":
+                                                        e._ready = !0,
+                                                            h(),
+                                                            e._sendQueuedMessages(),
+                                                        "function" == typeof c && c();
+                                                }
+                                        }
+                                    }
+                                    if (g.results || g.response) {
+                                        var k, l = g.results || g.response;
+                                        for (var m in l)
+                                            l.hasOwnProperty(m) && (k = l[m],
+                                            e._subs[m] && e.set(m, k));
+                                    }
+                                    g.error;
+                            }
+                        }, !1),
+                            e._iframe.addEventListener("load", g),
+                            e._iframe.addEventListener("unload", h),
+                            g();
+                    }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype._sendQueuedMessages = function(a) {
+                        for (var b = a ? this._messageBufferConnected : this._messageBuffer; b.length > 0; ) {
+                            var c = b.pop();
+                            this._send(c, c.ok, c.once);
+                        }
+                    }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype.call = function(a, b, c, d) {
+                        var e = {
+                            call: a,
+                            params: b,
+                            ok: c,
+                            once: d
+                        }
+                            , f = b.connected ? this._messageBufferConnected : this._messageBuffer;
+                        this._ready || this._connected && b.connected ? this._send(e, c, d) : f.unshift(e);
+                    }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype._send = function(a, b, c) {
+                        if (b) {
+                            var d = this
+                                , e = this._on(function(a) {
+                                (void 0 === c || c === !0) && d._off(e),
+                                    b.call(d, a);
+                            });
+                            a.id = e,
+                                this._sendMessage(a);
+                        } else
+                            this._sendMessage(a);
+                    }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype._sendMessage = function(a) {
+                        this._onSend && this._onSend(a),
+                        this.destroyed || this._iframe.contentWindow.postMessage(JSON.stringify(a), "*");
+                    }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype.set = function(a, b) {
+                        var c = this._subs[a];
+                        c && c.call(this, b);
+                    }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype._on = function(a) {
+                        var b = this._handleMap.addItem();
+                        return this._subs[b] = a,
+                            b;
+                    }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype._off = function(a) {
+                        delete this._subs[a],
+                            this._handleMap.removeItem(a);
+                    }
+                    ,
+                    HumanAPI.WindowRPCClient.prototype.destroy = function() {
+                        this.destroyed = !0;
+                    }
+                ;
+            }();
+
+
+        class HtPatBiodigitalDialog extends Polymer.TkLocalizerMixin(Polymer.Element) {
+
+            static get is() {
+                return 'ht-pat-biodigital-dialog';
+            }
+
+            static get properties() {
+                return {
+                    human: {
+                        type: Object,
+                        value: {}
+                    },
+                    view: {
+                      type: String,
+                      value: "o=maleAdult_standard-Skeletal_System_ID"
+                    },
+
+                    token:{
+                        type: String,
+                        value: "76155af1ee3500e3769fc78d3561636154723b42"
+                    },
+                    yaw: {
+                        type: Number,
+                        value: 0
+                    },
+                    selectedFilters:{
+                        type: Array,
+                        value: () => []
+                    },
+                    filtersSystem:{
+                        type: Array,
+                        value: () => []
+                    }
+                };
+            }
+
+            static get observers() {
+                return [];
+            }
+
+            ready() {
+                super.ready();
+            }
+
+            open(){
+                this.$['biodigitalDialog'].open()
+                this.set('selectedFilters', [])
+                this.set('filtersSystem',[])
+                this.set('bodyParts', [])
+
+                this._initialize()
+                this._modifyWidget()
+            }
+
+            _initialize(){
+                this.push('selectedFilters', "maleAdult_standard-Skeletal_System_ID")
+
+                this.set('filtersSystem', [
+                    {id: "maleAdult_standard-Skeletal_System_ID", icon: "medical-svg-icons:Skeletal_System", title: {en: "Skeletal system", fr:"Système osseux", nl:"Skeletal system"}},
+                    {id: "maleAdult_standard-Reproductive_System_ID", icon: "medical-svg-icons:Reproductive_System", title: {en: "Reproductive system", fr:"Système reproductif", nl:"Reproductive system"}},
+                    {id: "maleAdult_standard-Cardiovascular_System_ID", icon: "medical-svg-icons:Cardiovascular_System", title: {en: "Cardiovascular system", fr:"", nl:"Cardiovascular system"}},
+                    {id: "maleAdult_standard-Muscular_System_ID", icon: "medical-svg-icons:Muscular_System", title: {en: "Muscular system", fr:"Système musculaire", nl:"Muscular system"}},
+                    {id: "maleAdult_standard-Lymphatic_System_ID", icon: "medical-svg-icons:Lymphatic_System", title: {en: "Lymphatic system", fr:"Système lymphatique", nl:"Lymphatic system"}},
+                    {id: "maleAdult_standard-Endocrine_System_ID", icon: "medical-svg-icons:Endocrine_System", title: {en: "Endocrine system", fr:"Système endocrinien", nl:"Endocrine system"}},
+                    {id: "maleAdult_standard-Digestive_System_ID", icon: "medical-svg-icons:Digestive_System", title: {en: "Digestive system", fr:"Système digestif", nl:"Digestive system"}},
+                    {id: "maleAdult_standard-Integumentary_System_ID", icon: "medical-svg-icons:Integumentary_System", title: {en: "Integumentary system", fr:"Système tégumentaire", nl:"Integumentary system"}},
+                    {id: "maleAdult_standard-Urinary_System_ID", icon: "medical-svg-icons:Urinary_System", title: {en: "Urinary system", fr:"Système urinaire", nl:"Urinary system"}},
+                    {id: "maleAdult_standard-Viscera_and_Fascia_System_ID", icon: "medical-svg-icons:Viscera_and_Fascia_System", title: {en: "Viscera and fascia system", fr:"Viscères et fascia", nl:"Viscera and fascia system"}},
+                    {id: "maleAdult_standard-Respiratory_System_ID", icon: "medical-svg-icons:Respiratory_System", title: {en: "Respiratory system", fr:"Système respiratoire", nl:"Respiratory system"}},
+                    {id: "maleAdult_standard-Ligament_System_ID", icon: "medical-svg-icons:Ligament_System", title: {en: "Ligament system", fr:"Système ligamentaire", nl:"Ligament system"}},
+                    {id: "maleAdult_standard-Nervous_System_ID", icon: "medical-svg-icons:Nervous_System", title: {en: "Nervous system", fr:"Système nerveux", nl:"Nervous system"}}
+                ])
+            }
+
+            _isFilterSelected(filter) {
+               return this.selectedFilters.includes(filter) ? 'selected' : ''
+            }
+
+            _selectedSystemFilter(e) {
+                console.log(e)
+                if(e && e.target && e.target.id){
+                    const filter = e.target.id
+                    const currentIndex = this.selectedFilters.indexOf(filter)
+                    if (currentIndex >= 0) {
+                        this.splice('selectedFilters', currentIndex, 1)
+                        this.human.send("scene.showObjects", {[filter]: false});
+                    } else {
+                        this.push('selectedFilters', filter)
+                        this.human.send("scene.showObjects", {[filter]: true});
+                    }
+                }
+            }
+
+            _closeDialogs(){
+                this.$['biodigitalDialog'].close()
+            }
+
+            _modifyWidget(){
+
+                let patientProblemes = [
+                    {title : "2019 - F92 - Cataracte grise", description: "", objectId: "maleAdult_standard-Occipital_bone_52735_ID"},
+                    {title : "2018 - H82 - Aura vertigineuse", description: "", objectId: "maleAdult_standard-Right_ear_53641_ID"},
+                    {title : "1994 - L80 - Luxation d'une vertèbre", description: "", objectId: "maleAdult_standard-Left_Mandibular_Lateral_Incisor_ID"},
+                    {title : "2012 - L99 - Atteinte articulaire", description: "", objectId: "maleAdult_standard-Articular_Cartilage_of_the_Left_Shoulder_ID"},
+                    {title : "2014 - R80 - Bronchiolite", description: "", objectId: "maleAdult_standard-Left_Humerus_23130_ID"},
+                    {title : "2016 - S88 - Dermatite", description: "", objectId: "maleAdult_standard-Left_metacarpal_bones_of_hand_71898_ID"},
+                    {title : "2000 - W92 - Accouchement", description: "", objectId: "maleAdult_standard-Right_hamate_bone_24448_ID"},
+                    {title : "1999 - X91 - Verrue", description: "", objectId: "maleAdult_standard-Right_metacarpal_bones_of_hand_71898_ID"}
+                ]
+
+                this.human = new HumanAPI("biodigitalWidget", this);
+
+                this.human.send("annotations.setEnabled");
+
+                this.human.send("scene.info", function (data) {
+                    console.log(data.objects);
+                    return _.values(data.objects)
+                })
+
+                patientProblemes.map(prob => this.human.send("annotations.create", prob))
+
+
+            }
+
+            _rotateLeft() {
+                this.human.send("camera.orbit", { yaw: 20, animate: true });
+            }
+
+            _rotateRight() {
+                this.human.send("camera.orbit", { yaw: -20, animate: true });
+            }
+
+            _zoomOut() {
+                this.human.send("camera.set", { position: { z: -10 }, animate: true });
+            }
+
+            _zoomIn() {
+                this.human.send("camera.set", { position: { z: 10 }, animate: true });
+            }
+
+            _gotoHead() {
+                this.human.send("camera.set", { objectId: "maleAdult_standard-Bones_of_the_Head_ID", animate: true });
+            }
+
+            _gotoFoot() {
+                this.human.send("camera.set", { objectId: "maleAdult_standard-maleAdult_standard-Left_metatarsal_bones_ID", animate: true });
+            }
+
+
+            _localizeFilter(filter){
+                return filter && filter[this.language] ? filter[this.language] : ""
+            }
+
+            _saveModele(){
+
+                let http = require('http');
+
+                let headers = {
+                    'Accept': 'application/json',
+                    "Authorization": "Bearer " + this.token,
+                    'Cache-Control': 'no-cache'
+                }
+
+                let options = {
+                    url: "https://apis.biodigital.com/services/v1/content/collections/myhuman",
+                    method: 'GET',
+                    headers: headers
+                }
+
+                http.request(options, function (error, response, body) {
+                    let result = body;
+                    console.log(result)
+                })
+            }
+
+        }
+        customElements.define(HtPatBiodigitalDialog.is, HtPatBiodigitalDialog);
+    </script>
+</dom-module>

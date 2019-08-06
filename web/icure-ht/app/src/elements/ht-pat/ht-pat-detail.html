@@ -78,6 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="dialogs/hubs/ht-pat-hub-upload.html">
 <link rel="import" href="../../ht-upload-dialog.html">
 <link rel="import" href="dialogs/ht-pat-triptyque.html">
+<link rel="import" href="ht-pat-biodigital-dialog.html">
 
 
 <link rel="import" href="../../dialog-style.html">
@@ -883,7 +884,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 overflow: hidden;
             }
 
-            #insuranceStatus, #hubStatus, #tlStatus, #consentStatus, #edmgStatus, #ebmPracticeNet, #cbipLink  {
+            #insuranceStatus, #hubStatus, #tlStatus, #consentStatus, #edmgStatus, #ebmPracticeNet, #cbipLink, #biodigital{
                 --paper-fab-background: var(--app-background-color-dark);
                 --paper-fab-keyboard-focus-background: var(--app-background-color);
                 color: var(--app-primary-color-dark);
@@ -1650,6 +1651,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                         <paper-tooltip for="ebmPracticeNet">[[localize('adm_ebm','ebmPracticeNet',language)]]</paper-tooltip>
                                         <paper-fab id="cbipLink" mini on-tap="_linkToCBIP" src="[[_cbipPicture()]]"></paper-fab>
                                         <paper-tooltip for="cbipLink">[[localize('cbip','CBIP',language)]]</paper-tooltip>
+                                        <paper-fab id="biodigital" mini icon="icons:3d-rotation" on-tap="_openBiodigitalDialog"></paper-fab>
+                                        <paper-tooltip for="biodigital">3D by biodigital</paper-tooltip>
                                     </div>
                                 </div>
                             </paper-item>
@@ -2062,6 +2065,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             </div>
         </health-problem-selector>
+
+        <ht-pat-biodigital-dialog id="biodigitalDialog" api="[[api]]" i18n="[[i18n]]" resources="[[resources]]" language="[[language]]"></ht-pat-biodigital-dialog>
 
         <health-problem-selector id="edit-healthelement-dialog" api="[[api]]" i18n="[[i18n]]" resources="[[resources]]" language="[[language]]" on-open-health-problem="_composeHistory" data-provider="[[_healthElementsSelectorDataProvider()]]" on-entity-selected="_editedHealthElementSelected" entity-type="[[localize('hp','Health Problem',language)]]" entity="{{heEntity}}" ok-label="[[localize('save','Save',language)]]">
             <div class="extraDialogFields" slot="suffix">
@@ -5621,31 +5626,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _handleError(e) {
                 this.shadowRoot.querySelector("#upload-dialog").showErrorMessage(e);
             }
+                                                                                                                  
+                                                                                                                  _openTriptyqueDialog(e) {
+                                                                                                                  const triptyqueType = _.trim(_.get(e,"detail.type","physiotherapist"))
+                                                                                                                  return this.$['triptyqueDialog'].open({_dialogParameters: {triptyqueType:triptyqueType}});
+                                                                                                                  }
+                                                                                                                  
+                                                                                                                  _triptyqueDialogClosed(e) {
+                                                                                                                  // Todo: something...
+                                                                                                                  }
+                                                                                                                
+                                                                                                            
 
 
-
-
-
-
-
-
-
-
-
-            _openTriptyqueDialog(e) {
-                const triptyqueType = _.trim(_.get(e,"detail.type","physiotherapist"))
-                return this.$['triptyqueDialog'].open({_dialogParameters: {triptyqueType:triptyqueType}});
+            _openBiodigitalDialog(e){
+                e.stopPropagation();
+                this.$['biodigitalDialog'].open();
             }
-
-            _triptyqueDialogClosed(e) {
-                // Todo: something...
-            }
-
-
-
-
-
-
         }
 
         customElements.define(HtPatDetail.is, HtPatDetail);
