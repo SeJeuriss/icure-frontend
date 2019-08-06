@@ -198,14 +198,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 --paper-toggle-button-unchecked-ink-color: var(--paper-red-900);
             }
 
+            .form-container{
+                height: calc(100% - 120px);
+                overflow: auto;
+            }
+
+            #activeUsersList{
+                height: 100%;
+            }
+
         </style>
 
         <div class="forms-panel">
             <h4 class="panel-title">[[localize('man_forms', 'Management - Forms', language)]]</h4>
-
+            <h4>[[localize('adm-form-list-of-form', 'Form list', language)]]</h4> <!--<iron-icon icon="vaadin:database" on-tap="_createAllFieldBySpecialityInDb"></iron-icon>-->
             <div>
-                <h4>[[localize('adm-form-list-of-form', 'Form list', language)]]</h4> <!--<iron-icon icon="vaadin:database" on-tap="_createAllFieldBySpecialityInDb"></iron-icon>-->
-                <vaadin-grid id="activeUsersList" class="material grid" items="[[listForms]]" active-item="{{selectedForm}}">
+                <paper-input class="m0 mr10" value="{{formFilter}}" label="[[localize('search','Search',language)]]:"></paper-input>
+            </div>
+            <div class="form-container">
+                <vaadin-grid id="activeUsersList" class="material grid" items="[[vaadinGridDataToShow]]" active-item="{{selectedForm}}">
                     <vaadin-grid-column>
                         <template class="header">
                             [[localize('Id','Id',language)]]
@@ -405,6 +416,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Array,
                         value: () => []
                     },
+                    vaadinGridDataToShow:{
+                        type: Array,
+                        value: () => []
+                    },
                     tabs: {
                         type: Number,
                         value: 0
@@ -412,13 +427,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     selectedFormData:{
                         type: Object,
                         value: () => {}
+                    },
+                    formFilter:{
+                        type: String,
+                        value: null
                     }
 
                 }
             }
 
             static get observers() {
-                return ['_initFormsDataProvider(user)', '_selectedFormChanged(selectedForm)', '_initCodeMirror(tabs)'];
+                return ['_initFormsDataProvider(user)', '_selectedFormChanged(selectedForm)', '_initCodeMirror(tabs)', '_formFilterChanged(formFilter)'];
             }
 
             constructor() {
@@ -469,9 +488,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             */
 
             _initFormsDataProvider(){
-                this.api.form().findFormTemplatesBySpeciality('deptkinesitherapy').then(forms => {
-                    this.set('listForms', _.orderBy(forms, 'group.name'))
-                })
+                this.api.form().findFormTemplatesBySpeciality('deptkinesitherapy')
+                    .then(forms => Promise.all([forms, this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, 'dept', null, null, 200)]))
+                    .then(([forms, listOfHcp]) => {
+                        this.set('listForms', forms.map(form =>
+                            _.assign(form, {
+                                normalizedSearchTerms: _.map(_.uniq(_.compact(_.flatten(_.concat([_.get(form, 'name', ''), _.get(form, 'layout.group', ''), _.get(form, 'layout.name', ''), _.compact(_.get(listOfHcp.rows.find(hcp => hcp.id === form.specialty.id), 'label.'+this.language, ''))])))), i => _.trim(i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")).join(" ")
+                            }))
+                        )
+
+                        this.set('vaadinGridDataToShow', this.listForms)
+                    })
             }
 
             _initCodeMirror(tabs) {
@@ -527,6 +554,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         console.log(listOfFields)
                     })
                 })
+            }
+
+            _formFilterChanged(){
+                if(this.formFilter){
+                    const keywordsString = _.trim(_.get(this,"formFilter","")).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+                    const keywordsArray = _.compact(_.uniq(_.map(keywordsString.split(" "), i=>_.trim(i))))
+
+                    setTimeout(() => {
+                        if(parseInt(_.get(keywordsString,"length",0)) > 2) {
+                            const formsSearchResults =  _.chain(_.get(this, "listForms", []))
+                                .chain(_.get(this, "formFilter", []))
+                                .filter(i => _.size(keywordsArray) === _.size(_.compact(_.map(keywordsArray, keyword => _.trim(_.get(i, "normalizedSearchTerms", "")).indexOf(keyword) > -1))))
+                                .compact()
+                                .uniq()
+                                .orderBy(['layout.group', 'name', 'id'], ['asc', 'asc', 'asc'])
+                                .value()
+
+                            this.set('vaadinGridDataToShow', formsSearchResults)
+
+                        }else{
+                            this.set('vaadinGridDataToShow', this.listForms)
+                        }
+                    }, 100)
+                }
             }
         }
 
