@@ -1939,6 +1939,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     </span>
                                     <template is="dom-if" if="[[events.length]]">
                                         <paper-listbox id="_events_listbox" class="todo-list">
+
+
+
+
+
+
+
+
+
+
+
+
+
                                             <template is="dom-repeat" items="[[events]]" as="e">
                                                 <paper-item id="_svc_[[e.id]]" class$="todo-item [[_lateEventCssClass(e)]]">
                                                     <h4><label class="todo-due-date">[[_dateFormat(e.valueDate)]]</label>[[shortServiceDescription(e)]]</h4>
@@ -1952,6 +1965,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                                     </div>
                                                 </paper-item>
                                             </template>
+
+
+
+
+
+
+
+
+
                                         </paper-listbox>
                                     </template>
                                     <template is="dom-repeat" items="[[contactYears]]" as="contactYear">
@@ -3701,7 +3723,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             filterEvents() {
-                const filteredEvents = this.api.contact().filteredServices(this.contacts, s => s.tags.some(t => t.type === 'CD-LIFECYCLE')).filter(s => s.tags.some(t => t.type === 'CD-LIFECYCLE' && (t.code === 'planned' || t.code === 'pending')))
+                const filteredEvents = this.api.contact().filteredServices(this.contacts, s => s.tags.some(t => t.type === 'CD-LIFECYCLE')).filter(s => s.tags.some(t => t.type === 'CD-LIFECYCLE' && (t.code === 'planned' || t.code === 'pending' || t.code === 'reported')))
                 this.set('events', _.sortBy(filteredEvents, it => this.api.moment(it.valueDate)));
             }
 
