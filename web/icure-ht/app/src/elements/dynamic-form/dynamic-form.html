@@ -280,7 +280,7 @@
 									<template is="dom-if" if="[[_isTextField(layoutItem)]]">
 										<dynamic-text-field id="[[_sanitizeId(layoutItem.name)]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
 										 i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkableHealthElements]]" last-modified="[[_lastModified(layoutItem)]]" pattern="[[layoutItem.editor.pattern]]"
-										 value="[[_value(layoutItem,dataMap.*)]]" api="[[api]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]" linksMax="[[_linksDataSource(layoutItem)]]"></dynamic-text-field>
+										 value="[[_value(layoutItem,dataMap.*)]]" api="[[api]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]" linked-info="[[_linksDataSource(layoutItem)]]"></dynamic-text-field>
 									</template>
 									<template is="dom-if" if="[[_isTextArea(layoutItem)]]">
 										<dynamic-text-area id="[[_sanitizeId(layoutItem.name)]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
@@ -779,9 +779,11 @@
 			}
 
 			_linksDataSource(d){
-				const ds = d.tags.find(tag => tag.code === "care.topaz.form")
+				const ds = d.tags.find(tag => tag.type === "care.topaz.form")
+				const dso = { source: "codes", types: [ds.type], code: ds.code}
 				const uuid = this.api.crypto().randomUuid()
-				return d && d.tags && this.dataProvider && this.dataProvider.filter ? this.dataProvider.filter(ds, null, uuid, ds.code) || Promise.resolve([]): [];
+
+				return d && dso && d.tags && this.dataProvider && this.dataProvider.filter ? this.dataProvider.filter(dso, null, uuid, dso.code) || Promise.resolve([]): Promise.resolve([]);
 			}
 
 			_popupDataSource(d, options) {

@@ -8,10 +8,10 @@
 
 <dom-module id="dynamic-info">
     <template>
-        <style include="icpc-styles">
+        <style>
             paper-menu-button {
                 padding: 0;
-                color: grey;
+                color: red;
             }
 
             paper-icon-button {
@@ -63,17 +63,27 @@
         </style>
 
 
-        <template is="dom-if" if="[[_display(linkables, initialised)]]">
-            <template is="dom-if" if="[[!readOnly]]">
-                <template is="dom-if" if="[[!noStatus]]">
-                    <paper-menu-button id="stat" horizontal-align="left" dynamic-align="true" opened="{{statusOpened}}" allow-outside-scroll>
-                        <paper-icon-button id="stat_menu" class="form-title-bar-btn" icon="more-horiz" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
-                        <paper-listbox slot="dropdown-content">
-
-                        </paper-listbox>
-                    </paper-menu-button>
-                </template>
-            </template>
+        <template is="dom-if" if="[[_display(linkedInfo, initialised, linkedInfo.*)]]">
+            <paper-menu-button id="menu-info" horizontal-align="left" dynamic-align="true" opened="{{opened}}" allow-outside-scroll>
+                <paper-icon-button id="info_menu" class="form-title-bar-btn" icon="link" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
+                <paper-tooltip for="subctc-type">[[localize('contact_type','Contact type',language)]]</paper-tooltip>
+                <paper-listbox slot="dropdown-content">
+                    <template is="dom-if" if="[[statusOpened]]">
+                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                            <iron-icon icon="vaadin:info-circle-o" class="dropdown_icon"></iron-icon>
+                            Links
+                        </paper-item>
+                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                            <iron-icon icon="vaadin:external-link" class="dropdown_icon"></iron-icon>
+                            External links
+                        </paper-item>
+                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                            <iron-icon icon="vaadin:presentation" class="dropdown_icon"></iron-icon>
+                            Video
+                        </paper-item>
+                    </template>
+                </paper-listbox>
+            </paper-menu-button>
         </template>
     </template>
     <script>
@@ -102,10 +112,6 @@
                         type: Boolean,
                         value: false,
                         observer: '_opened'
-                    },
-                    statusOpened: {
-                        type: Boolean,
-                        value: false
                     },
                     openedOnce: {
                         type: Boolean,
@@ -145,16 +151,16 @@
                 e.preventDefault();
                 e.stopPropagation();
 
-                if(e.target.id === "stat_menu"){
-                    this.root.querySelector('#stat').open();
-                }else{
-                    this.root.querySelector('#mb').open();
+                if(e.target.id === "info_menu"){
+                    this.root.querySelector('#menu-info').open();
                 }
 
             }
 
-            _display(linkables, initialised) {
-                return linkables && linkables.length && (!this.delayed || initialised)
+            _display(linkedInfo, initialised) {
+                if(!this.delayed || initialised){
+                  return true
+                }
             }
 
         }
