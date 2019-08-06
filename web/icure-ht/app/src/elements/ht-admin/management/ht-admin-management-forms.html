@@ -517,7 +517,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 e.stopPropagation()
                 if(e.target.id && e.target.checked){
                     console.log(e.target.id)
-                    //todo
+                    let form = this.listForms.find(form => form.id === e.target.id)
+                    form.disabled = e.target.checked
+                    this.api.form().modifyForm(form).then(form => {
+                        console.log(form)
+                    })
                 }
             }
 
