@@ -8,7 +8,7 @@
 
 <dom-module id="dynamic-info">
     <template>
-        <style>
+        <style include="shared-styles">
             paper-menu-button {
                 padding: 0;
                 color: grey
@@ -59,6 +59,26 @@
                 color: var(--paper-grey-400);
             }
 
+            #description-dialog{
+                height: 250px;
+                width: 500px;
+            }
+
+            .description-content{
+                height: 150px;
+                overflow: auto;
+            }
+
+            .buttons {
+                position: initial;
+                display: flex;
+                background: var(--app-background-color);
+                z-index: 10;
+                bottom: 0;
+                right: 0;
+                box-sizing: border-box;
+            }
+
 
         </style>
 
@@ -88,6 +108,17 @@
                 </paper-listbox>
             </paper-menu-button>
         </template>
+
+        <paper-dialog id="description-dialog">
+            <h4>Description</h4>
+            <div class="description-content">
+                [[linkedInfo.0.appendices.description]]
+            </div>
+            <div class="buttons">
+                <paper-button class="modal-button" on-tap="_closeDescriptionDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+            </div>
+        </paper-dialog>
+
     </template>
     <script>
 
@@ -161,7 +192,7 @@
 
             _showDescription(e){
                 e.stopPropagation()
-                _.get(this, 'linkedInfo.0.appendices.description', null)  !== null ? this._openDesscription : null
+                _.get(this, 'linkedInfo.0.appendices.description', null)  !== null ? this.$['description-dialog'].open() : null
             }
 
             _redirectToLink(e){
@@ -175,8 +206,8 @@
                 _.get(this, 'linkedInfo.0.appendices.video', null) !== null ? window.open(_.get(this, 'linkedInfo.0.appendices.video', null),'_blank') : null
             }
 
-            _openDesscription(){
-
+            _closeDescriptionDialog(){
+                this.$['description-dialog'].close()
             }
 
             _isDescription(info){
