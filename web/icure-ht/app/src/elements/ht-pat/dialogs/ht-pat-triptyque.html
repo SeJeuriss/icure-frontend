@@ -2176,13 +2176,8 @@
 
             //         FABIEN
             //
-            //         - Repasser sur les endroits qui dépendent de _.get(this,"_vaadinGridPlanOfActionSelectedItem",{}) ==> won't be set when adding new POA
-            //              ==> Qqch du genre !!_.trim(_.get(currentPoa,"poaId","")) ? _.trim(_.get(currentPoa,"poaId","")) : _.trim(_.get(this,"_dialogData.lastNewPoaId","")),
-            //              ==> Idem dans _loadProcedureDetails
-
             //         - Bug placement / position dialog triptyque lors ouverture / si déjà ouvert && si navigate autres onglets ==> zoom in/out triggers it
             //         - Repasser sur procédures: obtention de .description + .externalLink + .video
-            //         - Cache un max de data / ne pas tout recharger à chaque fois / faire diff là où makes sense ensuite seulement load le cas échéant
             //         - Double check tout ok infirmières
             //         - Bouton fermer: par défaut le vertical-tab actif, cascase jusqu'à close detail, listing, dialog
             //         - Menu "..." verticaux + quels actions sur quelle tabs / niveau ? Detail: envoyer vers la mutuelle / demande de prolongation /

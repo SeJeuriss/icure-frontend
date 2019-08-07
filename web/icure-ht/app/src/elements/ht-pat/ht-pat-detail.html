@@ -1961,9 +1961,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                                     <div class="todo-actions">
                                                         <paper-icon-button id="event-btn-edit_[[e.id]]" class="action-edit-btn" icon="create" on-tap="_toggleActionButton"></paper-icon-button>
                                                         <paper-tooltip position="left" for="event-btn-edit_[[e.id]]">[[localize('edi','Edit',language)]]</paper-tooltip>
-                                                        <paper-icon-button id="event-btn-close_[[e.id]]" class="action-edit-btn hideable" icon="done" on-tap="completeEvent"></paper-icon-button>
+                                                        <paper-icon-button id="event-btn-close_[[e.id]]" data-service-id="[[e.id]]" data-triptyque-contact-id="[[e.triptyqueContactId]]" class="action-edit-btn hideable" icon="done" on-tap="completeEvent"></paper-icon-button>
                                                         <paper-tooltip position="left" for="event-btn-close_[[e.id]]">[[localize('arc','Archive',language)]]</paper-tooltip>
-                                                        <paper-icon-button id="event-btn-done_[[e.id]]" class="action-edit-btn hideable" icon="clear" on-tap="clearEvent"></paper-icon-button>
+                                                        <paper-icon-button id="event-btn-done_[[e.id]]" data-service-id="[[e.id]]" data-triptyque-contact-id="[[e.triptyqueContactId]]" class="action-edit-btn hideable" icon="clear" on-tap="clearEvent"></paper-icon-button>
                                                         <paper-tooltip position="left" for="event-btn-done_[[e.id]]">[[localize('mark_as_aborted','Marquer comme abandonnée',language)]]</paper-tooltip>
                                                     </div>
                                                 </paper-item>
@@ -3608,36 +3608,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            clearEvent(el) {
-                const svcId = el.target.id.substr("event-btn-done_".length);
-                const svc = this.get('events').find(s => s.id === svcId);
-
-                const t = svc.tags.find(t => t.type === 'CD-LIFECYCLE');
-                if (t) {
-                    t.code = 'aborted';
-                    t.id = "CD-LIFECYCLE|aborted|1"
-                    if (!this.currentContact) {
-                        return;
-                    }
-                    this.saveNewService(svc).then(c => this.filterEvents());
-                }
-            }
-
-            completeEvent(el) {
-                const svcId = el.target.id.substr("event-btn-close_".length);
-                const svc = this.get('events').find(s => s.id === svcId);
-
-                const t = svc.tags.find(t => t.type === 'CD-LIFECYCLE');
-                if (t) {
-                    t.code = 'completed';
-                    t.id = "CD-LIFECYCLE|completed|1"
-                    if (!this.currentContact) {
-                        return;
-                    }
-                    this.saveNewService(svc).then(c => this.filterEvents());
-                }
-            }
-
             _planAction(svc) {
                 this.$.planActionForm.open(svc)
             }
@@ -3731,7 +3701,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             filterEvents() {
                 const filteredEvents = this.api.contact().filteredServices(this.contacts, s => s.tags.some(t => t.type === 'CD-LIFECYCLE')).filter(s => s.tags.some(t => t.type === 'CD-LIFECYCLE' && (t.code === 'planned' || t.code === 'pending' || t.code === 'reported')))
-                this.set('events', _.sortBy(filteredEvents, it => this.api.moment(it.valueDate)));
+                this.set('events', _.sortBy(_.map(filteredEvents, event => _.merge({}, event, {triptyqueContactId: !!_.size(_.find(_.get(_.find(this.contacts, {id: _.trim(_.get(event,"contactId",""))}), "tags",[]), {code:"triptyque"}))?_.trim(_.get(event,"contactId","")):""})), it => this.api.moment(it.valueDate)));
             }
 
             _lateEventCssClass(e) {
@@ -5675,6 +5645,68 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _triptyqueDialogClosed(e) {
                 return this._refreshFromServices()
+            }
+
+            clearEvent(el) {
+
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(el,"target","")) && _.get(el,"target.nodeName","") === "PAPER-ICON-BUTTON" ? _.get(el,"target",{}) : _.find( _.get(el,"path",[]), p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
+                const serviceId = _.get(targetButton,"dataServiceId","")
+                const triptyqueContactId = _.get(targetButton,"dataTriptyqueContactId","")
+                const triptyqueContactObject = _.find(_.get(this,"contacts",[]),{id:triptyqueContactId})
+
+                return !!_.trim(triptyqueContactId) && !!_.size(triptyqueContactObject) ? promResolve
+                        .then(() => {
+                            const originalServiceData = _.find(_.get(triptyqueContactObject,"services",[]),{id:serviceId})
+                            const updatedServiceData = _.assign({}, originalServiceData, {tags: _.map(_.get(originalServiceData,"tags",[]), t => _.trim(_.get(t,"type","")) !== "CD-LIFECYCLE" ? t : { id: "CD-LIFECYCLE|aborted|1", type: "CD-LIFECYCLE", code: 'aborted', version: 1 })})
+                            const servicesToKeep = _.filter(_.get(triptyqueContactObject,"services",[]), i => _.trim(_.get(i,"id","")) !== _.trim(_.get(updatedServiceData,"id","")))
+                            triptyqueContactObject.services = _.concat(servicesToKeep, updatedServiceData)
+                            return !_.size(updatedServiceData) || !_.trim(_.get(triptyqueContactObject,"id","")) ? null : this.saveContact(triptyqueContactObject)
+                        }) :
+                    promResolve
+                        .then(() => {
+                            if (!this.currentContact) return promResolve
+                            const svcId = el.target.id.substr("event-btn-done_".length);
+                            const svc = this.get('events').find(s => s.id === svcId);
+                            const t = svc.tags.find(t => t.type === 'CD-LIFECYCLE');
+                            if (t) {
+                                t.code = 'aborted'
+                                t.id = "CD-LIFECYCLE|aborted|1";
+                                return this.saveNewService(svc).then(c => this.filterEvents());
+                            }
+                        })
+
+            }
+
+            completeEvent(el) {
+
+                const promResolve = Promise.resolve();
+                const targetButton = !!_.size(_.get(el,"target","")) && _.get(el,"target.nodeName","") === "PAPER-ICON-BUTTON" ? _.get(el,"target",{}) : _.find( _.get(el,"path",[]), p => _.get(p,"nodeName","") === "PAPER-ICON-BUTTON")
+                const serviceId = _.get(targetButton,"dataServiceId","")
+                const triptyqueContactId = _.get(targetButton,"dataTriptyqueContactId","")
+                const triptyqueContactObject = _.find(_.get(this,"contacts",[]),{id:triptyqueContactId})
+
+                return !!_.trim(triptyqueContactId) && !!_.size(triptyqueContactObject) ? promResolve
+                    .then(() => {
+                        const originalServiceData = _.find(_.get(triptyqueContactObject,"services",[]),{id:serviceId})
+                        const updatedServiceData = _.assign({}, originalServiceData, {tags: _.map(_.get(originalServiceData,"tags",[]), t => _.trim(_.get(t,"type","")) !== "CD-LIFECYCLE" ? t : { id: "CD-LIFECYCLE|completed|1", type: "CD-LIFECYCLE", code: 'completed', version: 1 })})
+                        const servicesToKeep = _.filter(_.get(triptyqueContactObject,"services",[]), i => _.trim(_.get(i,"id","")) !== _.trim(_.get(updatedServiceData,"id","")))
+                        triptyqueContactObject.services = _.concat(servicesToKeep, updatedServiceData)
+                        return !_.size(updatedServiceData) || !_.trim(_.get(triptyqueContactObject,"id","")) ? null : this.saveContact(triptyqueContactObject)
+                    }) :
+                    promResolve
+                        .then(() => {
+                            if (!this.currentContact) return promResolve
+                            const svcId = el.target.id.substr("event-btn-close_".length);
+                            const svc = this.get('events').find(s => s.id === svcId);
+                            const t = svc.tags.find(t => t.type === 'CD-LIFECYCLE');
+                            if (t) {
+                                t.code = 'completed'
+                                t.id = "CD-LIFECYCLE|completed|1";
+                                return this.saveNewService(svc).then(c => this.filterEvents());
+                            }
+                        })
+
             }
 
         }
