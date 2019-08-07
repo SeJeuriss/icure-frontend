@@ -158,8 +158,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <h4 class="panel-title">[[localize('man_procs', 'Management - Procedures', language)]]</h4>
             <div class="procedures-list">
                 <div>
-                    <div class="mr10 pt15">[[localize('search','Search',language)]]: </div>
-                    <paper-input class="m0 mr10" value="{{procedureFilter}}"></paper-input>
+                    <paper-input class="m0 mr10" value="{{procedureFilter}}" label="[[localize('search','Search',language)]]:"></paper-input>
                 </div>
                 <vaadin-grid id="vaadinProceduresGrid" class="material" width="100%" items="[[vaadinGridDataToShow]]" active-item="{{selectedProcedure}}" pageSize="[[_vaadinGridMaxItemsPerPage]]" on-selected-items-changed="_gridSelectedItemsChanged">
                     <vaadin-grid-column>

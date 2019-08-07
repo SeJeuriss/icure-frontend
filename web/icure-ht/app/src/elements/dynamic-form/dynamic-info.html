@@ -1,0 +1,169 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+
+
+
+<dom-module id="dynamic-info">
+    <template>
+        <style>
+            paper-menu-button {
+                padding: 0;
+                color: red;
+            }
+
+            paper-icon-button {
+                padding: 0 4px 8px 4px;
+                width: 20px;
+                height: 20px;
+            }
+
+            .link .colour-code span {
+                content: '';
+                display: inline-block;
+                height: 6px;
+                width: 6px;
+                border-radius: 3px;
+                margin-right: 3px;
+                margin-bottom: 1px;
+            }
+
+            paper-item {
+                font-size: 14px;
+                min-height: 30px;
+            }
+
+            .dropdown_icon{
+                height: 12px;
+            }
+
+            .status_icon{
+                height: 8px;
+            }
+
+            .stat_act{
+                color: var( --paper-green-400);
+            }
+
+            .stat_pass_rev{
+                color: var(--paper-orange-400);
+            }
+
+            .stat_pass_n_rev{
+                color: var( --paper-red-400);
+            }
+
+            .stat_not_pres{
+                color: var(--paper-grey-400);
+            }
+
+
+        </style>
+
+
+        <template is="dom-if" if="[[_display(linkedInfo, initialised, linkedInfo.*)]]">
+            <paper-menu-button id="menu-info" horizontal-align="left" dynamic-align="true" opened="{{opened}}" allow-outside-scroll>
+                <paper-icon-button id="info_menu" class="form-title-bar-btn" icon="link" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
+                <paper-tooltip for="subctc-type">[[localize('contact_type','Contact type',language)]]</paper-tooltip>
+                <paper-listbox slot="dropdown-content">
+                    <template is="dom-if" if="[[statusOpened]]">
+                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                            <iron-icon icon="vaadin:info-circle-o" class="dropdown_icon"></iron-icon>
+                            Links
+                        </paper-item>
+                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                            <iron-icon icon="vaadin:external-link" class="dropdown_icon"></iron-icon>
+                            External links
+                        </paper-item>
+                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                            <iron-icon icon="vaadin:presentation" class="dropdown_icon"></iron-icon>
+                            Video
+                        </paper-item>
+                    </template>
+                </paper-listbox>
+            </paper-menu-button>
+        </template>
+    </template>
+    <script>
+
+        class DynamicInfo extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'dynamic-info';
+            }
+
+            static get properties() {
+                return {
+                    api: {
+                        type: Object
+                    },
+                    linkables: {
+                        type: Array
+                    },
+                    representedObject: {
+                        type: Object
+                    },
+                    noStatus: {
+                        type: Boolean,
+                        value: false
+                    },
+                    opened: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_opened'
+                    },
+                    openedOnce: {
+                        type: Boolean,
+                        value: false
+                    },
+                    initialised: {
+                        type: Boolean,
+                        value: false
+                    },
+                    delayed: {
+                        type: Boolean,
+                        value: true
+                    }
+                };
+            }
+
+            static get observers() {
+                return [];
+            }
+
+            ready() {
+                super.ready();
+                if (this.delayed) {
+                    setTimeout(() => this.set('initialised', true), 100)
+                }
+            }
+
+            _opened(b) {
+                this.set('openedOnce', b || this.openedOnce)
+            }
+
+            _linkables(links,b) {
+                return b ? links: []
+            }
+
+            _show(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if(e.target.id === "info_menu"){
+                    this.root.querySelector('#menu-info').open();
+                }
+
+            }
+
+            _display(linkedInfo, initialised) {
+                if(!this.delayed || initialised){
+                  return true
+                }
+            }
+
+        }
+        customElements.define(DynamicInfo.is, DynamicInfo);
+    </script>
+</dom-module>

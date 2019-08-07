@@ -961,9 +961,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         .then(form => {
                             let fields = _.uniqBy(_.get(form, 'layout.sections[0].formColumns[0].formDataList', []), 'name')
 
-                            this.api.code().getCodes(fields.map(field => 'care.topaz.form.field|'+field.name+'|1').join(',')).then(codes => {
+                            this.api.code().getCodes(fields.map(field => 'care.topaz.form|'+field.name+'|1').join(',')).then(codes => {
                                 console.log(codes)
-                                this.set('selectedFormData', _.assign(form, {listOfFields: fields.map(f => codes.find(c => c.code === f.name) ? _.assign(f, {code: codes.find(c => c.code === f.name)}) : _.assign(f, {code: {links: [], appendices: {externalLink: null, video: null, description: null}, label: f.label, code: f.name, type: 'care.topaz.form.field'}}))}))
+                                this.set('selectedFormData', _.assign(form, {listOfFields: fields.map(f => codes.find(c => c.code === f.name) ? _.assign(f, {code: codes.find(c => c.code === f.name)}) : _.assign(f, {code: {links: [], appendices: {externalLink: null, video: null, description: null}, label: f.label, code: f.name, type: 'care.topaz.form'}}))}))
                             })
                         })
                         .finally(() => {
