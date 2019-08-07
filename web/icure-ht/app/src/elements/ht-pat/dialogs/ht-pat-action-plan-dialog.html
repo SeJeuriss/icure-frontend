@@ -266,6 +266,14 @@
                             {
                                 "id"       : "proposed",
                                 "label": {"fr": "Rappel envoyé", "nl": "Herinnering verzonden", "en": "Reminder sent"}
+                            },
+                            {
+                                "id"       : "cancelled",
+                                "label": {"fr": "Annulé", "nl": "cancelled", "en": "cancelled"}
+                            },
+                            {
+                                "id"       : "reported",
+                                "label": {"fr": "Prolongé", "nl": "Prolonged", "en": "Prolonged"}
                             }
                         ]
                     },
@@ -463,9 +471,10 @@
                 let listFiltered=[]
                 const procedureCode = this.proceduresListItem.find(p=> p.code===code)
                 if(procedureCode) {
-                    procedureCode.links.filter(link => link.includes("CD-HCPARTY|")).map(link => {
+                    _.get(procedureCode,"links",[]).filter(link => link.includes("CD-HCPARTY|")).map(link => {
                         const info = link.split('|')
-                        listFiltered.push(this.hcpartyTypeList.find(type => type.code === info[1]))
+                        const codeToAdd = this.hcpartyTypeList.find(type => type.code === info[1])
+                        if(!!_.size(codeToAdd)) listFiltered.push()
                     })
                 }
                 this.set("hcpartyTypeListFiltered",listFiltered)
@@ -636,7 +645,7 @@
                 const action = this.plannedAction
                 const contactId = this.currentContact.id
                 const responsible = action.HcpId && action.HcpId !== "" ? action.HcpId : this.user.healthcarePartyId
-                const valueDate = action.Deadline && action.Deadline !== "" ? this.api.moment(action.Deadline).format('YYYYMMDD') : ""
+                const valueDate = action.Deadline && action.Deadline !== "" ? parseInt(this.api.moment(action.Deadline).format('YYYYMMDD'))||null : null
 
                 if (!action || !contactId || !valueDate) {
                     this.set('errMsg',this.localize('some_mandat_fields','Some fields are mandatory',this.language))
@@ -667,15 +676,15 @@
                 this.service.responsible= responsible
                 this.service.content= {
                     fr: {
-                        stringValue: action.ProcedureInfo.label.fr,
+                        stringValue: _.trim(_.get(action,"ProcedureInfo.label.fr","")),
                         medicationValue: medication
                     },
                     nl: {
-                        stringValue: action.ProcedureInfo.label.nl,
+                        stringValue: _.trim(_.get(action,"ProcedureInfo.label.nl","")),
                         medicationValue: medication
                     },
                     en: {
-                        stringValue: action.ProcedureInfo.label.nl,
+                        stringValue: _.trim(_.get(action,"ProcedureInfo.label.en","")),
                         medicationValue: medication
                     }
                 }
@@ -687,9 +696,10 @@
                 this.service.tags= []
 
                 const status = {
+                    id: "CD-LIFECYCLE|" + action.Status + "|1",
                     type: "CD-LIFECYCLE",
                     code: action.Status,
-                    version: "1.0",
+                    version: "1",
                 }
                 if (action.Status === "refused") status.label = {fr: action.ReasonOfRef}
                 this.service.tags.push(status)

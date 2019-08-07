@@ -706,14 +706,14 @@
                     },
                     _defaultLifeCycleId: {
                         type: String,
-                        value: "CD-LIFECYCLE|active|1"
+                        value: "CD-LIFECYCLE|pending|1"
                     },
                     _procedureForm: {
                         type: Object,
                         value: {
                             heHr: "",
                             procedureHr: "",
-                            status: "CD-LIFECYCLE|active|1",
+                            status: "CD-LIFECYCLE|pending|1",
                             careDeadline: null,
                             descr: "",
                             linkedPhysician: "",
@@ -1721,14 +1721,17 @@
                             const subContactServicesIds = _.uniq(_.compact(_.map(_.get(subContact,"services",[]), i => _.trim(_.get(i,"serviceId","")))))
                             const subContactServices = _.filter(_.get(prescriptionContact,"services",[]), i => subContactServicesIds.indexOf( _.trim(_.get(i,"id","")) ) > -1)
 
+                            const actService = _.find(subContactServices, {label:"Actes"})
+                            const statusOfActService = _.chain(subContactServices).find({label:"Actes"}).get("tags",[]).find(i => _.trim(_.get(i,"type","")) === "CD-LIFECYCLE").get("id", _.get(this,"_defaultLifeCycleId")).value()
+
                             return {
                                 subContactId: subContactId,
                                 procedureId: _.trim(_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "procedureId" ), "content." + this.language + ".stringValue", _.trim(_.get(subContact,"codes[0].id")) )),
-                                careDeadline: parseInt(_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "careDeadline" ), "content." + this.language + ".numberValue",""))||null,
-                                status: _.trim(_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "status" ), "content." + this.language + ".stringValue",_.get(this,"_defaultLifeCycleId"))),
                                 linkedPhysician: _.trim(_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "linkedPhysician" ), "content." + this.language + ".stringValue", "" )),
-                                descr: _.trim(_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "descr" ), "content." + this.language + ".stringValue", "" )),
-                                customRehearsal: !!_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "customRehearsal" ), "content." + this.language + ".booleanValue", false )
+                                customRehearsal: !!_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "customRehearsal" ), "content." + this.language + ".booleanValue", false ),
+                                careDeadline: !!parseInt(_.trim(_.get(actService,"valueDate",""))) ? parseInt(_.trim(_.get(actService,"valueDate",""))) : parseInt(_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "careDeadline" ), "content." + this.language + ".numberValue",""))||null,
+                                status: !!_.trim(statusOfActService) ? _.trim(statusOfActService) : _.trim(_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "status" ), "content." + this.language + ".stringValue",_.get(this,"_defaultLifeCycleId"))),
+                                descr: !!_.trim(_.get(actService, "comment","")) ? _.trim(_.get(actService, "comment","")) : _.trim(_.get(_.find(subContactServices, i => _.trim(_.get(i,"label","")) === "descr" ), "content." + this.language + ".stringValue", "" ))
                             }
 
                         }))
@@ -2007,7 +2010,8 @@
                             const sourceContact = _.get(sourceSelectedPrescriptionObject,"contact",{})
                             const subContactToUpdate = _.find(_.get(sourceContact,"subContacts",[]),{descr: _.trim(_.get(this,"_procedureForm.subContactId",""))})
                             const subContactServiceIds = _.compact(_.map(_.get(subContactToUpdate,"services",[]),i=>_.trim(_.get(i,"serviceId",""))))
-                            const selectedLifeCycleObject = _.find(_.get(this,"_dialogData.codes.lifeCycleCodes",[]), i => _.trim(_.get(i,"id","something")) === _.trim(_.get(this,"_procedureForm.status","else")))
+
+                            const selectedLifeCycleObject = _.find(_.get(this,"_dialogData.codes.lifeCycleCodes",[]), i => _.trim(_.get(i,"id","")) === (!!_.trim(_.get(this,"_procedureForm.status","")) ? _.trim(_.get(this,"_procedureForm.status","")) : _.get(this,"_defaultLifeCycleId")))
 
                             // Drop data related to THIS procedure
                             sourceContact.services = _.filter(_.get(sourceContact,"services",[]), i => subContactServiceIds.indexOf(_.trim(_.get(i,"id",""))) === -1 )
@@ -2076,6 +2080,8 @@
                 return promResolve
                     .then(() => _.map(this._linkedProcedureForCurrentPao, procedureToLink => {
 
+                        const selectedLifeCycleObject = _.find(_.get(this,"_dialogData.codes.lifeCycleCodes",[]), i => _.trim(_.get(i,"id","")) === (!!_.trim(_.get(procedureToLink,"status","")) ? _.trim(_.get(procedureToLink,"status","")) : _.get(this,"_defaultLifeCycleId")))
+
                         const newServices = _.map(_.merge({}, {procedureId: _.trim(_.get(procedureToLink,"procedureObject.id",""))}, _.pick(procedureToLink, ["customRehearsal","careDeadline","descr","linkedPhysician","status"])), (v,k) => this.api.contact().service().newInstance(this.user, {
                             label: _.trim(k),
                             content: _.merge({},
@@ -2086,17 +2092,14 @@
                         }))
 
                         // For pat detail events - ht-pat-action-plan-dialog
-                        /*
-                        // Continuer ré-écrire ceci
                         newServices.push(this.api.contact().service().newInstance(this.user, {
                             label: "Actes",
-                            content: _.fromPairs([[this.language,{stringValue:_.trim(_.get(procedureToLink,"labelHr",""))}]]),
+                            content: _.fromPairs([[this.language,{stringValue:_.trim(_.get(procedureToLink,"procedureObject.labelHr",""))}]]),
                             comment: _.trim(_.get(procedureToLink,"descr","")),
                             valueDate: parseInt(_.get(procedureToLink,"careDeadline",null))||null,
-                            codes: [{id:_.trim(_.get(procedureToLink,"_procedureForm.procedureObject.id","")), type:_.trim(_.get(this,"_procedureForm.procedureObject.type","")), code:_.trim(_.get(this,"_procedureForm.procedureObject.code","")), version:_.trim(_.get(this,"_procedureForm.procedureObject.version",""))}],
+                            codes: [{id:_.trim(_.get(procedureToLink,"procedureObject.id","")), type:_.trim(_.get(procedureToLink,"procedureObject.type","")), code:_.trim(_.get(procedureToLink,"procedureObject.code","")), version:_.trim(_.get(procedureToLink,"procedureObject.version",""))}],
                             tags: [{id:_.trim(_.get(selectedLifeCycleObject,"id","")), type:_.trim(_.get(selectedLifeCycleObject,"type","")), code:_.trim(_.get(selectedLifeCycleObject,"code","")), version:_.trim(_.get(selectedLifeCycleObject,"version",""))}]
                         }))
-                        */
 
                         const newSubContact = {
                             codes: [{id:_.trim(_.get(procedureToLink,"procedureObject.id","")), type:_.trim(_.get(procedureToLink,"procedureObject.type","")), code:_.trim(_.get(procedureToLink,"procedureObject.code","")), version:_.trim(_.get(procedureToLink,"procedureObject.version",""))}],
