@@ -969,6 +969,14 @@
                             }
                         });
                     },
+					getFieldInfos: (data, deduplicationUuid, id) => {
+                    	if(_.get(data, 'code', '') === '') {return Promise.resolve([])}
+
+						return this.api.code().getCodes(data.code).then(res => {
+                    		console.log(res)
+                    		return res
+						});
+					},
                     filter: (data, text, deduplicationUuid, id) => {
                         if (data.source !== "codes") { return id ? Promise.resolve({}) : Promise.resolve([]) }
 
@@ -977,8 +985,7 @@
                             	return {
 									'id': res.id,
 									'name': res.label[this.language],
-									'authentic' : true,
-									'appendices': _.get(res, 'appendices', {})
+									'authentic' : true
 								};
                             })
                         }
