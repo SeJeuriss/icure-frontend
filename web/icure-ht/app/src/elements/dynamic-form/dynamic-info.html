@@ -11,7 +11,7 @@
         <style>
             paper-menu-button {
                 padding: 0;
-                color: red;
+                color: grey
             }
 
             paper-icon-button {
@@ -61,25 +61,28 @@
 
 
         </style>
-
-
+        
         <template is="dom-if" if="[[_display(linkedInfo, initialised, linkedInfo.*)]]">
             <paper-menu-button id="menu-info" horizontal-align="left" dynamic-align="true" opened="{{opened}}" allow-outside-scroll>
-                <paper-icon-button id="info_menu" class="form-title-bar-btn" icon="link" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
-                <paper-tooltip for="subctc-type">[[localize('contact_type','Contact type',language)]]</paper-tooltip>
+                <paper-icon-button id="info_menu" class="form-title-bar-btn" icon="vaadin:info-circle" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
+                <paper-tooltip for="subctc-type">[[localize('info','Information',language)]]</paper-tooltip>
                 <paper-listbox slot="dropdown-content">
-                    <template is="dom-if" if="[[statusOpened]]">
-                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                    <template is="dom-if" if="[[_isDescription(linkedInfo, linkedInfo.*)]]">
+                        <paper-item id="" class="link" on-tap="_showDescription">
                             <iron-icon icon="vaadin:info-circle-o" class="dropdown_icon"></iron-icon>
-                            Links
+                            [[localize('info_descr', 'Description', language)]]
                         </paper-item>
-                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                    </template>
+                    <template is="dom-if" if="[[_isExternalLink(linkedInfo, linkedInfo.*)]]">
+                        <paper-item id="" class="link" on-tap="_redirectToLink">
                             <iron-icon icon="vaadin:external-link" class="dropdown_icon"></iron-icon>
-                            External links
+                            [[localize('info_ext-lnk', 'External link', language)]]
                         </paper-item>
-                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                    </template>
+                    <template is="dom-if" if="[[_isVideo(linkedInfo, linkedInfo.*)]]">
+                        <paper-item id="" class="link" on-tap="_redirectToVideo">
                             <iron-icon icon="vaadin:presentation" class="dropdown_icon"></iron-icon>
-                            Video
+                            [[localize('info_vid-lnk', 'Video', language)]]
                         </paper-item>
                     </template>
                 </paper-listbox>
@@ -159,8 +162,40 @@
 
             _display(linkedInfo, initialised) {
                 if(!this.delayed || initialised){
-                  return true
+                    return (_.get('linkedInfo', 'description', null) !== null && _.get('linkedInfo', 'description', null) !== "") || (_.get('linkedInfo', 'externalLink', null) !== null && _.get('linkedInfo', 'externalLink', null) !== "") || (_.get('linkedInfo', 'video', null) !== null && _.get('linkedInfo', 'video', null) !== "")
                 }
+            }
+
+            _showDescription(e){
+                e.stopPropagation()
+                _.get(this, 'linkedInfo.description', null)  !== null ? this._openDesscription : null
+            }
+
+            _redirectToLink(e){
+                e.stopPropagation()
+                _.get(this, 'linkedInfo.externalLink', null) !== null ? window.open(_.get(this, 'linkedInfo.externalLink', null),'_blank') : null
+
+            }
+
+            __redirectToVideo(e){
+                e.stopPropagation()
+                _.get(this, 'linkedInfo.video', null) !== null ? window.open(_.get(this, 'linkedInfo.video', null),'_blank') : null
+            }
+
+            _openDesscription(){
+
+            }
+
+            _isDescription(info){
+                return _.get(info, 'description', null) !== null && _.get(info, 'description', null) !== ""
+            }
+
+            _isExternalLink(info){
+               return _.get(info, 'externalLink', null) !== null && _.get(info, 'externalLink', null) !== ""
+            }
+
+            _isVideo(info){
+               return _.get(info, 'video', null) !== null && _.get(info, 'video', null) !== ""
             }
 
         }
