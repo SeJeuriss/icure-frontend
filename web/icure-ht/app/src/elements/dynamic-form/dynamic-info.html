@@ -61,8 +61,8 @@
 
 
         </style>
-        
-        <template is="dom-if" if="[[_display(linkedInfo, initialised, linkedInfo.*)]]">
+
+        <template is="dom-if" if="[[_display(linkedInfo)]]">
             <paper-menu-button id="menu-info" horizontal-align="left" dynamic-align="true" opened="{{opened}}" allow-outside-scroll>
                 <paper-icon-button id="info_menu" class="form-title-bar-btn" icon="vaadin:info-circle" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
                 <paper-tooltip for="subctc-type">[[localize('info','Information',language)]]</paper-tooltip>
@@ -119,27 +119,22 @@
                     openedOnce: {
                         type: Boolean,
                         value: false
-                    },
-                    initialised: {
-                        type: Boolean,
-                        value: false
-                    },
-                    delayed: {
-                        type: Boolean,
-                        value: true
                     }
                 };
             }
 
             static get observers() {
-                return [];
+                return ['_initialize(dataInfo)'];
             }
 
             ready() {
                 super.ready();
-                if (this.delayed) {
-                    setTimeout(() => this.set('initialised', true), 100)
-                }
+            }
+
+            _initialize(){
+                this.dataInfo.then(code => {
+                    code && code.length > 0 ? this.set('linkedInfo', code) : null
+                })
             }
 
             _opened(b) {
@@ -160,26 +155,24 @@
 
             }
 
-            _display(linkedInfo, initialised) {
-                if(!this.delayed || initialised){
-                    return (_.get('linkedInfo', 'description', null) !== null && _.get('linkedInfo', 'description', null) !== "") || (_.get('linkedInfo', 'externalLink', null) !== null && _.get('linkedInfo', 'externalLink', null) !== "") || (_.get('linkedInfo', 'video', null) !== null && _.get('linkedInfo', 'video', null) !== "")
-                }
+            _display(linkedInfo) {
+                return linkedInfo.length > 0
             }
 
             _showDescription(e){
                 e.stopPropagation()
-                _.get(this, 'linkedInfo.description', null)  !== null ? this._openDesscription : null
+                _.get(this, 'linkedInfo.0.appendices.description', null)  !== null ? this._openDesscription : null
             }
 
             _redirectToLink(e){
                 e.stopPropagation()
-                _.get(this, 'linkedInfo.externalLink', null) !== null ? window.open(_.get(this, 'linkedInfo.externalLink', null),'_blank') : null
+                _.get(this, 'linkedInfo.0.appendices.externalLink', null) !== null ? window.open(_.get(this, 'linkedInfo.0.appendices.externalLink', null),'_blank') : null
 
             }
 
             __redirectToVideo(e){
                 e.stopPropagation()
-                _.get(this, 'linkedInfo.video', null) !== null ? window.open(_.get(this, 'linkedInfo.video', null),'_blank') : null
+                _.get(this, 'linkedInfo.0.appendices.video', null) !== null ? window.open(_.get(this, 'linkedInfo.0.appendices.video', null),'_blank') : null
             }
 
             _openDesscription(){
@@ -187,15 +180,15 @@
             }
 
             _isDescription(info){
-                return _.get(info, 'description', null) !== null && _.get(info, 'description', null) !== ""
+                return _.get(info[0], 'appendices.description', null) !== null && _.get(info[0], 'appendices.description', null) !== ""
             }
 
             _isExternalLink(info){
-               return _.get(info, 'externalLink', null) !== null && _.get(info, 'externalLink', null) !== ""
+               return _.get(info[0], 'appendices.externalLink', null) !== null && _.get(info[0], 'appendices.externalLink', null) !== ""
             }
 
             _isVideo(info){
-               return _.get(info, 'video', null) !== null && _.get(info, 'video', null) !== ""
+               return _.get(info[0], 'appendices.video', null) !== null && _.get(info[0], 'appendices.video', null) !== ""
             }
 
         }

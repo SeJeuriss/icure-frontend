@@ -280,12 +280,12 @@
 									<template is="dom-if" if="[[_isTextField(layoutItem)]]">
 										<dynamic-text-field id="[[_sanitizeId(layoutItem.name)]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
 										 i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkableHealthElements]]" last-modified="[[_lastModified(layoutItem)]]" pattern="[[layoutItem.editor.pattern]]"
-										 value="[[_value(layoutItem,dataMap.*)]]" api="[[api]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]" linked-info="[[_linksDataSource(layoutItem)]]"></dynamic-text-field>
+										 value="[[_value(layoutItem,dataMap.*)]]" api="[[api]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]" data-info="[[_linksDataSource(layoutItem)]]"></dynamic-text-field>
 									</template>
 									<template is="dom-if" if="[[_isTextArea(layoutItem)]]">
 										<dynamic-text-area id="[[_sanitizeId(layoutItem.name)]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
 										 i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkableHealthElements]]" last-modified="[[_lastModified(layoutItem)]]"
-										 value="[[_value(layoutItem,dataMap.*)]]" api="[[api]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]"></dynamic-text-area>
+										 value="[[_value(layoutItem,dataMap.*)]]" api="[[api]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]" data-info="[[_linksDataSource(layoutItem)]]"></dynamic-text-area>
 									</template>
 									<template is="dom-if" if="[[_isCheckboxField(layoutItem)]]">
 										<dynamic-checkbox id="[[_sanitizeId(layoutItem.name)]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
@@ -295,31 +295,31 @@
 									<template is="dom-if" if="[[_isNumberField(layoutItem)]]">
 										<dynamic-number-field id="[[_sanitizeId(layoutItem.name)]]" api="[[api]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
 										 i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkableHealthElements]]" last-modified="[[_lastModified(layoutItem)]]"
-										 value="[[_value(layoutItem,dataMap.*)]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]"></dynamic-number-field>
+										 value="[[_value(layoutItem,dataMap.*)]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]" data-info="[[_linksDataSource(layoutItem)]]"></dynamic-number-field>
 									</template>
 									<template is="dom-if" if="[[_isMeasureField(layoutItem)]]">
 										<dynamic-measure-field id="[[_sanitizeId(layoutItem.name)]]" api="[[api]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]"
 										 is-modified-after="[[_isModifiedAfter(layoutItem)]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"
 										 linkables="[[linkableHealthElements]]" last-modified="[[_lastModified(layoutItem)]]" value-with-unit="[[_value(layoutItem,dataMap.*)]]"
-										 width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]"></dynamic-measure-field>
+										 width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]" data-info="[[_linksDataSource(layoutItem)]]"></dynamic-measure-field>
 									</template>
 									<template is="dom-if" if="[[_isPopupMenu(layoutItem)]]">
 										<dynamic-popup-menu id="[[_sanitizeId(layoutItem.name)]]" api="[[api]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
 										 i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" data-source="[[_popupDataSource(layoutItem, layoutItem.editor.menuOptions)]]"
 										 linkables="[[linkableHealthElements]]" last-modified="[[_lastModified(layoutItem)]]" value="[[_value(layoutItem,dataMap.*)]]"
 										 width="[[layoutItem.editor.flow]]" options="[[layoutItem.editor.menuOptions]]" on-field-changed="_valueChanged"
-										 read-only="[[readOnly]]" display-all-always="[[layoutItem.editor.displayAllAlways]]" is-free-text="[[layoutItem.editor.isFreeText]]"></dynamic-popup-menu>
+										 read-only="[[readOnly]]" display-all-always="[[layoutItem.editor.displayAllAlways]]" is-free-text="[[layoutItem.editor.isFreeText]]" data-info="[[_linksDataSource(layoutItem)]]"></dynamic-popup-menu>
 									</template>
 									<template is="dom-if" if="[[_isDateField(layoutItem)]]">
 										<dynamic-date-field id="[[_sanitizeId(layoutItem.name)]]" api="[[api]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
 										 linkables="[[linkableHealthElements]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" last-modified="[[_lastModified(layoutItem)]]"
-										 value="[[_value(layoutItem,dataMap.*)]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]"></dynamic-date-field>
+										 value="[[_value(layoutItem,dataMap.*)]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueChanged" read-only="[[readOnly]]" disabled="[[disabled]]" data-info="[[_linksDataSource(layoutItem)]]"></dynamic-date-field>
 									</template>
 									<template is="dom-if" if="[[_isValueDateField(layoutItem)]]">
 										<dynamic-date-field id="[[_sanitizeId(layoutItem.name)]]" api="[[api]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
 										 linkables="[[linkableHealthElements]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" last-modified="[[_lastModified(layoutItem)]]"
 										 value="[[_valueDate(layoutItem,dataMap.*)]]" width="[[layoutItem.editor.flow]]" on-field-changed="_valueDateChangedWithBooleanSet"
-										 read-only="[[readOnly]]" disabled="[[disabled]]"></dynamic-date-field>
+										 read-only="[[readOnly]]" disabled="[[disabled]]" data-info="[[_linksDataSource(layoutItem)]]"></dynamic-date-field>
 									</template>
 									<template is="dom-if" if="[[_isTokenField(layoutItem)]]">
 										<dynamic-token-field id="[[_sanitizeId(layoutItem.name)]]"  label="[[layoutItem.label]]" key="[[layoutItem.name]]" api="[[api]]" was-modified="[[_wasModified(layoutItem)]]"
@@ -779,14 +779,9 @@
 			}
 
 			_linksDataSource(d){
-				const ds = d.tags.find(tag => tag.type === "care.topaz.form")
+				const ds = _.get(d, 'tags', []).find(tag => tag.type === "care.topaz.form")
 				const uuid = this.api.crypto().randomUuid()
-
-				return d && this.dataProvider && this.dataProvider.getFieldInfos ? this.dataProvider.getFieldInfos(ds, null, uuid, ds.code) : Promise.resolve()
-
-				/*const dso = { source: "codes", types: [ds.type], code: ds.code}
-				const uuid = this.api.crypto().randomUuid()
-				return d && dso && d.tags && this.dataProvider && this.dataProvider.filter ? this.dataProvider.filter(dso, null, uuid, dso.code) || Promise.resolve([]): Promise.resolve([]);*/
+				return d && _.get(ds, 'code', null) && _.get(this, 'dataProvider.getFieldInfos', null) ? this.dataProvider.getFieldInfos(ds, null, uuid, ds.code) : Promise.resolve()
 			}
 
 			_popupDataSource(d, options) {

@@ -31,6 +31,16 @@
 				box-sizing: border-box;
 			}
 
+			dynamic-info{
+				position: absolute;
+				right: 0;
+				top: 15px;
+				height: calc(100% - 17px);
+				background: var(--app-input-background-color);
+				border-radius: 0 4px 0 0;
+				box-sizing: border-box;
+			}
+
 			.modified-icon {
 				width: 18px;
 			}
@@ -121,6 +131,7 @@
 			<iron-autogrow-textarea class$="paper-input-input [[additionalCssClasses]]" slot="input" value="{{value}}" readonly="[[readOnly]]" disabled="[[readOnly]]"></iron-autogrow-textarea>
 		</paper-input-container>
 		<dynamic-link i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkables]]" represented-object="[[key]]" api="[[api]]" read-only="[[readOnly]]"></dynamic-link>
+		<dynamic-info i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" api="[[api]]" data-info="[[dataInfo]]"></dynamic-info>
 	</template>
 	<script>
 class DynamicTextArea extends Polymer.TkLocalizerMixin(Polymer.Element) {
