@@ -29,6 +29,12 @@
 				bottom: 8px;
             }
 
+			dynamic-info{
+				position: absolute;
+				right: 0;
+				bottom: 2px;
+			}
+
 			.modified-icon {
 				width: 18px;
 			}
@@ -93,6 +99,7 @@
 					<input value="{{inputValue::input}}" readonly>
 				</iron-input>
 			</paper-input-container>
+			<dynamic-info i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" api="[[api]]" data-info="[[dataInfo]]"></dynamic-info>
 		</template>
 		<template is="dom-if" if="[[!readOnly]]">
 			<paper-input-container always-float-label="true">
@@ -109,6 +116,7 @@
 				</iron-input>
 			</paper-input-container>
 			<dynamic-link i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkables]]" represented-object="[[key]]" api="[[api]]"></dynamic-link>
+			<dynamic-info i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" api="[[api]]" data-info="[[dataInfo]]"></dynamic-info>
         </template>
 
 	</template>

@@ -975,7 +975,7 @@
 						return this.api.code().getCodes(data.code).then(res => {
                     		console.log(res)
                     		return res
-						});
+						})
 					},
                     filter: (data, text, deduplicationUuid, id) => {
                         if (data.source !== "codes") { return id ? Promise.resolve({}) : Promise.resolve([]) }

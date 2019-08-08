@@ -8,10 +8,10 @@
 
 <dom-module id="dynamic-info">
     <template>
-        <style>
+        <style include="shared-styles">
             paper-menu-button {
                 padding: 0;
-                color: red;
+                color: grey
             }
 
             paper-icon-button {
@@ -59,32 +59,66 @@
                 color: var(--paper-grey-400);
             }
 
+            #description-dialog{
+                height: 250px;
+                width: 500px;
+            }
+
+            .description-content{
+                height: 150px;
+                overflow: auto;
+            }
+
+            .buttons {
+                position: initial;
+                display: flex;
+                background: var(--app-background-color);
+                z-index: 10;
+                bottom: 0;
+                right: 0;
+                box-sizing: border-box;
+            }
+
 
         </style>
 
-
-        <template is="dom-if" if="[[_display(linkedInfo, initialised, linkedInfo.*)]]">
+        <template is="dom-if" if="[[_display(linkedInfo)]]">
             <paper-menu-button id="menu-info" horizontal-align="left" dynamic-align="true" opened="{{opened}}" allow-outside-scroll>
-                <paper-icon-button id="info_menu" class="form-title-bar-btn" icon="link" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
-                <paper-tooltip for="subctc-type">[[localize('contact_type','Contact type',language)]]</paper-tooltip>
+                <paper-icon-button id="info_menu" class="form-title-bar-btn" icon="vaadin:info-circle" slot="dropdown-trigger" alt="menu" on-tap="_show"></paper-icon-button>
+                <paper-tooltip for="subctc-type">[[localize('info','Information',language)]]</paper-tooltip>
                 <paper-listbox slot="dropdown-content">
-                    <template is="dom-if" if="[[statusOpened]]">
-                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                    <template is="dom-if" if="[[_isDescription(linkedInfo, linkedInfo.*)]]">
+                        <paper-item id="" class="link" on-tap="_showDescription">
                             <iron-icon icon="vaadin:info-circle-o" class="dropdown_icon"></iron-icon>
-                            Links
+                            [[localize('info_descr', 'Description', language)]]
                         </paper-item>
-                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                    </template>
+                    <template is="dom-if" if="[[_isExternalLink(linkedInfo, linkedInfo.*)]]">
+                        <paper-item id="" class="link" on-tap="_redirectToLink">
                             <iron-icon icon="vaadin:external-link" class="dropdown_icon"></iron-icon>
-                            External links
+                            [[localize('info_ext-lnk', 'External link', language)]]
                         </paper-item>
-                        <paper-item id="" class="link" on-tap="showPlanActionForm">
+                    </template>
+                    <template is="dom-if" if="[[_isVideo(linkedInfo, linkedInfo.*)]]">
+                        <paper-item id="" class="link" on-tap="_redirectToVideo">
                             <iron-icon icon="vaadin:presentation" class="dropdown_icon"></iron-icon>
-                            Video
+                            [[localize('info_vid-lnk', 'Video', language)]]
                         </paper-item>
                     </template>
                 </paper-listbox>
             </paper-menu-button>
         </template>
+
+        <paper-dialog id="description-dialog">
+            <h4>Description</h4>
+            <div class="description-content">
+                [[linkedInfo.0.appendices.description]]
+            </div>
+            <div class="buttons">
+                <paper-button class="modal-button" on-tap="_closeDescriptionDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+            </div>
+        </paper-dialog>
+
     </template>
     <script>
 
@@ -116,27 +150,22 @@
                     openedOnce: {
                         type: Boolean,
                         value: false
-                    },
-                    initialised: {
-                        type: Boolean,
-                        value: false
-                    },
-                    delayed: {
-                        type: Boolean,
-                        value: true
                     }
                 };
             }
 
             static get observers() {
-                return [];
+                return ['_initialize(dataInfo)'];
             }
 
             ready() {
                 super.ready();
-                if (this.delayed) {
-                    setTimeout(() => this.set('initialised', true), 100)
-                }
+            }
+
+            _initialize(){
+                this.dataInfo.then(code => {
+                    code && code.length > 0 ? this.set('linkedInfo', code) : null
+                })
             }
 
             _opened(b) {
@@ -157,10 +186,40 @@
 
             }
 
-            _display(linkedInfo, initialised) {
-                if(!this.delayed || initialised){
-                  return true
-                }
+            _display(linkedInfo) {
+                return linkedInfo.length > 0
+            }
+
+            _showDescription(e){
+                e.stopPropagation()
+                _.get(this, 'linkedInfo.0.appendices.description', null)  !== null ? this.$['description-dialog'].open() : null
+            }
+
+            _redirectToLink(e){
+                e.stopPropagation()
+                _.get(this, 'linkedInfo.0.appendices.externalLink', null) !== null ? window.open(_.get(this, 'linkedInfo.0.appendices.externalLink', null),'_blank') : null
+
+            }
+
+            __redirectToVideo(e){
+                e.stopPropagation()
+                _.get(this, 'linkedInfo.0.appendices.video', null) !== null ? window.open(_.get(this, 'linkedInfo.0.appendices.video', null),'_blank') : null
+            }
+
+            _closeDescriptionDialog(){
+                this.$['description-dialog'].close()
+            }
+
+            _isDescription(info){
+                return _.get(info[0], 'appendices.description', null) !== null && _.get(info[0], 'appendices.description', null) !== ""
+            }
+
+            _isExternalLink(info){
+               return _.get(info[0], 'appendices.externalLink', null) !== null && _.get(info[0], 'appendices.externalLink', null) !== ""
+            }
+
+            _isVideo(info){
+               return _.get(info[0], 'appendices.video', null) !== null && _.get(info[0], 'appendices.video', null) !== ""
             }
 
         }

@@ -56,6 +56,12 @@
 				top: 8px;
 			}
 
+			dynamic-info{
+				position: absolute;
+				right: 16px;
+				bottom: 2px;
+			}
+
 			.modified-icon {
 				width: 18px;
 			}
@@ -168,6 +174,7 @@
                     <input type="text" value="{{traductValue::input}}" readonly>
 				</iron-input>
             </paper-input-container>
+			<dynamic-info i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" api="[[api]]" data-info="[[dataInfo]]"></dynamic-info>
 		</template>
 		<template is="dom-if" if="[[!readOnly]]">
 			<template is="dom-if" if="[[!dataSource]]">
@@ -201,6 +208,7 @@
 				<vaadin-combo-box filtered-items="[[items]]" item-label-path="name" item-value-path="id" on-filter-changed="_filterChanged" label="[[_label(label)]]" value="{{comboBoxValue}}"></vaadin-combo-box>
 			</template>
 			<dynamic-link i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkables]]" represented-object="[[key]]" api="[[api]]"></dynamic-link>
+			<dynamic-info i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" api="[[api]]" data-info="[[dataInfo]]"></dynamic-info>
 		</template>
 
 	</template>
