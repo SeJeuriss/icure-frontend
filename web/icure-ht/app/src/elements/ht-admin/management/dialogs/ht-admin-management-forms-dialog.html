@@ -901,7 +901,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
             </div>
             <div class="buttons">
-                <template is="dom-if" if="[[_isFormDataTab]]">
+                <template is="dom-if" if="[[_isFormDataTab(selectedTab)]]">
                     <paper-button class="modal-button" on-tap="_download"><iron-icon icon="icons:cloud-download" class="mr5 smallIcon" ></iron-icon>[[localize('download','Download',language)]]</paper-button>
                     <paper-button class="modal-button" on-tap="_upload"><iron-icon icon="icons:cloud-upload" class="mr5 smallIcon" ></iron-icon>[[localize('upload','Upload',language)]]</paper-button>
                 </template>
@@ -1126,7 +1126,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _isFormDataTab(){
-                return this.tabs === 1
+                return this.selectedTab === 1
             }
 
             _download(e) {
@@ -1142,9 +1142,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _fileUpload() {
-                setTimeout(() => this.root.querySelector('#upload-dialog').close(), 5000);
+                setTimeout(() => {
+                    this.root.querySelector('#upload-dialog').close()
+                    this._closeFormDialog()
+                    this.openFormDialog()
+                } , 5000);
             }
-
 
         }
 
