@@ -999,7 +999,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         .then(form => {
                             let fields = _.uniqBy(_.get(form, 'layout.sections[0].formColumns[0].formDataList', []), 'name')
 
-                            this.api.code().getCodes(fields.map(field => 'care.topaz.form|'+field.name+'|1').join(',')).then(codes => {
+                            ;(_.size(_.compact(_.uniq(fields.map(field => _.get(_.get(field, 'tags', []).find(tag => _.get(tag, 'type', null) === "care.topaz.form"), 'code', null))))) > 0 ? this.api.code().getCodes(_.compact(_.uniq(fields.map(field => _.get(_.get(field, 'tags', []).find(tag => _.get(tag, 'type', null) === "care.topaz.form"), 'code', null)))).join(',')) : Promise.resolve([])).then(codes => {
                                 console.log(codes)
                                 this.set('selectedFormData',
                                     _.assign(form, {
