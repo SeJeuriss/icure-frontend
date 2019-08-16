@@ -882,6 +882,36 @@
             return parseFloat( _.trim(inputNumber).replace(',','.') ).toLocaleString("de-DE", {maximumFractionDigits:2, minimumFractionDigits:2})
         }
 
+        _getSpecialityOfPersonByInami(inami){
+            const specialities = [
+                {specCode: [10,11,12,13,14,15,16,17,18,19], label: {fr: "Médecin", nl: "Doctor", en: "Doctor"}, code: "persphysician"},
+                {specCode: [20,21,22,23,24,25,26,27,28,29], label: {fr: "Pharmacien", nl: "Apotheker", en: "Pharmacy"}, code: "pharmacy"},
+                {specCode: [30,31,32,33,34,35,36,37,38,39], label: {fr: "Praticien de l'art dentaire", nl: "Tandarts", en: "Dentist"}, code: "persdentist"},
+                {specCode: [40], label: {fr: "Accoucheuse", nl: "Vroedvrouw", en: "Midwife"}, code: "persmidwife"},
+                {specCode: [41,42,43,44,45,46,47,48,49], label: {fr: "Praticien de l'art infirmier", nl: "Verpleegster", en: "Nurse"}, code: "persnurse"},
+                {specCode: [50,51,52,53,54,55], label: {fr: "Kinésithérapeute", nl: "Fysiotherapeut", en: "Physiotherapist"}, code: "persphysiotherapist"},
+                {specCode: [56], label: {fr: "Diététicien", nl: "Diëtist", en: "Dietician"}, code: "persdietician"},
+                {specCode: [57], label: {fr: "Podologue", nl: "Podoloog", en: "Podiatrist"}, code:"perspodiatrist"},
+                {specCode: [58, 60], label: {fr: "Logopède", nl: "Logopedist", en: "Speech therapist"}, code: "persspeechtherapist"},
+                {specCode: [59, 61], label: {fr: "Orthopédiste", nl: "Ortopedist", en: "Orthopaedist"}, code: "persorthopaedist"},
+                {specCode: [62, 64], label: {fr: "Bandagiste", nl: "Bandagiste", en: "Trussmaker"}, code: "perstrussmaker"},
+                {specCode: [63], label: {fr: "Dispensateur d'implants", nl: "Implantaatdispenser", en: "Implant dispenser"}},
+                {specCode: [65], label: {fr: "Ergothérapeute", nl: "Ergotherapeut", en: "Ergotherapist"}, code: "persergotherapist"},
+                {specCode: [66], label: {fr: "Opticien", nl: "Opticien", en: "Optician"}, code: "persoptician"},
+                {specCode: [67], label: {fr: "Audiologue", nl: "Audicien", en: "Audiologist"}, code: "persaudiologist"},
+                {specCode: [68], label: {fr: "Pharmacien-biologiste", nl: "Biologische-apotheker", en: "Pharmacist-biologist"}, code: "perspharmacistclinicalbiologist"},
+                {specCode: [69], label: {fr: "Fournisseur de matériel d’autogestion qui n'est pas une pharmacies.", nl: "Leverancier van zelfmanagementapparatuur die geen apotheek is.", en: "Supplier of self-management equipment that is not pharmacie."}},
+                {specCode: [70], label: {fr: "Thérapeute cognitivo-comportementaliste pour SFC, psychologue clinicien, orthopédagogue clinicien", nl: "Cognitieve gedragstherapeut voor CCC, klinisch psycholoog, klinisch orthopedagoog", en: "Cognitive Behaviorist Therapist for CCC, Clinical Psychologist, Clinical Orthopedagogue"}},
+                {specCode: [80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,98,99], label: {fr: "Personnel soignant et aide soignant", nl: "Zorgverleners", en: "Caregivers"}, code:"perscaregiver"},
+                {specCode: [95,96,97], label: {fr: "Infirmière MR", nl: "RT verpleegkundigen", en: "RH nurse"}, code: "persnurse"}
+            ]
+
+            if(this.api.patient().checkInami(inami)){
+                const inamiSpec = parseInt(_.trim(inami).replace(new RegExp("[^(0-9)]", "g"), "").slice(0,2))
+                return specialities.find(speciality => speciality.specCode.find(c => c === inamiSpec)) || null
+            }
+        }
+
     }
 
     customElements.define(IccApi.is, IccApi)
