@@ -246,7 +246,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             [[localize('specialityFormName','Speciality',language)]]
                         </template>
                         <template>
-                            <div>[[item.specialty.code]]</div>
+                            <div>[[_localizeSpeciality(item.specialty.code)]]</div>
                         </template>
                     </vaadin-grid-column>
                     <vaadin-grid-column>
@@ -254,7 +254,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             [[localize('status','Status',language)]]
                         </template>
                         <template>
-                            <paper-toggle-button class="status" id="[[item.id]]" on-change="_toggleStatusChanged"></paper-toggle-button>
+                            <paper-toggle-button class="status" id="[[item.id]]" on-change="_toggleStatusChanged" checked="[[_getToggleStatus(item.disabled)]]"></paper-toggle-button>
                         </template>
                     </vaadin-grid-column>
                 </vaadin-grid>
@@ -375,12 +375,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _toggleStatusChanged(e){
                 e.stopPropagation()
-                if(e.target.id && e.target.checked){
+                if(e.target.id){
                     console.log(e.target.id)
                     let form = this.listForms.find(form => form.id === e.target.id)
-                    form.disabled = e.target.checked
-                    this.api.form().modifyForm(form).then(form => {
+                    form.disabled = e.target.checked === true ? "false" : "true"
+                    this.api.form().updateFormTemplate(form.id, form).then(form => {
                         console.log(form)
+                        this.splice('listForms', _.indexOf(this.listForms, this.listForms.find(f => f.id === form.id)), 1)
+                        this.push('listForms', form)
+                        this._formFilterChanged()
                     })
                 }
             }
@@ -442,6 +445,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         }
                     }, 100)
                 }
+            }
+
+            _localizeSpeciality(specialityCode){
+                return this.localize('cd-hcp-'+specialityCode, specialityCode, this.language)
+            }
+
+            _getToggleStatus(status){
+                return status && status === "true" ? false : true
             }
         }
 

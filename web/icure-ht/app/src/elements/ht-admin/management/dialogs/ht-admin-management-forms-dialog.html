@@ -862,15 +862,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <template is="dom-if" if="[[_isSelectedField(selectedField)]]">
                                 <div class="page-container">
                                     <div class="container-line">
-                                        <paper-input class="container-line-field w-50" label="Nom du champ" value="{{selectedField.label}}" readOnly="true"></paper-input>
-                                        <paper-input class="container-line-field w-50" label="Id" value="{{selectedField.name}}" readOnly="true"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="[[localize('adm-form-field-name', 'Field name', language)]]" value="{{selectedField.label}}" readOnly="true"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="[[localize('adm-form-field-id', 'Field id', language)]]" value="{{selectedField.name}}" readOnly="true"></paper-input>
                                     </div>
                                     <div class="container-line">
-                                        <paper-input class="container-line-field w-100" label="Infobulle" value="{{selectedField.code.appendices.description}}"></paper-input>
+                                        <paper-input class="container-line-field w-100" label="[[localize('adm-form-field-bubble-info', 'Bubble info', language)]]" value="{{selectedField.code.appendices.description}}"></paper-input>
                                     </div>
                                     <div class="container-line">
-                                        <paper-input class="container-line-field w-50" label="Url externe" value="{{selectedField.code.appendices.externalLink}}"></paper-input>
-                                        <paper-input class="container-line-field w-50" label="Support vidéo" value="{{selectedField.code.appendices.video}}"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="[[localize('adm-form-field-external-link', 'External link', language)]]" value="{{selectedField.code.appendices.externalLink}}"></paper-input>
+                                        <paper-input class="container-line-field w-50" label="[[localize('adm-form-field-external-video', 'External video', language)]]" value="{{selectedField.code.appendices.video}}"></paper-input>
+                                    </div>
+                                    <div class="container-line">
+                                        [[localize('adm-form-field-nmcl-links', 'Linked nomenclature', language)]]
                                     </div>
                                     <div class="container-line">
                                         <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newNmclCode" label="[[localize('inputYourSearchQuery','Linked nomenclature code',language)]]" filter="{{nmclFilter}}" filtered-items="[[filteredNmclList]]" item-label-path="displayName" selected-item="{{selectedNmcl}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
