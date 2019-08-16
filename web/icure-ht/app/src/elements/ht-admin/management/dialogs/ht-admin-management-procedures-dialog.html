@@ -296,28 +296,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <page>
                             <div class="page-container">
                                 <div class="container-line">
-                                    <paper-input class="container-line-field w-100" label="Nom de la procédure (fr)" value="{{selectedProcedure.label.fr}}"></paper-input>
+                                    <paper-input class="container-line-field w-100" label="[[localize('adm-proc-proc-name-fr', 'Procedure name (Fr)', language)]]" value="{{selectedProcedure.label.fr}}"></paper-input>
                                 </div>
 
                                 <div class="container-line">
-                                    <paper-input class="container-line-field w-100" label="Nom de la procédure (nl)" value="{{selectedProcedure.label.nl}}"></paper-input>
+                                    <paper-input class="container-line-field w-100" label="[[localize('adm-proc-proc-name-nl', 'Procedure name (Nl)', language)]]" value="{{selectedProcedure.label.nl}}"></paper-input>
                                 </div>
 
                                 <div class="container-line">
-                                    <paper-input class="container-line-field w-100" label="Nom de la procédure (en)" value="{{selectedProcedure.label.en}}"></paper-input>
+                                    <paper-input class="container-line-field w-100" label="[[localize('adm-proc-proc-name-en', 'Procedure name (En)', language)]]" value="{{selectedProcedure.label.en}}"></paper-input>
                                 </div>
 
                                 <div class="container-line">
-                                    <paper-input class="container-line-field w-100" label="Infobulle" value="{{selectedProcedure.appendices.description}}"></paper-input>
+                                    <paper-input class="container-line-field w-100" label="[[localize('adm-proc-bubble-info', 'Bubble info', language)]]" value="{{selectedProcedure.appendices.description}}"></paper-input>
                                 </div>
 
                                 <div class="container-line">
-                                    <paper-input class="container-line-field w-50" label="Url externe" value="{{selectedProcedure.appendices.externalLink}}"></paper-input>
-                                    <paper-input class="container-line-field w-50" label="Support vidéo" value="{{selectedProcedure.appendices.video}}"></paper-input>
+                                    <paper-input class="container-line-field w-50" label="[[localize('adm-proc-external-link', 'External link', language)]]" value="{{selectedProcedure.appendices.externalLink}}"></paper-input>
+                                    <paper-input class="container-line-field w-50" label="[[localize('adm-proc-external-video', 'External video', language)]]" value="{{selectedProcedure.appendices.video}}"></paper-input>
                                 </div>
 
                                 <div class="tokenListTitleLine">
-                                    Eléments de soin liés
+                                    [[localize('adm-proc-linked-he', 'Linked health elements', language)]]
                                 </div>
                                 <div class="container-line">
                                     <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newEsCode" label="[[localize('inputYourSearchQuery','Linked health element code',language)]]" filter="{{esFilter}}" filtered-items="[[filteredEsList]]" item-label-path="displayName" selected-item="{{selectedEs}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
@@ -335,7 +335,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </div>
 
                                 <div class="tokenListTitleLine">
-                                    Nomenclatures liées
+                                    [[localize('adm-proc-linked-proc', 'Linked procedures', language)]]
                                 </div>
                                 <div class="container-line">
                                     <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newNmclCode" label="[[localize('inputYourSearchQuery','Linked nomenclature code',language)]]" filter="{{nmclFilter}}" filtered-items="[[filteredNmclList]]" item-label-path="displayName" selected-item="{{selectedNmcl}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
@@ -353,7 +353,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 </div>
 
                                 <div class="tokenListTitleLine">
-                                    Départements liés
+                                    [[localize('adm-proc-linked-dept', 'Linked department', language)]]
                                 </div>
                                 <div class="container-line">
                                     <vaadin-combo-box class="container-line-field w-100" class="container-line-field" id="newDepartementCode" label="[[localize('inputYourSearchQuery','Linked profession code',language)]]" filter="{{departementFilter}}" filtered-items="[[filteredDepartementList]]" item-label-path="displayName" selected-item="{{selectedDepartement}}" allow-custom-value><template>[[item.displayedName]]</template></vaadin-combo-box>
