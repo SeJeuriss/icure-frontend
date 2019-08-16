@@ -295,7 +295,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </style>
 
         <div class="col-left">
-            <template is="dom-if" if="[[isAdmin]]">
+            <template is="dom-if" if="[[_isAdmin]]">
                 <collapse-button id="managementcollapse">
                     <paper-item id="management" slot="sublist-collapse-item" class="menu-trigger menu-item" on-tap="toggleMenu" elevation="">
                         <div class="one-line-menu list-title management-line">
@@ -318,12 +318,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="facturationFlatRateManagementSubMenu">
                             <iron-icon class="sub-menu-icon" icon="icons:shopping-cart"></iron-icon> [[localize('fac_fla_rat','Flat rate facturation',language)]]
                         </paper-item>
-                        <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="formsManagementSubMenu">
-                            <iron-icon class="sub-menu-icon" icon="av:library-books"></iron-icon> [[localize('forms','Forms',language)]]
-                        </paper-item>
-                        <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="proceduresManagementSubMenu">
-                            <iron-icon class="sub-menu-icon" icon="vaadin:tools"></iron-icon> [[localize('adm_procs','Procedures',language)]]
-                        </paper-item>
+                        <template is="dom-if" if="[[_isAdminMaster]]">
+                            <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="formsManagementSubMenu">
+                                <iron-icon class="sub-menu-icon" icon="av:library-books"></iron-icon> [[localize('forms','Forms',language)]]
+                            </paper-item>
+                            <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="proceduresManagementSubMenu">
+                                <iron-icon class="sub-menu-icon" icon="vaadin:tools"></iron-icon> [[localize('adm_procs','Procedures',language)]]
+                            </paper-item>
+                        </template>
                         <!--
                         <paper-item class="one-line-menu menu-item flex-start" id="management" data-submenu="groupsManagementSubMenu">
                             <iron-icon class="sub-menu-icon" icon="vaadin:split"></iron-icon> [[localize('grps','Groups of users',language)]]
@@ -454,10 +456,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Object,
                         value: () => {}
                     },
-                    isAdmin: {
-                        type: Boolean,
-                        value: false
-                    },
                     _isElectronAvailable: {
                         type: Boolean,
                         value: false
@@ -478,7 +476,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             apiReady(){
-                this.user && this.user.roles && this.user.roles.find(r => r === 'ADMIN' || r === 'MS-ADMIN' || r === 'MS_ADMIN') ? this.set('isAdmin', true) : this.set('isAdmin', false)
                 this.api.isElectronAvailable().then(x=> this.set("_isElectronAvailable", !!x) ).catch(e=>{ /* False anyway */ })
             }
 
@@ -575,6 +572,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                 styx.parent(e.target, el => el.tagName.toLowerCase() === 'collapse-button').toggle();
                 styx.parent(e.target, el => el.tagName.toLowerCase() === 'paper-item').classList.toggle('opened');
+            }
+
+            _isAdmin(){
+                return _.get(this.user, 'roles', []).find(r => r === 'ADMIN' || r === 'MS-ADMIN' || r === 'MS_ADMIN') ? true : false
+            }
+
+            _isAdminMaster(){
+                return _.get(this.user, 'roles', []).find(r => r === 'ADMIN' && r === 'MASTER') ? true : false
             }
 
         }
