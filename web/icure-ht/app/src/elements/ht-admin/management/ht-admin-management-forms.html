@@ -207,16 +207,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 height: 100%;
             }
 
+            .searchForm{
+                display: flex;
+            }
+
+            .w80{
+                width: 80%;
+            }
+
+            .w20{
+                width: 20%;
+            }
+
         </style>
 
         <div class="forms-panel">
             <h4 class="panel-title">[[localize('man_forms', 'Management - Forms', language)]]</h4>
             <h4>[[localize('adm-form-list-of-form', 'Form list', language)]]</h4> <!--<iron-icon icon="vaadin:database" on-tap="_createAllFieldBySpecialityInDb"></iron-icon>-->
-            <div>
-                <paper-input class="m0 mr10" value="{{formFilter}}" label="[[localize('search','Search',language)]]:"></paper-input>
+            <div class="searchForm">
+                <paper-input class="w80 m0 mr10" value="{{formFilter}}" label="[[localize('search','Search',language)]]:"></paper-input>
+                <vaadin-combo-box class="w20 type-to m-l-20" id="type-Dept" items="[[departmentAvailable]]" item-label-path="label.fr" item-value-path="id" required error-message="This field is required" label="[[localize('dept', 'Department', language)]]" selected-item="{{selectedDepartment}}"></vaadin-combo-box>
             </div>
             <div class="form-container">
-                <vaadin-grid id="activeUsersList" class="material grid" items="[[vaadinGridDataToShow]]" active-item="{{selectedForm}}">
+                <vaadin-grid id="formList" class="material grid" items="[[vaadinGridDataToShow]]" active-item="{{selectedForm}}">
                     <vaadin-grid-column>
                         <template class="header">
                             [[localize('Id','Id',language)]]
@@ -285,6 +298,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Object,
                         noReset: true
                     },
+                    hcp:{
+                      type: Object,
+                      value: () => {}
+                    },
                     selectedForm:{
                         type: Object,
                         value: () => {}
@@ -308,13 +325,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     formFilter:{
                         type: String,
                         value: null
+                    },
+                    departmentAvailable: {
+                        type: Array,
+                        value: () => []
+                    },
+                    selectedDepartment:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    listOfDept:{
+                        type: Array,
+                        value: () => []
                     }
 
                 }
             }
 
             static get observers() {
-                return ['_initFormsDataProvider(user)', '_selectedFormChanged(selectedForm)', '_initCodeMirror(tabs)', '_formFilterChanged(formFilter)'];
+                return ['_init(user)', '_initFormsDataProvider(selectedDepartment)', '_selectedFormChanged(selectedForm)', '_initCodeMirror(tabs)', '_formFilterChanged(formFilter)'];
             }
 
             constructor() {
@@ -347,17 +376,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             */
 
+            _init(){
+                this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                    .then(hcp => Promise.all([hcp, this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, 'dept', null, null, 200)]))
+                    .then(([hcp, listOfDept]) => {
+                        this.set('hcp', hcp)
+                        this.set('listOfDept', listOfDept.rows)
+                    })
+                    .finally(() => {
+                        this.set("departmentAvailable", this.listOfDept.filter(dept => dept.code === "deptkinesitherapy" || dept.code === "deptgeneralpractice"))
+                        this.set('selectedDepartment', this.listOfDept.find(dept => dept.code === _.get(this.hcp, 'specialityCodes.0.code', 'deptgeneralpractice')))
+                        this._initFormsDataProvider()
+                    })
+
+            }
+
             _initFormsDataProvider(){
-                this.api.form().findFormTemplatesBySpeciality('deptkinesitherapy')
-                    .then(forms => Promise.all([forms, this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, 'dept', null, null, 200)]))
-                    .then(([forms, listOfHcp]) => {
+                this.api.form().findFormTemplatesBySpeciality(_.get(this.selectedDepartment, 'code', "deptgeneralpractice"))
+                    .then((forms) => {
                         this.set('listForms', forms.map(form =>
                             _.assign(form, {
-                                normalizedSearchTerms: _.map(_.uniq(_.compact(_.flatten(_.concat([_.get(form, 'name', ''), _.get(form, 'layout.group', ''), _.get(form, 'layout.name', ''), _.compact(_.get(listOfHcp.rows.find(hcp => hcp.id === form.specialty.id), 'label.'+this.language, ''))])))), i => _.trim(i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")).join(" ")
+                                normalizedSearchTerms: _.map(_.uniq(_.compact(_.flatten(_.concat([_.get(form, 'name', ''), _.get(form, 'layout.group', ''), _.get(form, 'layout.name', ''), _.compact(_.get(this.listOfDept.find(hcp => hcp.id === form.specialty.id), 'label.'+this.language, ''))])))), i => _.trim(i).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")).join(" ")
                             }))
                         )
-
                         this.set('vaadinGridDataToShow', this.listForms)
+                        this.set('formFilter', null)
+                        this.$['formList'].clearCache()
                     })
             }
 
@@ -453,6 +497,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _getToggleStatus(status){
                 return status && status === "true" ? false : true
+            }
+
+            _getHcpLabel(label){
+                return label.fr
             }
         }
 
