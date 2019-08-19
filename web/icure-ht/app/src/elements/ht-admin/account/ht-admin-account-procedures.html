@@ -526,7 +526,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         version: 1,
                         level: 1,
                         links: this.selectedPackageInfo.listOfProcedures.map(proc => proc.id),
-                        flags: this.hcp.specialityCodes.map(spec => spec.code),
+                        flags: _.get(this.hcp, 'specialityCodes', null) ? this.hcp.specialityCodes.map(spec => spec.code) : ["deptgeneralpractice"],
                         regions: ["be", "fr"],
                         label: {[this.language]: this.selectedPackageInfo.packageName},
                         author: this.user.id,
