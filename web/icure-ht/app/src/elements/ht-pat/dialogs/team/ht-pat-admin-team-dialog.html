@@ -8,29 +8,29 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="../../../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../../../bower_components/paper-tabs/paper-tabs.html">
-<link rel="import" href="../../../../bower_components/vaadin-material-theme/vaadin-grid.html">
-<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid.html">
-<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-column.html">
-<link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-sorter.html">
-<link rel="import" href="../../../../bower_components/vaadin-text-field/vaadin-text-area.html">
-<link rel="import" href="../../../../bower_components/vaadin-form-layout/vaadin-form-layout.html">
-<link rel="import" href="../../../../bower_components/vaadin-material-theme/vaadin-text-field.html">
-<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="../../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../../../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../../../../bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="../../../../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../../../../bower_components/vaadin-grid/vaadin-grid-column.html">
+<link rel="import" href="../../../../../bower_components/vaadin-grid/vaadin-grid-sorter.html">
+<link rel="import" href="../../../../../bower_components/vaadin-text-field/vaadin-text-area.html">
+<link rel="import" href="../../../../../bower_components/vaadin-form-layout/vaadin-form-layout.html">
+<link rel="import" href="../../../../../bower_components/vaadin-material-theme/vaadin-text-field.html">
+<link rel="import" href="../../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 
 
-<link rel="import" href="../../dynamic-form/dynamic-form.html">
-<link rel="import" href="../dialogs/medicalhouse/ht-pat-medicalhouse-timeline.html">
-<link rel="import" href="../../../scrollbar-style.html">
+<link rel="import" href="../../../dynamic-form/dynamic-form.html">
+<link rel="import" href="../../dialogs/medicalhouse/ht-pat-medicalhouse-timeline.html">
+<link rel="import" href="../../../../scrollbar-style.html">
 
 <dom-module id="ht-pat-admin-team">
     <template>
@@ -1073,7 +1073,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
             _localizeSpeciality(speciality){
-               return this.specialityList.find(spec => spec.id === speciality) && this.specialityList.find(spec => spec.id === speciality).code ? this.localize('cd-hcp-'+this.specialityList.find(spec => spec.id === speciality).code, this.specialityList.find(spec => spec.id === speciality).code, this.language)  : this.localize('cd-hcp-'+speciality, speciality, this.language)
+                return this.specialityList.find(spec => spec.id === speciality) && this.specialityList.find(spec => spec.id === speciality).code ? this.localize('cd-hcp-'+this.specialityList.find(spec => spec.id === speciality).code, this.specialityList.find(spec => spec.id === speciality).code, this.language)  : this.localize('cd-hcp-'+speciality, speciality, this.language)
             }
 
             _isEhealthActive(){
@@ -1220,25 +1220,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _addHcpToExternalTeam(){
                 if(_.get(this.newHcpCareTeam, 'invite', false) === true){
                     this.api.hcparty().createHealthcareParty({
-                            name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
-                            lastName: _.get(this.newHcpCareTeam, 'lastName', null),
-                            firstName: _.get(this.newHcpCareTeam, 'firstName', null),
-                            nihii: _.get(this.newHcpCareTeam, 'nihii', null),
-                            ssin: _.get(this.newHcpCareTeam, 'ssin', null),
-                            speciality: _.get(this.newHcpCareTeam, 'speciality.id', null),
-                            compagyName: _.get(this.newHcpCareTeam, 'compagyName', null),
-                            notes: _.get(this.newHcpCareTeam, 'notes', null),
-                            cbe: _.get(this.newHcpCareTeam, 'cbe', null),
-                            addresses: _.get(this.newHcpCareTeam, 'addresses', null),
-                            specialityCodes: dept.length > 0 ? dept.map(dept => {
-                                return {
-                                    code: _.get(_.split(dept, '|'), 1, null),
-                                    type: _.get(_.split(dept, '|'), 0, null),
-                                    version: _.get(_.split(dept, '|'), 2, null),
-                                    id: dept
-                                }
-                            }) : null
-                        })
+                        name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
+                        lastName: _.get(this.newHcpCareTeam, 'lastName', null),
+                        firstName: _.get(this.newHcpCareTeam, 'firstName', null),
+                        nihii: _.get(this.newHcpCareTeam, 'nihii', null),
+                        ssin: _.get(this.newHcpCareTeam, 'ssin', null),
+                        speciality: _.get(this.newHcpCareTeam, 'speciality.id', null),
+                        compagyName: _.get(this.newHcpCareTeam, 'compagyName', null),
+                        notes: _.get(this.newHcpCareTeam, 'notes', null),
+                        cbe: _.get(this.newHcpCareTeam, 'cbe', null),
+                        addresses: _.get(this.newHcpCareTeam, 'addresses', null),
+                        specialityCodes: dept.length > 0 ? dept.map(dept => {
+                            return {
+                                code: _.get(_.split(dept, '|'), 1, null),
+                                type: _.get(_.split(dept, '|'), 0, null),
+                                version: _.get(_.split(dept, '|'), 2, null),
+                                id: dept
+                            }
+                        }) : null
+                    })
                         .then(hcp => Promise.all([hcp, this.api.user().createUser({
                             healthcarePartyId: hcp.id,
                             name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
@@ -1278,25 +1278,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         .catch(e => console.log("Error: "+e))
                 }else{
                     this.api.hcparty().createHealthcareParty({
-                            name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
-                            lastName: _.get(this.newHcpCareTeam, 'lastName', null),
-                            firstName: _.get(this.newHcpCareTeam, 'firstName', null),
-                            nihii: _.get(this.newHcpCareTeam, 'nihii', null),
-                            ssin: _.get(this.newHcpCareTeam, 'ssin', null),
-                            companyName: _.get(this.newHcpCareTeam, 'companyName', null),
-                            notes: _.get(this.newHcpCareTeam, 'notes', null),
-                            cbe: _.get(this.newHcpCareTeam, 'cbe', null),
-                            speciality: _.get(this.newHcpCareTeam, 'speciality.id', null),
-                            addresses: _.get(this.newHcpCareTeam, 'addresses', null),
-                            specialityCodes: _.get(this.newHcpCareTeam, 'speciality.links', []).length ? _.get(this.newHcpCareTeam, 'speciality.links', []).map(dept => {
-                                return {
-                                    code: _.get(_.split(dept, '|'), 1, null),
-                                    type: _.get(_.split(dept, '|'), 0, null),
-                                    version: _.get(_.split(dept, '|'), 2, null),
-                                    id: dept
-                                }
-                            }) : null
-                        })
+                        name: _.get(this.newHcpCareTeam, 'lastName', null)+" "+_.get(this.newHcpCareTeam, 'firstName', null),
+                        lastName: _.get(this.newHcpCareTeam, 'lastName', null),
+                        firstName: _.get(this.newHcpCareTeam, 'firstName', null),
+                        nihii: _.get(this.newHcpCareTeam, 'nihii', null),
+                        ssin: _.get(this.newHcpCareTeam, 'ssin', null),
+                        companyName: _.get(this.newHcpCareTeam, 'companyName', null),
+                        notes: _.get(this.newHcpCareTeam, 'notes', null),
+                        cbe: _.get(this.newHcpCareTeam, 'cbe', null),
+                        speciality: _.get(this.newHcpCareTeam, 'speciality.id', null),
+                        addresses: _.get(this.newHcpCareTeam, 'addresses', null),
+                        specialityCodes: _.get(this.newHcpCareTeam, 'speciality.links', []).length ? _.get(this.newHcpCareTeam, 'speciality.links', []).map(dept => {
+                            return {
+                                code: _.get(_.split(dept, '|'), 1, null),
+                                type: _.get(_.split(dept, '|'), 0, null),
+                                version: _.get(_.split(dept, '|'), 2, null),
+                                id: dept
+                            }
+                        }) : null
+                    })
                         .then(hcp => Promise.all([hcp, this.api.patient().getPatientWithUser(this.user, this.patient.id)])
                             .then(([hcp, patient]) => {
                                 const newHcp = {
