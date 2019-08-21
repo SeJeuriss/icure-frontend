@@ -293,15 +293,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 width: auto;
             }
 
-            #hcpInfoDialog{
-                height: calc(100% - 50px);
-                width: 90%;
-            }
-
-            .pageContent{
-
-            }
-
         </style>
         <div class="team-content">
             <div class="internal-team">
@@ -525,35 +516,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-dialog id="ht-invite-hcp-link">
             <h3>Lien de première connexion</h3>
             <h4>[[invitedHcpLink]]</h4>
-        </paper-dialog>
-
-        <paper-dialog id="hcpInfoDialog">
-
-            <paper-tabs class="tab-selector" selected="{{tabs}}" >
-                <paper-tab>
-                    <iron-icon class="tabIcon" icon="vaadin:male"></iron-icon> [[localize('','Info',language)]]
-                </paper-tab>
-                <paper-tab>
-                    <iron-icon class="tabIcon" icon="editor:attach-file"></iron-icon> [[localize('','Pathology',language)]]
-                </paper-tab>
-            </paper-tabs>
-            <iron-pages selected="[[tabs]]">
-                <page>
-                    <div class="pageContent">
-
-                    </div>
-                </page>
-                <page>
-                    <div class="pageContent">
-
-                    </div>
-                </page>
-            </iron-pages>
-
-            <div class="buttons">
-                <paper-button class="modal-button" on-tap="_refresh"><iron-icon icon="icons:refresh" class="mr5 smallIcon" ></iron-icon> [[localize('refresh','Refresh',language)]]</paper-button>
-                <paper-button class="modal-button" on-tap="_closeDialogs"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
-            </div>
         </paper-dialog>
 
     </template>
@@ -1016,7 +978,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _selectedCareProviderChanged(){
                 if(this.selectedCareProvider) {
-                    this.$['hcpInfoDialog'].open()
+                    this.dispatchEvent(new CustomEvent('open-team-info-dialog', {detail: {selectedHcpId: _.get(this.selectedCareProvider, 'id', null)}, composed: true, bubbles: true}));
                 }
             }
 
