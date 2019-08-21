@@ -26,19 +26,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../../bower_components/vaadin-material-theme/vaadin-text-field.html">
 <link rel="import" href="../../../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="../../../../icpc-styles.html">
 
 <link rel="import" href="../../../../scrollbar-style.html">
 
 <dom-module id="ht-pat-admin-team-dialog">
     <template>
         <style include="iron-flex iron-flex-alignment"></style>
+        <style include="icpc-styles"></style>
         <style include="scrollbar-style">
 
             #hcpInfoDialog{
                 height: calc(98% - 12vh);
                 width: 98%;
                 max-height: calc(100% - 64px - 48px - 20px); /* 100% - header - margin - footer*/
-                min-height: 400px;
+                min-height: 700px;
                 min-width: 800px;
                 top: 64px;
             }
@@ -48,6 +50,42 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 right: 0;
                 bottom: 0;
                 margin: 0;
+            }
+
+
+            paper-material.card {
+                background-color: #fff;
+                padding: 10px;
+                margin-left: 5px;
+                margin-right: 5px;
+                margin-bottom: 10px;
+            }
+
+            paper-input {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+
+            paper-input {
+                --paper-input-container-focus-color: var(--app-primary-color);
+                --paper-input-container-label: {
+                    color: var(--app-text-color);
+                    opacity: 1;
+                };
+                --paper-input-container-underline-disabled: {
+                    border-bottom: 1px solid var(--app-text-color);
+
+                };
+                --paper-input-container-color: var(--app-text-color);
+            }
+
+            paper-textarea {
+                --paper-input-container-focus-color: var(--app-primary-color);
+            }
+
+            paper-dropdown-menu {
+                padding-left: 5px;
+                padding-right: 5px;
             }
 
             paper-tabs {
@@ -121,26 +159,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 box-sizing: border-box;
             }
 
+            .colour-code{
+                line-height: 12px;
+                margin-right:4px;
+                color: black;
+            }
+
+            #activeHealthElements{
+                height: 200px;
+                width: 99%;
+            }
+
+            #inactiveHealthElements{
+                height: 200px;
+                width: 99%;
+            }
+
+            .pageContent{
+                max-height: 600px;
+                overflow: auto;
+            }
+
+            vaadin-text-field {
+                height: 40px;
+                padding: 0;
+            }
+
+            .tabIcon{
+                heigth: 14px;
+                width: 14px;
+                padding: 4px;
+            }
+
         </style>
 
         <paper-dialog id="hcpInfoDialog">
 
             <paper-tabs class="tab-selector" selected="{{tabs}}">
                 <paper-tab>
-                    <iron-icon class="tabIcon" icon="vaadin:male"></iron-icon> [[localize('','Info',language)]]
+                    <iron-icon class="tabIcon" icon="vaadin:doctor"></iron-icon> [[localize('adm-team-care-proc-info','Care provider informations',language)]]
                 </paper-tab>
                 <paper-tab>
-                    <iron-icon class="tabIcon" icon="editor:attach-file"></iron-icon> [[localize('','Pathology',language)]]
+                    <iron-icon class="tabIcon" icon="vaadin:clipboard-pulse"></iron-icon> [[localize('adm-team-path-foll-care','Pathologies follow by care provider',language)]]
                 </paper-tab>
             </paper-tabs>
             <iron-pages selected="[[tabs]]">
                 <page>
                     <div class="pageContent">
                         <div class="external-care-team-block">
-                            <div class="external-care-team-block-title">Praticien</div>
+                            <div class="external-care-team-block-title">[[localize('adm-team-prov', 'Provider', language)]]</div>
                             <div class="external-care-team-line">
-                                <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{selectedHcp.lastName}}" required error-message="This field is required"></vaadin-text-field>
-                                <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{selectedHcp.firstName}}" required error-message="This field is required"></vaadin-text-field>
+                                <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{selectedHcp.lastName}}" readOnly></vaadin-text-field>
+                                <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{selectedHcp.firstName}}" readOnly></vaadin-text-field>
                             </div>
                             <div class="external-care-team-line">
                                 <vaadin-text-field class="external-care-team-line-item" label="[[localize('inami','Nihii',language)]]" value="{{selectedHcp.nihii}}"></vaadin-text-field>
@@ -153,13 +223,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             </div>
                         </div>
                         <div class="external-care-team-block">
-                            <div class="external-care-team-block-title">Commentaire</div>
+                            <div class="external-care-team-block-title">[[localize('adm-team-comment', 'Comment', language)]]</div>
                             <div class="external-care-team-line">
-                                <vaadin-text-field class="external-care-team-line-item-only" label="[[localize('comm','Comment',language)]]" value="{{selectedHcp.notes}}"></vaadin-text-field>
+                                <vaadin-text-field class="external-care-team-line-item-only" label="[[localize('adm-team-comment','Comment',language)]]" value="{{selectedHcp.notes}}"></vaadin-text-field>
                             </div>
                         </div>
                         <div class="external-care-team-block">
-                            <div class="external-care-team-block-title">Période de référence</div>
+                            <div class="external-care-team-block-title">[[localize('adm-team-ref-period', 'Referral periods', language)]]</div>
                             <div class="external-care-team-line">
                                 <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-beg','Beginning of the follow-up',language)]]" value="{{selectedHcp.referralStartDate}}" i18n="[[i18n]]"></vaadin-date-picker>
                                 <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-end','End of the follow-up',language)]]" value="{{selectedHcp.referralEndDate}}" i18n="[[i18n]]"></vaadin-date-picker>
@@ -168,26 +238,109 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             </div>
                         </div>
                         <div class="external-care-team-block">
-                            <div class="external-care-team-block-title">Données de contacts</div>
-                            <div class="external-care-team-line">
-                                <vaadin-text-field class="external-care-team-line-item" label="[[localize('street','Street',language)]]" value="{{selectedHcp.addresses.0.street}}"></vaadin-text-field>
-                                <vaadin-text-field class="external-care-team-line-item" label="[[localize('number','Number',language)]]" value="{{selectedHcp.addresses.0.houseNumber}}"></vaadin-text-field>
-                                <vaadin-text-field class="external-care-team-line-item" label="[[localize('post_code','Postal code',language)]]" value="{{selectedHcp.addresses.0.postalCode}}"></vaadin-text-field>
-                                <vaadin-text-field class="external-care-team-line-item" label="[[localize('city','City',language)]]" value="{{selectedHcp.addresses.0.city}}"></vaadin-text-field>
-                            </div>
+                            <div class="external-care-team-block-title">[[localize('adm-team-ctc-data', 'Contacts data', language)]]</div>
+                            <template is="dom-repeat" items="[[selectedHcp.addresses]]" as="adr">
+                                <div class="external-care-team-line">
+                                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('street','Street',language)]]" value="{{adr.street}}"></vaadin-text-field>
+                                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('number','Number',language)]]" value="{{adr.houseNumber}}"></vaadin-text-field>
+                                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('post_code','Postal code',language)]]" value="{{adr.postalCode}}"></vaadin-text-field>
+                                    <vaadin-text-field class="external-care-team-line-item" label="[[localize('city','City',language)]]" value="{{adr.city}}"></vaadin-text-field>
+                                </div>
+
+                                <template is="dom-repeat" items="[[adr.telecoms]]" as="tel">
+                                    <div class="external-care-team-line">
+                                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('type','Type',language)]]" value="{{tel.telecomType}}"></vaadin-text-field>
+                                        <vaadin-text-field class="external-care-team-line-item" label="[[localize('number','Number',language)]]" value="{{tel.telecomNumber}}"></vaadin-text-field>
+                                    </div>
+                                </template>
+                            </template>
                         </div>
                     </div>
                 </page>
                 <page>
                     <div class="pageContent">
+                        <div>
+                            <h4>[[localize('adm-team-act-he', 'Active health elements', language)]]</h4>
+                            <vaadin-grid id="activeHealthElements" class="material" overflow="bottom" items="[[he.activeElements]]">
+                                <vaadin-grid-column width="40px">
+                                    <template class="header">
+                                        <vaadin-grid-sorter path="name">Code</vaadin-grid-sorter>
+                                    </template>
+                                    <template>
+                                        <label class$="colour-code [[item.colour]]"><span></span></label> [[_getCode(item)]]
+                                    </template>
+                                </vaadin-grid-column>
+                                <vaadin-grid-column width="80px">
+                                    <template class="header">
+                                        <vaadin-grid-sorter path="nihii">Libellé</vaadin-grid-sorter>
+                                    </template>
+                                    <template>
+                                        [[item.descr]]
+                                    </template>
+                                </vaadin-grid-column>
+                                <vaadin-grid-column width="80px">
+                                    <template class="header">
+                                        <vaadin-grid-sorter path="speciality">Début</vaadin-grid-sorter>
+                                    </template>
+                                    <template>
+                                        [[_dateFormat(item.openingDate, item.valueDate)]]
+                                    </template>
+                                </vaadin-grid-column>
+                                <vaadin-grid-column width="80px">
+                                    <template class="header">
+                                        <vaadin-grid-sorter path="speciality">Fin</vaadin-grid-sorter>
+                                    </template>
+                                    <template>
+                                        [[_dateFormat(item.closingDate)]]
+                                    </template>
+                                </vaadin-grid-column>
+                            </vaadin-grid>
+                        </div>
 
+                        <div>
+                            <h4>[[localize('adm-team-inact-he', 'Inactive health elements', language)]]</h4>
+                            <vaadin-grid id="inactiveHealthElements" class="material" overflow="bottom" items="[[he.inactiveElements]]">
+                                <vaadin-grid-column width="40px">
+                                    <template class="header">
+                                        <vaadin-grid-sorter path="name">[[localize('adm-team-code', 'Code', language)]]</vaadin-grid-sorter>
+                                    </template>
+                                    <template>
+                                        <label class$="colour-code [[item.colour]]"><span></span></label> [[_getCode(item)]]
+                                    </template>
+                                </vaadin-grid-column>
+                                <vaadin-grid-column width="80px">
+                                    <template class="header">
+                                        <vaadin-grid-sorter path="nihii">[[localize('adm-team-label', 'Label', language)]]</vaadin-grid-sorter>
+                                    </template>
+                                    <template>
+                                        [[item.descr]]
+                                    </template>
+                                </vaadin-grid-column>
+                                <vaadin-grid-column width="80px">
+                                    <template class="header">
+                                        <vaadin-grid-sorter path="speciality">[[localize('adm-team-start-date', 'Start date', language)]]</vaadin-grid-sorter>
+                                    </template>
+                                    <template>
+                                        [[_dateFormat(item.openingDate, item.valueDate)]]
+                                    </template>
+                                </vaadin-grid-column>
+                                <vaadin-grid-column width="80px">
+                                    <template class="header">
+                                        <vaadin-grid-sorter path="speciality">[[localize('adm-team-end-date', 'End date', language)]]</vaadin-grid-sorter>
+                                    </template>
+                                    <template>
+                                        [[_dateFormat(item.closingDate)]]
+                                    </template>
+                                </vaadin-grid-column>
+                            </vaadin-grid>
+                        </div>
                     </div>
                 </page>
             </iron-pages>
 
             <div class="buttons">
                 <paper-button class="modal-button" on-tap="_closeDialogs"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
-                <paper-button class="modal-button" on-tap="_save"><iron-icon icon="icons:refresh" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
+                <paper-button class="modal-button" on-tap="_updateHcp"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
             </div>
         </paper-dialog>
 
@@ -221,24 +374,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     user: {
                         type: Object
                     },
+                    selectedTeamHcp:{
+                        type: String
+                    },
                     patient: {
                         type: Object,
                         notify: true
-                    },
-                    patientMap: {
-                        type: Object
-                    },
-                    dataProvider: {
-                        type: Object,
-                        value: null
-                    },
-                    patientTeam:{
-                        type: Object,
-                        value: () => {}
-                    },
-                    tabs:{
-                        type: Number,
-                        value: 0
                     },
                     selectedHcp: {
                         type: Object,
@@ -252,11 +393,31 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Object,
                         value: () => {}
                     },
+                    tabs:{
+                        type: Number,
+                        value: 0
+                    },
+                    contacts:{
+                      type: Array,
+                      value: () => []
+                    },
+                    activeHealthElements:{
+                        type: Array,
+                        value: () => []
+                    },
+                    inactiveHealthElements:{
+                        type: Array,
+                        value: () => []
+                    },
+                    he:{
+                        type: Object,
+                        value: () => {}
+                    }
                 };
             }
 
             static get observers() {
-                return [];
+                return ['_selectedHcpSpecialityChanged(selectedHcpSpeciality)'];
             }
 
             constructor() {
@@ -268,18 +429,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _openDialog(){
-                console.log(this.selectedTeamHcp)
                 this.api.hcparty().getHealthcareParty(this.selectedTeamHcp)
                 .then(hcp => this.set('selectedHcp', hcp))
                 .then(() => this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', 'fr', 'pers', null, null, 1000))
                 .then(listOfHcp => this.set('specialityList', listOfHcp.rows))
-                .finally(() => this.$['hcpInfoDialog'].open())
+                .finally(() => {
+                    this.set('he', {activeElements: this.activeHealthElements.filter(he => _.get(he, 'responsible', "") === this.selectedHcp.id), inactiveElements: this.inactiveHealthElements.filter(he => _.get(he, 'responsible', "") === this.selectedHcp.id)})
+                    this.set('selectedHcpSpeciality', this.specialityList.find(spec => spec.id === this.selectedHcp.speciality))
+                    this.$['hcpInfoDialog'].open()
+                })
             }
 
             _closeDialogs(){
                 this.$['hcpInfoDialog'].close()
             }
 
+            _getCode(he){
+                return _.get(_.get(he, 'codes', []).find(c => c.type === "ICPC"), 'code', null)
+            }
+
+            _dateFormat(date, altDate){
+                return (date || altDate) && this.api.moment((date || altDate)).format('DD/MM/YYYY') || '';
+            }
+
+            _selectedHcpSpecialityChanged(){
+                this.set('selectedHcp.speciality', _.get(this, "selectedHcpSpeciality", {}))
+            }
+
+            _updateHcp(){
+                console.log(this.selectedHcp)
+                this.api.hcparty().modifyHealthcareParty(this.selectedHcp).then(hcp => {
+                    this.set('selectedHcp', hcp)
+                    this._closeDialogs()
+                })
+            }
         }
 
         customElements.define(HtPatAdminTeamDialog.is, HtPatAdminTeamDialog);

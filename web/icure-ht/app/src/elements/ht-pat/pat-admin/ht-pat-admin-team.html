@@ -466,7 +466,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </template>
             <div class="external-care-team-form">
                 <div class="external-care-team-block">
-                    <div class="external-care-team-block-title">Praticien</div>
+                    <div class="external-care-team-block-title">[[localize('adm-team-prov', 'Provider', language)]]</div>
                     <div class="external-care-team-line">
                         <vaadin-text-field class="external-care-team-line-item" label="[[localize('las_nam','Last name',language)]]" value="{{newHcpCareTeam.lastName}}" required error-message="This field is required"></vaadin-text-field>
                         <vaadin-text-field class="external-care-team-line-item" label="[[localize('fir_nam','First name',language)]]" value="{{newHcpCareTeam.firstName}}" required error-message="This field is required"></vaadin-text-field>
@@ -482,13 +482,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </div>
                 </div>
                 <div class="external-care-team-block">
-                    <div class="external-care-team-block-title">Commentaire</div>
+                    <div class="external-care-team-block-title">[[localize('adm-team-comment', 'Comment', language)]]</div>
                     <div class="external-care-team-line">
-                        <vaadin-text-field class="external-care-team-line-item-only" label="[[localize('comm','Comment',language)]]" value="{{newHcpCareTeam.notes}}"></vaadin-text-field>
+                        <vaadin-text-field class="external-care-team-line-item-only" label="[[localize('adm-team-comment', 'Comment', language)]]" value="{{newHcpCareTeam.notes}}"></vaadin-text-field>
                     </div>
                 </div>
                 <div class="external-care-team-block">
-                    <div class="external-care-team-block-title">Période de référence</div>
+                    <div class="external-care-team-block-title">[[localize('adm-team-ref-period', 'Referral periods', language)]]</div>
                     <div class="external-care-team-line">
                         <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-beg','Beginning of the follow-up',language)]]" value="{{newHcpCareTeam.referralStartDate}}" i18n="[[i18n]]"></vaadin-date-picker>
                         <vaadin-date-picker class="external-care-team-line-item" label="[[localize('foll-up-end','End of the follow-up',language)]]" value="{{newHcpCareTeam.referralEndDate}}" i18n="[[i18n]]"></vaadin-date-picker>
@@ -497,7 +497,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </div>
                 </div>
                 <div class="external-care-team-block">
-                    <div class="external-care-team-block-title">Données de contacts</div>
+                    <div class="external-care-team-block-title">[[localize('adm-team-ctc-data', 'Contacts data', language)]]</div>
                     <div class="external-care-team-line">
                         <vaadin-text-field class="external-care-team-line-item" label="[[localize('street','Street',language)]]" value="{{newHcpCareTeam.addresses.0.street}}"></vaadin-text-field>
                         <vaadin-text-field class="external-care-team-line-item" label="[[localize('number','Number',language)]]" value="{{newHcpCareTeam.addresses.0.houseNumber}}"></vaadin-text-field>
@@ -659,10 +659,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     patientTeam:{
                         type: Object,
                         value: () => {}
-                    },
-                    tabs:{
-                        type: Number,
-                        value: 0
                     }
                 };
             }

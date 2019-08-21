@@ -2071,7 +2071,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         </ht-pat-detail-ctc-detail-panel>
                 </template>
                 <template is="dom-if" if="[[isAdminSelected(selectedAdminOrCompleteFileIndex)]]">
-                    <ht-pat-admin-card id="pat-admin-card" api="[[api]]" user="[[user]]" patient="{{patient}}" i18n="[[i18n]]" resources="[[resources]]" language="[[language]]" tab-index="[[adminTabIndex]]" cardData="[[cardData]]" credentials="[[credentials]]" on-card-changed="_cardChanged" on-patient-saved="_patientSaved" on-open-team-info-dialog="_openTeamInfoDialog" selected-team-hcp="[[selectedTeamHcp]]"></ht-pat-admin-card>
+                    <ht-pat-admin-card id="pat-admin-card" api="[[api]]" user="[[user]]" patient="{{patient}}" i18n="[[i18n]]" resources="[[resources]]" language="[[language]]" tab-index="[[adminTabIndex]]" cardData="[[cardData]]" credentials="[[credentials]]" on-card-changed="_cardChanged" on-patient-saved="_patientSaved" on-open-team-info-dialog="_openTeamInfoDialog"></ht-pat-admin-card>
                 </template>
             </vaadin-split-layout>
         </div>
@@ -2504,7 +2504,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             language="[[language]]"
             resources="[[resources]]"
         ></print-document>
-        <ht-pat-admin-team-dialog id="htPatAdminTeamDialog" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"></ht-pat-admin-team-dialog>
+        <ht-pat-admin-team-dialog id="htPatAdminTeamDialog" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" selected-team-hcp="[[selectedTeamHcp]]" active-health-elements="[[activeHealthElements]]" inactive-health-elements="[[inactiveHealthElements]]"></ht-pat-admin-team-dialog>
         
 
     </template>
@@ -2907,8 +2907,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         value: ""
                     },
                     selectedTeamHcp:{
-                        type: Object,
-                        value: () => {}
+                        type: String,
+                        value: null
                     }
                 };
             }
@@ -5721,14 +5721,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 const printDocumentComponent = this.shadowRoot.querySelector("#printDocument")
                 return printDocumentComponent && typeof _.get(printDocumentComponent,"printDocument", false) === "function"  && printDocumentComponent.printDocument(_.get(e,"detail",{}))
             }
-                                                                                                                  
-                                                                                                                  _openTeamInfoDialog(e){
-                                                                                                                  this.set('selectedTeamHcp', _.get(e, 'detail.selectedHcpId', {}))
-                                                                                                                  if(this.selectedTeamHcp){
-                                                                                                                  this.$['htPatAdminTeamDialog']._openDialog()
-                                                                                                                  }
-                                                                                                                  
-                                                                                                                  }
+
+            _openTeamInfoDialog(e){
+                this.set('selectedTeamHcp', _.get(e, 'detail.selectedHcpId', null))
+                this.$['htPatAdminTeamDialog']._openDialog()
+            }
 
         }
 
