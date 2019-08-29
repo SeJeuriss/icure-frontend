@@ -260,7 +260,11 @@
                     this.reset()
                     return;
                 }
-                this.api.contact().filterServices(this.contacts,s => s.label==='Actes' || (s.tags.some(t => t.type == "SOAP" && t.code == "Plan") && s.tags.some(t => t.type == 'CD-ITEM-TASK')))
+                this.api.contact().filterServices(this.contacts,
+                    s => s.label==='Actes'
+                        || (s.tags.some(t => t.type == "SOAP" && t.code == "Plan") && s.tags.some(t => t.type == 'CD-ITEM-TASK'))
+                        || (s.tags.some(t => t.type == "CD-ITEM" && t.code == "actionplan"))
+                )
                 .then(services =>{
                     this.set("services",_.orderBy(services,["valueDate", "created"],['desc', 'desc']))
                 })

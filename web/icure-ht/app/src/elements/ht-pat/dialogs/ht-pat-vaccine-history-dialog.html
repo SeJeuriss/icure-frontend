@@ -241,9 +241,18 @@
                             {"id" : "planned","label": {"fr": "En attente planifié", "nl": "Gepland wachten", "en": "Scheduled waiting"}},
                             {"id" : "completed","label": {"fr": "Fait", "nl": "Geëxecuteerd", "en": "Done"}},
                             {"id" : "proposed","label": {"fr": "Rappel envoyé", "nl": "Herinnering verzonden", "en": "Reminder sent"}},
-                            {"id" : "cancelled","label": {"fr": "Annulé", "nl": "cancelled", "en": "cancelled"}}
+                            {"id" : "cancelled","label": {"fr": "Annulé", "nl": "cancelled", "en": "cancelled"}},
+                            {"id" : "administrated","label": {"fr": "Administré", "nl": "Geëxecuteerd", "en": "administrated"}}
                         ]
                     },
+                    doneStatus: {
+                        type: Array,
+                        value : () => [
+                            "completed",
+                            "administrated",
+                        ]
+
+                    }
                 }
             }
 
@@ -270,18 +279,25 @@
                 if(!(this.contacts && this.contacts.length)) {
                     this.reset()
                 } else {
-                    this.api.contact().filterServices(this.contacts,s => s.label==='Actes').then(services =>{
-                        let vaccines = []
-                        services.forEach(svc=>{
-                            Object.keys(svc.tags).forEach(k=>{
-                                if (svc.tags[k].code == 'vaccine') {
-                                    let thesCode = '0'
-                                    Object.keys(svc.codes).forEach(c=>{if(svc.codes[c].type == "BE-THESAURUS-PROCEDURES") {thesCode = svc.codes[c].code}})
-                                    const vacc = {name: this._getName(svc),intDate:svc.valueDate, intCreated:svc.created, date: this._timeFormat(svc.valueDate),status: this._getStatut(svc),code: thesCode}
-                                    if (vacc.status == 'Fait' || vacc.status == 'Geëxecuteerd' || vacc.status == 'Done') vaccines.push(vacc)
-                                }
-                            })
+                    this.api.contact().filterServices(this.contacts,s =>
+                        (
+                            s.label==='Actes'
+                            || s.tags.some(c => c.type == "CD-ITEM" && c.code == "vaccine")
+                        )
+                        && s.tags.some(c => c.type == "CD-LIFECYCLE" && this.doneStatus.includes(c.code))
+                    ).then(services =>{
+                        let vaccines = services.map( svc => {
+                            return {
+                                "name": this._getName(svc),
+                                "service": svc,
+                                "intDate": svc.valueDate,
+                                "intCreated": svc.created,
+                                "date": this._timeFormat(svc.valueDate),
+                                "status": this._getStatut(svc),
+                                "code": svc.codes.filter(c => c.type === "BE-THESAURUS-PROCEDURES").map(c => c.code).find(c => !!c)
+                            }
                         })
+                        console.debug("vaccines:", vaccines, services)
                         this.set("vaccines",_.orderBy(vaccines,['intDate', 'intCreated'],['desc','desc']))
                     })
                 }
