@@ -1159,6 +1159,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: String,
                         value : ""
                     },
+                    loginLockerData: {
+                        type:Object,
+                        value: {loginTryCount:0}
+                    },
                     electronErrorMessage:{
                         type:String,
                         value:""
@@ -1242,6 +1246,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }else {
                         localStorage.setItem('last_app_startup', Date.now().toString())
                         this.$["loginDialog"].enable()
+                        this._loadLoginLockerData()
                         this.$["setupPrompt"].close()
                     }
                 }).catch(() => {
@@ -1734,6 +1739,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
                         if (!this.authenticated) {
                             this.authenticated = true
+                            this._resetLoginLockerData()
 
                             const loadKeysForParent = (parentId, prom) => {
                                 if (parentId) {
@@ -1772,8 +1778,62 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }).catch(function (e) {
                     this.authenticated = false
                     sessionStorage.removeItem('auth')
+                    this._lockIfTooManyFails()
                     this.set("credentials.error", "Wrong user or password")
                 }.bind(this))
+            }
+
+            _resetLoginLockerData() {
+                // when login succeed
+                this.loginLockerData.unlockDate = null
+                this.loginLockerData.loginTryCount = 0
+                localStorage.setItem('loginLockerData', JSON.stringify(this.loginLockerData))
+            }
+
+            _loadLoginLockerData() {
+                const lockerData = JSON.parse(localStorage.getItem('loginLockerData'))
+                if(this.loginLockerData.loginTryCount == null) {
+                    this.loginLockerData.loginTryCount = 0
+                }
+                if(this.loginLockerData.loginTryCount == 0 && !!lockerData) {
+                    //console.log("load loginLockerData", lockerData)
+                    this.loginLockerData = lockerData
+                    if(!!this.loginLockerData.unlockDate) {
+                        const waitTime = Math.abs(Date.now() - this.loginLockerData.unlockDate)
+                        console.log(`login locked for ${waitTime} milliseconds`)
+                        this.$["loginDialog"].disable()
+                        const timeout = setTimeout(()=>{
+                            this.$["loginDialog"].enable()
+                            this.loginLockerData.unlockDate = null
+                            localStorage.setItem('loginLockerData', JSON.stringify(this.loginLockerData))
+                        }, waitTime)
+                    }
+                }
+            }
+
+            _lockIfTooManyFails() {
+                const serieSize = 3
+                const baseWaitTime = 5000
+                this.set("loginLockerData.loginTryCount", this.loginLockerData.loginTryCount + 1)
+                localStorage.setItem('loginLockerData', JSON.stringify(this.loginLockerData))
+                console.log("loginTryCount", this.loginLockerData.loginTryCount)
+
+                const waitTime = baseWaitTime * Math.pow(2, Math.trunc(this.loginLockerData.loginTryCount/serieSize)-1)
+                //console.log("tryLimit, waitTime", waitTime, this.loginLockerData.loginTryCount)
+                if(this.loginLockerData.loginTryCount % serieSize == 0) {
+                    this.set('loginLockerData.unlockDate', Date.now() + waitTime )
+                    localStorage.setItem('loginLockerData', JSON.stringify(this.loginLockerData))
+                    this.$["loginDialog"].disable()
+                    console.log(`login locked for ${waitTime} milliseconds`)
+                    const timeout = setTimeout(()=>{
+                        this.$["loginDialog"].enable()
+                        this.loginLockerData.unlockDate = null
+                        localStorage.setItem('loginLockerData', JSON.stringify(this.loginLockerData))
+                    }, waitTime)
+                    return true
+                } else {
+                    return false
+                }
             }
 
             loadOrImportRSAKeys(u, hcp, page) {
