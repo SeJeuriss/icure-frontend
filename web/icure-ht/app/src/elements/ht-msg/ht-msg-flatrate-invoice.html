@@ -354,7 +354,7 @@
                     display: none;
                 }
 
-                #messagesGridContainer,#messagesGridContainer2, #messagesGridContainer3 {
+                #messagesGridContainer,#messagesGridContainer2, #messagesGridContainer3, #messagesGridContainer4 {
                     overflow-y: auto;
                 }
 
@@ -1166,7 +1166,90 @@
                 </div>
             </template>
 
-
+            <template is="dom-if" if="[[_isEqual(flatrateMenuSection, 'j20_corrected')]]">
+                <div class="invoicesGridContainer">
+                    <div class="invoiceContainer">
+                        <div id="messagesGridContainer4" class="invoiceSubContainerMiddle">
+                            <div class="scrollBox">
+                                <vaadin-grid id="messagesGrid" items="[[messagesGridData]]" data-status$="[[_getBatchStatusByMenuSection(flatrateMenuSection)]]" class="invoicesToBeCorrectedGrid">
+                                    <vaadin-grid-column flex-grow="0" width="4%" class="recipient-col">
+                                        <template class="header">
+                                            <vaadin-grid-sorter path="oaCode">Oa</vaadin-grid-sorter>
+                                        </template>
+                                        <template>[[item.oaCode]]</template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column flex-grow="0" width="15%" class="recipient-col">
+                                        <template class="header">
+                                            <vaadin-grid-sorter path="oaLabel">[[localize('name','Name',language)]]</vaadin-grid-sorter>
+                                        </template>
+                                        <template>[[item.oaLabel]]</template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column flex-grow="0" width="5%" class="recipient-col">
+                                        <template class="header">
+                                            <vaadin-grid-sorter path="invoiceData.invoiceReference">N° fact.</vaadin-grid-sorter>
+                                        </template>
+                                        <template>[[item.invoiceData.invoiceReference]]</template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column flex-grow="0" width="17%" class="recipient-col">
+                                        <template class="header">
+                                            <vaadin-grid-sorter path="patientData.firstName">[[localize('inv_pat','Patient',language)]] </vaadin-grid-sorter>
+                                        </template>
+                                        <template>[[item.patientData.firstName]] [[item.patientData.lastName]]</template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column flex-grow="0" width="8%" class="recipient-col">
+                                        <template class="header">
+                                            <vaadin-grid-sorter path="patientData.ssin">[[localize('inv_niss','Niss',language)]]</vaadin-grid-sorter>
+                                        </template>
+                                        <template>[[_formatSsinNumber(item.patientData.ssin)]]</template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column flex-grow="0" width="9%" class="recipient-col">
+                                        <template class="header">
+                                            <vaadin-grid-sorter path="invoiceData.invoicingCodes">Nmcl</vaadin-grid-sorter>
+                                        </template>
+                                        <template>[[_renderGridInvoiceNmcl(item.invoiceData.invoicingCodes)]]</template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column flex-grow="0" width="7%" class="recipient-col">
+                                        <template class="header">
+                                            <vaadin-grid-sorter path="invoiceData.invoiceDate">Date presta.</vaadin-grid-sorter>
+                                        </template>
+                                        <template>[[formatDate(item.invoiceData.invoiceDate,'date')]]</template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column-group>
+                                        <vaadin-grid-column flex-grow="0" width="5%" class="recipient-col">
+                                            <template class="header">
+                                                <vaadin-grid-sorter path="invoicedAmount">[[localize('inv_batch_amount','Amount',language)]]<br/>[[localize('inv_batch_amount_invoiced','Invoiced',language)]]</vaadin-grid-sorter>
+                                            </template>
+                                            <template><span class$="invoice-status [[_getTxtStatusColor(item.invoiceStatusHr,item.invoicedAmount)]]">[[item.invoicedAmount]]€</span></template>
+                                            <template class="footer">[[_invoicesToBeCorrectedInvoicedAmount(flatrateMenuSection, 'flatFiles')]]€</template>
+                                        </vaadin-grid-column>
+                                        <vaadin-grid-column flex-grow="0" width="5%" class="recipient-col">
+                                            <template class="header">
+                                                <vaadin-grid-sorter path="refusedAmount">[[localize('inv_batch_amount','Amount',language)]]<br/>[[localize('inv_batch_amount_rej','Rejected',language)]]</vaadin-grid-sorter>
+                                            </template>
+                                            <template><span class$="invoice-status [[_getTxtStatusColor('force-red',item.refusedAmount)]]">[[item.refusedAmount]]€</span></template>
+                                            <template class="footer">[[_invoicesToBeCorrectedRefusedAmount(flatrateMenuSection, 'flatFiles')]]€</template>
+                                        </vaadin-grid-column>
+                                    </vaadin-grid-column-group>
+                                    <vaadin-grid-column flex-grow="0" width="5%" class="recipient-col">
+                                        <template class="header">
+                                            <vaadin-grid-sorter path="invoiceStatusHr">[[localize('inv_stat','Status',language)]]</vaadin-grid-sorter>
+                                        </template>
+                                        <template>
+                                            <span class="invoice-status invoice-status--redStatus"><iron-icon icon="vaadin:circle" class="statusIcon invoice-status--redStatus"></iron-icon> [[localize('inv_rej','Rejected',language)]]</span>
+                                        </template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column flex-grow="1" class="stat-col">
+                                        <template><paper-button class="button button--save" on-tap="_flagInvoiceAsCorrected" data-invoice-id$="[[item.invoiceData.id]]" ><iron-icon icon="check-circle" data-message-id$="[[item.id]]" data-invoice-id$="[[item.invoiceData.id]]"></iron-icon> &nbsp; [[localize('corrected',"Corrected",language)]]</paper-button></template>
+                                    </vaadin-grid-column>
+                                    <vaadin-grid-column flex-grow="1" class="stat-col">
+                                        <template><paper-button class="button button--other" on-tap="_flagInvoiceAsLostConfirmationDialog" data-invoice-id$="[[item.invoiceData.id]]" ><iron-icon icon="error" data-message-id$="[[item.id]]" data-invoice-id$="[[item.invoiceData.id]]"></iron-icon> &nbsp; [[localize('lost',"Lost",language)]]</paper-button></template>
+                                    </vaadin-grid-column>
+                                </vaadin-grid>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
 
             <template is="dom-if" if="[[_isEqual(flatrateMenuSection, 'j20_toBeSend')]]">
                 <!--<template is="dom-if" if="[[_showWarningMessageEarlyInvoicingDownload()]]"><div class="warningMessage" id="warningMessageInvoicing"><div class="warningMessageBody"><iron-icon icon="icons:warning" class="w30px h30px"></iron-icon> &nbsp; [[localize('earlyInvoicingDownloadWarningMessage', 'Please only download invoicing at the end of the month', language)]]</div></div></template>-->
@@ -1618,6 +1701,7 @@
                         value: () => ({
                             archived:               { status:(1 << 21), menuSection: "j20_archive", llKey:'inv_arch' },
                             error:                  { status:(1 << 17), menuSection: "j20_toBeCorrected", llKey:'inv_err' },
+                            corrected:              { status:(1 << 17), menuSection: "j20_corrected", llKey:'inv_cor' },
                             partiallyAccepted:      { status:(1 << 16), menuSection: "j20_partiallyAccepted", llKey:'inv_par_acc' },
                             fullyAccepted:          { status:(1 << 15), menuSection: "j20_accept", llKey:'inv_full_acc' },
                             rejected:               { status:(1 << 12), menuSection: "j20_reject", llKey:'inv_rej' },
