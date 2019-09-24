@@ -3705,6 +3705,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _patientSaved() {
                 setTimeout(() => this.$.savedIndicator.classList.remove("saved"), 2000);
                 this.$.savedIndicator.classList.add("saved");
+                // TODO (LDE)
+                this.updateStatus();
             }
 
             saveContact(ctc, preSave, postSave, postError) {
@@ -4173,7 +4175,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         this.set("supportBreakTheGlass", true);
                         break
                 }
-                if (patient.ssin && (this.api.tokenId || this.api.tokenIdMH)) {
+                this._patient = patient;
+                this.updateStatus();
+            }
+
+            updateStatus(){
+                if (this._patient.ssin && (this.api.tokenId || this.api.tokenIdMH)) {
 
                     let dlg = this.root.querySelector('#genInsDialog')
                     let dStart = null;
@@ -4275,7 +4282,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                         if (patient === this.patient) {
                                             this.api.queue(this.patient, 'patient').then (([pat, defer])  => {
                                                 return this.api.patient().modifyPatientWithUser(this.user,this.patient).catch(e => defer.resolve(this.patient)).then(pt => this.api.register(pt, 'patient', defer)).then(p => {
-                                                     this.dispatchEvent(new CustomEvent("patient-saved", {bubbles: true, composed: true}))
+                                                    this.dispatchEvent(new CustomEvent("patient-saved", {bubbles: true, composed: true}))
                                                     Polymer.dom(this.root).querySelector('#pat-admin-card').patientChanged();
                                                 })
                                             })
@@ -4297,13 +4304,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     this.$.insuranceStatus.classList.remove('insuranceOk')
                     this.$.consentStatus.classList.remove('noConsent')
                     this.$.consentStatus.classList.remove('consentOk')
-                    this.$.hubStatus.classList.remove('noAccess')
-                    this.$.hubStatus.classList.remove('accessOk')
                     this.$.tlStatus.classList.remove('noTl');
                     this.$.tlStatus.classList.remove('tlOk');
+                    this.$.hubStatus.classList.remove('noAccess')
+                    this.$.hubStatus.classList.remove('accessOk')
                     this.$.edmgStatus.classList.remove('edmgPending');
                     this.$.edmgStatus.classList.remove('edmgOk');
                     this.$.edmgStatus.classList.remove('edmgNOk');
+
+                    if (!this._patient.ssin)
+                        this.$.insuranceStatus.classList.add('noInsurance');
+                    this.$.consentStatus.classList.add('noConsent')
+                    this.$.tlStatus.classList.add('noTl');
                 }
             }
 
