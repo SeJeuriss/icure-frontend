@@ -180,7 +180,7 @@
                         <div class="name">[[item.name]] ([[item.code]])</div>
                         <template is="dom-repeat" items="[[allVaccines]]" as="allvac">
                             <div class="vacc">
-                                <vaadin-checkbox checked="[[isMatching(item.code,allvac.code)]]" disabled></vaadin-checkbox>
+                                <vaadin-checkbox checked="[[isMatchingAny(item.codes,allvac.code)]]" disabled></vaadin-checkbox>
                             </div>
                         </template>
                     </div>
@@ -294,7 +294,8 @@
                                 "intCreated": svc.created,
                                 "date": this._timeFormat(svc.valueDate),
                                 "status": this._getStatut(svc),
-                                "code": svc.codes.filter(c => c.type === "BE-THESAURUS-PROCEDURES").map(c => c.code).find(c => !!c)
+                                "code": svc.codes.filter(c => c.type === "BE-THESAURUS-PROCEDURES").map(c => c.code).find(c => !!c),
+                                "codes": svc.codes.filter(c => c.type === "BE-THESAURUS-PROCEDURES" || c.type === "CD-VACCINEINDICATION").map(c => c.code).filter(c => !!c)
                             }
                         })
                         console.debug("vaccines:", vaccines, services)
@@ -304,8 +305,7 @@
             }
 
             _getName(svc){
-                const content = svc && this.api.contact().preferredContent(svc, this.language) || svc.content[this.language]
-                return (content && content.medicationValue && content.medicationValue.medicinalProduct && content.medicationValue.medicinalProduct.intendedname) || this.localize('not_specified','n/a',this.language)
+                return svc && this.api.contact().shortServiceDescription(svc, this.language) || this.localize('not_specified','non renseigné',this.language)
             }
             _timeFormat(date) {
                 return date && this.api.moment(date).format(date > 99991231 ? 'DD/MM/YYYY' : 'DD/MM/YYYY') || '';
@@ -317,9 +317,20 @@
             getAllVaccFromThesaurus() {
                 let allVacc = []
                 this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS-PROCEDURES', this.language || 'en', 'vaccin', null, null, 100).then(results => {
-                    let tempVacc = []
-                    results.rows.map(th=>{this.vaccines.forEach(v=>{if (v.code == th.code && (tempVacc.indexOf(th) < 0)) tempVacc.push(th)})})
-                    this.set('allVaccines', _.sortBy(tempVacc,'code'))
+                    return this.api.code().findPaginatedCodes('be', 'CD-VACCINEINDICATION', null, null, null, 100).then(cdresults => {
+
+                        let tempVacc = []
+                        ;(cdresults.rows.concat(results.rows)).map(th=>{
+                            this.vaccines.forEach( v=> {
+                                v.codes.forEach(vcode => {
+                                    if (vcode == th.code && (tempVacc.indexOf(th) < 0)) {
+                                        tempVacc.push(th)
+                                    }
+                                })
+                            })
+                        })
+                        this.set('allVaccines', _.sortBy(tempVacc,'code'))
+                    })
                 })
             }
             _getVaccNameFromThes(vac) {
@@ -327,6 +338,9 @@
             }
             isMatching(a,b) {
                 return a == b
+            }
+            isMatchingAny(a,b) {
+                return (a || []).includes(b)
             }
 
         }

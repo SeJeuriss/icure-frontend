@@ -234,7 +234,9 @@
                             {
                                 "id"       : "cancelled",
                                 "label": {"fr": "Annulé", "nl": "cancelled", "en": "cancelled"}
-                            }
+                            },
+
+                            {"id" : "administrated","label": {"fr": "Administré", "nl": "Geëxecuteerd", "en": "administrated"}}
                         ]
                     },
                     selected :{
@@ -277,8 +279,7 @@
             }
 
             _getContent(svc){
-                const content = svc && this.api.contact().preferredContent(svc, this.language) || svc.content[this.language]
-                return content && content.stringValue || this.localize('obs_val','obsolete value',this.language)
+                return svc && this.api.contact().shortServiceDescription(svc, this.language) || this.localize('not_specified','non renseigné',this.language)
             }
 
             _formatDate(date){
@@ -298,7 +299,8 @@
                         (this.comboStatus.find(e => e.label[this.language] === status).id === "pending")  ? "status--orangeStatus" : 
                         (this.comboStatus.find(e => e.label[this.language] === status).id === "planned")  ? "status--orangeStatus" : 
                         (this.comboStatus.find(e => e.label[this.language] === status).id === "proposed")  ? "status--orangeStatus" : 
-                        (this.comboStatus.find(e => e.label[this.language] === status).id === "completed")  ? "status--greenStatus" : 
+                        (this.comboStatus.find(e => e.label[this.language] === status).id === "completed")  ? "status--greenStatus" :
+                        (this.comboStatus.find(e => e.label[this.language] === status).id === "administrated")  ? "status--greenStatus" :
                         ""
             }
 
@@ -311,7 +313,8 @@
                         (this.comboStatus.find(e => e.label[this.language] === status).id === "pending")  ? "statusIcon--orangeStatus" : 
                         (this.comboStatus.find(e => e.label[this.language] === status).id === "planned")  ? "statusIcon--orangeStatus" : 
                         (this.comboStatus.find(e => e.label[this.language] === status).id === "proposed")  ? "statusIcon--orangeStatus" : 
-                        (this.comboStatus.find(e => e.label[this.language] === status).id === "completed")  ? "statusIcon--greenStatus" : 
+                        (this.comboStatus.find(e => e.label[this.language] === status).id === "completed")  ? "statusIcon--greenStatus" :
+                        (this.comboStatus.find(e => e.label[this.language] === status).id === "administrated")  ? "statusIcon--greenStatus" :
                         ""
             }
 
