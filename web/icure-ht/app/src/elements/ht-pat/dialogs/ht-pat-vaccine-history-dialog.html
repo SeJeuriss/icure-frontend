@@ -281,8 +281,7 @@
                 } else {
                     this.api.contact().filterServices(this.contacts,s =>
                         (
-                            s.label==='Actes'
-                            || s.tags.some(c => c.type == "CD-ITEM" && c.code == "vaccine")
+                            s.tags.some(c => c.type == "CD-ITEM" && c.code == "vaccine")
                         )
                         && s.tags.some(c => c.type == "CD-LIFECYCLE" && this.doneStatus.includes(c.code))
                     ).then(services =>{
