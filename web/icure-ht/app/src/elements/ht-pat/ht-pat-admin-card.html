@@ -536,18 +536,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <div class="buttons">
                     <paper-icon-button class="button--icon-btn" id="print-vignette" icon="av:recent-actors" on-tap="printMutualVignette"></paper-icon-button>
                     <paper-tooltip for="print-vignette" position="left">[[localize('print_mutual_vignette','Print mutual vignette',language)]]</paper-tooltip>
-    
+
                     <paper-icon-button class="button--icon-btn" id="print-vignette-grid" icon="av:library-books" on-tap="printMutualVignetteGrid"></paper-icon-button>
                     <paper-tooltip for="print-vignette-grid" position="left">[[localize('print_mutual_vignette_grid','Print mutual vignette grid',language)]]</paper-tooltip>
-    
+
                     <paper-icon-button class="button--icon-btn" id="fill-with-card" icon="vaadin:health-card" on-tap="fillWithCard"></paper-icon-button>
                     <paper-tooltip for="fill-with-card" position="left">[[localize('fill_with_eid','Fill with eid',language)]]</paper-tooltip>
-    
+
                     <paper-icon-button class="button--icon-btn" id="save-btn" icon="save" on-tap="forceSaveAdmin"></paper-icon-button>
                     <paper-tooltip for="save-btn" position="left">[[localize('save','Save',language)]]</paper-tooltip>
                 </div>
             </div>
-            
+
 
 
             <iron-pages class="iron-container" selected="[[tabs]]" class="">
@@ -1543,7 +1543,7 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
                     return Promise.resolve(s ? Object.values(this.api.users).filter(u => (u.login && u.login.toLowerCase().includes(s.toLowerCase())) ||
                         (u.name && u.name.toLowerCase().includes(s.toLowerCase())) || (u.email && u.email.toLowerCase().includes(s.toLowerCase())))
                         .map(u => ({id: u.id, name: u.name || u.login || u.email})) : [])
-                } else if (data.source === "codes" && data.types.length && (id || (text && text.length > 1))) {
+                } else if (data.source === "codes" && data.types.length && (id || (text && text.length >= 1))) {
                     return id ?
                         Promise.all(data.types.map(ct => this.api.code().getCodeWithParts(ct.type, id, '1')))
                             .then(x => _.compact(x)[0])
@@ -1556,7 +1556,13 @@ class HtPatAdminCard extends Polymer.TkLocalizerMixin(Polymer.Element) {
                             const words = text.toLowerCase().split(/\s+/)
                             const sorter = x => [x.name && x.name.toLowerCase().startsWith(words[0]) ? 0 : 1, x.name]
 
-                            return this.api.code().findPaginatedCodesByLabel('be', ct.type, typeLng, words[0], null, null, 200).then(results => _.sortBy(results.rows.filter(c => c.label[typeLng] && words.every(w => c.label[typeLng].toLowerCase().includes(w))).map(code => ({
+                            return this.api.code().filterBy(null, null, 1000, null, null, null, {filter: {'$type':'IntersectionFilter', 'filters':words.map(w => ({
+                                        '$type': 'CodeByRegionTypeLabelLanguageFilter',
+                                        'region': 'be',
+                                        'type': ct.type,
+                                        'language': typeLng,
+                                        'label':w
+                                    }))}}).then(results => _.sortBy(results.rows.filter(c => c.label[typeLng] && words.every(w => c.label[typeLng].toLowerCase().includes(w))).map(code => ({
                                 id: code.code, name: code.label[typeLng], stringValue: code.label[typeLng], codes: [code]
                             })), sorter))
                         })).then(responses => _.flatMap(responses))
