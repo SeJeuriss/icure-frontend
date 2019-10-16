@@ -1263,19 +1263,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.api.message().getMessage(selectedMessage.id)
                 .then(message => {
                     message.status = message.status ^ 1 << 26;
-                    const docIds = JSON.parse(message.metas.documentListJson).map(item => item.id);
-                    return this.api.contact().getContactWithUser(this.user, selectedMessage.contactId)
-                        .then(contact => {
-                            const servicesLeft = contact.services.filter(svc => !docIds.includes(svc.content[this.language].documentId));
-                            if (servicesLeft.length === 0) {
-                                contact.deletionDate = parseInt(moment().format('YYYYMMDDHHmmss'));
-                            } else {
-                                contact.services = servicesLeft;
-                            }
-                            return this.api.contact().modifyContactWithUser(this.user, contact);
-                        })
-                        .then(contact => this.api.register(contact, "contact"))
-                        .then(() => message)
+                    return new Promise(resolve => {
+                        if (_.has(message, "metas.documentListJson")) {
+                            return resolve(JSON.parse(message.metas.documentListJson).map(item => item.id));
+                        } else {
+                            return this.api.document().findByMessage(this.user.healthcareelement, message)
+                                .then(documents => documents.map(document => document.id))
+                        }
+                    })
+                        .then(docIds => this.api.contact().getContactWithUser(this.user, selectedMessage.contactId)
+                            .then(contact => {
+                                const servicesLeft = contact.services.filter(svc => !docIds.includes(svc.content[this.language].documentId));
+                                if (servicesLeft.length === 0) {
+                                    contact.deletionDate = parseInt(moment().format('YYYYMMDDHHmmss'));
+                                } else {
+                                    contact.services = servicesLeft;
+                                }
+                                return this.api.contact().modifyContactWithUser(this.user, contact);
+                            })
+                            .then(contact => this.api.register(contact, "contact"))
+                            .then(() => message)
+                        )
                 })
                 .then(message => this.encryptInfo(message, [{}]))
                 .then(message => this.api.message().modifyMessage(message))
