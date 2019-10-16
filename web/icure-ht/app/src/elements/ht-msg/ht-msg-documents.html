@@ -1263,21 +1263,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             this.api.message().getMessage(selectedMessage.id)
                 .then(message => {
                     message.status = message.status ^ 1 << 26;
-                    return new Promise(resolve => {
-                        if (_.has(message, "metas.documentListJson")) {
-                            return resolve(JSON.parse(message.metas.documentListJson).map(item => item.id));
-                        } else {
-                            return this.api.document().findByMessage(this.user.healthcareelement, message)
-                                .then(documents => documents.map(document => document.id))
-                        }
-                    })
+                    return this.api.document().findByMessage(this.user.healthcarePartyId, message)
+                        .then(documents => documents.map(document => document.id))
                         .then(docIds => this.api.contact().getContactWithUser(this.user, selectedMessage.contactId)
                             .then(contact => {
-                                const servicesLeft = contact.services.filter(svc => !docIds.includes(svc.content[this.language].documentId));
+                                const servicesLeft = contact.services.filter(svc => !docIds.includes(_.get(svc, "content[" + this.language + "].documentId", "")));
+                                const servicesExclIds = contact.services.filter(svc => docIds.includes(_.get(svc, "content[" + this.language + "].documentId", ""))).map(svc => svc.id);
+                                const subContactLeft = contact.subContacts.filter(sc => sc.status !== 64 || sc.services.some(svc => !servicesExclIds.includes(svc.serviceId)));
                                 if (servicesLeft.length === 0) {
                                     contact.deletionDate = parseInt(moment().format('YYYYMMDDHHmmss'));
                                 } else {
                                     contact.services = servicesLeft;
+                                    contact.subContacts = subContactLeft;
                                 }
                                 return this.api.contact().modifyContactWithUser(this.user, contact);
                             })
@@ -1292,7 +1289,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 .then(() => this._refresh())
                 .catch((error) => this.dispatchEvent(new CustomEvent('show-error-message', {
                     detail: {
-                        title: e.detail.doc.filename,
+                        title: _.get(e, "detail.doc.filename", ""),
                         message: "err.document.update",
                         detail: error
                     }, bubbles: true
