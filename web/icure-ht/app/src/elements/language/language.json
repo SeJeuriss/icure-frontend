@@ -1,5 +1,6 @@
 {
   "en": {
+    "Anamnesis": "Anamnesis",
     "del": "Delete",
     "name": "Name",
     "Apr": "Apr",
@@ -1868,6 +1869,7 @@
     "genins.not.ok": "MCN no insurability"
   },
   "fr": {
+    "Anamnesis": "Anamnèse",
     "AFF": "N° d'affiliation",
     "Apr": "avr",
     "Aug": "aoû",
@@ -3820,6 +3822,7 @@
     "genins.not.ok": "MCN pas d'assurabilité"
   },
   "nl": {
+    "Anamnesis": "Anamnese",
     "AFF": "Lidnummer",
     "Apr": "apr",
     "Aug": "aug",
