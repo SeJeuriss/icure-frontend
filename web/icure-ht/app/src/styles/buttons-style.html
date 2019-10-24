@@ -9,10 +9,11 @@
                     font-size: var(--font-size-normal);
                     height: 28px;
                     padding: 0 12px;
-                    text-transform: capitalize;
+                    text-transform: none;
                     background: transparent;
                     box-sizing: border-box; 
                     border-radius: 3px;
+                    @apply --transition;
                 };
 
                 --button-hover: {
@@ -30,7 +31,6 @@
 
                 --button--save: {
                     --paper-button-ink-color: var(--app-secondary-color-dark);
-                    /* box-shadow: var(--app-shadow-elevation-1); */
                     background: var(--app-secondary-color);
                     color: var(--app-text-color-light);
                     font-weight: 700;
@@ -39,7 +39,6 @@
 
                 --button--save-hover: {
                     background: var(--app-secondary-color-dark);
-                    /* box-shadow: var(--app-shadow-elevation-2);   */
                 };
 
                 --button--save-disabled: {
@@ -93,8 +92,8 @@
                     --paper-icon-button-ink-color: var(--app-secondary-color-dark);
                     --paper-icon-button: {
                         background: var(--app-secondary-color);
+                        box-shadow: none;
                         color: var(--app-text-color-light);
-                        box-shadow: var(--app-shadow-elevation-1);
                         border-radius: 3px;
                         height: 28px;
                         width: 28px;
@@ -102,7 +101,7 @@
                         padding: 4px;
                     };
                     --paper-icon-button-hover: {
-                        box-shadow: var(--app-shadow-elevation-2);
+                        box-shadow: none;
                         background: var(--app-secondary-color-dark);
                         color: var(--app-text-color-light);
                     };
@@ -110,7 +109,6 @@
 
                 --button--menu: {
                     --paper-button-ink-color: var(--app-secondary-color-dark);
-                    /* box-shadow: var(--app-shadow-elevation-1); */
                     background: var(--app-secondary-color);
                     color: var(--app-text-color-light);
                     font-weight: 700;
@@ -131,11 +129,42 @@
 
                 --button--menu-hover: {
                     background: var(--app-secondary-color-dark);
-                    /* box-shadow: var(--app-shadow-elevation-2); */
                 };
 
                 --button--menu-focus: {
                     background: var(--app-secondary-color-dark);
+                };
+
+                --button--menu-other: {
+                    --paper-button-ink-color: var(--app-secondary-color-dark);
+                    background: transparent;
+                    color: var(--app-secondary-color);
+                    font-weight: 700;
+                    padding: 0 4px 0 12px;
+                    display: flex;
+                    flex-flow: row nowrap;
+                    justify-content: space-between;
+                    align-items: center;
+                    line-height: 28px;
+                    border: 1px solid var(--app-secondary-color);
+                };
+
+                --button--menu-other-span: {
+                    height: 100%;
+                    border-right: 1px solid var(--app-secondary-color);
+                    padding-right: 12px;
+                    display: block;
+                };
+
+                --button--menu-other-hover: {
+                    background-color: rgba(255, 80, 0, .2);
+                };
+
+                --button--menu-other-focus: {
+                    background-color: rgba(221, 52, 21, .2);
+                    box-shadow: none;
+                    border: 1px solid var(--app-secondary-color-dark);  
+                    color: var(--app-secondary-color-dark);
                 };
             }
 
@@ -196,15 +225,16 @@
                 --paper-icon-button: {
                     background: var(--app-secondary-color);
                     color: var(--app-text-color-light);
-                    box-shadow: var(--app-shadow-elevation-1);
+                    box-shadow: none;
                     border-radius: 3px;
                     height: 28px;
                     width: 28px;
                     box-sizing: border-box;
                     padding: 4px;
+                    @apply --transition;
                 };
                 --paper-icon-button-hover: {
-                    box-shadow: var(--app-shadow-elevation-2);
+                    box-shadow: none;
                     background: var(--app-secondary-color-dark);
                     color: var(--app-text-color-light);
                 };
@@ -228,6 +258,63 @@
 
             .button--menu:focus:not([disabled]) {
                 @apply --button--menu-focus;
+            }
+
+            .button--menu-other{
+                @apply --button--menu-other;
+            }
+
+            .button--menu-other span{
+                @apply --button--menu-other-span;
+            }
+
+            .button--menu-other iron-icon{
+                margin-left: 4px;
+            }
+
+            .button--menu-other:hover{
+                @apply --button--menu--other-hover;
+            }
+
+            .button--menu-other:focus:not([disabled]) {
+                @apply --button--menu--other-focus;
+            }
+            
+            .menu-button paper-listbox {
+				padding: 0;
+			}
+
+            .menu-button paper-listbox paper-button {
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: flex-start;
+                align-items: center;
+                text-transform: capitalize;
+                height: 28px;
+				width: 100%;
+                padding: 0 12px 0 8px;
+                font-weight: 400;
+                font-size: var(--font-size-normal);
+                text-align: left;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                flex-grow: 1;
+                border-radius: 0;
+                margin: 0;
+            }
+
+            .menu-button paper-listbox paper-button:hover {
+                background: var(--app-background-color-dark);
+            }
+
+            .menu-button paper-listbox paper-button iron-icon {
+                color: var(--app-secondary-color);
+                height: 20px;
+                width: 20px;
+                margin-right: 4px;
+                box-sizing: border-box;
+				min-width: 20px;
             }
         </style>
     </template>

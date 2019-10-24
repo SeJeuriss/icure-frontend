@@ -14,7 +14,7 @@
                 -webkit-border-radius: 10px;
                 -moz-border-radius: 10px;
                 padding: 0px 6px 1px 8px;
-                background-color: #fffdfd91;
+                background-color: rgba(0,0,0,0.8);
                 max-width: 100px;
                 width: auto;
                 white-space: nowrap;
@@ -24,6 +24,7 @@
                 margin-right: 4px;
                 height: 12px;
                 cursor: pointer;
+                user-select: none;
             }
 
             span.he-pill-highlighted {
@@ -33,9 +34,13 @@
             .ICPC-2-fallback-back { background: var(--paper-blue-grey-500) !important; color: white !important; }
             .ICPC-2-fallback span{ background: var(--paper-blue-grey-500) !important; }
 
+            span.he-pill:hover .closePillsBtn {
+                width: 10px;
+            }
             .closePillsBtn{
                 height: 10px;
-                width: 10px;
+                width: 0;
+                @apply --transition;
             }
         </style>
 

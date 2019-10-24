@@ -1,10 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
-
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../../bower_components/iron-icons/hardware-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/image-icons.html">
 <link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
-
 <link rel="import" href="../../../bower_components/iron-input/iron-input.html">
 <link rel="import" href="../../../bower_components/paper-input/paper-input-container.html">
 <link rel="import" href="../../../bower_components/iron-label/iron-label.html">
@@ -12,14 +10,15 @@
 <link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../../bower_components/paper-fab-speed-dial/paper-fab-speed-dial.html">
 <link rel="import" href="../../../bower_components/paper-fab-speed-dial/paper-fab-speed-dial-action.html">
-<link rel="import" href="../../styles/buttons-style.html">
 
+<link rel="import" href="../../styles/buttons-style.html">
+<link rel="import" href="../../styles/shared-styles.html">
 
 <link rel="import" href="dynamic-form.html">
 
 <dom-module id="dynamic-sub-form">
 	<template>
-		<style include="buttons-style">
+		<style include="buttons-style shared-styles">
 			:host {
 				flex-grow: 9999;
 				min-width: 100%;
@@ -31,21 +30,46 @@
 				width: 18px;
 			}
 
-			.subform-container{
-				border: 1px solid rgba(0,0,0,.1);
-				margin: 0 6px 12px;
+			.subform-title-container {
+				@apply --flex-rw-c-sa;
 			}
 
-			span{
-				color:var(--app-primary-color);
-				background:rgba(0,0,0,0.1);
-				font-size:12px;
-				margin:12px 0 0 6px;
-				padding:2px 4px;
-				display:inline-block;
-				max-width:256px;
-				text-align:center;
+			.subform-title-container paper-menu-button {
+				margin-right: 6px;
 			}
+
+			.subform-title-container:not(:first-child) {
+				margin-top: 8px;
+			}
+
+			paper-button.subform-title {
+				@apply --flex-rw-c-sa;
+				color: var(--app-primary-color);
+				background: var(--app-background-color-dark);
+				font-size: var(--font-size-large);
+				padding: 4px 8px;
+				text-align: left;
+				flex-grow: 1;
+				height: 20px;
+				flex-grow: 1;
+				text-transform: none;
+				box-sizing: content-box;
+				margin-right: 8px;
+				margin-left: 6px;
+				border-radius: 0;
+				transition: all .24s cubic-bezier(0.075, 0.82, 0.165, 1);
+			}
+
+			paper-button.subform-title:hover {
+				background: var(--app-background-color-darker);
+			}
+
+			paper-button.subform-title span{
+				display: block;
+				flex-grow: 1;
+				text-align: left;
+			}
+
 			.add-button{
 				position:absolute;
 				left: calc(100% - 32px);
@@ -69,6 +93,7 @@
 				background: var(--app-secondary-color-dark);
 				color: var(--app-text-color-light);
 			}
+
 			paper-fab#remove{
 				height: 18px;
 				width: 18px;
@@ -141,37 +166,87 @@
 				visibility: hidden;
 			}
 
+			.add-form-container {
+				position:relative;
+			}
+
+			.button{
+				width: fit-content;
+			}
+
+			paper-menu-button {
+				padding: 0;
+			}
+
+			paper-listbox {
+				padding: 0;
+			}
+
+			.add-forms-container {
+				text-align: right;
+				position: absolute;
+				margin-top: 8px;
+				background-color: var(--app-background-color);
+				opacity: 1;
+				border-radius: 2px;
+				z-index: 200;
+				box-shadow: var(--app-shadow-elevation-2);
+				display: flex;
+				flex-flow: row wrap;
+				align-items: stretch;
+				border-radius: 3px;
+				overflow: auto;
+				padding: 0;
+			}
+
+			.menu-button paper-listbox {
+				max-height: calc(28px * 5);
+			}
+			
 		</style>
-		<span>[[localize(label,label,language)]]</span>
-		<template is="dom-if" if="[[!readOnly]]">
-			<div class="relative">
-				<template is="dom-if" if="[[_singleAction(layoutItem.editor.compulsoryFormGuids.*, layoutItem.editor.optionalFormGuids.*)]]">
-				<paper-fab class="button--icon-btn add-button" icon="add" on-tap="_add"></paper-fab>
-			</template>
-			<template is="dom-if" if="[[!_singleAction(layoutItem.editor.compulsoryFormGuids.*, layoutItem.editor.optionalFormGuids.*)]]">
-					<paper-fab id="add" class="button--icon-btn add-button" icon="add" on-tap="_openAdd"></paper-fab>
-					<div class$="overlay [[_isHiddenClass(isAdding)]] [[overlayClass]]">
-						<template is="dom-repeat" items="[[_allGuids(layoutItem.editor.compulsoryFormGuids.*, layoutItem.editor.optionalFormGuids.*)]]" as="guid">
-							<div class="btn-container">
-								<span class="label">[[_formTemplateLabel(guid, templates.*)]]</span>
-								<paper-fab class="add-sub-button" id="[[guid]]" icon="icons:create-new-folder" on-tap="_add"></paper-fab>
-							</div>
-						</template>
-					</div>
-			</template>
-			</div>
-		</template>
 
 		<div class="subform-container">
 			<template id="subforms-repeat" is="dom-repeat" items="[[subContexts]]" as="subContext">
+				<template is="dom-if" if="[[subContext.template.name]]">
+					<div class="subform-title-container">
+						<paper-button class="subform-title"><span>[[subContext.template.name]]</span><iron-icon icon="hardware:keyboard-arrow-down"></iron-icon></paper-button>
+						<paper-menu-button class="menu-button" horizontal-align="right" dynamic-align="true" vertical-offset="36">
+							<paper-icon-button class="button--icon-btn" icon="icons:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>
+							<paper-listbox slot="dropdown-content">
+								<paper-button on-tap="_revealLinks"><iron-icon icon="icons:link"></iron-icon>[[localize('Link', 'Link', language)]]</paper-button>
+								<paper-button on-tap="_duplicate"><iron-icon icon="icons:content-copy"></iron-icon>[[localize('Duplicate', 'Duplicate', language)]]</paper-button>
+								<paper-button on-tap="_delete"><iron-icon icon="icons:delete"></iron-icon>[[localize('del', 'Delete', language)]]</paper-button>
+							</paper-listbox>
+						</paper-menu-button>
+					</div>
+				</template>
 				<div class="relative">
-                    <template is="dom-if" if="[[!readOnly]]">
-					    <paper-fab id="remove" icon="close" on-tap="_delete"></paper-fab>
-                    </template>
 					<dynamic-form id="sf-[[index]]" api="[[api]]" user="[[user]]" template="[[_getTemplate(subContext)]]" data-map="[[subContext.dataMap]]" data-provider="[[subContext.dataProvider]]" reports="[[formReports]]" read-only="[[readOnly]]" is-sub-form i18n="[[i18n]]" resources="[[resources]]" language="[[language]]" no-print="[[noPrint]]"></dynamic-form>
 				</div>
 			</template>
 		</div>
+
+		<template is="dom-if" if="[[!readOnly]]">
+			<template is="dom-if" if="[[layoutItem.editor.compulsoryFormGuids.* || layoutItem.editor.optionalFormGuids.*]]">
+				<paper-menu-button class="menu-button" horizontal-align="left" dynamic-align="true" vertical-offset="36">
+						<paper-button id="newSubFormBtn" class="button button--menu" slot="dropdown-trigger" alt="add sub form menu">
+							<template is="dom-if" if="[[!_isEqual(key, '6FF898B0-2694-4973-83F3-1F93C6DADC61')]]">
+								<span>[[localize('add_sub_for','Add sub forms',language)]]</span>
+							</template>
+							<template is="dom-if" if="[[_isEqual(key, '6FF898B0-2694-4973-83F3-1F93C6DADC61')]]">
+								<span>[[localize('add_cert_pres','Add certificate / prescription',language)]]</span>
+							</template>
+							<iron-icon icon="icons:more-vert"></iron-icon>
+						</paper-button>
+						<paper-listbox slot="dropdown-content">
+							<template is="dom-repeat" items="[[_allGuids(layoutItem.editor.compulsoryFormGuids.*, layoutItem.editor.optionalFormGuids.*)]]" as="guid">
+								<paper-button id="[[guid]]" on-tap="_add"><iron-icon icon="icons:create-new-folder"></iron-icon>[[_formTemplateLabel(guid, templates.*)]]</paper-button>
+							</template>
+						</paper-listbox>
+					</paper-menu-button>
+			</template>
+		</template>
+
 	</template>
 	<script>
 class DynamicSubForm extends Polymer.TkLocalizerMixin(Polymer.Element) {
@@ -225,7 +300,6 @@ class DynamicSubForm extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
 	ready() {
 		super.ready();
-
 		this.uuid = this.api.crypto().randomUuid();
 	}
 
@@ -281,6 +355,7 @@ class DynamicSubForm extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
 	_add(e) {
 		this.set('isAdding', false);
+		this.set('showAddSubFormsContainer', false)
 		const guid = e.target.id || this._allGuids()[0];
 		if (guid) {
 			this.dispatchEvent(new CustomEvent('add-subform', { detail: { guid: guid }, composed: true }));
@@ -294,6 +369,10 @@ class DynamicSubForm extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
 	_isHiddenClass() {
 		return this.isAdding ? '' : 'hidden-menu';
+	}
+
+	_isEqual(a,b) {
+		return (a === b)
 	}
 
 }

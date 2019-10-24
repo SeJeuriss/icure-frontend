@@ -8,6 +8,7 @@
 <link rel="import" href="../../../bower_components/paper-styles/shadow.html">
 <link rel="import" href="../../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 <link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
 
 <link rel="import" href="dynamic-number-field.html">
 <link rel="import" href="dynamic-token-field.html">
@@ -23,12 +24,13 @@
 <link rel="import" href="../../styles/icpc-styles.html">
 <link rel="import" href="../../styles/dialog-style.html">
 <link rel="import" href="../../styles/buttons-style.html">
+<link rel="import" href="../../styles/shared-styles.html">
 
 <link rel="import" href="ckmeans-grouping.html">
 
 <dom-module id="dynamic-form">
 	<template>
-		<style include="icpc-styles dialog-style buttons-style">
+		<style include="icpc-styles dialog-style buttons-style shared-styles">
 			ht-spinner.center {
 				position: absolute;
 				left: calc(50% - 14px);
@@ -39,7 +41,6 @@
 				min-height: 16px;
 				padding: 0 0 8px 0;
 				box-shadow: none;
-				border-bottom: 1px solid lightgrey;
 				margin: 0;
 				width: 100%;
 				background: transparent;
@@ -113,6 +114,7 @@
 				justify-content: space-between;
 				align-items: center;
 				box-sizing: border-box;
+				border: 1px solid var(--app-primary-color-dark);
 			}
 
 			.form-title > span {
@@ -201,17 +203,14 @@
 			}
 
 			.msoap-container .section {
-				display: flex;
-				flex-flow: row wrap;
-				align-items: stretch;
-				justify-content: space-around;
+				@apply --flex-rnw-s-sa;
 				width: 100%;
 				border-bottom: 1px solid var(--app-background-color-darker);
 			}
 
 			.msoap-container .section .section--label {
 				background: var(--app-background-color-dark);
-				width: 48px;
+				min-width: 48px;
 				display: flex;
 				flex-flow: row wrap;
 				align-items: center;
@@ -279,6 +278,56 @@
 				padding: 8px;			
 			}
 
+			.msoap-container .section .section--form h4 {
+				@apply --flex-rw-c-sa;
+				font-size: var(--font-size-large);
+				margin: 0 6px;
+				width: auto;
+				padding: 4px 0;
+				color: var(--app-primary-color);
+				font-weight: 500;
+				width: 100%;
+				border-bottom: 1px solid rgba(0,0,0,0.14);
+				text-align: left;
+			}
+
+			.msoap-container .section .section--form h4:not(:first-child){
+				margin: 8px 6px;
+			}
+
+			.msoap-container .section .section--form h4 paper-menu-button{
+				padding: 0;
+			}
+
+			.msoap-container .section .section--form h4 span {
+				display: block;
+				flex-grow: 1;
+				text-align: left;
+			}
+
+			.links-container {
+				@apply --flex-rw-c-fs;
+			}
+
+			.links-container > .link {
+				height: 8px;
+				width: 8px;
+				background: #00C852;
+				margin: 0 4px 0 0;
+				border-radius: 50%;
+				transform-origin: center center;
+				cursor: pointer;
+				@apply --transition;
+			}
+
+			.links-container > .link:hover {
+				transform: scale(1.2);
+			}
+
+			#general-info {
+				padding: 8px 8px 12px;
+			}
+
 		</style>
 
 		<ckmeans-grouping id="ckmeans-grouping"></ckmeans-grouping>
@@ -296,18 +345,6 @@
                             <paper-tooltip position="bottom" for="linktosub">[[localize('link_sub','Link to sub',language)]]</paper-tooltip>
 							-->
 							<template is="dom-if" if="[[_none(showEdit,noPrint)]]">
-
-<!--								<template is="dom-if" if="[[!isSubForm]]">-->
-<!--									<paper-menu-button class="form-title-bar-btn" horizontal-align="right" dynamic-align="true" vertical-offset="26">-->
-<!--										<paper-icon-button class="form-title-bar-btn" slot="dropdown-trigger" alt="menu" icon="icons:file-upload"></paper-icon-button>-->
-<!--										<paper-listbox slot="dropdown-content" >-->
-<!--											<template is="dom-repeat" items="[[reports]]" as="report">-->
-<!--												<paper-item class="link" on-tap="newReport" id="report"><iron-icon icon="vaadin:file-o"></iron-icon>[[_getReportTrad(report.name)]]</paper-item>-->
-<!--											</template>-->
-<!--										</paper-listbox>-->
-<!--									</paper-menu-button>-->
-<!--								</template>-->
-
 								<template is="dom-if" if="[[_shouldDisplayPrintSubFormIcon(isSubForm, template)]]">
 									<paper-icon-button icon="print" on-tap="printSubForm" id="printSubForm" class="add-button"></paper-icon-button>
 									<paper-tooltip position="bottom" for="printSubForm">[[localize('print','Print',language)]]</paper-tooltip>
@@ -408,6 +445,22 @@
 							</paper-button>
 						</div>
 						<div class="section--form">
+							<h4>
+								<template is="dom-if" if="[[isLinked]]">
+									<div class="links-container">
+										<div class="link"></div>
+										<div class="link ICPC-2--A-back"></div>
+									</div>
+								</template>
+								<span>Examen clinique général</span>
+								<paper-menu-button class="menu-button" horizontal-align="right" dynamic-align="true" horizontal-offset="8" vertical-offset="44">
+									<paper-icon-button class="button--icon-btn" icon="icons:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>
+									<paper-listbox slot="dropdown-content">
+										<paper-button on-tap="_revealLinks"><iron-icon icon="app:link"></iron-icon>[[localize('Link', 'Link', language)]]</paper-button>
+										<paper-button on-tap="_unlinkAll"><iron-icon icon="app:remove-link"></iron-icon>[[localize('Unlink', 'Unlink', language)]]</paper-button>
+									</paper-listbox>
+								</paper-menu-button>
+							</h4>
 							<template is="dom-repeat" items="[[template.sections]]" as="section">
 								<template is="dom-repeat" items="[[section.formColumns]]" as="column">
 									<template id="layoutitems-repeat" is="dom-repeat" items="[[_sortedGroupedFormDataList(column.formDataList)]]" as="layoutItem">
@@ -470,15 +523,24 @@
 														linkables="[[linkableHealthElements]]" last-modified="[[_lastModified(layoutItem)]]" value="[[_valueContainers(layoutItem,dataMap.*)]]"
 														width="[[layoutItem.editor.flow]]" on-field-changed="_valueContainersChanged" read-only="[[readOnly]]" disabled="[[disabled]]" create-treatment="[[_hasTreatmentCdItem(layoutItem.tags)]]"></dynamic-medication-field>
 												</template>
-												<template is="dom-if" if="[[_isSubForm(layoutItem)]]">
-													<dynamic-sub-form id="sf_[[_sanitizeId(layoutItem.name)]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" layout-item="[[layoutItem]]" api="[[api]]" user="[[user]]"
-														i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" sub-contexts="[[_subForms(layoutItem,dataMap.*)]]"
-														on-delete-subform="_deleteSubForm" on-add-subform="_addSubForm" read-only="[[readOnly]]" disabled="[[disabled]]" no-print="[[noPrint]]"></dynamic-sub-form>
-												</template>
 												<template is="dom-if" if="[[_isLabel(layoutItem)]]">
 													<div class="tKLabelSeparator">[[layoutItem.label]]</div>
 												</template>
 											</template>
+										</template>	
+									</template>
+								</template>
+							</template>
+							<h4><span>Examen clinique détaillé</span></h4>
+							<template is="dom-repeat" items="[[template.sections]]" as="section">
+								<template is="dom-repeat" items="[[section.formColumns]]" as="column">
+									<template id="layoutitems-repeat" is="dom-repeat" items="[[_sortedGroupedFormDataList(column.formDataList)]]" as="layoutItem">
+										<template is="dom-if" if="[[_isEqual(layoutItem.name, '8F4DEAA3-696A-44B2-B913-0C2EE418940F')]]">
+											<template is="dom-if" if="[[_isSubForm(layoutItem)]]">
+													<dynamic-sub-form id="sf_[[_sanitizeId(layoutItem.name)]]" data-layout$="[[layoutItem]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" layout-item="[[layoutItem]]" api="[[api]]" user="[[user]]"
+															i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" sub-contexts="[[_subForms(layoutItem,dataMap.*)]]"
+															on-delete-subform="_deleteSubForm" on-add-subform="_addSubForm" read-only="[[readOnly]]" disabled="[[disabled]]" no-print="[[noPrint]]"></dynamic-sub-form>
+												</template>
 										</template>
 									</template>
 								</template>
@@ -533,6 +595,15 @@
 												</template>
 											</template>
 										</template>
+										
+										<template is="dom-if" if="[[_isSubForm(layoutItem)]]">
+											<template is="dom-if" if="[[_isEqual(layoutItem.name, '6FF898B0-2694-4973-83F3-1F93C6DADC61')]]">
+												<dynamic-sub-form id="sf_[[_sanitizeId(layoutItem.name)]]" data-layout$="[[layoutItem]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" layout-item="[[layoutItem]]" api="[[api]]" user="[[user]]"
+														i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" sub-contexts="[[_subForms(layoutItem,dataMap.*)]]"
+														on-delete-subform="_deleteSubForm" on-add-subform="_addSubForm" read-only="[[readOnly]]" disabled="[[disabled]]" no-print="[[noPrint]]"></dynamic-sub-form>
+											</template>
+										</template>
+										
 									</template>
 								</template>
 							</template>
@@ -540,9 +611,9 @@
 					</div>
 				</div>
 			</template>
-			<form id="general-info" is="iron-form">
-				<div class="card-content horizontal justified">
-					<template is="dom-if" if="[[!_isEqual(template.guid, 'FFFFFFFF-FFFF-FFFF-FFFF-CONSULTATION')]]">
+			<template is="dom-if" if="[[!_isEqual(template.guid, 'FFFFFFFF-FFFF-FFFF-FFFF-CONSULTATION')]]">
+				<form id="general-info" is="iron-form">
+					<div class="card-content horizontal justified">
 						<template is="dom-repeat" items="[[template.sections]]" as="section">
 								<template is="dom-repeat" items="[[section.formColumns]]" as="column">
 									<template id="layoutitems-repeat" is="dom-repeat" items="[[_sortedGroupedFormDataList(column.formDataList)]]" as="layoutItem">
@@ -605,7 +676,7 @@
 													width="[[layoutItem.editor.flow]]" on-field-changed="_valueContainersChanged" read-only="[[readOnly]]" disabled="[[disabled]]" create-treatment="[[_hasTreatmentCdItem(layoutItem.tags)]]"></dynamic-medication-field>
 											</template>
 											<template is="dom-if" if="[[_isSubForm(layoutItem)]]">
-												<dynamic-sub-form id="sf_[[_sanitizeId(layoutItem.name)]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" layout-item="[[layoutItem]]" api="[[api]]" user="[[user]]"
+												<dynamic-sub-form id="sf_[[_sanitizeId(layoutItem.name)]]" data-layout$="[[layoutItem]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" layout-item="[[layoutItem]]" api="[[api]]" user="[[user]]"
 													i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" sub-contexts="[[_subForms(layoutItem,dataMap.*)]]"
 													on-delete-subform="_deleteSubForm" on-add-subform="_addSubForm" read-only="[[readOnly]]" disabled="[[disabled]]" no-print="[[noPrint]]"></dynamic-sub-form>
 											</template>
@@ -616,10 +687,9 @@
 									</template>
 								</template>
 						</template>
-					</template>
-				</div>
-			</form>
-			
+					</div>
+				</form>
+			</template>
 			<template is="dom-if" if="[[showEdit]]">
                 <paper-icon-button class="button--icon-btn edit-print-pat-details-btn" icon="create" on-tap="editForm"></paper-icon-button>
 			</template>
@@ -1032,13 +1102,13 @@
 
 			_deleteSubForm(e, detail) {
 				e.stopPropagation();
-				const layoutItem = Polymer.dom(this.root).querySelector('#layoutitems-repeat').itemForElement(e.target);
+				const layoutItem = JSON.parse(e.target.getAttribute('data-layout'))
 				this.dataProvider.deleteSubForm && this.dataProvider.deleteSubForm(layoutItem.name, detail.id, detail.index);
 			}
 
 			_addSubForm(e, detail) {
 				e.stopPropagation();
-				const layoutItem = Polymer.dom(this.root).querySelector('#layoutitems-repeat').itemForElement(e.target);
+				const layoutItem = JSON.parse(e.target.getAttribute('data-layout'))
 				this.dataProvider.addSubForm && this.dataProvider.addSubForm(layoutItem.name, detail.guid);
 			}
 
@@ -1093,7 +1163,7 @@
 			}
 
 			_isO(item) {
-				return item.tags && item.tags[1] && item.tags[1].code === "Objective" || item.subForm === true
+				return item.tags && item.tags[1] && item.tags[1].code === "Objective"
 			}
 
 			_isA(item) {

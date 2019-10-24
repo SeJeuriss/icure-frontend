@@ -195,13 +195,13 @@
 				padding-bottom: 32px;
 			}
 
-			.extra-info{
+			.extra-info {
 				color:var(--app-text-color-disabled);
 				font-style: italic;
 				font-size: 80%;
 			}
 
-			.close-button-icon{
+			.close-button-icon {
 				position: absolute;
 				top: 0;
 				right: 0;
@@ -219,12 +219,12 @@
                 margin: 0;
 			}
 
-			paper-input{
+			paper-input {
 				--paper-input-container-focus-color: var(--app-primary-color);
 			}
 
 
-			filter-panel{
+			filter-panel {
 				flex-grow: 9;
 				/* --panel-width: 60%; */
 			}
@@ -242,19 +242,19 @@
                 border-bottom: 1px solid var(--app-background-color-darker);
             }
 
-            .contact-actions div{
+            .contact-actions div {
                 height: 28px;
             }
 
-            .contact-actions.mobile span{
+            .contact-actions.mobile span {
                 display: none;
             }
 
-            .contact-actions.mobile paper-button{
+            .contact-actions.mobile paper-button {
                 min-width: 0;
             }
 
-			.layout-bar{
+			.layout-bar {
 				display: inline-flex;
 				flex-flow: row nowrap;
 				align-items: center;
@@ -274,17 +274,17 @@
                 padding: 4px;
 			}
 
-			.layout-bar .list{
+			.layout-bar .list {
 				padding: 2px;
                 margin: 0 8px;
 			}
 
-			.layout-bar .doc{
+			.layout-bar .doc {
 				padding: 3px;
                 margin: 0 8px;
 			}
 
-			.layout-bar .table{
+			.layout-bar .table {
                 padding: 4px 6px;
             }
 
@@ -292,57 +292,11 @@
 				color: var(--app-secondary-color) !important;
 			}
 
-			.add-forms-container, .print-forms-container, .outgoing-docs-container {
-                text-align: right;
-                position: absolute;
-                margin-top: 8px;
-                top: 28px;
-                left: 4px;
-                background-color: var(--app-background-color);
-                opacity: 1;
-                border-radius: 2px;
-                z-index: 200;
-                height: auto !important;
-                box-shadow: var(--app-shadow-elevation-2);
-                display: flex;
-                flex-flow: column nowrap;
-                align-items: stretch;
-                border-radius: 3px;
-                overflow: hidden;
-                padding: 0;
+            paper-menu-button {
+				padding: 0;
 			}
 
-            .add-forms-container paper-button, .print-forms-container paper-button, .outgoing-docs-container paper-button{
-                display: flex;
-                flex-flow: row nowrap;
-                justify-content: flex-start;
-                align-items: center;
-                text-transform: capitalize;
-                height: 28px;
-                padding: 0 12px 0 8px;
-                font-weight: 400;
-                font-size: var(--font-size-normal);
-                text-align: left;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                flex-grow: 1;
-                border-radius: 0;
-                margin: 0;
-            }
-            .add-forms-container paper-button:hover, .print-forms-container paper-button:hover, .outgoing-docs-container paper-button:hover{
-                background: var(--app-background-color-dark);
-            }
-
-            .add-forms-container paper-button iron-icon, .print-forms-container paper-button iron-icon, .outgoing-docs-container paper-button iron-icon{
-                color: var(--app-secondary-color);
-                height: 20px;
-                width: 20px;
-                margin-right: 4px;
-                box-sizing: border-box;
-            }
-
-			.close-add-forms-btn, .close-print-forms-btn{
+			.close-add-forms-btn, .close-print-forms-btn {
 				background: var(--app-secondary-color-dark) !important;
 			}
 
@@ -355,9 +309,7 @@
 				right: 8px;
 			}
 
-
-
-			.horizontal{
+			.horizontal {
 				flex-flow: row nowrap;
 			}
 
@@ -393,12 +345,12 @@
                 position: relative;
 			}
 
-            #prose-editor::slotted(*){
+            #prose-editor::slotted(*) {
                 margin-top: 0;
                 padding: 0;
             }
 
-			.buttons{
+			.buttons {
 				display: flex;
 				flex-grow: 1;
 				box-sizing: border-box;
@@ -440,7 +392,7 @@
                 }
             }
 
-			#templateSavedIndicator{
+			#templateSavedIndicator {
 				position: fixed;
 				top:50%;
 				right: -200px;
@@ -459,9 +411,11 @@
                 -o-transition: all 400ms ease;
                 -ms-transition: all 400ms ease;
 			}
-			.templateSaved{
+
+			.templateSaved {
 				right:0!important;
 			}
+
 			#template-description-dialog {
                 width:60%;
                 padding-bottom:20px;
@@ -488,8 +442,6 @@
                 height:100px;
 			}
 
-
-
             @media screen and (max-height: 744px) {
                 #entities-list {
                     flex-grow: 1;
@@ -497,7 +449,7 @@
                 }
             }
 
-			#chooseSizePrintFormDialog{
+			#chooseSizePrintFormDialog {
 				width : 300px
 			}
 
@@ -569,8 +521,6 @@
                 width:100%;
                 text-align:center;
             }
-
-
 		</style>
 
         <template is="dom-if" if="[[_bodyOverlay]]">
@@ -588,74 +538,44 @@
 			<div class="layout horizontal">
                 <div class="contact-actions">
                     <template is="dom-if" if="[[_hasCurrentContact(contacts)]]">
-
-						<template is="dom-if" if=[[!showAddFormsContainer]]>
-                            <paper-button id="newFormBtn" class="button button--menu" on-tap="_toggleAddActions">
+                        <paper-menu-button class="menu-button" horizontal-align="left" dynamic-align="true" horizontal-offset="4" vertical-offset="36">
+                            <paper-button id="newFormBtn" class="button button--menu" slot="dropdown-trigger" alt="add sub form menu">
                                 <span class="no-mobile">[[localize('add_for','Add forms',language)]]</span>
-                                <iron-icon icon="[[_actionIcon(showAddFormsContainer)]]" ></iron-icon>
+                                <iron-icon icon="icons:more-vert"></iron-icon>
                             </paper-button>
-                        </template>
+                            <paper-listbox slot="dropdown-content">
+                                <paper-button on-tap="addConsultation"><iron-icon icon="vaadin:doctor-briefcase"></iron-icon>[[localize('con_mso','Consultation MSOAP',language)]]</paper-button>
+                                <paper-button on-tap="addPrescriptionForm"><iron-icon icon="vaadin:pill"></iron-icon>[[localize('presc_of_med','Ordonnance',language)]]</paper-button>
+                                <paper-button on-tap="addOther"><iron-icon icon="vaadin:records"></iron-icon>[[localize('oth_for','Other form',language)]]</paper-button>
+                                <paper-button on-tap="addDocument"><iron-icon icon="editor:attach-file"></iron-icon>[[localize('add_doc','Add document',language)]]</paper-button>
+                            </paper-listbox>
+                        </paper-menu-button>
 
-                        <template is="dom-if" if=[[showAddFormsContainer]]>
-                            <div class="add-form-container">
-                                <paper-button class="button button--menu" on-tap="_toggleAddActions">
-                                    <span class="no-mobile">[[localize('clo','Close',language)]]</span>
-                                    <iron-icon icon="[[_actionIcon(showAddFormsContainer)]]" ></iron-icon>
-                                </paper-button>
-                                <div class="add-forms-container">
-                                    <!--<paper-fab-speed-dial-action icon="vaadin:chart-line" on-tap="addMedicalHistory">[[localize('med_his','Medical history',language)]]</paper-fab-speed-dial-action>-->
-                                    <paper-button on-tap="addConsultation"><iron-icon icon="vaadin:doctor-briefcase"></iron-icon>[[localize('con_mso','Consultation MSOAP',language)]]</paper-button>
-                                    <paper-button on-tap="addPrescriptionForm"><iron-icon icon="vaadin:pill"></iron-icon>[[localize('presc_of_med','Ordonnance',language)]]</paper-button>
-                                    <!--<paper-button icon="vaadin:file-o" on-tap="newReport"><iron-icon icon=""></iron-icon>[[localize('new_rep','Nouveau rapport',language)]]</paper-button>-->
-                                    <!--<paper-button icon="vaadin:stethoscope" on-tap="addFirstContact"><iron-icon icon=""></iron-icon>[[localize('first_ctc','First contact',language)]]</paper-button>-->
-                                    <paper-button on-tap="addOther"><iron-icon icon="vaadin:records"></iron-icon>[[localize('oth_for','Other form',language)]]</paper-button>
-                                    <paper-button on-tap="addDocument"><iron-icon icon="editor:attach-file"></iron-icon>[[localize('add_doc','Add document',language)]]</paper-button>
-									<!--<paper-button on-tap="writeLinkingLetter"><iron-icon icon="vaadin:clipboard-text"></iron-icon>[[localize('linkingLetter','Lettre de liaison',language)]]</paper-button>-->
-                                </div>
-                            </div>
-                        </template>
+                        <paper-menu-button class="menu-button" horizontal-align="left" dynamic-align="true" horizontal-offset="4" vertical-offset="36">
+                            <paper-button id="newOutgoingDocBtn" class="button button--menu-other" slot="dropdown-trigger" alt="add sub form menu">
+                                <span class="no-mobile">[[localize('outGoingDoc','Outgoing docs',language)]]</span>
+                                <iron-icon icon="icons:more-vert"></iron-icon>
+                            </paper-button>
+                            <paper-listbox slot="dropdown-content">
+                                <template is="dom-repeat" id="outGoingDocumentTemplates" items="[[outGoingDocumentTemplates]]" as="outGoingDocumentTemplate">
+                                    <template is="dom-if" if=[[outGoingDocumentTemplate.isLast]]><hr style="margin: 3px 0 3px 0;padding: 0;border: 0;border-top: 1px dashed #ccc;"/></template>
+                                    <paper-button on-tap="_triggerOutGoingDocumentDialog" data-ogdt-template-id$="[[outGoingDocumentTemplate.id]]"><iron-icon icon="icons:description"></iron-icon>[[outGoingDocumentTemplate.name]]</paper-button>
+                                </template>
+                            </paper-listbox>
+                        </paper-menu-button>
 
-						<template is="dom-if" if=[[!showOutGoingDocContainer]]>
-							<paper-button id="newOutgoingDocBtn" class="button button--menu" on-tap="_toggleOutGoingDocActions">
-								<span class="no-mobile">[[localize('outGoingDoc','Outgoing docs',language)]]</span>
-								<iron-icon icon="[[_actionIcon(showOutGoingDocContainer)]]" ></iron-icon>
-							</paper-button>
-						</template>
-
-						<template is="dom-if" if=[[showOutGoingDocContainer]]>
-							<div class="add-form-container">
-								<paper-button class="button button--menu" on-tap="_toggleOutGoingDocActions">
-									<span class="no-mobile">[[localize('clo','Close',language)]]</span>
-									<iron-icon icon="[[_actionIcon(showOutGoingDocContainer)]]" ></iron-icon>
-								</paper-button>
-								<div class="outgoing-docs-container">
-									<template is="dom-repeat" id="outGoingDocumentTemplates" items="[[outGoingDocumentTemplates]]" as="outGoingDocumentTemplate">
-                                        <template is="dom-if" if=[[outGoingDocumentTemplate.isLast]]><hr style="margin: 3px 0 3px 0;padding: 0;border: 0;border-top: 1px dashed #ccc;"/></template>
-										<paper-button on-tap="_triggerOutGoingDocumentDialog" data-ogdt-template-id$="[[outGoingDocumentTemplate.id]]"><iron-icon icon="icons:description"></iron-icon>[[outGoingDocumentTemplate.name]]</paper-button>
-									</template>
-								</div>
-							</div>
-						</template>
-
-                        <template is="dom-if" if=[[!showPrintFormsContainer]]>
-                            <paper-button id="prescribeBtnCtnr" class="button button--menu" on-tap="_togglePrintActions">
+                        <paper-menu-button class="menu-button" horizontal-align="left" dynamic-align="true" horizontal-offset="4" vertical-offset="36">
+                            <paper-button id="prescribeBtnCtnr" class="button button--menu-other" slot="dropdown-trigger" alt="add sub form menu">
                                 <span class="no-mobile">[[localize('print','Print',language)]]</span>
-                                <iron-icon icon="[[_actionIcon(showPrintFormsContainer)]]" ></iron-icon>
+                                <iron-icon icon="icons:more-vert"></iron-icon>
                             </paper-button>
-                        </template>
-                        <template is="dom-if" if=[[showPrintFormsContainer]]>
-                            <div  class="print-form-container" on-tap="_displayPrescriptionError">
-                                <paper-button id="prescribeBtnCtnr" class="button button--menu" on-tap="_togglePrintActions">
-                                    <span class="no-mobile">[[localize('clo','Close',language)]]</span>
-                                    <iron-icon icon="[[_actionIcon(showPrintFormsContainer)]]" ></iron-icon>
-                                </paper-button>
-                                <div class="print-forms-container">
-                                    <paper-button id="prescribeBtn" on-tap="_prescribe"><iron-icon icon="vaadin:pill"></iron-icon>[[localize('prescription','Prescription',language)]]</paper-button>
-                                    <paper-button on-tap="_printContact"><iron-icon icon="vaadin:doctor-briefcase"></iron-icon>[[localize('contact','Contact',language)]]</paper-button>
-                                    <paper-button on-tap="_printContact"><iron-icon icon="vaadin:clipboard-text"></iron-icon>[[localize('itt','ITT',language)]]</paper-button>
-                                </div>
-                            </div>
-                        </template>
+                            <paper-listbox slot="dropdown-content">
+                                <paper-button id="prescribeBtn" on-tap="_prescribe"><iron-icon icon="vaadin:pill"></iron-icon>[[localize('prescription','Prescription',language)]]</paper-button>
+                                <paper-button on-tap="_printContact"><iron-icon icon="vaadin:doctor-briefcase"></iron-icon>[[localize('contact','Contact',language)]]</paper-button>
+                                <paper-button on-tap="_printContact"><iron-icon icon="vaadin:clipboard-text"></iron-icon>[[localize('itt','ITT',language)]]</paper-button>
+                            </paper-listbox>
+                        </paper-menu-button>
+
                         <div id="procedureBtnCtnr">
                             <paper-button id="procedureBtn" class="button button--other" on-tap="_planAction">
                                 <iron-icon icon="vaadin:tools" ></iron-icon>

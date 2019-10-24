@@ -75,8 +75,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="./elements/icons/icure-icons.html">
 <link rel="import" href="./styles/notification-style.html">
 <link rel="import" href="./ht-update-dialog.html">
-<link rel="immport" href="./styles/buttons-style.html">
+<link rel="import" href="./styles/buttons-style.html">
 <link rel="import" href="./styles/notification-style.html">
+<link rel="import" href="./styles/app-icons.html">
 
 <dom-module id="ht-app-tz">
 
@@ -309,10 +310,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 padding: 0;
             }
 
-            footer.log-info .eHealth-status-container:hover, footer.log-info .user-email:hover, footer.log-info .versions span:hover{
-                background: var(--app-background-color-dark);
+            footer.log-info .timer {
+                padding: 0 8px;
+                border-right: 1px solid var(--app-background-color-dark);
             }
 
+            footer.log-info .eHealth-status-container:hover, footer.log-info .user-email:hover, footer.log-info .versions span:hover, footer.log-info .timer:hover{
+                background: var(--app-background-color-dark);
+            }
 
             footer.log-info > div {
                 display: flex;
@@ -453,23 +458,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 border-radius: 2px 2px 0 0;
             }
 
-            .timer {
-                font-size: 10px;
-                width: auto;
-                position: absolute;
-                top: 50%;
-                right: 137px;
-                transform: scaleX(1) translateY(-50%);
-                color: var(--app-text-color-light);
-                opacity: 1;
-                transition: all .24s;
-            }
-
-            .logo:hover + .timer {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-
             .logo {
                 width: 64px;
                 height: 64px;
@@ -583,10 +571,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             @media screen and (max-width: 640px) {
-                .timer {
-                    display: none;
-                }
-
                 paper-dialog#ht-invite-hcp {
                     max-width: none !important;
                     width: 100% !important;
@@ -752,7 +736,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                 <path class="cls-1" d="M27.06 27.06v-9.61h-4.63v5.06h-5.02v4.55h9.65z"/>
                                 <path class="cls-1" d="M1 14.42a13.48 13.48 0 0 0 13.53 13.64v-4.55a8.92 8.92 0 0 1-7.65-4.37 9.06 9.06 0 0 1-1.26-4.6 10.13 10.13 0 0 1 1.24-4.8 7.16 7.16 0 0 1 2.92-2.95 9.23 9.23 0 0 1 9.34 0 9 9 0 0 1 4.31 7.72h4.63v-.12A13.65 13.65 0 0 0 14.54 1 13.66 13.66 0 0 0 1 14.42M49.58 1a13.48 13.48 0 0 0-13.64 13.53h4.55a8.92 8.92 0 0 1 4.37-7.65 9.06 9.06 0 0 1 4.6-1.26 10.13 10.13 0 0 1 4.8 1.24 7.16 7.16 0 0 1 3 2.92 9.23 9.23 0 0 1 0 9.34 9 9 0 0 1-7.72 4.31v4.63h.12A13.65 13.65 0 0 0 63 14.54 13.66 13.66 0 0 0 49.58 1" transform="translate(-1 -1)"/>
                             </svg>
-                            <div class="timer" id="timer">[[localize('time_lft','Time left:',language)]] {{disconnectionTimer}} m.</div>
 
                             <paper-tooltip class="big" position="left" for="tools-and-parameters">[[localize('tools_and_parameters','Tools and parameters',language)]]</paper-tooltip>
                             <paper-menu-button id="tools-and-parameters" horizontal-align="right" close-on-activate no-overlap no-animations focused="false">
@@ -812,6 +795,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <footer class="log-info">
                 <div>
                     <div class="user-email" on-click="_debugPostUser"><iron-icon icon="icons:account-circle"></iron-icon>[[user.login]]</div>
+                    <div class="timer" id="timer">[[localize('time_lft','Time left:',language)]] {{disconnectionTimer}} m.</div>
                     <div class="eHealth-status-container">
                         <iron-icon icon="icure-svg-icons:ehealth"></iron-icon>
                         <span>eHealth</span>
