@@ -2701,7 +2701,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                                 comment: null
                                             }, (progress) => this.set('taskProgress', (pidx + progress) / selectedPatientsForExport.length), this.api.sessionId).then(output => {
                                                 //creation of the xml file
-                                                var file = typeof output === "string" ? new Blob([output], {type: "application/xml"}) : output
+                                                let file = typeof output === "string" ? new Blob([output], {type: "application/xml"}) : output
+                                                let filename = patient.names.replace(" ", "_") + "_" + (moment().format("x")) + ".xml"
+
+                                                this.addDocumentToPatientFolder(patient.id, file, filename)
 
                                                 //creation the downloading link
                                                 var a = document.createElement("a")
@@ -2711,7 +2714,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                                 //download the new file
                                                 var url = window.URL.createObjectURL(file)
                                                 a.href = url
-                                                a.download = patient.names.replace(" ", "_") + "_" + (moment().format("x")) + ".xml"
+                                                a.download = filename
                                                 a.click()
                                                 window.URL.revokeObjectURL(url)
 
@@ -2729,6 +2732,130 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         this.api.patient().getPatientsWithUser(this.user,new models.ListOfIdsDto({ids:_.uniq(this.patientSelected.map(pat => pat.id))}))
                             .then(pats => this.$['fusion-dialog'].open(pats))
                 }
+            }
+
+            addDocumentToPatientFolder(patientid, file, filename) {
+                let updatedContact = null;
+                let documentList = [];
+                const title = this.title;
+                let docDate = moment();
+                const docDateYMD = parseInt(docDate.format("YYYYMMDDHHmmss"));
+                const docDateMs = parseInt(docDate.format("x")) || new Date().getTime();
+                const docDateAsString = docDate.format("YYYY-MM-DD")
+                this.api.patient().getPatientWithUser(this.user, patientid)
+                    .then(patient => {
+
+                        Promise.all([this.api.user().findByHcpartyId(this.hcpId), this.api.message().newInstance(this.user)])
+                            .then(([user, msg]) => this.api.message().createMessage(_.merge(msg, {
+                                transportGuid: "SMF:OUT",
+                                //recipients: [this.hcpId, (this.user.healthcarePartyId || this.hcpId || "")],
+                                //recipientsType: "org.taktik.icure.entities.HealthcareParty",
+                                metas: {
+                                    documentDate: docDateAsString,
+                                    importDate: moment().format("YYYY-MM-DD")
+                                },
+                                //toAddresses: [_.get(this.user, "email", _.get(this.user, "healthcarePartyId", "")), _.get(user, "email", this.hcpId)],
+                                //subject: title,
+                                //@ToDo test on persphysician ==> traited or not
+                                status: 1 << 1 | 1 << 25 | (patient.id ? 1 << 26 : 0)
+                            })))
+                            .then(msg => {
+                                new Promise(resolve => {
+                                    if (patient) {
+                                        console.log("has patient for message ", msg.id);
+                                        Promise.resolve(patient).then(patient => {
+                                            return this.api.contact().newInstance(this.user, patient, {
+                                                openingDate: docDateYMD,
+                                                closingDate: docDateYMD,
+                                                author: this.user.id,
+                                                responsible: this.user.healthcarePartyId,
+                                                subContacts: []
+                                            })
+                                        })
+                                            .then(contact => resolve(contact))
+                                    } else {
+                                        console.log("no patient for message ", msg.id);
+                                        // return this._encryptInfo(msg, [{}])
+                                        return resolve();
+                                    }
+                                })
+                                    .then(contact => {
+                                        return this.api.document().newInstance(this.user, msg, {
+                                            //documentType: doc.type,
+                                            mainUti: this.api.document().uti("application/xml"),
+                                            name: filename,
+                                            created: docDateMs
+                                        })
+                                            .then(newDoc => this.api.document().createDocument(newDoc))
+                                            .then(createdDoc => {
+
+                                                if (!contact) return;
+                                                const svc = this.api.contact().service().newInstance(this.user, {
+                                                    content: _.fromPairs([[this.language, {
+                                                        documentId: createdDoc.id,
+                                                        //stringValue: doc.title
+                                                    }]]),
+                                                    created: docDateMs,
+                                                    tags: [{type: 'CD-TRANSACTION', code: 'note'}],
+                                                    label: 'exported PMF',
+                                                    //comment: cryptedComment
+                                                });
+
+                                                if (contact.services === undefined) contact.services = [svc];
+                                                else contact.services.push(svc);
+
+                                                const sc = {status: 64, services: [{serviceId: svc.id}]};
+                                                contact.subContacts.push(sc);
+                                                console.log("2 - pushed sc");
+                                                return file.arrayBuffer().then(arraybuffer =>
+                                                    this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("encrypt", this.user, createdDoc, arraybuffer)
+                                                        .then(encryptedFileContent => this.api.document().setAttachment(createdDoc.id, null, encryptedFileContent))
+                                                )
+                                            })
+                                            .then(() => contact)
+                                    })
+                                    .then(contact => {
+                                        if (!contact) return;
+                                        console.log("3 - create or modify contact")
+                                        return this.api.contact().createContactWithUser(this.user, contact)
+                                            .then(contact => this.api.register(contact, "contact"))
+                                            .then(contact => {
+                                                console.log("created contact: ", contact)
+                                            })
+                                        /*
+                                        .then(contact => this._encryptInfo(msg, [{
+                                            'patientId': patient.id,
+                                            'isAssigned': true,
+                                            'contactId': contact.id
+                                        }]))
+                                        */
+                                    })
+                                    .then(() => msg)
+                                    .then(msg => {
+                                        console.log("4 - stringify");
+                                        //msg.metas.documentListJson = JSON.stringify(documentList);
+                                        //delete msg.metas.documentList;
+                                        //console.log("-- 2 - documentList: ", documentList);
+                                        //console.log("-- documentListJson: ", msg.metas.documentListJson);
+                                        //return this.api.message().modifyMessage(msg);
+                                        return msg
+                                    })
+                                    .then(msg => {
+                                        console.log(msg);
+                                        return msg;
+                                    })
+                                    .catch(error => console.log(error))
+                                    .finally(msg => {
+                                        console.log("5 - finally");
+                                        this.dispatchEvent(new CustomEvent("post-process", {
+                                            detail: {
+                                                messages: msg,
+                                                contact: updatedContact
+                                            }, bubbles: true
+                                        }))
+                                    })
+                            })
+                    })
             }
 
             _deselectAllSelectedPatients() {

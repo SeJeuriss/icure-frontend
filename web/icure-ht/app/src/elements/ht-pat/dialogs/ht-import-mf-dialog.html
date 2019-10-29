@@ -353,7 +353,7 @@
                         type: Array,
                         value: () => []
                     },
-                    importPromisePool: {
+                    importPromisePool: { // pushed into but not really used
                         type: Array,
                         value: () => []
                     },
@@ -423,6 +423,10 @@
             }
 
             //////////////
+            // the code flow is:
+            // - when adding a file, _filesChanged is called which upload the file as a Document on DB
+            // - when upload finished, upload widget call _mfFileUploaded which add the file to the checkIfPatientExists pipeline (pipeline are made with promise-limit module)
+            // - if patient doesnt exists, add it to importPatientFromSmfItem pipeline, else add it to patientCheckStatuses list and wait for user confirmation
 
             _toggleAllCheckboxes(e) {
                 console.log("_toggleAllCheckboxes", e.detail.value)
@@ -472,7 +476,7 @@
                             this.isUploadingFile = true
                             f.attached = true
                             return this.api.document().newInstance(this.user, null, {
-                                documentType: 'result',
+                                documentType: 'note',
                                 mainUti: this.api.document().uti(f.type),
                                 name: f.name
                             }).then(d => this.api.document().createDocument(d)).then(d => {
@@ -681,17 +685,20 @@
                                         return this.api.document().newInstance(this.user, pat, doc)
                                     })).then(d => {
                                         return this.api.document().modifyDocuments(d)
-                                    })
+                                    }),
                                 ]
                                 return prolist.reduce((acc, prom) => acc.then(res => prom.then(innerRes => res.concat(innerRes))), Promise.resolve([]))
                                     .then(
                                         datastatus => {
-                                            console.log("done import: " + document.name + ":" + pat.firstName + " " + pat.lastName + "; " + pat.id)
-                                            console.log(datastatus)
+                                            return this.addMfDocumentToPatient(pat, document).then(() => {
 
-                                            this.set(['patientImportStatuses', this.patientImportStatuses.indexOf(status), 'progress'], 1 / results.length) // handle multiple pat per file
-                                            this.set(['patientImportStatuses', this.patientImportStatuses.indexOf(status), 'statuses.patient.success'], true)
-                                            return Promise.resolve()
+                                                console.log("done import: " + document.name + ":" + pat.firstName + " " + pat.lastName + "; " + pat.id)
+                                                console.log(datastatus)
+
+                                                this.set(['patientImportStatuses', this.patientImportStatuses.indexOf(status), 'progress'], 1 / results.length) // handle multiple pat per file
+                                                this.set(['patientImportStatuses', this.patientImportStatuses.indexOf(status), 'statuses.patient.success'], true)
+                                                return Promise.resolve()
+                                            })
                                         },
                                         // patient imported but error importing patient data
                                         err => {
@@ -861,6 +868,127 @@
 
             _statusDetailClass(status) {
                 return status.success === null ? '' : status.success ? 'status-green' : 'status-red'
+            }
+
+            addMfDocumentToPatient(patient, doc) {
+                // doc is already a Document with id and delegations
+                let filename = doc.name
+                let updatedContact = null;
+                let documentList = [];
+                const title = "Imported SMF file"
+                let docDate = moment();
+
+                const docDateYMD = parseInt(docDate.format("YYYYMMDDHHmmss"));
+                const docDateMs = parseInt(docDate.format("x")) || new Date().getTime();
+                const docDateAsString = docDate.format("YYYY-MM-DD")
+                console.log("message to process ", doc);
+                return Promise.all([this.api.user().findByHcpartyId(this.user.healthcarePartyId), this.api.message().newInstance(this.user)])
+                    .then(([user, msg]) => this.api.message().createMessage(_.merge(msg, {
+                        transportGuid: "SMF:IN:IMPORTED-DOCUMENT",
+                        recipients: [this.user.healthcarePartyId],
+                        recipientsType: "org.taktik.icure.entities.HealthcareParty",
+                        metas: {
+                            documentDate: docDateAsString,
+                            importDate: moment().format("YYYY-MM-DD")
+                        },
+                        toAddresses: [_.get(this.user, "email", _.get(this.user, "healthcarePartyId", "")), _.get(user, "email", this.user.healthcarePartyId)],
+                        subject: title,
+                        //@ToDo test on persphysician ==> traited or not
+                        status: 1 << 1 | 1 << 25 | (patient.id ? 1 << 26 : 0)
+                    })))
+                    .then(msg => new Promise(resolve => {
+                            if (patient.id) {
+                                console.log("has patient for message ", msg.id);
+                                return this.api.patient().getPatientWithUser(this.user, patient.id)
+                                    .then(patient => this.api.register(patient, "patient"))
+                                    .then(patient => {
+                                            return this.api.contact().newInstance(this.user, patient, {
+                                                openingDate: docDateYMD,
+                                                closingDate: docDateYMD,
+                                                author: this.user.id,
+                                                responsible: this.user.healthcarePartyId,
+                                                subContacts: []
+                                            })
+                                    })
+                                    .then(contact => resolve(contact))
+                            } else {
+                                console.log("no patient for message ", msg.id);
+                                // return this._encryptInfo(msg, [{}])
+                                return resolve();
+                            }
+                        })
+                            .then(contact => {
+                                //let name = doc.title.includes("." + doc.extension) ? _.trim(doc.title) : _.trim(doc.title) + "." + doc.extension;
+                                const svc = this.api.contact().service().newInstance(this.user, {
+                                    content: _.fromPairs([[this.language, {
+                                        documentId: doc.id,
+                                        stringValue: doc.name
+                                    }]]),
+                                    created: docDateMs,
+                                    tags: [{type: 'CD-TRANSACTION', code: "note"}],
+                                    label: 'imported document',
+                                });
+
+                                if (contact.services === undefined) contact.services = [svc];
+                                else contact.services.push(svc);
+
+                                const sc = {status: 64, services: [{serviceId: svc.id}]};
+                                contact.subContacts.push(sc);
+                                console.log("2 - pushed sc");
+
+                                console.log("3 - create or modify contact")
+                                return this.api.contact().createContactWithUser(this.user, contact)
+                                    .then(contact => this.api.register(contact, "contact"))
+                                    .then(contact => updatedContact = contact)
+                                    .then(contact => this._encryptInfo(msg, [{
+                                        'patientId': patient.id,
+                                        'isAssigned': true,
+                                        'contactId': contact.id
+                                    }]))
+                            })
+                            .then(() => msg)
+                    )
+                    .then(msg => {
+                        console.log("4 - stringify");
+                        //msg.metas.documentListJson = JSON.stringify(documentList);
+                        //delete msg.metas.documentList;
+                        //console.log("-- 2 - documentList: ", documentList);
+                        //console.log("-- documentListJson: ", msg.metas.documentListJson);
+                        //return this.api.message().modifyMessage(msg);
+                        return msg
+                    })
+                    .then(msg => {
+                        console.log(msg);
+                        return msg;
+                    })
+                    .catch(error => console.log(error))
+                    .finally(msg => {
+                        console.log("5 - finally");
+                        /*
+                        this.dispatchEvent(new CustomEvent("post-process", {
+                            detail: {
+                                messages: msg,
+                                contact: updatedContact
+                            }, bubbles: true
+                        }))
+
+                         */
+                    })
+            }
+
+            // duplicated from ht-upload-dialog
+            _encryptInfo(message, info) {
+                if (!message.metas)
+                    return Promise.reject('Invalid message structure');
+                try {
+                    return this.api.encryptDecryptFileContentByUserHcpIdAndDocumentObject("encrypt", this.user, message, this.api.crypto().utils.ua2ArrayBuffer(this.api.crypto().utils.text2ua(JSON.stringify(info))))
+                        .then(encrypted => {
+                            message.metas.cryptedInfo = btoa(String.fromCharCode.apply(null, new Uint8Array(encrypted)));
+                            return message;
+                        })
+                } catch (error) {
+                    return Promise.reject(error);
+                }
             }
 
         }
