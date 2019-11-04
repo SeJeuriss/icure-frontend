@@ -2142,7 +2142,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </div>
                 </div>
                 <template is="dom-repeat" items="[[historyElement]]" as="he">
-                    <h4>[[he.modifiedDateAsString]] [[he.descr]]</h4>
+                    <h4>[[he.createdDateAsString]] [[he.descr]]</h4>
                     <div>
                         <b>[[localize('aut','Author',language)]]:</b> [[he.responsibleHcp.firstName]] [[he.responsibleHcp.lastName]]
                     </div>
@@ -2151,7 +2151,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <template is="dom-if" if="[[_checkClosingDate(he.closingDate)]]">
                             <b>[[localize('en_da','End Date',language)]]:</b> [[he.closingDateAsString]]
                         </template>
-
                     </div>
                     <div>
                         <template is="dom-if" if="[[_checkHeTagAvailable(he, 'CD-ITEM')]]">
@@ -2174,6 +2173,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             <b>[[localize('ext-temp','Extra temporality',language)]]:</b> [[_getHeTags(he, 'CD-EXTRA-TEMPORALITY')]];
                         </template>
 
+                    </div>
+                    <div>
+                        <b>[[localize('last_edi','Modified Date',language)]]:</b> [[he.modifiedDateAsString]]
                     </div>
                 </template>
             </div>
@@ -3844,7 +3846,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             ;(hesByHeId[he.healthElementId] || (hesByHeId[he.healthElementId] = [])).push(he)
                         }
                     })
-                    _.values(hesByHeId).forEach(a => a.sort((he1, he2) => (he2.modified || 0) - (he1.modified || 0)))
+                    _.values(hesByHeId).forEach(a => {
+                        // now use .created instead of modified to sort history (keep .modified for backward compat)
+                        hesByHeId[a[0].healthElementId] = _.orderBy(a, ['created', 'modified'], ['desc', 'desc'])
+                    })
                     const hes = _.values(hesByHeId).map(a => a[0]).filter((s) => s && !s.endOfLife)
 
                     ctcs.sort((a, b) => (a.created || 0) - (b.created || 0))
@@ -5015,6 +5020,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         delete healthElement.plansOfActionDescr;
                         _.assign(he, this._normalizedHealthElement(healthElement));
                         he.id = this.api.crypto().randomUuid();
+                        // previously, .modified was used to sort versioning history but .modified is automatically set by
+                        //      backend so we can't create several version at once else they have the same date (SMF import for example)
+                        // created was always the created date of first version, now it is the creation date of the specific version
+                        //      so it can be used to sort versioning history
+                        // to keep backward compat, one should always sort first by .created then by .modified
+                        he.created = moment().format("x")
                         delete he.rev;
                         return he;
                     }).then(he => this.api.helement().createHealthElement(he)).then(he => this.refreshPatient());
@@ -5150,14 +5161,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _composeHistory(e){
                 this.set("historyElement", [])
                 ;(_.size(_.get(this, 'healthElements', []).filter(eh => eh.healthElementId === _.get(e, 'detail.entity.healthElementId', null))) ? this.api.hcparty().getHealthcareParties(_.compact(_.uniq(_.get(this, 'healthElements', []).filter(eh => eh.healthElementId === _.get(e, 'detail.entity.healthElementId', null)).map(he => he.responsible))).join(',')) : Promise.resolve([]))
-                    .then(hcps => this.set('historyElement',_.sortBy(_.get(this, 'healthElements', []).filter(eh => eh.healthElementId === _.get(e, 'detail.entity.healthElementId', null)).map(eh =>
+                    .then(hcps => this.set('historyElement',_.orderBy(_.get(this, 'healthElements', []).filter(eh => eh.healthElementId === _.get(e, 'detail.entity.healthElementId', null)).map(eh =>
                         _.assign(eh, {
-                            modifiedDateAsString: _.get(eh, 'modified', null) ? this.api.moment(_.get(eh, 'modified', null)).format('DD/MM/YYYY') : null,
+                            modifiedDateAsString: _.get(eh, 'modified', null) ? this.api.moment(_.get(eh, 'modified', null)).format('DD/MM/YYYY HH:mm:ss') : null,
+                            createdDateAsString: _.get(eh, 'created', null) ? this.api.moment(_.get(eh, 'created', null)).format('DD/MM/YYYY HH:mm:ss') : null,
                             openingDateAsString: _.get(eh, 'openingDate', null) ? this.api.moment(_.get(eh, 'openingDate', null)).format('DD/MM/YYYY') : null,
                             closingDateAsString: _.get(eh, 'closingDate', null) ? this.api.moment(_.get(eh, 'closingDate', null)).format('DD/MM/YYYY') : null,
                             responsibleHcp : hcps.find(hcp => hcp.id === eh.responsible)
                         })
-                    ), ['modified'], ['desc'])))
+                    ), ['created', 'modified'], ['desc', 'desc'])))
 
             }
 
