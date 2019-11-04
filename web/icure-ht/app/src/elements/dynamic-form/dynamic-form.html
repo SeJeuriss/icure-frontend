@@ -25,12 +25,14 @@
 <link rel="import" href="../../styles/dialog-style.html">
 <link rel="import" href="../../styles/buttons-style.html">
 <link rel="import" href="../../styles/shared-styles.html">
+<link rel="import" href="../../elements/collapse-button/collapse-button.html">
+<link rel="import" href="../../styles/scrollbar-style.html">
 
 <link rel="import" href="ckmeans-grouping.html">
 
 <dom-module id="dynamic-form">
 	<template>
-		<style include="icpc-styles dialog-style buttons-style shared-styles">
+		<style include="icpc-styles dialog-style buttons-style shared-styles scrollbar-style">
 			ht-spinner.center {
 				position: absolute;
 				left: calc(50% - 14px);
@@ -55,7 +57,6 @@
 			}
 
 			.pat-details-card {
-				min-height: 120px;
 				width: calc(100% - 64px);
 				margin: 0 24px 24px;
 			}
@@ -106,7 +107,7 @@
 				background: var(--app-primary-color-dark);
 				font-size: 12px;
 				margin: 0;
-				padding: 2px 4px 2px 20px;
+				padding: 2px 4px 2px 12px;
 				display: flex;
 				flex-flow: row nowrap;
 				width: 100%;
@@ -115,6 +116,9 @@
 				align-items: center;
 				box-sizing: border-box;
 				border: 1px solid var(--app-primary-color-dark);
+				position: sticky;
+				top: 0;
+				z-index: 2;
 			}
 
 			.form-title > span {
@@ -122,7 +126,7 @@
 				min-width: 100px;
 			}
 
-			.form-title >div {
+			.form-title > div {
 				flex-grow: 0;
 				min-width: 48px;
 			}
@@ -208,6 +212,10 @@
 				border-bottom: 1px solid var(--app-background-color-darker);
 			}
 
+			/* .section:nth-child(even) .section--label {
+				background: var(--app-background-color-darker)!important;
+			} */
+
 			.msoap-container .section .section--label {
 				background: var(--app-background-color-dark);
 				min-width: 48px;
@@ -274,7 +282,7 @@
 				flex-grow: 1;
 				display: inline-flex;
 				flex-flow: row wrap;
-				align-items: baseline;
+				align-items: center;
 				padding: 8px;			
 			}
 
@@ -328,6 +336,63 @@
 				padding: 8px 8px 12px;
 			}
 
+			.menu-button {
+				--paper-menu-button-dropdown: {
+					transform-origin: top right;
+					height: 500px;
+				}
+			}
+
+			.menu-button paper-listbox { 
+				overflow-x: hidden;
+			}
+
+			.menu-button paper-listbox collapse-button > .sublist {
+				overflow-y: auto;
+				max-height: calc(20px * 5);
+			}
+
+			.menu-button paper-listbox collapse-button > .sublist > paper-listbox {
+				overflow: hidden;
+			}
+
+			.menu-button paper-listbox collapse-button > .sublist > paper-listbox > paper-item {
+				background: var(--app-background-color-dark);
+				height: 20px;
+				padding: 0 0 0 8px;
+				user-select: none;
+				@apply --flex-rnw-c-fs;
+			}
+			
+			.menu-button paper-listbox collapse-button > .sublist > paper-listbox > paper-item:hover {
+				background: var(--app-background-color-darker);
+			}
+
+			.menu-button paper-listbox collapse-button > .sublist > paper-listbox > paper-item > span {
+				font-size: 12px;
+				padding-right: 8px;
+				text-overflow: ellipsis;
+				overflow: hidden;
+				white-space: nowrap;
+				line-height: 1;
+    			height: auto;
+			}
+
+			.menu-button paper-listbox collapse-button > paper-item > iron-icon:last-child {
+				height: 18px;
+				width: 18px;
+				padding: 0;
+				color: var(--app-text-color);
+			}
+
+			collapse-button[opened] > paper-item > iron-icon:last-child {
+				transform: scale(-1);
+			}
+
+			[hidden] {
+                display:none!important;
+            }
+
 		</style>
 
 		<ckmeans-grouping id="ckmeans-grouping"></ckmeans-grouping>
@@ -338,42 +403,43 @@
 				<div class="form-title">
 					<span>[[displayedTitle]]</span>
 					<slot name="titlebar"></slot>
-					<div>
-                        <template is="dom-if" if="[[!readOnly]]">
-                            <!--
-                            <dynamic-subcontact-type-selector id="linktosub" subcontact-type="[[subcontactType]]" language="[[language]]" resources="[[resources]]" on-link-to-subcontact-type="_linkToSubcontactType"></dynamic-subcontact-type-selector>
-                            <paper-tooltip position="bottom" for="linktosub">[[localize('link_sub','Link to sub',language)]]</paper-tooltip>
-							-->
-							<template is="dom-if" if="[[_none(showEdit,noPrint)]]">
-								<template is="dom-if" if="[[_shouldDisplayPrintSubFormIcon(isSubForm, template)]]">
-									<paper-icon-button icon="print" on-tap="printSubForm" id="printSubForm" class="add-button"></paper-icon-button>
-									<paper-tooltip position="bottom" for="printSubForm">[[localize('print','Print',language)]]</paper-tooltip>
+					<template is="dom-if" if="[[!readOnly]]">
+						<paper-menu-button class="menu-button" horizontal-align="right" dynamic-align="true" vertical-offset="26">
+							<paper-icon-button  class="form-title-bar-btn" icon="icons:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>
+							<paper-listbox slot="dropdown-content">
+								<collapse-button>
+									<paper-item slot="sublist-collapse-item" id="linkhe"><iron-icon icon="icons:link"></iron-icon><span>[[localize('link_he','Link Health Element',language)]]</span><iron-icon icon="hardware:keyboard-arrow-down"></iron-icon></paper-item>
+									<div class="sublist" multi toggle-shift>
+										<paper-listbox>
+											<template is="dom-repeat" items="[[linkableHealthElements]]" as="he">
+												<template is="dom-if" if="[[he.id]]">
+													<paper-item id="[[he.id]]" class="link" on-tap="_linkForm">
+														<label class$="colour-code [[he.colour]]">
+															<span></span>
+														</label><span>[[he.descr]]</span></paper-item>
+												</template>
+												<template is="dom-if" if="[[!he.id]]">
+													<paper-item id="[[he.idService]]" class="link" on-tap="_linkForm">
+														<label class$="colour-code [[he.colour]]">
+															<span></span>
+														</label><span>[[he.descr]]</span></paper-item>
+												</template>
+											</template>
+										</paper-listbox>
+									</div>
+								</collapse-button>
+								<template is="dom-repeat" items="[[_toArray(sections)]]" as="section">
+									<paper-button on-tap="_hideShowSection" data-section$="[[section.key]]" hidden$="{{section.value}}">Add [[section.key]]</paper-button>
 								</template>
-							</template>
-                            <paper-tooltip position="bottom" for="linkhe">[[localize('link_he','Link Health Element',language)]]</paper-tooltip>
-                            <paper-menu-button class="form-title-bar-btn" horizontal-align="right" dynamic-align="true" vertical-offset="26">
-                                <paper-icon-button id="linkhe" class="form-title-bar-btn" icon="icons:link" slot="dropdown-trigger" alt="menu"></paper-icon-button>
-                                <paper-listbox slot="dropdown-content">
-                                    <template is="dom-repeat" items="[[linkableHealthElements]]" as="he">
-                                        <template is="dom-if" if="[[he.id]]">
-                                            <paper-item id="[[he.id]]" class="link" on-tap="_linkForm">
-                                                <label class$="colour-code [[he.colour]]">
-                                                    <span></span>
-                                                </label>[[he.descr]]</paper-item>
-                                        </template>
-                                        <template is="dom-if" if="[[!he.id]]">
-                                            <paper-item id="[[he.idService]]" class="link" on-tap="_linkForm">
-                                                <label class$="colour-code [[he.colour]]">
-                                                    <span></span>
-                                                </label>[[he.descr]]</paper-item>
-                                        </template>
-                                    </template>
-                                </paper-listbox>
-							</paper-menu-button>
-							<paper-icon-button id="delform" class="form-title-bar-btn" icon="icons:delete" on-tap="_deleteConfirmation"></paper-icon-button>
-                            <paper-tooltip position="bottom" for="delform">[[localize('del_form','Delete form',language)]]</paper-tooltip>
-                        </template>
-					</div>
+								<template is="dom-if" if="[[_none(showEdit,noPrint)]]">
+									<template is="dom-if" if="[[_shouldDisplayPrintSubFormIcon(isSubForm, template)]]">
+										<paper-button  on-tap="printSubForm" id="printSubForm"><iron-icon icon="print"></iron-icon>[[localize('print','Print',language)]]</paper-button>
+									</template>
+								</template>
+								<paper-button id="delform" class="form-title-bar-btn" on-tap="_deleteConfirmation"><iron-icon icon="icons:delete"></iron-icon><span>[[localize('del_form','Delete form',language)]]</span></paper-button>
+							</paper-listbox>
+						</paper-menu-button>
+					</template>
 				</div>
 			</template>
 			<template is="dom-if" if="[[!dataProvider]]">
@@ -381,10 +447,10 @@
 			</template>
 			
 			<template is="dom-if" if="[[_isEqual(template.guid,'FFFFFFFF-FFFF-FFFF-FFFF-CONSULTATION')]]">
-				<div class="msoap-container">				
-					<div class="section section--M">
+				<div class="msoap-container">
+					<div class="section section--M" hidden$="{{!sections.M}}">
 						<div class="section--label">
-							<paper-button class="btn">
+							<paper-button class="btn" data-section="M" on-tap="_hideShowSection">
 								<span>M</span>
 								<iron-icon icon="close"></iron-icon>
 							</paper-button>
@@ -409,9 +475,9 @@
 							</template>
 						</div>
 					</div>
-					<div class="section section--S">
+					<div class="section section--S" hidden$="{{!sections.S}}">
 						<div class="section--label">
-							<paper-button class="btn">
+							<paper-button class="btn" data-section="S" on-tap="_hideShowSection">
 								<span>S</span>
 								<iron-icon icon="close"></iron-icon>
 							</paper-button>
@@ -437,9 +503,9 @@
 							</template>
 						</div>
 					</div>
-					<div class="section section--O">
+					<div class="section section--O" hidden$="{{!sections.O}}">
 						<div class="section--label">
-							<paper-button class="btn">
+							<paper-button class="btn" data-section="O" on-tap="_hideShowSection">
 								<span>O</span>
 								<iron-icon icon="close"></iron-icon>
 							</paper-button>
@@ -456,7 +522,27 @@
 								<paper-menu-button class="menu-button" horizontal-align="right" dynamic-align="true" horizontal-offset="8" vertical-offset="44">
 									<paper-icon-button class="button--icon-btn" icon="icons:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>
 									<paper-listbox slot="dropdown-content">
-										<paper-button on-tap="_revealLinks"><iron-icon icon="app:link"></iron-icon>[[localize('Link', 'Link', language)]]</paper-button>
+										<collapse-button>
+											<paper-item slot="sublist-collapse-item" id="linkhe"><iron-icon icon="icons:link"></iron-icon><span>[[localize('Link', 'Link', language)]]</span><iron-icon icon="hardware:keyboard-arrow-down"></iron-icon></paper-item>
+											<div class="sublist" multi toggle-shift>
+												<paper-listbox>
+													<template is="dom-repeat" items="[[healthElements]]" as="he">
+														<template is="dom-if" if="[[he.id]]">
+															<paper-item id="[[he.id]]" class="link" on-tap="_linkForm">
+																<label class$="colour-code [[he.colour]]">
+																	<span></span>
+																</label><span>[[he.descr]]</span></paper-item>
+														</template>
+														<template is="dom-if" if="[[!he.id]]">
+															<paper-item id="[[he.idService]]" class="link" on-tap="_linkForm">
+																<label class$="colour-code [[he.colour]]">
+																	<span></span>
+																</label><span>[[he.descr]]</span></paper-item>
+														</template>
+													</template>
+												</paper-listbox>
+											</div>
+										</collapse-button>	
 										<paper-button on-tap="_unlinkAll"><iron-icon icon="app:remove-link"></iron-icon>[[localize('Unlink', 'Unlink', language)]]</paper-button>
 									</paper-listbox>
 								</paper-menu-button>
@@ -494,7 +580,7 @@
 												</template>
 												<template is="dom-if" if="[[_isPopupMenu(layoutItem)]]">
 													<dynamic-popup-menu id="[[_sanitizeId(layoutItem.name)]]" api="[[api]]" label="[[layoutItem.label]]" key="[[layoutItem.name]]" was-modified="[[_wasModified(layoutItem)]]" is-modified-after="[[_isModifiedAfter(layoutItem)]]"
-														i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" data-source="[[_popupDataSource(layoutItem, layoutItem.editor.menuOptions)]]"
+														i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" data-source="[[_popupDataSource(layoutItem, layoutItem.editor Options)]]"
 														linkables="[[linkableHealthElements]]" last-modified="[[_lastModified(layoutItem)]]" value="[[_value(layoutItem,dataMap.*)]]"
 														width="[[layoutItem.editor.flow]]" options="[[layoutItem.editor.menuOptions]]" on-field-changed="_valueChanged"
 														read-only="[[readOnly]]" display-all-always="[[layoutItem.editor.displayAllAlways]]" is-free-text="[[layoutItem.editor.isFreeText]]"></dynamic-popup-menu>
@@ -547,9 +633,9 @@
 							</template>
 						</div>
 					</div>
-					<div class="section section--A">
+					<div class="section section--A" hidden$="{{!sections.A}}">
 						<div class="section--label">
-							<paper-button class="btn">
+							<paper-button class="btn" data-section="A" on-tap="_hideShowSection">
 								<span>A</span>
 								<iron-icon icon="close"></iron-icon>
 							</paper-button>
@@ -574,9 +660,9 @@
 							</template>
 						</div>
 					</div>
-					<div class="section section--P">
+					<div class="section section--P" hidden$="{{!sections.P}}">
 						<div class="section--label">
-							<paper-button class="btn">
+							<paper-button class="btn" data-section="P" on-tap="_hideShowSection">
 								<span>P</span>
 								<iron-icon icon="close"></iron-icon>
 							</paper-button>
@@ -789,7 +875,21 @@
                     },
                     closed: {
 					    type: Boolean
-                    }
+                    },
+					sections: {
+						type: Object,
+						value: 
+						{
+							"M": true,
+							"S": true,
+							"O": true,
+							"A": true,
+							"P": true
+						},
+						notify: true,
+						notifyPath: true,
+						reflectToAttribute: true
+					}
 				};
 			}
 
@@ -847,6 +947,24 @@
 					return 0;
 				}
 			}
+
+			_hideShowSection(e) {
+				const section = e.target.getAttribute('data-section') ? e.target.getAttribute('data-section') : e.target.parentElement.getAttribute('data-section')
+				
+				this.set(`sections.${section}`, !this.sections[section])
+				console.log(this.sections)
+
+			}
+
+			_toArray(obj) {
+				return _.map(obj, function(value, key) {
+					return {
+						key: key,
+						value: value
+					};
+				});
+			}
+			
 
             _hasTreatmentCdItem(tags) {
 			    return tags && tags.some(t => (t.type === 'CD-ITEM' && t.code ==='treatment') || (t.type === 'ICURE' && t.code ==='PRESC'))

@@ -9,6 +9,7 @@
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../styles/icpc-styles.html">
 <link rel="import" href="../../styles/buttons-style.html">
+<link rel="import" href="../../styles/shared-styles.html">
 
 <link rel="import" href="dynamic-form.html">
 <link rel="import" href="dynamic-pills.html">
@@ -16,11 +17,17 @@
 
 <dom-module id="dynamically-loaded-form">
 	<template>
-		<style include="icpc-styles buttons-style">
+		<style include="icpc-styles buttons-style shared-styles">
 
 			.title-bar {
 				flex-grow: 2;
-				text-align: right;
+                flex-shrink: 2;
+                min-width: 0;
+                overflow: hidden;
+                display: flex;
+                flex-flow: row-reverse nowrap;
+                align-items: center;
+                margin-left: 12px;
 			}
 
 			.containerPlanAction{
@@ -80,15 +87,13 @@
 				margin-left: 15px;
 			}
 		</style>
-
 		<template is="dom-if" if="[[_shouldDisplay(form, form.deletionDate, contact)]]">
 			<dynamic-form id="dynamic-form" api="[[api]]" user="[[user]]" language="[[language]]" resources="[[resources]]" template="[[form.template.layout]]" reports="[[formReports]]"
 						  data-provider="[[dataProvider]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" data-map="[[dataMap]]" linkable-health-elements="[[mainHealthElements]]"
 						  title="[[form.template.name]]" read-only="[[_isNotInCurrentContact(currentContact, contact, form, currentContact.subContacts.*)]]" show-title="true" health-elements="[[healthElements]]"
-                          disabled="[[currentContact.closingDate]]"
-						  on-link-form="linkForm" on-link-to-health-element="linkService" on-unlink-to-health-element="unlinkService" on-delete-form="deleteForm" on-status-changed="_statusChanged" on-dynamically-event="_openActionDialog" subcontact-type="[[subcontactType]]" on-subcontact-type-change="_subContactTypeChange">
-				<div slot="titlebar" class="title-bar">
-					<dynamic-pills health-elements="[[_selectedHes(healthElements.*, contact.subContacts.*, dataProvider)]]" highlighted-hes="{{highlightedHes}}"></dynamic-pills>
+                          disabled="[[currentContact.closingDate]]" on-link-form="linkForm" on-link-to-health-element="linkService" on-unlink-to-health-element="unlinkService" on-delete-form="deleteForm" on-status-changed="_statusChanged" on-dynamically-event="_openActionDialog" subcontact-type="[[subcontactType]]" on-subcontact-type-change="_subContactTypeChange">
+				<div slot="titlebar" id="titleBar" class="title-bar">
+					<dynamic-pills id="dynamicPills" class$="[[_isOverflown()]]" health-elements="[[_selectedHes(healthElements.*, contact.subContacts.*, dataProvider)]]" highlighted-hes="{{highlightedHes}}"></dynamic-pills>
 				</div>
 			</dynamic-form>
 		</template>
@@ -192,6 +197,8 @@
             constructor() {
                 super();
             }
+
+           
 
             disconnectedCallback() {
                 this.flushSave()

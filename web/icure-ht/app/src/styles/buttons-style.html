@@ -125,6 +125,9 @@
                     border-right: 1px solid var(--app-secondary-color-dark);
                     padding-right: 12px;
                     display: block;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 };
 
                 --button--menu-hover: {
@@ -154,6 +157,9 @@
                     border-right: 1px solid var(--app-secondary-color);
                     padding-right: 12px;
                     display: block;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
                 };
 
                 --button--menu-other-hover: {
@@ -284,31 +290,38 @@
 				padding: 0;
 			}
 
-            .menu-button paper-listbox paper-button {
+            .menu-button paper-listbox paper-button, .menu-button paper-listbox collapse-button > paper-item {
                 display: flex;
                 flex-flow: row nowrap;
                 justify-content: flex-start;
                 align-items: center;
-                text-transform: capitalize;
+                text-transform: initial;
                 height: 28px;
 				width: 100%;
                 padding: 0 12px 0 8px;
                 font-weight: 400;
                 font-size: var(--font-size-normal);
                 text-align: left;
-                white-space: nowrap;
-                text-overflow: ellipsis;
                 overflow: hidden;
                 flex-grow: 1;
                 border-radius: 0;
                 margin: 0;
+                box-sizing: border-box;
+                user-select: none;
             }
 
-            .menu-button paper-listbox paper-button:hover {
+            .menu-button paper-listbox paper-button:hover, .menu-button paper-listbox collapse-button > paper-item:hover {
                 background: var(--app-background-color-dark);
             }
 
-            .menu-button paper-listbox paper-button iron-icon {
+            .menu-button paper-listbox paper-button span, .menu-button paper-listbox collapse-button > paper-item span {
+                flex-grow: 1;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+
+            .menu-button paper-listbox paper-button iron-icon, .menu-button paper-listbox collapse-button > paper-item iron-icon {
                 color: var(--app-secondary-color);
                 height: 20px;
                 width: 20px;

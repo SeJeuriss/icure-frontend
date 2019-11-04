@@ -4,18 +4,28 @@
 <link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 
-
+<link rel="import" href="../../styles/shared-styles.html">
 
 <dom-module id="dynamic-pills">
     <template>
-        <style include="icpc-styles">
+        <style include="icpc-styles shared-styles">
+            :host { 
+                width: 100%;
+            }
+            .container {
+                flex-grow: 1;
+                flex-shrink: 0;
+                width: 100%;
+                @apply --flex-rrnw-c-fs;
+            }
+
             span.he-pill {
+                display: block;
                 border-radius: 10px;
                 -webkit-border-radius: 10px;
                 -moz-border-radius: 10px;
                 padding: 0px 6px 1px 8px;
                 background-color: rgba(0,0,0,0.8);
-                max-width: 100px;
                 width: auto;
                 white-space: nowrap;
                 overflow: hidden;
@@ -25,6 +35,8 @@
                 height: 12px;
                 cursor: pointer;
                 user-select: none;
+                flex-shrink: 1;
+                @apply --transition;
             }
 
             span.he-pill-highlighted {
@@ -37,19 +49,25 @@
             span.he-pill:hover .closePillsBtn {
                 width: 10px;
             }
+
+            span.he-pill:hover {
+                flex-shrink: 0;
+            }
+
             .closePillsBtn{
                 height: 10px;
                 width: 0;
                 @apply --transition;
             }
         </style>
-
-        <template is="dom-repeat" items="[[healthElements]]" as="he">
-            <template is="dom-if" if="[[he.descr]]">
-                <span id="pill-[[he.id]]" class$="form-title-bar-btn he-pill [[_heColourStyle(he, highlightedHes.*)]]" on-tap="_highlight">[[he.descr]]  <iron-icon id="pill-[[he.id]]" class="closePillsBtn" icon="vaadin:close" on-tap="_deletePills"></iron-icon></span>
-
+        <div class$="container [[_isOverflown()]]">
+            <template is="dom-repeat" items="[[healthElements]]" as="he">
+                <template is="dom-if" if="[[he.descr]]">
+                    <span id="pill-[[he.id]]" class$="form-title-bar-btn he-pill [[_heColourStyle(he, highlightedHes.*)]]" on-tap="_highlight">[[he.descr]]  <iron-icon id="pill-[[he.id]]" class="closePillsBtn" icon="vaadin:close" on-tap="_deletePills"></iron-icon></span>
+                </template>
             </template>
-        </template>
+        </div>
+        
     </template>
     <script>
 
@@ -79,7 +97,9 @@ class DynamicPill extends Polymer.TkLocalizerMixin(Polymer.Element) {
     ready() {
         super.ready();
     }
-
+    _isOverflown() {
+        return (this.parentElement.offsetWidth < this.offsetWidth) ? 'overflown' : 'overflown'
+    }
     _highlight(e) {
         const id = e.target.id.substr(5)
         const hHe = this.highlightedHes.find(he => he.id === id)

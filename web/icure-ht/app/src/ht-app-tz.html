@@ -90,7 +90,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             app-header {
                 color: var(--app-text-color-light);
                 background-color: var(--app-primary-color-dark);
-                height: 64px;
+                height: 48px;
                 @apply --shadow-elevation-4dp;
             }
 
@@ -100,7 +100,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             app-toolbar {
                 padding-right: 0;
-                height: 64px;
+                height: 48px;
                 display: flex;
                 flex-flow: row nowrap;
                 justify-content: space-between;
@@ -137,6 +137,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             paper-menu-button {
                 position: relative;
                 transform: translateY(-50%);
+                padding: 0;
                 --paper-menu-button-content: {
                     width: 480px;
                 };
@@ -170,7 +171,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             paper-tabs {
                 --paper-tabs-selection-bar-color: var(--app-secondary-color);
-                height: 64px;
+                height: 48px;
             }
 
             paper-tab {
@@ -207,7 +208,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 visibility: hidden;
                 @apply --shadow-elevation-6dp;
                 padding: 0 1em;
-                height: calc(100vh - 84px); /* 84px = app-header height and log */
+                height: calc(100vh - 48px - 20px); /* 84px = app-header height and log */
                 overflow-y: auto;
             }
 
@@ -242,7 +243,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 top: 64px;
                 left: 0;
                 width: 100vw;
-                height: calc(100vh - 84px);
+                height: calc(100vh - 48px - 20px);
                 display: none;
                 background: var(--app-text-color-disabled);
             }
@@ -459,9 +460,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .logo {
-                width: 64px;
-                height: 64px;
-                padding: 12px;
+                width: 48px;
+                height: 48px;
+                padding: 8px;
                 box-sizing: border-box;
             }
 
@@ -738,7 +739,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             </svg>
 
                             <paper-tooltip class="big" position="left" for="tools-and-parameters">[[localize('tools_and_parameters','Tools and parameters',language)]]</paper-tooltip>
-                            <paper-menu-button id="tools-and-parameters" horizontal-align="right" close-on-activate no-overlap no-animations focused="false">
+                            <paper-menu-button id="tools-and-parameters" horizontal-align="right" close-on-activate no-overlap no-animations focused="false" vertical-offset="6">
                                 <paper-icon-button icon="icons:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>
                                 <paper-listbox class="extra-menu" slot="dropdown-content" stop-keyboard-event-propagation>
                                     <div class="dropdown-content"></div><!-- workaround to fix that the fist element of the list was always focus -->
