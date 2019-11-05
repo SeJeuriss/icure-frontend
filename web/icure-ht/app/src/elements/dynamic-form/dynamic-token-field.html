@@ -63,17 +63,30 @@
             }
 
             .tokens paper-button {
-                background: var(--exm-token-input-badge-color, --default-primary-color);
+                background: var(--app-secondary-color, --default-primary-color);
                 margin: 2px 0;
                 color: var(--exm-token-input-badge-text-color, --text-primary-color);
                 height: 18px;
-                font-size: 13px;
+                font-size: var(--font-size-normal);
                 min-width: initial;
             }
 
             .tokens paper-button iron-icon {
                 height: 16px;
                 width: 16px;
+            }
+
+			.tokens[disabled] paper-button {
+                background: var(--app-secondary-color, --default-primary-color);
+                margin: 2px 0;
+                color: var(--exm-token-input-badge-text-color, --text-primary-color);
+                height: 18px;
+                font-size: var(--font-size-normal);
+                min-width: initial;
+            }
+
+            .tokens[disabled]  paper-button iron-icon {
+                display:none;
             }
 
             input {
@@ -100,8 +113,7 @@
                 cursor: text;
             }
 
-        </style>
-
+		</style>
 		<tk-token-field label="[[localize(label,label,language)]]" value="{{localizedValue}}" on-value-splices-change="_localizedValueChanged" data-value-path="id"  data-label-path="stringValue" data-source="[[dataSource]]" always-float-label read-only="[[readOnly]]" disabled="[[readOnly]]">
 			<span slot="label-suffix">
 				<template is="dom-if" if="[[wasModified]]">
@@ -112,7 +124,7 @@
 				</template>
 			</span>
 		</tk-token-field>
-		<dynamic-link i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkables]]" represented-object="[[key]]" api="[[api]]"></dynamic-link>
+		<dynamic-link i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkables]]" represented-object="[[key]]" api="[[api]]"></dynamic-link>	
 	</template>
 	<script>
 class DynamicTokenField extends Polymer.TkLocalizerMixin(Polymer.Element) {
@@ -133,7 +145,7 @@ class DynamicTokenField extends Polymer.TkLocalizerMixin(Polymer.Element) {
 			},
 			readOnly: {
 				type: Boolean,
-				value: false
+				value: true
 			},
 			lastModified: {
 				type: String

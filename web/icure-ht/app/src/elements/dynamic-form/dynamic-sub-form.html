@@ -70,6 +70,10 @@
 				text-align: left;
 			}
 
+			paper-button.subform-title.read-only iron-icon{
+				transform: scale(-1);
+			}
+
 			.add-button{
 				position:absolute;
 				left: calc(100% - 32px);
@@ -209,7 +213,7 @@
 			<template id="subforms-repeat" is="dom-repeat" items="[[subContexts]]" as="subContext">
 				<template is="dom-if" if="[[subContext.template.name]]">
 					<div class="subform-title-container">
-						<paper-button class="subform-title"><span>[[subContext.template.name]]</span><iron-icon icon="hardware:keyboard-arrow-down"></iron-icon></paper-button>
+						<paper-button class="subform-title" on-tap="_toggleReadOnly"><span>[[subContext.template.name]]</span><iron-icon class="icon" icon="hardware:keyboard-arrow-down"></iron-icon></paper-button>
 						<paper-menu-button class="menu-button" horizontal-align="right" dynamic-align="true" vertical-offset="36">
 							<paper-icon-button class="button--icon-btn" icon="icons:more-vert" slot="dropdown-trigger" alt="menu"></paper-icon-button>
 							<paper-listbox slot="dropdown-content">
@@ -330,6 +334,11 @@ class DynamicSubForm extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
 	_allGuids() {
 		return (this.layoutItem.editor.compulsoryFormGuids || []).concat(this.layoutItem.editor.optionalFormGuids || []);
+	}
+
+	_toggleReadOnly(e) {
+		this.set('readOnly', !this.readOnly)
+		e.target.parentElement.classList.toggle('read-only')
 	}
 
 	_formTemplateLabel(guid) {
