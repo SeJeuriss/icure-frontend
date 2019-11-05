@@ -180,7 +180,7 @@
                         <div class="name">[[item.name]] ([[item.code]])</div>
                         <template is="dom-repeat" items="[[allVaccines]]" as="allvac">
                             <div class="vacc">
-                                <vaadin-checkbox checked="[[isMatching(item.code,allvac.code)]]" disabled></vaadin-checkbox>
+                                <vaadin-checkbox checked="[[isMatchingAny(item.codes,allvac.code)]]" disabled></vaadin-checkbox>
                             </div>
                         </template>
                     </div>
@@ -241,15 +241,24 @@
                             {"id" : "planned","label": {"fr": "En attente planifié", "nl": "Gepland wachten", "en": "Scheduled waiting"}},
                             {"id" : "completed","label": {"fr": "Fait", "nl": "Geëxecuteerd", "en": "Done"}},
                             {"id" : "proposed","label": {"fr": "Rappel envoyé", "nl": "Herinnering verzonden", "en": "Reminder sent"}},
-                            {"id" : "cancelled","label": {"fr": "Annulé", "nl": "cancelled", "en": "cancelled"}}
+                            {"id" : "cancelled","label": {"fr": "Annulé", "nl": "cancelled", "en": "cancelled"}},
+                            {"id" : "administrated","label": {"fr": "Administré", "nl": "Geëxecuteerd", "en": "administrated"}}
                         ]
+                    },
+                    doneStatus: {
+                        type: Array,
+                        value : () => [
+                            "completed",
+                            "administrated",
+                        ]
+
                     }
                 }
             }
 
             static get observers() {
                 return [
-                    'setList(contacts, servicesRefresher)','getAllVaccFromThesaurus(vaccines)'
+                    'setList(contacts, servicesRefresher)','getAllVaccFromThesaurus(vaccines)',
                 ]
             }
 
@@ -270,26 +279,32 @@
                 if(!(this.contacts && this.contacts.length)) {
                     this.reset()
                 } else {
-                    this.api.contact().filterServices(this.contacts,s => s.label==='Actes').then(services =>{
-                        let vaccines = []
-                        services.forEach(svc=>{
-                            Object.keys(svc.tags).forEach(k=>{
-                                if (svc.tags[k].code == 'vaccine') {
-                                    let thesCode = '0'
-                                    Object.keys(svc.codes).forEach(c=>{if(svc.codes[c].type == "BE-THESAURUS-PROCEDURES") {thesCode = svc.codes[c].code}})
-                                    const vacc = {name: this._getName(svc),intDate:svc.valueDate, intCreated:svc.created, date: this._timeFormat(svc.valueDate),status: this._getStatut(svc),code: thesCode}
-                                    if (vacc.status == 'Fait' || vacc.status == 'Geëxecuteerd' || vacc.status == 'Done') vaccines.push(vacc)
-                                }
-                            })
+                    this.api.contact().filterServices(this.contacts,s =>
+                        (
+                            s.tags.some(c => c.type == "CD-ITEM" && c.code == "vaccine")
+                        )
+                        && s.tags.some(c => c.type == "CD-LIFECYCLE" && this.doneStatus.includes(c.code))
+                    ).then(services =>{
+                        let vaccines = services.map( svc => {
+                            return {
+                                "name": this._getName(svc),
+                                "service": svc,
+                                "intDate": svc.valueDate,
+                                "intCreated": svc.created,
+                                "date": this._timeFormat(svc.valueDate),
+                                "status": this._getStatut(svc),
+                                "code": svc.codes.filter(c => c.type === "BE-THESAURUS-PROCEDURES").map(c => c.code).find(c => !!c),
+                                "codes": svc.codes.filter(c => c.type === "BE-THESAURUS-PROCEDURES" || c.type === "CD-VACCINEINDICATION").map(c => c.code).filter(c => !!c)
+                            }
                         })
+                        console.debug("vaccines:", vaccines, services)
                         this.set("vaccines",_.orderBy(vaccines,['intDate', 'intCreated'],['desc','desc']))
                     })
                 }
             }
 
             _getName(svc){
-                const content = svc && this.api.contact().preferredContent(svc, this.language) || svc.content[this.language]
-                return (content && content.medicationValue && content.medicationValue.medicinalProduct && content.medicationValue.medicinalProduct.intendedname) || this.localize('not_specified','n/a',this.language)
+                return svc && this.api.contact().shortServiceDescription(svc, this.language) || this.localize('not_specified','non renseigné',this.language)
             }
             _timeFormat(date) {
                 return date && this.api.moment(date).format(date > 99991231 ? 'DD/MM/YYYY' : 'DD/MM/YYYY') || '';
@@ -301,9 +316,20 @@
             getAllVaccFromThesaurus() {
                 let allVacc = []
                 this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS-PROCEDURES', this.language || 'en', 'vaccin', null, null, 100).then(results => {
-                    let tempVacc = []
-                    results.rows.map(th=>{this.vaccines.forEach(v=>{if (v.code == th.code && (tempVacc.indexOf(th) < 0)) tempVacc.push(th)})})
-                    this.set('allVaccines', _.sortBy(tempVacc,'code'))
+                    return this.api.code().findPaginatedCodes('be', 'CD-VACCINEINDICATION', null, null, null, 100).then(cdresults => {
+
+                        let tempVacc = []
+                        ;(cdresults.rows.concat(results.rows)).map(th=>{
+                            this.vaccines.forEach( v=> {
+                                v.codes.forEach(vcode => {
+                                    if (vcode == th.code && (tempVacc.indexOf(th) < 0)) {
+                                        tempVacc.push(th)
+                                    }
+                                })
+                            })
+                        })
+                        this.set('allVaccines', _.sortBy(tempVacc,'code'))
+                    })
                 })
             }
             _getVaccNameFromThes(vac) {
@@ -311,6 +337,9 @@
             }
             isMatching(a,b) {
                 return a == b
+            }
+            isMatchingAny(a,b) {
+                return (a || []).includes(b)
             }
 
         }
