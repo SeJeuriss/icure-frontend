@@ -4,7 +4,7 @@
             .notification-container {
                 display: none;
                 grid-template-columns: 48px 1fr 108px;
-                grid-template-rows: 28px 28px;
+                grid-template-rows: repeat(2, minmax(28px, 72px));
                 position: fixed;
                 z-index: 150;
                 background: var(--app-secondary-color);
@@ -43,6 +43,7 @@
                 overflow-y: auto;
                 height: auto;
                 max-height: 100%;
+                box-sizing: border-box;
             }
 
             .notification-container .notification-msg h4{

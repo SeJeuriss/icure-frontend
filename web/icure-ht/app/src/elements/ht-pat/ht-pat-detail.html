@@ -394,6 +394,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 padding: 12px;
                 cursor: pointer;
                 box-sizing: border-box;
+                @apply --flex-rnw-c-sa;
             }
 
             .patient-info-container:hover{
@@ -1672,13 +1673,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </paper-button>
             </paper-item>
 
-            <paper-item id="flatrate-notification" class="notification-container error" style="top:148px; height: 168px; grid-template-rows: 28px 140px;">
-                <iron-icon class="notification-icn" icon="vaadin:exclamation" style="grid-row: 1 / span 1;"></iron-icon>
-                <div class="notification-msg" style="place-self: start;">
+            <paper-item id="flatrate-notification" class="notification-container error" style="top:148px; height: auto;">
+                <iron-icon class="notification-icn" icon="vaadin:exclamation"></iron-icon>
+                <div class="notification-msg" style="padding: 8px 0; place-self: start;">
                     <h4>[[localize('flatrate-err','Flatrate info',language)]]</h4>
-                    <p>[[flatrateMsg]]</p>
+                    <p>[[flatrateMsg]]Le Lorem Ipsum est simplement du faux texte employé dans la composition et la mise en page avant impression. Le Lorem Ipsum est le faux texte standard de l'imprimerie depuis les années 1500, quand un imprimeur anonyme assembla ensemble des morceaux de texte pour réaliser un livre spécimen de polices de texte. Il n'a pas fait que survivre cinq siècles, mais s'est aussi adapté à la bureautique informatique, sans que son contenu n'en soit modifié. Il a été popularisé dans les années 1960 grâce à la vente de feuilles Letraset contenant des passages du Lorem Ipsum, et, plus récemment, par son inclusion dans des applications de mise en page de texte, comme Aldus PageMaker.</p>
                 </div>
-                <paper-button name="closeFlatrateMsg" class="notification-btn" on-tap="closeFlatrateMsg">
+                <paper-button name="closeFlatrateMsg" class="notification-btn single-btn" on-tap="closeFlatrateMsg">
                     [[localize('clo','Close',language)]]
                 </paper-button>
             </paper-item>
@@ -1719,7 +1720,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-material class="zone compact-menu">
                         <paper-listbox class="padding-0" id="adminFileMenu" selected="{{selectedAdminOrCompleteFileIndex}}" selectable="paper-item">
                             <paper-fab id="pat-close" class="btn-pat-close" mini icon="close" on-tap="close"></paper-fab>
-                            <paper-item id="_admin_info" class="horizontal layout patient-info-container" on-tap="_expandColumn">
+                            <paper-item id="_admin_info" class="patient-info-container" on-tap="_expandColumn">
                                 <div class="patient-picture-container"><img src$="[[picture(patient,patient.picture)]]"></div>
                                 <div class="patient-info">
                                     <div class="patient-name">[[getGender(patient.gender)]] [[patient.firstName]] [[patient.lastName]]</div>
