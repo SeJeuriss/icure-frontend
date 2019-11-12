@@ -307,7 +307,7 @@
                 return svc && this.api.contact().shortServiceDescription(svc, this.language) || this.localize('not_specified','non renseigné',this.language)
             }
             _timeFormat(date) {
-                return date && this.api.moment(date).format(date > 99991231 ? 'DD/MM/YYYY' : 'DD/MM/YYYY') || '';
+                return date ? this.api.formatedMoment(date) : '';
             }
             _getStatut(svc){
                 return this.comboStatus.find(statut => statut.id===svc.tags.find(tag => tag.type==="CD-LIFECYCLE").code) ? this.comboStatus.find(statut => statut.id===svc.tags.find(tag => tag.type==="CD-LIFECYCLE").code).label[this.language] : svc.tags.find(tag => tag.type==="CD-LIFECYCLE").code
