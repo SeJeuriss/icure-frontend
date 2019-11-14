@@ -2195,6 +2195,7 @@
                                 allergies: allergies,
                                 startDate: medicationValue.beginMoment && this.api.moment(medicationValue.beginMoment).format('DD/MM/YYYY') || "",
                                 endDate: medicationValue.endMoment && this.api.moment(medicationValue.endMoment).format('DD/MM/YYYY') || "",
+                                samCode: medicationValue.samCode,
                                 service: service
                             };
                             results.push(medication);
@@ -2218,6 +2219,7 @@
                             "deliveryStatus": this._deliveryStatus(result.service) || "hidden",
                             "startDate": result.startDate,
                             "endDate": result.endDate,
+                            "samCode": result.samCode,
                             "service": result.service,
                             "type": result.type
                         };
@@ -2676,7 +2678,7 @@
                             "priority": "low"
                         };
 
-                        Object.assign(newMedicationContent.medicationValue, drugType === "CD-INNCLUSTER" ? {substanceProduct: product} : {medicinalProduct: product});
+                        Object.assign(newMedicationContent.medicationValue, drugType === "CD-INNCLUSTER" ? {substanceProduct: product} : {medicinalProduct: product, samCode: med.samCode});
                         // newMedicationContent.medicationUnit = newMedicationContent.regimen[0].administratedQuantity.unit = med.unit;
 
                         ((newMed.codes || (newMed.codes = [])).find(code => code.type === drugType) || (newMed.codes[newMed.codes.length] = {

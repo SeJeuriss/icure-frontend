@@ -593,148 +593,151 @@
             </div>
             <div class="content">
                 <template is="dom-if" if="[[_hasAllergies(medicationDetail)]]">
-                        <div class="allergy-alert">
-                            <div class="allergy-title">
-                                <iron-icon class="alert-icon" icon="icons:warning"></iron-icon>
-                                [[localize('aller_int','Allergies et intolérances',language)]]
-                            </div>
-                            <div class="list">
-                                <template is="dom-repeat" items="[[medicationDetail.allergies]]" as="allergy">
-                                    <div><iron-icon class$="code-icon [[_getAtcStyle(allergy)]]" icon="[[_getAllergyIcon(allergy)]]"></iron-icon>[[_getIcpcLabel(allergy)]]<i>[[_shortDateFormat(allergy.openingDate, allergy.valueDate)]]</i>[[allergy.descr]]</div>
-                                </template>
-                            </div>
+                    <div class="allergy-alert">
+                        <div class="allergy-title">
+                            <iron-icon class="alert-icon" icon="icons:warning"></iron-icon>
+                            [[localize('aller_int','Allergies et intolérances',language)]]
                         </div>
-                    </template>
-                    <div class="regimen-line display-type-regimen">
-                        <template is="dom-if" if="[[medicationContent.isPrescription]]">
-                            <vaadin-checkbox checked="{{medicationDetail.options.createMedication}}" id="isNew">
-                                <template is="dom-if" if="[[!medicationContent.isMedication]]">
-                                    [[localize('create_med', 'Créer une médication chronique', language)]]
-                                </template>
-                                <template is="dom-if" if="[[medicationContent.isMedication]]">
-                                    [[localize('update_med', 'Mettre à jour la médication chronique', language)]]
-                                </template>
-                            </vaadin-checkbox>
-                        </template>
-                    </div>
-                    <template is="dom-if" if="[[medicationDetail.posologyNote]]">
-                        <div class="regimen-line display-type-regimen">
-                            <paper-input-container always-float-label="true" class="comment">
-                                <label slot="label" class="color-status">[[localize('proposed_posology','Posologie proposée',language)]]</label>
-                                <iron-autogrow-textarea class="paper-input-input" slot="input" disabled value="[[medicationDetail.posologyNote]]"></iron-autogrow-textarea>
-                            </paper-input-container>
-                            <paper-icon-button class="button--icon-btn" icon="content-copy" role="button" on-tap="_copyPosologyNote"></paper-icon-button>
+                        <div class="list">
+                            <template is="dom-repeat" items="[[medicationDetail.allergies]]" as="allergy">
+                                <div><iron-icon class$="code-icon [[_getAtcStyle(allergy)]]" icon="[[_getAllergyIcon(allergy)]]"></iron-icon>[[_getIcpcLabel(allergy)]]<i>[[_shortDateFormat(allergy.openingDate, allergy.valueDate)]]</i>[[allergy.descr]]</div>
+                            </template>
                         </div>
-                    </template>
-                    <div class="regimen-line display-type-regimen">
-                        <paper-dropdown-menu always-float-label id="unit" label="[[localize('portion', 'Portion', language)]]" disabled="[[!medicationDetail.dividable]]">
-                            <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{quantityFactor}}">
-                                <template is="dom-repeat" items="[[quantityFactors]]">
-                                    <paper-item id="[[item.id]]" value="[[item]]">[[localize(item.label, item.numLabel, language)]]</paper-item>
-                                </template>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
                     </div>
-                    <template is="dom-repeat" items="[[regimenKeys]]">
-                        <ht-regimen-day
-                                api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"
-                                period-config="[[periodConfig]]" regimen-config="[[regimenConfig]]" regimen="{{medicationContent.medicationValue.regimen}}" key="[[item]]"
-                                medication-unit="[[medicationContent.medicationUnit]]" weekday-codes="[[weekdayCodes]]" occurrences="[[regimenKeys.length]]"
-                                quantity-factor=[[quantityFactorValue]] on-regimen-changed="_regimenChanged" on-regimen-delete="_removeRegimen">
-                        </ht-regimen-day>
+                </template>
+                <template is="dom-if" if="[[cnkWarning]]">
+                    <div class="cnk-warning">[[cnkWaning]]</div>
+                </template>
+                <div class="regimen-line display-type-regimen">
+                    <template is="dom-if" if="[[medicationContent.isPrescription]]">
+                        <vaadin-checkbox checked="{{medicationDetail.options.createMedication}}" id="isNew">
+                            <template is="dom-if" if="[[!medicationContent.isMedication]]">
+                                [[localize('create_med', 'Créer une médication chronique', language)]]
+                            </template>
+                            <template is="dom-if" if="[[medicationContent.isMedication]]">
+                                [[localize('update_med', 'Mettre à jour la médication chronique', language)]]
+                            </template>
+                        </vaadin-checkbox>
                     </template>
-                    <div class="regimen-line display-type-regimen">
-                        <paper-dropdown-menu always-float-label id="peri" label="[[localize('peri', 'Période', language)]]">
-                            <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{periodConfig}}">
-                                <template is="dom-repeat" items="[[periodConfigs]]">
-                                    <paper-item value="[[item]]">[[localize(item.id, item.id, language)]]</paper-item>
-                                </template>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
-                        <template is="dom-if" if="[[_canAddRegimen(periodConfig)]]">
-                            <paper-icon-button class="button--icon-btn" icon="icons:add" on-tap="_addRegimen"></paper-icon-button>
-                            <paper-dropdown-menu always-float-label id="periodConfigDropDown" label="[[localize(periodConfig.label, periodConfig.label, language)]]" disabled=[[periodConfig.disabled]]>
-                                <paper-listbox id="periodConfig" slot="dropdown-content" attr-for-selected="value" selected="{{regimenKey}}">
-                                    <template is="dom-repeat" items="[[availableRegimenKeys]]">
-                                        <paper-item value="[[item]]">[[localize(item, item, language)]]</paper-item>
-                                    </template>
-                                </paper-listbox>
-                            </paper-dropdown-menu>
-                        </template>
-                    </div>
+                </div>
+                <template is="dom-if" if="[[medicationDetail.posologyNote]]">
                     <div class="regimen-line display-type-regimen">
                         <paper-input-container always-float-label="true" class="comment">
-                            <label slot="label" class="color-status">[[localize('pos','Posology',language)]]</label>
-                            <iron-autogrow-textarea class="paper-input-input" slot="input" on-keydown="_instructionOverride" value="{{medicationContent.medicationValue.instructionForPatient}}"></iron-autogrow-textarea>
+                            <label slot="label" class="color-status">[[localize('proposed_posology','Posologie proposée',language)]]</label>
+                            <iron-autogrow-textarea class="paper-input-input" slot="input" disabled value="[[medicationDetail.posologyNote]]"></iron-autogrow-textarea>
                         </paper-input-container>
+                        <paper-icon-button class="button--icon-btn" icon="content-copy" role="button" on-tap="_copyPosologyNote"></paper-icon-button>
                     </div>
-                    <div class="regimen-line display-type-regimen">
-                        <vaadin-date-picker id="beginMoment" label="[[localize('start-date', 'Start date', language)]]" value="{{medicationDetail.beginMomentAsString}}"
-                                            class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
-                        <vaadin-date-picker id="endMoment" label="[[localize('end-date', 'End date', language)]]" value="{{medicationDetail.endMomentAsString}}"
-                                            class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
-                        <paper-input always-float-label type="number" min="0" label="[[localize('','Nombre de jours',language)]]" value="{{duration}}"></paper-input>
-                        <template is="dom-if" if="[[canShowProvisionInfo]]">
-                            <vaadin-date-picker id="endProvisionMoment" label="[[localize('', 'Fin boîte', language)]]" readonly value="[[endProvisionMomentAsString]]"
-                                                class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
-                            <paper-input always-float-label type="number" min="0" readonly label="[[localize('provision-days','Jours couverts',language)]]" value="[[provisionDays]]"></paper-input>
-                            <template is="dom-if" if="[[insufficientProvision]]">
-                                <div class="date-alert">
-                                    <iron-icon class="alert-icon" icon="icons:warning"></iron-icon>
-                                </div>
+                </template>
+                <div class="regimen-line display-type-regimen">
+                    <paper-dropdown-menu always-float-label id="unit" label="[[localize('portion', 'Portion', language)]]" disabled="[[!medicationDetail.dividable]]">
+                        <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{quantityFactor}}">
+                            <template is="dom-repeat" items="[[quantityFactors]]">
+                                <paper-item id="[[item.id]]" value="[[item]]">[[localize(item.label, item.numLabel, language)]]</paper-item>
                             </template>
-                        </template>
-                    </div>
-                    <div class="regimen-line display-type-regimen">
-                        <paper-dropdown-menu always-float-label id="medicSubstitution" label="[[localize('', 'Substitution', language)]]">
-                            <paper-listbox id="substitution" slot="dropdown-content" selected="{{medicationContent.medicationValue.substitutionAllowed}}" attr-for-selected="value">
-                                <paper-item value="true">[[localize('subtitutionAllowed','Autorisée',language)]]</paper-item>
-                                <paper-item value="false">[[localize('subtitutionForbidden','Interdite',language)]]</paper-item>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                </div>
+                <template is="dom-repeat" items="[[regimenKeys]]">
+                    <ht-regimen-day
+                            api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"
+                            period-config="[[periodConfig]]" regimen-config="[[regimenConfig]]" regimen="{{medicationContent.medicationValue.regimen}}" key="[[item]]"
+                            medication-unit="[[medicationContent.medicationUnit]]" weekday-codes="[[weekdayCodes]]" occurrences="[[regimenKeys.length]]"
+                            quantity-factor=[[quantityFactorValue]] on-regimen-changed="_regimenChanged" on-regimen-delete="_removeRegimen">
+                    </ht-regimen-day>
+                </template>
+                <div class="regimen-line display-type-regimen">
+                    <paper-dropdown-menu always-float-label id="peri" label="[[localize('peri', 'Période', language)]]">
+                        <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{periodConfig}}">
+                            <template is="dom-repeat" items="[[periodConfigs]]">
+                                <paper-item value="[[item]]">[[localize(item.id, item.id, language)]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                    <template is="dom-if" if="[[_canAddRegimen(periodConfig)]]">
+                        <paper-icon-button class="button--icon-btn" icon="icons:add" on-tap="_addRegimen"></paper-icon-button>
+                        <paper-dropdown-menu always-float-label id="periodConfigDropDown" label="[[localize(periodConfig.label, periodConfig.label, language)]]" disabled=[[periodConfig.disabled]]>
+                            <paper-listbox id="periodConfig" slot="dropdown-content" attr-for-selected="value" selected="{{regimenKey}}">
+                                <template is="dom-repeat" items="[[availableRegimenKeys]]">
+                                    <paper-item value="[[item]]">[[localize(item, item, language)]]</paper-item>
+                                </template>
                             </paper-listbox>
                         </paper-dropdown-menu>
-        
-                        <paper-dropdown-menu always-float-label id="medicReimbursement" label="[[localize('presc_reimb', 'Reimbursement', language)]]" class="regimen--reimbursement">
-                            <paper-listbox id="reimbursementReason" slot="dropdown-content" class="dropdown-reimbursement" attr-for-selected="value" selected="{{reimbursementReason}}">
-                                <template is="dom-repeat" items="[[reimbursementCodeRecipe]]">
+                    </template>
+                </div>
+                <div class="regimen-line display-type-regimen">
+                    <paper-input-container always-float-label="true" class="comment">
+                        <label slot="label" class="color-status">[[localize('pos','Posology',language)]]</label>
+                        <iron-autogrow-textarea class="paper-input-input" slot="input" on-keydown="_instructionOverride" value="{{medicationContent.medicationValue.instructionForPatient}}"></iron-autogrow-textarea>
+                    </paper-input-container>
+                </div>
+                <div class="regimen-line display-type-regimen">
+                    <vaadin-date-picker id="beginMoment" label="[[localize('start-date', 'Start date', language)]]" value="{{medicationDetail.beginMomentAsString}}"
+                                        class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
+                    <vaadin-date-picker id="endMoment" label="[[localize('end-date', 'End date', language)]]" value="{{medicationDetail.endMomentAsString}}"
+                                        class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
+                    <paper-input always-float-label type="number" min="0" label="[[localize('','Nombre de jours',language)]]" value="{{duration}}"></paper-input>
+                    <template is="dom-if" if="[[canShowProvisionInfo]]">
+                        <vaadin-date-picker id="endProvisionMoment" label="[[localize('', 'Fin boîte', language)]]" readonly value="[[endProvisionMomentAsString]]"
+                                            class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
+                        <paper-input always-float-label type="number" min="0" readonly label="[[localize('provision-days','Jours couverts',language)]]" value="[[provisionDays]]"></paper-input>
+                        <template is="dom-if" if="[[insufficientProvision]]">
+                            <div class="date-alert">
+                                <iron-icon class="alert-icon" icon="icons:warning"></iron-icon>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+                <div class="regimen-line display-type-regimen">
+                    <paper-dropdown-menu always-float-label id="medicSubstitution" label="[[localize('', 'Substitution', language)]]">
+                        <paper-listbox id="substitution" slot="dropdown-content" selected="{{medicationContent.medicationValue.substitutionAllowed}}" attr-for-selected="value">
+                            <paper-item value="true">[[localize('subtitutionAllowed','Autorisée',language)]]</paper-item>
+                            <paper-item value="false">[[localize('subtitutionForbidden','Interdite',language)]]</paper-item>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+
+                    <paper-dropdown-menu always-float-label id="medicReimbursement" label="[[localize('presc_reimb', 'Reimbursement', language)]]" class="regimen--reimbursement">
+                        <paper-listbox id="reimbursementReason" slot="dropdown-content" class="dropdown-reimbursement" attr-for-selected="value" selected="{{reimbursementReason}}">
+                            <template is="dom-repeat" items="[[reimbursementCodeRecipe]]">
+                                <paper-item value="[[item]]">[[_getCodeLabel(item.label)]]</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+
+                    <vaadin-date-picker id="deliveryDate" label="[[localize('deliv_from', 'Délivrable à partir du', language)]]" readonly value="{{medicationDetail.deliveryMomentAsString}}"
+                                        class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
+                    <vaadin-date-picker id="endExecDate" label="[[localize('EndDateForExecution', 'Date de fin pour excécution', language)]]" readonly value="{{medicationDetail.endExecMomentAsString}}"
+                                        class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
+                </div>
+                <div class="regimen-line display-type-regimen">
+                    <!--
+                    <vaadin-checkbox checked="[[medicationContent.medicationValue.substitutionAllowed]]" id="substitutionAllowed" on-checked-changed="_substitutionAllowedChanged">[[localize('substitution', 'Substitution', language)]]</vaadin-checkbox>
+                    <vaadin-checkbox id="renewal" checked=[[medicationContent.medicationValue.isRenewal]] on-checked-changed="_renewalValueChanged">[[localize('renewal', 'Renewal', language)]]</vaadin-checkbox>
+                    -->
+                    <paper-dropdown-menu always-float-label id="medicRenewal" label="[[localize('renewal', 'Renouvellement', language)]]">
+                        <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{medicationDetail.renewal}}">
+                            <paper-item value="allowed">[[localize('allowed','Permis',language)]]</paper-item>
+                            <paper-item value="forbidden">[[localize('forbidden','Interdit',language)]]</paper-item>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+                    <template is="dom-if" if="[[_isAllowed(medicationDetail.renewal)]]">
+                        <paper-input always-float-label type="number" min="0" label="[[localize('number', 'Nombre', language)]]" value="{{medicationContent.medicationValue.renewal.decimal}}"></paper-input>
+                        <paper-input always-float-label type="number" min="0" label="[[localize('everyX', 'tous le', language)]]" value="{{medicationContent.medicationValue.renewal.duration.value}}"></paper-input>
+                        <paper-dropdown-menu always-float-label id="medicRenewalTimeUnit" label="[[localize('time_unit','Time unit',language)]]" class="regimen--renewalTimeUnit">
+                            <paper-listbox id="renewalTimeUnit" slot="dropdown-content" class="dropdown-renewalTimeUnit" attr-for-selected="value" selected="{{renewalTimeUnit}}">
+                                <template is="dom-repeat" items="[[timeUnits]]">
                                     <paper-item value="[[item]]">[[_getCodeLabel(item.label)]]</paper-item>
                                 </template>
                             </paper-listbox>
                         </paper-dropdown-menu>
-        
-                        <vaadin-date-picker id="deliveryDate" label="[[localize('deliv_from', 'Délivrable à partir du', language)]]" readonly value="{{medicationDetail.deliveryMomentAsString}}"
-                                            class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
-                        <vaadin-date-picker id="endExecDate" label="[[localize('EndDateForExecution', 'Date de fin pour excécution', language)]]" readonly value="{{medicationDetail.endExecMomentAsString}}"
-                                            class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
-                    </div>
-                    <div class="regimen-line display-type-regimen">
-                        <!--
-                        <vaadin-checkbox checked="[[medicationContent.medicationValue.substitutionAllowed]]" id="substitutionAllowed" on-checked-changed="_substitutionAllowedChanged">[[localize('substitution', 'Substitution', language)]]</vaadin-checkbox>
-                        <vaadin-checkbox id="renewal" checked=[[medicationContent.medicationValue.isRenewal]] on-checked-changed="_renewalValueChanged">[[localize('renewal', 'Renewal', language)]]</vaadin-checkbox>
-                        -->
-                        <paper-dropdown-menu always-float-label id="medicRenewal" label="[[localize('renewal', 'Renouvellement', language)]]">
-                            <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{medicationDetail.renewal}}">
-                                <paper-item value="allowed">[[localize('allowed','Permis',language)]]</paper-item>
-                                <paper-item value="forbidden">[[localize('forbidden','Interdit',language)]]</paper-item>
-                            </paper-listbox>
-                        </paper-dropdown-menu>
-                        <template is="dom-if" if="[[_isAllowed(medicationDetail.renewal)]]">
-                            <paper-input always-float-label type="number" min="0" label="[[localize('number', 'Nombre', language)]]" value="{{medicationContent.medicationValue.renewal.decimal}}"></paper-input>
-                            <paper-input always-float-label type="number" min="0" label="[[localize('everyX', 'tous le', language)]]" value="{{medicationContent.medicationValue.renewal.duration.value}}"></paper-input>
-                            <paper-dropdown-menu always-float-label id="medicRenewalTimeUnit" label="[[localize('time_unit','Time unit',language)]]" class="regimen--renewalTimeUnit">
-                                <paper-listbox id="renewalTimeUnit" slot="dropdown-content" class="dropdown-renewalTimeUnit" attr-for-selected="value" selected="{{renewalTimeUnit}}">
-                                    <template is="dom-repeat" items="[[timeUnits]]">
-                                        <paper-item value="[[item]]">[[_getCodeLabel(item.label)]]</paper-item>
-                                    </template>
-                                </paper-listbox>
-                            </paper-dropdown-menu>
-                        </template>
-                    </div>
-                    <div class="regimen-line display-type-regimen">
-                        <paper-input-container always-float-label="true" class="comment">
-                            <label slot="label" class="color-status">[[localize('comments-for-pharmacist','Commentaires pour le pharmacien',language)]]</label>
-                            <iron-autogrow-textarea class="paper-input-input" slot="input" value="{{medicationContent.medicationValue.commentForDelivery}}"></iron-autogrow-textarea>
-                        </paper-input-container>
-                    </div>
+                    </template>
+                </div>
+                <div class="regimen-line display-type-regimen">
+                    <paper-input-container always-float-label="true" class="comment">
+                        <label slot="label" class="color-status">[[localize('comments-for-pharmacist','Commentaires pour le pharmacien',language)]]</label>
+                        <iron-autogrow-textarea class="paper-input-input" slot="input" value="{{medicationContent.medicationValue.commentForDelivery}}"></iron-autogrow-textarea>
+                    </paper-input-container>
+                </div>
             </div> 
         </div>
     </template>
@@ -888,7 +891,6 @@
                         type: String,
                         value: ""
                     },
-
                     quantityFactors: {
                         type: Array,
                         value: () => [
@@ -898,12 +900,10 @@
                             {id: "quarter", label: "quantity_factor_quarter", numLabel: "1/4", denominator: 4}
                         ]
                     },
-
                     weekdayKeys: {
                         type: Array,
                         value: () => ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
                     },
-
                     periodConfigs: {
                         type: Array,
                         value: () => [
@@ -913,17 +913,14 @@
                             // {id: "monthly", keys: _.range(1, 32), label: "dayOfMonth", disabled: false, keyId: "dayNumber"}
                         ]
                     },
-
                     periodConfig: {
                         type: Object,
                         value: {id: ""}
                     },
-
                     availableRegimenKeys: {
                         type: Array,
                         value: () => [""]
                     },
-
                     regimenConfig: {
                         type: Array,
                         value: () => [
@@ -945,22 +942,18 @@
                             {id: "thehourofsleep"}
                         ]
                     },
-
                     weekdayCodes: {
                         type: Array,
                         value: () => []
                     },
-
                     dayPeriodCodes: {
                         type: Array,
                         value: () => []
                     },
-
                     reimbursementReason: {
                         type: Object,
                         value: () => {}
                     },
-
                     insufficientProvision: {
                         type: Boolean,
                         value: false
@@ -981,6 +974,10 @@
                         type: String,
                         value: ""
                     },
+                    cnkWarning: {
+                        type: String,
+                        value: ""
+                    }
                 }
             }
 
@@ -1009,6 +1006,24 @@
 
             ready() {
                 super.ready();
+            }
+
+            _checkCnk() {
+                if (this.medicationDetail.drugType === "substance") return;
+                const code = (this.medicationContent.codes.find(code => code.type === "CD-DRUG-CNK") || {code: ""}).code;
+                this.api.besamv2().findPaginatedAmpsByCode(this.medicationContent.samCode, null, null, 1)
+                    .then(results => (results && results.rows || []))
+                    .then(amps => amps.reduce((ampps, amp) => amp.ampps && amp.ampps.length && ampps.concat(amp.ampps).map(ampp => Object.assign(ampp, {amp: amp})) || ampps, [])
+                        .find(ampp => ampp.dmpps && ampp.dmpps.length && ampp.dmpps.find(dmpp => dmpp.codeType === 'CNK' && dmpp.code === code))
+                    )
+                    .then(ampp => {
+                        if (ampp.amp.status !== "AUTHORIZED") {
+                            this.set("cnkWarning", "Not longer authorized!");
+                        } else if ((ampp.dmpps.find(dmpp => dmpp.codeType === 'CNK' && dmpp.code === code) || {to: ""}).to) {
+                            const preferredCnk = (ampp.dmpps.find(dmpp => dmpp.deliveryEnvironment === "P" && dmpp.codeType === "CNK" && !dmpp.to) || {code: ""}).code;
+                            this.set("cnkWarning", preferredCnk ? "Obsolete! use CNK " + preferredCnk : "Obsolete!");
+                        }
+                    })
             }
 
             _close() {
