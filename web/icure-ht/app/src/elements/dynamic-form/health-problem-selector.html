@@ -212,8 +212,25 @@
 				<div class="grid">
 					<div class="label">[[localize('conf','Confidentiality',language)]]</div>
 					<paper-radio-group selected="[[_confidentiality(entity, entity.tags, entity.tags.*, entity.status, entity.closingDate)]]" class="flex" on-selected-changed="_confidentialityChanged">
-						<paper-radio-button name="notsecret">[[localize('no-conf','Non confidential',language)]]</paper-radio-button>
-						<paper-radio-button name="secret">[[localize('cond','Confidential',language)]]</paper-radio-button>
+						<paper-radio-button name="freeaccess">[[localize('no-conf','Non confidential',language)]]</paper-radio-button>
+						<paper-radio-button name="personal">[[localize('pers-conf','Personal note',language)]]</paper-radio-button>
+						<paper-radio-button name="secret">[[localize('conf','Confidential',language)]]</paper-radio-button>
+					</paper-radio-group>
+				</div>
+
+<!--				<div class="grid">-->
+<!--					<div class="label">[[localize('pat_conf','Patient Confidentiality',language)]]</div>-->
+<!--					<paper-radio-group selected="[[_patientConfidentiality(entity, entity.tags, entity.tags.*, entity.status, entity.closingDate)]]" class="flex" on-selected-changed="_patientConfidentialityChanged">-->
+<!--						<paper-radio-button name="notsecret">[[localize('no-conf','Non confidential',language)]]</paper-radio-button>-->
+<!--						<paper-radio-button name="secret">[[localize('conf','Confidential',language)]]</paper-radio-button>-->
+<!--					</paper-radio-group>-->
+<!--				</div>-->
+
+				<div class="grid">
+					<div class="label">[[localize('sumehr_export','Include in sumehr',language)]]</div>
+					<paper-radio-group selected="[[_sumehrExport(entity, entity.tags, entity.tags.*, entity.status, entity.closingDate)]]" class="flex" on-selected-changed="_sumehrExportChanged">
+						<paper-radio-button name="yes">[[localize('yes','Yes',language)]]</paper-radio-button>
+						<paper-radio-button name="no">[[localize('no','No',language)]]</paper-radio-button>
 					</paper-radio-group>
 				</div>
 
@@ -754,7 +771,17 @@ class HealthProblemSelector extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
 	_confidentiality(){
 		const code = this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.Confidentiality');
+		return code && code.code ? code.code : "freeaccess";
+	}
+
+	_patientConfidentiality(){
+		const code = this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.PatientConfidentiality');
 		return code && code.code ? code.code : "notsecret";
+	}
+
+	_sumehrExport(){
+		const code = this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.SumehrExport');
+		return code && code.code ? code.code : "yes";
 	}
 
 	_natureChanged(e) {
@@ -804,7 +831,15 @@ class HealthProblemSelector extends Polymer.TkLocalizerMixin(Polymer.Element) {
 	}
 
 	_confidentialityChanged(e){
-		this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.Confidentiality', 'notsecret').code = e.detail.value
+		this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.Confidentiality', 'freeaccess').code = e.detail.value
+	}
+
+	_patientConfidentialityChanged(e){
+		this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.PatientConfidentiality', 'notsecret').code = e.detail.value
+	}
+
+	_sumehrExportChanged(e){
+		this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.SumehrExport', 'yes').code = e.detail.value
 	}
 
     _cellContent(item, column) {

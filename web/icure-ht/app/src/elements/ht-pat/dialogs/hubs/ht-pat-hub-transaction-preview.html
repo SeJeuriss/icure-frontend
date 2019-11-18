@@ -618,9 +618,14 @@
 <!--                                                        <paper-toggle-button  class="status" on-tap="_toggleConfidentiality"-->
 <!--                                                                              data-item-data$="[[item]]"-->
 <!--                                                                              checked="[[_isConfidential(item)]]"></paper-toggle-button>-->
-                                                        <vaadin-checkbox on-tap="_toggleConfidentiality"
-                                                                         data-item-data$="[[item]]"
-                                                                         checked="[[_isConfidential(item)]]"></vaadin-checkbox>
+<!--                                                        <vaadin-checkbox on-tap="_toggleConfidentiality"-->
+<!--                                                                         data-item-data$="[[item]]"-->
+<!--                                                                         checked="[[_isConfidential(item)]]"></vaadin-checkbox>-->
+                                                        <paper-radio-group data-item-data$="[[item]]" selected="[[_confidentiality(item)]]" on-selected-changed="_confidentialityChanged">
+                                                            <paper-radio-button name="freeaccess">[[localize('no-conf','Non confidential',language)]]</paper-radio-button>
+                                                            <paper-radio-button name="personal">[[localize('pers-conf','Personal note',language)]]</paper-radio-button>
+                                                            <paper-radio-button name="secret">[[localize('conf','Confidential',language)]]</paper-radio-button>
+                                                        </paper-radio-group>
                                                     </template>
                                                 </vaadin-grid-column>
                                             </vaadin-grid>
@@ -692,9 +697,14 @@
                                             <template>
 <!--                                                <paper-toggle-button class="status" on-tap="_toggleConfidentiality" data-item-data$="[[item]]"-->
 <!--                                                                     checked="[[_isConfidential(item)]]"></paper-toggle-button>-->
-                                                <vaadin-checkbox on-tap="_toggleConfidentiality"
-                                                                 data-item-data$="[[item]]"
-                                                                 checked="[[_isConfidential(item)]]"></vaadin-checkbox>
+<!--                                                <vaadin-checkbox on-tap="_toggleConfidentiality"-->
+<!--                                                                 data-item-data$="[[item]]"-->
+<!--                                                                 checked="[[_isConfidential(item)]]"></vaadin-checkbox>-->
+                                                <paper-radio-group data-item-data$="[[item]]" selected="[[_confidentiality(item)]]" on-selected-changed="_confidentialityChanged">
+                                                    <paper-radio-button name="freeaccess">[[localize('no-conf','Non confidential',language)]]</paper-radio-button>
+                                                    <paper-radio-button name="personal">[[localize('pers-conf','Personal note',language)]]</paper-radio-button>
+                                                    <paper-radio-button name="secret">[[localize('conf','Confidential',language)]]</paper-radio-button>
+                                                </paper-radio-group>
                                             </template>
                                         </vaadin-grid-column>
                                     </vaadin-grid>
@@ -1864,6 +1874,47 @@
 
             _getChecked(item) {
                 return this._isConfidential(item) ? "checked" : ""
+            }
+
+            _confidentiality(item){
+                const code = this._tagForEntity(item, 'org.taktik.icure.entities.embed.Confidentiality');
+                return code && code.code ? code.code : "freeaccess";
+            }
+
+            _tagForEntity(e, type, code) {
+                const tags = e && (e.tags || (e.tags = []));
+                return tags.find(t => t.type === type) || create && (tags[tags.length] = { type: type, code: code, version: '1' });
+            }
+
+            _confidentialityChanged(e){
+                const item = JSON.parse(_.get(e, "target.dataset.itemData", ""));
+                const gridId = e.srcElement.parentElement.parentElement.id;
+                console.log("_confidentialityChanged", e, item, "grid", gridId);
+                //this.shadowRoot.querySelector('#' + gridId).clearCache();
+                if (item.healthElementId) {
+                    //he
+                    this.api.helementicc.getHealthElement(item.id).then(he => this.api.helementicc.decrypt(hcp.id, [he])).then(hes => {
+                        console.log(hes);
+                        let he = hes[0];
+                        this._tagForEntity(he, 'org.taktik.icure.entities.embed.Confidentiality', 'freeaccess').code = e.detail.value
+                        this._sendHEChanged(he);
+                    });
+
+                } else {
+                    //svc
+                    this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
+                    this.api.contacticc.getContactWithUser(this.user, item.contactId).then(ctc => {
+                            console.log(ctc);
+                            this.api.contacticc.decrypt(hcp.id, [ctc]).then(cvcsTmp => {
+                                console.log(cvcsTmp);
+                                let svc = ctcsTmp[0].services.find(svc => svc.id === item.id);
+                                this._tagForEntity(svc, 'org.taktik.icure.entities.embed.Confidentiality', 'freeaccess').code = e.detail.value
+                                console.log("svc", svc);
+                                this._sendServiceChanged(svc);
+                            })
+                        }
+                    )})
+                }
             }
 
             _toggleConfidentiality(e) {
