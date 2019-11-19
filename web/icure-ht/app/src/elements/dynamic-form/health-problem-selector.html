@@ -227,10 +227,13 @@
 <!--				</div>-->
 
 				<div class="grid">
-					<div class="label">[[localize('sumehr_export','Include in sumehr',language)]]</div>
-					<paper-radio-group selected="[[_sumehrExport(entity, entity.tags, entity.tags.*, entity.status, entity.closingDate)]]" class="flex" on-selected-changed="_sumehrExportChanged">
-						<paper-radio-button name="yes">[[localize('yes','Yes',language)]]</paper-radio-button>
-						<paper-radio-button name="no">[[localize('no','No',language)]]</paper-radio-button>
+					<div class="label">[[localize('visibility','Visibility',language)]]</div>
+					<paper-radio-group selected="[[_visibility(entity, entity.tags, entity.tags.*, entity.status, entity.closingDate)]]" class="flex" on-selected-changed="_visibilityChanged">
+                        <paper-radio-button name="visible">[[localize('visible','Visible',language)]]</paper-radio-button>
+                        <paper-radio-button name="highlighted">[[localize('highlighted','Hightlighted',language)]]</paper-radio-button>
+                        <paper-radio-button name="proeminent">[[localize('proeminent','Proeminent',language)]]</paper-radio-button>
+                        <paper-radio-button name="maskedfromexportedfile">[[localize('maskedfromexportedfile','Not in export',language)]]</paper-radio-button>
+						<paper-radio-button name="maskedfromsummary">[[localize('maskedfromsummary','Not in Sumehr',language)]]</paper-radio-button>
 					</paper-radio-group>
 				</div>
 
@@ -779,9 +782,9 @@ class HealthProblemSelector extends Polymer.TkLocalizerMixin(Polymer.Element) {
 		return code && code.code ? code.code : "notsecret";
 	}
 
-	_sumehrExport(){
-		const code = this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.SumehrExport');
-		return code && code.code ? code.code : "yes";
+	_visibility(){
+		const code = this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.Visibility');
+		return code && code.code ? code.code : "proeminent";
 	}
 
 	_natureChanged(e) {
@@ -838,8 +841,8 @@ class HealthProblemSelector extends Polymer.TkLocalizerMixin(Polymer.Element) {
 		this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.PatientConfidentiality', 'notsecret').code = e.detail.value
 	}
 
-	_sumehrExportChanged(e){
-		this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.SumehrExport', 'yes').code = e.detail.value
+	_visibilityChanged(e){
+		this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.Visibility', 'proeminent').code = e.detail.value
 	}
 
     _cellContent(item, column) {
