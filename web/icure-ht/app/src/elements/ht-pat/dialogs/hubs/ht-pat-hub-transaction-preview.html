@@ -1580,8 +1580,7 @@
             }
 
             _formatDate(date){
-                const strDate = date ? date.toString() : "";
-                return strDate.length >= 8 ? strDate.substr(6,2) + "/" + strDate.substr(4,2) + "/" + strDate.substr(0,4): date;
+                return this.api.formatedMoment(date);
             }
 
 
@@ -1893,13 +1892,14 @@
                 //this.shadowRoot.querySelector('#' + gridId).clearCache();
                 if (item.healthElementId) {
                     //he
-                    this.api.helementicc.getHealthElement(item.id).then(he => this.api.helementicc.decrypt(hcp.id, [he])).then(hes => {
-                        console.log(hes);
-                        let he = hes[0];
-                        this._tagForEntity(he, 'org.taktik.icure.entities.embed.Confidentiality', 'freeaccess').code = e.detail.value
-                        this._sendHEChanged(he);
-                    });
-
+                    this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
+                        this.api.helementicc.getHealthElement(item.id).then(he => this.api.helementicc.decrypt(hcp.id, [he])).then(hes => {
+                            console.log(hes);
+                            let he = hes[0];
+                            this._tagForEntity(he, 'org.taktik.icure.entities.embed.Confidentiality', 'freeaccess').code = e.detail.value
+                            this._sendHEChanged(he);
+                        });
+                    })
                 } else {
                     //svc
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
