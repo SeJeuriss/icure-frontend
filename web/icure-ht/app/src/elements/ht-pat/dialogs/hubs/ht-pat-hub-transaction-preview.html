@@ -1905,8 +1905,8 @@
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
                     this.api.contacticc.getContactWithUser(this.user, item.contactId).then(ctc => {
                             console.log(ctc);
-                            this.api.contacticc.decrypt(hcp.id, [ctc]).then(cvcsTmp => {
-                                console.log(cvcsTmp);
+                            this.api.contacticc.decrypt(hcp.id, [ctc]).then(ctcsTmp => {
+                                console.log(ctcsTmp);
                                 let svc = ctcsTmp[0].services.find(svc => svc.id === item.id);
                                 this._tagForEntity(svc, 'org.taktik.icure.entities.embed.Confidentiality', 'freeaccess').code = e.detail.value
                                 console.log("svc", svc);

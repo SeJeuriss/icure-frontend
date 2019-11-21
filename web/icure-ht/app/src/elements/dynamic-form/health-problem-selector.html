@@ -784,7 +784,7 @@ class HealthProblemSelector extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
 	_visibility(){
 		const code = this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.Visibility');
-		return code && code.code ? code.code : "proeminent";
+		return code && code.code ? code.code : "visible";
 	}
 
 	_natureChanged(e) {
