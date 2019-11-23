@@ -6359,6 +6359,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _healthElementChanged(e){
                 console.log("he changed event arrived");
+                // console.log("current delegations", e.detail.healthelement.delegations);
+                // console.log("current delegations", JSON.stringify(e.detail.healthelement.delegations));
+                // this.api.helement().setHealthElementsDelegations([]).then(() => {})
                 this.api.helement().modifyHealthElement(e.detail.healthelement).then(() => {
                     this.refreshPatient();
                 });
