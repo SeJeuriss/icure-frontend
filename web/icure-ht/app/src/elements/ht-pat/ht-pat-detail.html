@@ -6415,12 +6415,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _healthElementChanged(e){
                 console.log("he changed event arrived");
-                // console.log("current delegations", e.detail.healthelement.delegations);
-                // console.log("current delegations", JSON.stringify(e.detail.healthelement.delegations));
+                console.log("current delegations", e.detail.healthelement.delegations);
+                console.log("current delegations", JSON.stringify(e.detail.healthelement.delegations));
+                const he = e.detail.healthelement;
+                //console.log("filtered delegations", he.delegations.filter(del => d))
                 // this.api.helement().setHealthElementsDelegations([]).then(() => {})
-                this.api.helement().modifyHealthElement(e.detail.healthelement).then(() => {
-                    this.refreshPatient();
-                });
+                if(this.isPersonal(he)){
+                    console.log("he is personal", he);
+                    //TODO: this isn't working, remove hardcoded id
+                    delete he.delegations["0db6818b-b8e6-470e-8be7-66e4ff0963d4"];
+                    this.api.helement().setHealthElementsDelegations([he]).then(res => {
+                        console.log("setHealthElementsDelegations", res);
+                        this.refreshPatient();
+                    });
+                }
+                else{
+                    this.api.helement().modifyHealthElement(e.detail.healthelement).then(() => {
+                        this.refreshPatient();
+                    });
+                }
+            }
+
+            isPersonal(item){
+                //TODO : uncomment
+                return false;//item && item.tags && item.tags.filter(tag => tag.type === "org.taktik.icure.entities.embed.Confidentiality" && tag.code === "personal").length > 0 ? true : false;
             }
 
             _LodashDash(txt){
