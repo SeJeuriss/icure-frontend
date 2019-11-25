@@ -4280,7 +4280,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 //console.log("Before load "+(+new Date() - now))
                 Promise.all([this.api.contact().findBy(this.user.healthcarePartyId, patient).then(ctcs => ctcs.map(ctc => this.api.register(ctc, 'contact'))), this.api.helement().findBy(this.user.healthcarePartyId, patient, true)]).then(([ctcs, allHes]) => {
                     //console.log("After load "+(+new Date() - now))
-
+                    console.log("allHes after load", allHes, "hcpId", this.user.healthcarePartyId);
                     const hesByHeId = {}
                     allHes.forEach(he => {
                         if (he.healthElementId) {
