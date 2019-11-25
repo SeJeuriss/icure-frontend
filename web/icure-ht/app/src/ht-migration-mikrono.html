@@ -238,6 +238,7 @@
                                             startTime: (parseInt(_.get(item, "startTime", 0)) ? moment(_.trim(_.get(item, "startTime", "")), "YYYYMMDDHHmmss").format("YYYY-MM-DDTHH:mm:ss") + "Z" : null),
                                             endTime: (parseInt(_.get(item, "startTime", 0)) ? moment(_.trim(_.get(item, "endTime", "")), "YYYYMMDDHHmmss").format("YYYY-MM-DDTHH:mm:ss") + "Z" : null),
                                             appointmentTypeId: mikronoTypeIdByTopazTypeId[item.calendarItemTypeId],
+                                            status: item.meetingTags.map(mt => mt.code).slice(-1)[0], // get last code to mark canceled appointments
                                             originalObject: _.merge({wasMigrated: true}, item)
                                         }))
                                     })
