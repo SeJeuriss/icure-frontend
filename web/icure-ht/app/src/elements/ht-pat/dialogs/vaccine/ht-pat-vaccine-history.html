@@ -259,7 +259,7 @@
                     return {
                         id: svc.id,
                         date: svc.valueDate,
-                        code: this._getCode(svc).code,
+                        code: _.get(this._getCode(svc), 'code', null),
                         name: this._getName(svc),
                         color: this._getColor(svc),
                         status: this._getStatus(svc),
@@ -344,7 +344,7 @@
             }
 
             _formatStatus(code) {
-                return this.localize("vacc_" + code, code, this.language)
+                return this.localize("proc_status_" + code, code, this.language)
             }
 
             onActionChanged(detail) {
