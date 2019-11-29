@@ -641,8 +641,10 @@ class HtPatHeTreeDetail extends Polymer.TkLocalizerMixin(Polymer.Element) {
     }
 
     _getPrivacyType(healthElement){
+        //org.taktik.icure.entities.embed.Visibility
         return healthElement && healthElement.tags &&
-        healthElement.tags.find(tag => tag.type==="org.taktik.icure.entities.embed.Confidentiality" && tag.code==="secret") ? "secret"  : ""
+        healthElement.tags.find(tag => tag.type==="org.taktik.icure.entities.embed.Confidentiality" && tag.code==="secret")
+            ? "secret"  : healthElement.tags.find(tag => tag.type==="org.taktik.icure.entities.embed.Visibility" && tag.code!=="visible") ? "notvisible" :""
     }
 
     _getPrivacyIcon(healthElement){
@@ -656,7 +658,6 @@ class HtPatHeTreeDetail extends Polymer.TkLocalizerMixin(Polymer.Element) {
             default:
                 return ''
         }
-
     }
 
     _getLabel(he){
