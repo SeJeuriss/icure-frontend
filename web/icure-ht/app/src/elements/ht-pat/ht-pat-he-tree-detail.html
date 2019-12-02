@@ -644,7 +644,7 @@ class HtPatHeTreeDetail extends Polymer.TkLocalizerMixin(Polymer.Element) {
         //org.taktik.icure.entities.embed.Visibility
         return healthElement && healthElement.tags &&
         healthElement.tags.find(tag => tag.type==="org.taktik.icure.entities.embed.Confidentiality" && (tag.code==="secret" || tag.code==="personal"))
-            ? "secret"  : healthElement.tags.find(tag => tag.type==="org.taktik.icure.entities.embed.Visibility" && tag.code!=="visible") ? "notvisible" :""
+            ? "secret"  : healthElement.tags.find(tag => tag.type==="org.taktik.icure.entities.embed.Visibility" && (tag.code!=="visible" && tag.code)) ? "notvisible" : ""
     }
 
     _getPrivacyIcon(healthElement){

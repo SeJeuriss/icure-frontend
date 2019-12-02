@@ -2514,7 +2514,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </div>
                 </div>
                 <template is="dom-repeat" items="[[historyElement]]" as="he">
-                    <h4>[[he.modifiedDateAsString]] [[he.descr]]</h4>
+                    <h4>[[he.modifiedDateAsString]] [[he.descr]] [[isPersonal(he)]]</h4>
                     <div>
                         <b>[[localize('aut','Author',language)]]:</b> [[he.responsibleHcp.firstName]] [[he.responsibleHcp.lastName]]
                     </div>
@@ -5989,11 +5989,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                         delete healthElement.plansOfActionDescr;
                                         _.assign(he, this._normalizedHealthElement(healthElement));
                                         he.id = this.api.crypto().randomUuid();
-                                        delete he.rev;
                                         return he;
                                     }).then(he =>
                                         this.api.helement().newInstance(this.user, pat, he, this.isPersonal(healthElement))
-                                            .then(he => this.api.helement().createHealthElement(he)).then(he => he))
+                                            .then(he => this.api.helement().modifyHealthElement(he)).then(he => he))
                                 });
 
 
@@ -6008,6 +6007,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                         .then(he => this.api.helement().createHealthElement(he)).then(he => this.refreshPatient()))
                             })
 
+                    } else {
+                        console.log("PROMOTING SERVICE", healthElement)
+                        const svc = this.editedHealthElementModel.he.svc;
+                        return this.api.helement().serviceToHealthElement(this.user, this.patient, svc,
+                            this.api.contact().shortServiceDescription(svc, language)).then(he => {
+                            if (this.currentContact) {
+                                this.api.contact().promoteServiceInContact(this.currentContact, this.user, this.contacts, svc, undefined, null, [he.id], null);
+                                this.saveCurrentContact().then(c => this.refreshPatient());
+                            }
+
+                            this.editedHealthElementModel.he = he;
+                            return this._editedHealthElementSelected(event, healthElement);
+                        });
                     }
                 }else {
                     if (this.editedHealthElementModel.he.id) {
