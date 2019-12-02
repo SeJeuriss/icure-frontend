@@ -612,7 +612,8 @@
                 const ridDrugs = this.ridSentList.find(group=> group.rid === rid).drugs
                 const splitCols = [{rid: rid, drugIds: ridDrugs.map(d => d.id)}]
                 const element = this.root.querySelector("#barCode");
-                const toPrint = this._formatPrescriptionsBody(splitCols,ridDrugs,this.patient,this.globalHcp,moment(this.deliveryDateString+"").format("DD/MM/YYYY"),moment(this.endDateForExecutionString+"").format("DD/MM/YYYY"),element)
+                const reSplitColumns = this._splitPerDate(splitCols, ridDrugs);
+                const toPrint = this._formatPrescriptionsBody(reSplitColumns,ridDrugs,this.patient,this.globalHcp,moment(this.deliveryDateString+"").format("DD/MM/YYYY"),moment(this.endDateForExecutionString+"").format("DD/MM/YYYY"),element)
                 this._pdfReport(ridDrugs,toPrint,this.selectedFormat)
             }
 
@@ -802,6 +803,24 @@
                 return medsDup;
             }
 
+            _splitPerDate(splitColumns, drugs) {
+                return splitColumns.map(splitColumn => {
+                    return splitColumn.drugIds.reduce((clusters, drugId) => {
+                        const drug = drugs.find(drug => drug.id === drugId);
+                        const drugMed = this.api.contact().medicationValue(drug, this.language);
+                        const drugDeliveryMoment = drugMed && drugMed.deliveryMoment || "";
+                        const drugEndExecutionMoment = drugMed && drugMed.endExecutionMoment || "";
+                        const cluster = clusters.find(cluster => cluster.drugIds.length > 0 && drugDeliveryMoment === cluster.deliveryMoment && drugEndExecutionMoment === cluster.endExecutionMoment);
+                        if (cluster) {
+                            cluster.drugIds.push(drugId);
+                        } else {
+                            clusters.push({drugIds: [drugId], deliveryMoment: drugDeliveryMoment, endExecutionMoment: drugEndExecutionMoment, rid: splitColumn.rid || ""});
+                        }
+                        return clusters;
+                    }, [])
+                }).reduce((reSplitColumn, clusters) => reSplitColumn.concat(...clusters), []);
+            }
+
             _printPrescriptions(e) {
                 if(!this._printEnabled()) {
                     console.log("nothing to print")
@@ -809,8 +828,9 @@
                 }
                 this.$.confirmNoRecipe.close()
 				this.$.loading.open();
-				const splitColumns = this._splitColumns.filter(c => c && c.drugIds && c.drugIds.length > 0)
+				const splitColumns = this._splitColumns.filter(c => c && c.drugIds && c.drugIds.length > 0);
                 const drugsToBePrescribed = this._drugsSelectedAndToBePrescribed();
+                const reSplitColumns = this._splitPerDate(splitColumns, drugsToBePrescribed);
 				const element = this.root.querySelector("#barCode");
 				let toPrint = undefined
 				this.set('selectedFormat', (this.patient.ssin && this.api.tokenId) ? this.selectedFormat : 'presc')
@@ -819,13 +839,13 @@
                 if (this.patient.ssin && this.api.tokenId){ // if ehealth connected
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
                         Promise.all(
-                            splitColumns.map(c =>
+                            reSplitColumns.map(c =>
                                 this.api.fhc().Recipecontroller().createPrescriptionUsingPOST(this.api.keystoreId, this.api.tokenId, "persphysician", hcp.nihii, hcp.ssin, hcp.lastName, this.api.credentials.ehpassword, {
                                     patient: this.patient,
                                     hcp: hcp,
                                     feedback: false,
                                     medications: this._convertForRecipe(drugsToBePrescribed).filter(s => c.drugIds.includes(s.id)).map(s => this.addEmptyPosologyIfNeeded(this.api.contact().medicationValue(s, this.language))),
-                                    deliveryDate: this.api.moment(this.deliveryDateString).format("YYYYMMDD")
+                                    deliveryDate: this.api.moment(c.deliveryMoment).format("YYYYMMDD")
                                 }).then(prescri => {
                                     c.rid = prescri.rid
                                     c.recipeResponse = prescri
@@ -846,7 +866,8 @@
                             this._markDrugsAsSent(drugsToBePrescribed)
                         })
                         .then(()=>{
-                            toPrint = this._formatPrescriptionsBody(splitColumns,drugsToBePrescribed,this.patient,this.globalHcp,moment(this.deliveryDateString+"").format("DD/MM/YYYY"),moment(this.endDateForExecutionString+"").format("DD/MM/YYYY"),element)
+                            const reSplitColumns = this._splitPerDate(splitColumns, drugsToBePrescribed);
+                            toPrint = this._formatPrescriptionsBody(reSplitColumns,drugsToBePrescribed,this.patient,this.globalHcp,moment(this.deliveryDateString+"").format("DD/MM/YYYY"),moment(this.endDateForExecutionString+"").format("DD/MM/YYYY"),element)
                             this._pdfReport(drugsToBePrescribed,toPrint,this.selectedFormat)
                             this.$.loading.close();
                         })
@@ -879,7 +900,8 @@
 
             _formatBody(ids, drugs) {
                 const element = this.root.querySelector("#barCode");
-                return this._formatPrescriptionsBody(ids, drugs, this.patient, this.globalHcp, moment(this.deliveryDateString + "").format("DD/MM/YYYY"), moment(this.endDateForExecutionString+"").format("DD/MM/YYYY"), element)
+                const reIds = this._splitPerDate(ids, drugs);
+                return this._formatPrescriptionsBody(reIds, drugs, this.patient, this.globalHcp, moment(this.deliveryDateString + "").format("DD/MM/YYYY"), moment(this.endDateForExecutionString+"").format("DD/MM/YYYY"), element)
             }
 
             _print(e) {
@@ -906,10 +928,11 @@
                 }
                 const splitColumns = this._splitColumns.filter(c => c && c.drugIds && c.drugIds.length > 0)
                 const drugsToBePrescribed = this._drugsSelectedAndToBePrescribed();
+                const reSplitColumns = this._splitPerDate(splitColumns, drugsToBePrescribed);
                 this.set('selectedFormat', (this.patient.ssin && this.api.tokenId) ? this.selectedFormat : 'presc')
                 const element = this.root.querySelector("#barCode");
 
-                const toPrint = this._formatPrescriptionsBody(splitColumns,drugsToBePrescribed,this.patient,this.globalHcp,moment(this.deliveryDateString+"").format("DD/MM/YYYY"),moment(this.endDateForExecutionString+"").format("DD/MM/YYYY"),element)
+                const toPrint = this._formatPrescriptionsBody(reSplitColumns,drugsToBePrescribed,this.patient,this.globalHcp,moment(this.deliveryDateString+"").format("DD/MM/YYYY"),moment(this.endDateForExecutionString+"").format("DD/MM/YYYY"),element)
                 this._pdfReport(drugsToBePrescribed,toPrint,this.selectedFormat)
                     .then(()=>{
                         this._markDrugsAsSent(drugsToBePrescribed)
@@ -923,6 +946,9 @@
 
                 const inRecipeMode = this.patient.ssin && this.api.tokenId && splitColumns.find(c=>c.rid) // else print good old prescription format
                 splitColumns.forEach((c, idx) => {
+                    // @todo remove useless args
+                    deliveryDate = this.api.moment(c.deliveryMoment).format("DD/MM/YYYY");
+                    endDateForExecution = this.api.moment(c.endExecutionMoment).format("DD/MM/YYYY");
                     const ridOrNihii = c.rid ? c.rid : hcp.nihii;
                     JsBarcode(element, ridOrNihii, {format: "CODE128A", displayValue: false, height: 75});
                     const jpegUrl = element.toDataURL("image/jpeg");
@@ -1011,7 +1037,7 @@
                         </footer>
                     </article>` : prescriContent; // create single prescription body
 
-                    prescriToPrint.push({name:medicName,'prescriBody':prescri,'page':pageNum,'posology':articlePoso, 'medWithPosology': articleMedWithPoso,'myRid':ridLabel, 'myJpegUrl':jpegUrl}) // add a prescription with its datas
+                    prescriToPrint.push({name:medicName,'prescriBody':prescri,'page':pageNum,'posology':articlePoso, 'medWithPosology': articleMedWithPoso,'myRid':ridLabel, 'myJpegUrl':jpegUrl, 'deliveryDate':deliveryDate, 'endDateForExecution':endDateForExecution}) // add a prescription with its datas
                 }) // splitCol forEach end
                 // console.log("prescriToPrint",prescriToPrint)
 
@@ -1022,6 +1048,8 @@
                     singlePage.name = prescri.name
                     singlePage.rid = prescri.myRid
                     singlePage.jpegUrl = prescri.myJpegUrl
+                    singlePage.deliveryDate = prescri.deliveryDate;
+                    singlePage.endDateForExecution = prescri.endDateForExecution;
                     prescri.medWithPosology.map((poso)=>{ // check if there's posology
                         singlePage.poso.push(poso)
                     })
@@ -1105,15 +1133,15 @@
 											<div class="vert w100">
 												<div class="cell bb center">
 													<p class="mt0">${this.localize('date_and_sign_of_presc',"Date and prescriber's signature",this.language)}</p>
-													<p>${deliveryDate}</p>
+													<p>${onePrescription.deliveryDate}</p>
 												</div>
 												<div class="cell">
 													<p class="center">${this.localize('deliv_date','Deliverable from the specified date or from',this.language)}&nbsp;:</p>
-													<p class="signdate center bold w100">${deliveryDate}</p>
+													<p class="signdate center bold w100">${onePrescription.deliveryDate}</p>
 												</div>
 												<div class="cell">
 													<p class="center">${this.localize('EndDateForExecution','End date for execution',this.language)}&nbsp;:</p>
-													<p class="signdate center bold w100">${endDateForExecution}</p>
+													<p class="signdate center bold w100">${onePrescription.endDateForExecution}</p>
 												</div>
 											</div>
 										</div>

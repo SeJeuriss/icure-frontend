@@ -580,7 +580,7 @@
             .title-header {
                 display: flex;
                 align-items: center;
-                padding-left: 12px;
+                padding: 0 12px;
             }
 
             .text-area {
@@ -639,9 +639,9 @@
                 width: 100%;
             }
 
-            iron-autogrow-textarea {
-                --iron-autogrow-textarea_-_padding: 4px 8px 0;
-            }
+            /*iron-autogrow-textarea {*/
+            /*    --iron-autogrow-textarea_-_padding: 4px 8px 0;*/
+            /*}*/
 
         </style>
         <div class$="container [[_customContainer(closable)]]">
@@ -716,7 +716,7 @@
                             <label slot="label" class="color-status">[[localize('proposed_posology','Posologie proposée',language)]]</label>
                             <iron-autogrow-textarea slot="input" disabled value="[[medicationDetail.posologyNote]]"></iron-autogrow-textarea>
                         </paper-input-container>
-                        <paper-icon-button class="button--icon-btn" icon="content-copy" role="button" on-tap="_copyPosologyNote"></paper-icon-button>
+<!--                        <paper-icon-button class="button&#45;&#45;icon-btn" icon="content-copy" role="button" on-tap="_copyPosologyNote"></paper-icon-button>-->
                     </div>
                 </template>
                 <div class="regimen-line display-type-regimen">
@@ -799,11 +799,14 @@
                             </template>
                         </paper-listbox>
                     </paper-dropdown-menu>
-
-                    <vaadin-date-picker id="deliveryDate" label="[[localize('deliv_from', 'Délivrable à partir du', language)]]" readonly value="{{medicationDetail.deliveryMomentAsString}}"
-                                        class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
-                    <vaadin-date-picker id="endExecDate" label="[[localize('EndDateForExecution', 'Date de fin pour excécution', language)]]" readonly value="{{medicationDetail.endExecMomentAsString}}"
-                                        class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
+                    <template is="dom-if" if="[[medicationContent.isPrescription]]">
+                        <vaadin-date-picker id="deliveryDate" label="[[localize('deliv_from', 'Délivrable à partir du', language)]]" value="{{medicationDetail.deliveryMomentAsString}}"
+                                            min="[[medicationDetail.todayAsString]]" max="[[medicationDetail.endExecutionMomentAsString]]"
+                                            class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
+                        <vaadin-date-picker id="endExecDate" label="[[localize('EndDateForExecution', 'Date de fin pour excécution', language)]]" value="{{medicationDetail.endExecutionMomentAsString}}"
+                                            min="[[medicationDetail.todayAsString]]" max="[[medicationDetail.maxEndExecutionMomentAsString]]"
+                                            class="regimen--datepicker" i18n="[[i18n]]"></vaadin-date-picker>
+                    </template>
                 </div>
                 <div class="regimen-line display-type-regimen">
                     <!--
@@ -1089,6 +1092,8 @@
                     '_changeBeginMoment(medicationDetail.beginMomentAsString)',
                     '_changeEndMoment(medicationDetail.endMomentAsString)',
                     '_changeDuration(duration)',
+                    '_changeEndExecutionMoment(medicationDetail.endExecutionMomentAsString)',
+                    '_changeDeliveryMoment(medicationDetail.deliveryMomentAsString)',
                     '_regimenChanged(medicationContent.medicationValue, medicationDetail.commentForPatient, medicationContent.medicationValue.regimen.*)',
                     '_medicationChanged(medication, medication.*)',
                     '_quantityFactorChanged(quantityFactor)',
@@ -1419,6 +1424,32 @@
                 }
             }
 
+            _endExecutionMoment() {
+                return this.api.moment(this.medicationDetail.endExecutionMomentAsString, "YYYY-MM-DD");
+            }
+
+            _deliveryMoment() {
+                return this.api.moment(this.medicationDetail.deliveryMomentAsString, "YYYY-MM-DD");
+            }
+
+            _changeEndExecutionMoment() {
+                if (this.medicationDetail) {
+                    if (this._deliveryMoment() > this._endExecutionMoment()) {
+                        this.set("medicationDetail.deliveryMomentAsString", this.medicationDetail.endExecutionMomentAsString);
+                    }
+                    this.set("medicationContent.medicationValue.endExecutionMoment", parseInt(this._endExecutionMoment().format("YYYYMMDD"), 10));
+                }
+            }
+
+            _changeDeliveryMoment() {
+                if (this.medicationDetail) {
+                    if (this._deliveryMoment() > this._endExecutionMoment()) {
+                        this.set("medicationDetail.endExecutionMomentAsString", this.medicationDetail.deliveryMomentAsString);
+                    }
+                    this.set("medicationContent.medicationValue.deliveryMoment", parseInt(this._deliveryMoment().format("YYYYMMDD"), 10));
+                }
+            }
+
             _isCompoundPrescription() {
                 return this.medicationDetail && this.medicationDetail.type === "compound";
             }
@@ -1523,7 +1554,7 @@
 
                         this._initmedicationContent();
 
-                        const today = this.api.moment(Date.now());
+                        const now = Date.now();
                         this.set("initializingDate", true);
 
                         const commentForPatient = this._extractCommentForPatient();
@@ -1531,10 +1562,12 @@
                         this.set("medicationDetail", Object.assign(
                             medication,
                             {
-                                beginMomentAsString : this.api.moment((content && content.medicationValue && content.medicationValue.beginMoment) || (medication.newMedication && medication.newMedication.valueDate) || (medication.newMedication && medication.newMedication.openingDate) || Date.now()).format('YYYY-MM-DD') || null,
+                                todayAsString: this.api.moment(now).format("YYYY-MM-DD"),
+                                beginMomentAsString : this.api.moment((content && content.medicationValue && content.medicationValue.beginMoment) || (medication.newMedication && medication.newMedication.valueDate) || (medication.newMedication && medication.newMedication.openingDate) || now).format('YYYY-MM-DD') || null,
                                 endMomentAsString: this.api.moment((content && content.medicationValue && content.medicationValue.endMoment) || (medication.newMedication && medication.newMedication.closingDate)) ? this.api.moment(content.medicationValue.endMoment || (medication.newMedication && medication.newMedication.closingDate)).format("YYYY-MM-DD") : null,
-                                deliveryMomentAsString: today.format("YYYY-MM-DD"),
-                                endExecMomentAsString: today.add(3, "months").subtract(1, "days").format("YYYY-MM-DD"),
+                                deliveryMomentAsString: this.api.moment((content && content.medicationValue && content.medicationValue.deliveryMoment) || now).format('YYYY-MM-DD'),
+                                endExecutionMomentAsString: (this.content && this.content.medicationValue && this.content.medicationValue.endExecutionMoment && this.api.moment(this.content.medicationValue.endExecutionMoment) || this.api.moment(now).add(3, "months").subtract(1, "days")).format("YYYY-MM-DD"),
+                                maxEndExecutionMomentAsString: this.api.moment(now).add(1, "years").subtract(1, "days").format("YYYY-MM-DD"),
                                 dividable: medication.dividable === undefined ? true : medication.dividable,
                                 packDisplayValue: medication.packDisplayValue || 0,
                                 medicPriority : this.medicationContent.medicationValue.priority === "high" ? 2 : this.medicationContent.medicationValue.priority === "middle" ? 1 : 0,
@@ -1567,7 +1600,7 @@
             }
 
             _periodChanged() {
-                if (!this.periodConfig.id) return;
+                if (!this.periodConfigs || !this.periodConfig.id) return;
                 let regimen = _.get(this.medicationContent, "medicationValue.regimen", "");
                 this.set("medicationContent.medicationValue.regimen", regimen.filter(reg => this.periodConfig.id === "weeklyPosology" ? reg.weekday : !reg.weekday));
                 this._initRegimenKeys();
