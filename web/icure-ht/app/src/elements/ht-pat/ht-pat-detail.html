@@ -5958,33 +5958,83 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 };
             }
 
+            isPersonal(he){
+                return he && he.tags && he.tags.find(tg => tg.type === "org.taktik.icure.entities.embed.Confidentiality" && tg.code === "personal" ) ? true : false;
+            }
+
             _addedHealthElementSelected(event, healthElement) {
-                this.saveCurrentContact()
-                    .then(c => this.api.register(c, 'contact'))
-                    .then(() => this.api.helement().newInstance(this.user, this.patient, this._normalizedHealthElement(healthElement)).then(he => this.api.helement().createHealthElement(he)).then(() => this.refreshPatient()));
+                if(this.isPersonal(healthElement)){
+                    console.log("PERSONAL HE CREATED", healthElement);
+                    this.api.patient().initConfidentialDelegation(this.patient, this.user)
+                        .then(pat =>
+                    this.saveCurrentContact()
+                        .then(c => this.api.register(c, 'contact'))
+                        .then(() => this.api.helement().newInstance(this.user, pat, this._normalizedHealthElement(healthElement), this.isPersonal(healthElement)).then(he => this.api.helement().createHealthElement(he)).then(() => this.refreshPatient()))
+                    )
+                }
+                else
+                {
+                    this.saveCurrentContact()
+                        .then(c => this.api.register(c, 'contact'))
+                        .then(() => this.api.helement().newInstance(this.user, this.patient, this._normalizedHealthElement(healthElement)).then(he => this.api.helement().createHealthElement(he)).then(() => this.refreshPatient()));
+                }
             }
 
             _editedHealthElementSelected(event, healthElement) {
-                if (this.editedHealthElementModel.he.id) {
-                    this.api.helement().getHealthElement(this.editedHealthElementModel.he.id).then(he => {
-                        delete healthElement.plansOfActionDescr;
-                        _.assign(he, this._normalizedHealthElement(healthElement));
-                        he.id = this.api.crypto().randomUuid();
-                        delete he.rev;
-                        return he;
-                    }).then(he => this.api.helement().createHealthElement(he)).then(he => this.refreshPatient());
-                } else if (this.editedHealthElementModel.he.idService) {
-                    const svc = this.editedHealthElementModel.he.svc;
-                    return this.api.helement().serviceToHealthElement(this.user, this.patient, svc,
-                        this.api.contact().shortServiceDescription(svc, language)).then(he => {
-                        if (this.currentContact) {
-                            this.api.contact().promoteServiceInContact(this.currentContact, this.user, this.contacts, svc, undefined, null, [he.id], null);
-                            this.saveCurrentContact().then(c => this.refreshPatient());
-                        }
+                console.log("historyElement", this.historyElement, JSON.stringify(this.historyElement));
+                if(this.isPersonal(healthElement)){
+                    console.log("PERSONAL HE MODIFIED", healthElement);
+                    if (this.editedHealthElementModel.he.id) {
+                        this.api.patient().initConfidentialDelegation(this.patient, this.user)
+                            .then(pat => {
+                                this.historyElement.forEach(hhe => {
+                                    console.log("make history confidential", hhe);
+                                    this.api.helement().getHealthElement(hhe.id).then(he => {
+                                        delete healthElement.plansOfActionDescr;
+                                        _.assign(he, this._normalizedHealthElement(healthElement));
+                                        he.id = this.api.crypto().randomUuid();
+                                        delete he.rev;
+                                        return he;
+                                    }).then(he =>
+                                        this.api.helement().newInstance(this.user, pat, he, this.isPersonal(healthElement))
+                                            .then(he => this.api.helement().createHealthElement(he)).then(he => he))
+                                });
 
-                        this.editedHealthElementModel.he = he;
-                        return this._editedHealthElementSelected(event, healthElement);
-                    });
+
+                                this.api.helement().getHealthElement(this.editedHealthElementModel.he.id).then(he => {
+                                    delete healthElement.plansOfActionDescr;
+                                    _.assign(he, this._normalizedHealthElement(healthElement));
+                                    he.id = this.api.crypto().randomUuid();
+                                    delete he.rev;
+                                    return he;
+                                }).then(he =>
+                                    this.api.helement().newInstance(this.user, pat, he, this.isPersonal(healthElement))
+                                        .then(he => this.api.helement().createHealthElement(he)).then(he => this.refreshPatient()))
+                            })
+
+                    }
+                }else {
+                    if (this.editedHealthElementModel.he.id) {
+                        this.api.helement().getHealthElement(this.editedHealthElementModel.he.id).then(he => {
+                            delete healthElement.plansOfActionDescr;
+                            _.assign(he, this._normalizedHealthElement(healthElement));
+                            he.id = this.api.crypto().randomUuid();
+                            delete he.rev;
+                            return he;
+                        }).then(he => this.api.helement().createHealthElement(he)).then(he => this.refreshPatient());
+                    } else if (this.editedHealthElementModel.he.idService) {
+                        const svc = this.editedHealthElementModel.he.svc;
+                        return this.api.helement().serviceToHealthElement(this.user, this.patient, svc,
+                            this.api.contact().shortServiceDescription(svc, language)).then(he => {
+                            if (this.currentContact) {
+                                this.api.contact().promoteServiceInContact(this.currentContact, this.user, this.contacts, svc, undefined, null, [he.id], null);
+                                this.saveCurrentContact().then(c => this.refreshPatient());
+                            }
+
+                            this.editedHealthElementModel.he = he;
+                            return this._editedHealthElementSelected(event, healthElement);
+                        });
+                    }
                 }
             }
 
@@ -6742,7 +6792,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 const he = e.detail.healthelement;
                 //console.log("filtered delegations", he.delegations.filter(del => d))
                 // this.api.helement().setHealthElementsDelegations([]).then(() => {})
-                if(this.isPersonal(he)){
+                if(false) { //this.isPersonal(he)){
                     console.log("he is personal", he);
                     //TODO: this isn't working, remove hardcoded id
                     delete he.delegations["0db6818b-b8e6-470e-8be7-66e4ff0963d4"];
@@ -6756,11 +6806,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         this.refreshPatient();
                     });
                 }
-            }
-
-            isPersonal(item){
-                //TODO : uncomment
-                return false;//item && item.tags && item.tags.filter(tag => tag.type === "org.taktik.icure.entities.embed.Confidentiality" && tag.code === "personal").length > 0 ? true : false;
             }
 
             _LodashDash(txt){
