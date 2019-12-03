@@ -1342,6 +1342,7 @@
 		"pat_import_sta": "Patient import status",
 		"pat_import_exist": "Patient exists already",
 		"pati": "Patient",
+		"praticien": "Practitioner",
 		"patientwill": "Patient will",
 		"patient": "Patient",
 		"patient_has_adr": "Patient has an adverse drug reaction to",
@@ -2416,7 +2417,8 @@
 		"editLabelAndTransaction" : "Edit label and type",
 		"modifyInformation" : "Modify information",
 		"present" : "Present",
-		"not-present" : "Not present"
+		"not-present" : "Not present",
+		"flatrate-err" : "Flatrate error"
 	},
 	"fr": {
 		"createAccessLog" : "création d'un log d'accès",
@@ -3824,6 +3826,7 @@
 		"pat_import_sta": "Etat de l'import des patients",
 		"pat_import_exist": "Il existe déjà un patient du même nom ou NISS",
 		"pati": "Patient",
+		"praticien": "Praticien",
 		"patientwill": "Souhaits du patient",
 		"patient": "Patient",
 		"patient_has_adr": "Le patient possède une contre-indication pour la médication",
@@ -4919,7 +4922,8 @@
 		"editLabelAndTransaction" : "Editer le libellé et le type",
 		"modifyInformation" : "Modifier les informations",
 		"present" : "Présent",
-		"not-present" : "Pas présent"
+		"not-present" : "Pas présent",
+		"flatrate-err" : "Données forfait"
 	},
 	"nl": {
 		"createAccessLog" : "maak een toegangslogboek",
@@ -6301,6 +6305,7 @@
 		"patientwill": "Patiënt wilsbeschikkingen",
 		"pat_ident": "Patiënt",
 		"pati": "Patiënt",
+		"praticien": "Beoefenaar",
 		"patient_has_adr": "Patiënt heeft een medicatie bijwerking van",
 		"pay": "Betaling",
 		"pay_ok": "Betal. OK",
@@ -7379,6 +7384,7 @@
 		"editLabelAndTransaction" : "Edit label and type",
 		"modifyInformation" : "Modify information",
 		"present" : "Aanwezig",
-		"not-present" : "Niet aanwezig"
+		"not-present" : "Niet aanwezig",
+		"flatrate-err" : "Forfait gegevens"
 	}
 }
