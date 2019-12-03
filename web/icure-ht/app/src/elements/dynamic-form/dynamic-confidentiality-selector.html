@@ -116,7 +116,8 @@
                 if (!type) {
                     return;
                 }
-                this.dispatchEvent(new CustomEvent('confidentiality-tag-changed', {bubbles: true, composed: true, detail: { type: type} }));
+                console.log("addConfidentialityType", type);
+                this.dispatchEvent(new CustomEvent('confidentiality-changed', {bubbles: true, composed: true, detail: { type: type} }));
 
             }
 

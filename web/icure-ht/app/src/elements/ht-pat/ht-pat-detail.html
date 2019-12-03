@@ -6440,6 +6440,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             contactChanged(e){
                 this.set("refreshServicesDescription",this.refreshServicesDescription+1)
+                if(e.detail && e.detail.refresh){
+                    console.log("patient refresh wanted");
+                    this.refreshPatient();
+                }
             }
 
             getTypeContact(ctc){

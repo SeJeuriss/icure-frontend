@@ -866,7 +866,7 @@
 						<span class="contact-title">[[_selectedContactsHeaderLabel(contacts, currentContact.tags.*)]]
                             <template is="dom-if" if="[[_hasCurrentContact()]]">
                                 <dynamic-subcontact-type-selector id="subctc-type-c" subcontact-type="[[contactTypeList]]" language="[[language]]" resources="[[resources]]" on-link-to-subcontact-type="_contactTypeChange"></dynamic-subcontact-type-selector>
-								<dynamic-confidentiality-selector id="dynamicConfidentialitySelector" list-of-confidentiality-type="[[listOfConfidentialityType]]" language="[[language]]" resources="[[resources]]" list-of-confidentiality-type="[[listOfConfidentialityType]]" on-confidentiality-changed="_confidentialityChanged"></dynamic-confidentiality-selector>
+								<dynamic-confidentiality-selector id="dynamicConfidentialitySelector" list-of-confidentiality-type="[[listOfConfidentialityType]]" language="[[language]]" resources="[[resources]]" available-confidentiality-type="[[listOfConfidentialityType]]" on-confidentiality-changed="_confidentialityChanged"></dynamic-confidentiality-selector>
 								<dynamic-visibility-selector id="dynamicVisibilitySelector" list-of-visibility-type="[[listOfVisibilityType]]" language="[[language]]" resources="[[resources]]" list-of-visibility-type="[[listOfVisibilityType]]" on-visibility-changed="_visibilityChanged"></dynamic-visibility-selector>
                             </template>
                         </span>
@@ -888,7 +888,7 @@
                                 <span class="contact-title">[[_contactHeaderLabel(currentContact, currentContact.tags.*)]]
                                     <template is="dom-if" if="[[_hasCurrentContact(contacts)]]">
                                         <dynamic-subcontact-type-selector id="subctc-type-b" subcontact-type="[[contactTypeList]]" language="[[language]]" resources="[[resources]]" on-link-to-subcontact-type="_contactTypeChange"></dynamic-subcontact-type-selector>
-										<dynamic-confidentiality-selector id="dynamicConfidentialitySelector" list-of-confidentiality-type="[[listOfConfidentialityType]]" language="[[language]]" resources="[[resources]]" list-of-confidentiality-type="[[listOfConfidentialityType]]" on-confidentiality-changed="_confidentialityChanged"></dynamic-confidentiality-selector>
+										<dynamic-confidentiality-selector id="dynamicConfidentialitySelector" list-of-confidentiality-type="[[listOfConfidentialityType]]" language="[[language]]" resources="[[resources]]" available-confidentiality-type="[[listOfConfidentialityType]]" on-confidentiality-changed="_confidentialityChanged"></dynamic-confidentiality-selector>
 										<dynamic-visibility-selector id="dynamicVisibilitySelector" list-of-visibility-type="[[listOfVisibilityType]]" language="[[language]]" resources="[[resources]]" list-of-visibility-type="[[listOfVisibilityType]]" on-visibility-changed="_visibilityChanged"></dynamic-visibility-selector>
 									</template>
                                 </span>
@@ -908,7 +908,7 @@
                             <span class="contact-title">[[_contactHeaderLabel(dof.ctc, currentContact.tags.*)]]
 								<template is="dom-if" if="[[_isCurrentContact(dof.ctc)]]">
                                     <dynamic-subcontact-type-selector id="subctc-type-d" subcontact-type="[[contactTypeList]]" language="[[language]]" resources="[[resources]]" on-link-to-subcontact-type="_contactTypeChange"></dynamic-subcontact-type-selector>
-									<dynamic-confidentiality-selector id="dynamicConfidentialitySelector" list-of-confidentiality-type="[[listOfConfidentialityType]]" language="[[language]]" resources="[[resources]]" list-of-confidentiality-type="[[listOfConfidentialityType]]" on-confidentiality-changed="_confidentialityChanged"></dynamic-confidentiality-selector>
+									<dynamic-confidentiality-selector id="dynamicConfidentialitySelector" list-of-confidentiality-type="[[listOfConfidentialityType]]" language="[[language]]" resources="[[resources]]" available-confidentiality-type="[[listOfConfidentialityType]]" on-confidentiality-changed="_confidentialityChanged"></dynamic-confidentiality-selector>
 									<dynamic-visibility-selector id="dynamicVisibilitySelector" list-of-visibility-type="[[listOfVisibilityType]]" language="[[language]]" resources="[[resources]]" list-of-visibility-type="[[listOfVisibilityType]]" on-visibility-changed="_visibilityChanged"></dynamic-visibility-selector>
 								</template>
 							</span>
@@ -1872,6 +1872,79 @@
 							.then(ctc => this.dispatchEvent(new CustomEvent('contact-saved', { detail: {contact :ctc} , bubbles:true })))
                 }
             }
+
+            isPersonal(item){
+				return item && item.tags && item.tags.find(tg => tg.type === "org.taktik.icure.entities.embed.Confidentiality" && tg.code === "personal" ) ? true : false;
+			}
+
+			_confidentialityChanged(e){
+				if(e.detail){
+					console.log("_confidentialityChanged", e.detail);
+					const idx = this.currentContact.tags.indexOf(this.currentContact.tags.find(t => t.type === "org.taktik.icure.entities.embed.Confidentiality"))
+					if(idx != -1){
+						this.currentContact.tags.splice(idx, 1);
+					}
+					this.currentContact.tags.push(e.detail.type);
+					this.notifyPath('currentContact.tags')
+
+					this.currentContact.services.forEach(svc => {
+						const idx = svc.tags.indexOf(svc.tags.find(t => t.type === "org.taktik.icure.entities.embed.Confidentiality"))
+						if(idx != -1){
+							svc.tags.splice(idx, 1);
+						}
+						svc.tags.push(e.detail.type);
+						this.notifyPath('currentContact.services');
+
+						console.log("_confidentialityChanged svc", svc);
+					});
+
+					if(this.isPersonal(this.currentContact)){
+						console.log("make contact personal");
+						this.api.contact().newInstance(this.user, this.patient, this.currentContact, true)
+								.then(ctc => this.saveCurrentContact())
+								.then(ctc => this.dispatchEvent(new CustomEvent('contact-saved', {
+									detail: {
+										contact: ctc,
+										refresh: true
+									}, bubbles: true
+								})))
+					}
+					else {
+						this.saveCurrentContact()
+								.then(ctc => this.dispatchEvent(new CustomEvent('contact-saved', {
+									detail: {
+										contact: ctc,
+										refresh: true
+									}, bubbles: true
+								})))
+					}
+				}
+			}
+
+			_visibilityChanged(e){
+				if(e.detail){
+					console.log("_visibilityChanged", e.detail);
+					const idx = this.currentContact.tags.indexOf(this.currentContact.tags.find(t => t.type === "org.taktik.icure.entities.embed.Visibility"))
+					if(idx != -1){
+						this.currentContact.tags.splice(idx, 1);
+					}
+					this.currentContact.tags.push(e.detail.type);
+					this.notifyPath('currentContact.tags');
+
+					this.currentContact.services.forEach(svc => {
+						const idx = svc.tags.indexOf(svc.tags.find(t => t.type === "org.taktik.icure.entities.embed.Visibility"))
+						if(idx != -1){
+							svc.tags.splice(idx, 1);
+						}
+						svc.tags.push(e.detail.type);
+						this.notifyPath('currentContact.services');
+						console.log("_visibilityChanged svc", svc);
+					});
+
+					this.saveCurrentContact()
+							.then(ctc => this.dispatchEvent(new CustomEvent('contact-saved', { detail: {contact :ctc, refresh:true} , bubbles:true })))
+				}
+			}
 
 			formDeleted(e, form) {
 				this.saveCurrentContact().then(c => this._contactsChanged());

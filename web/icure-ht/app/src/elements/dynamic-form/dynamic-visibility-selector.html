@@ -111,12 +111,13 @@
 
             }
 
-            addConfidentialityType(e) {
+            addVisibilityType(e) {
                 const type = this.availableVisibilityType && this.availableVisibilityType.find(type => e.target.id === type.id) || null
                 if (!type) {
                     return;
                 }
-                this.dispatchEvent(new CustomEvent('visibility-tag-changed', {bubbles: true, composed: true, detail: { type: type} }));
+                console.log("addVisibilityType", type);
+                this.dispatchEvent(new CustomEvent('visibility-changed', {bubbles: true, composed: true, detail: { type: type} }));
 
             }
 
