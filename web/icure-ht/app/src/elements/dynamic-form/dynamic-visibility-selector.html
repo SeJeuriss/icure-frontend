@@ -4,20 +4,13 @@
 <link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../styles/scrollbar-style.html">
+<link rel="import" href="../../styles/buttons-style.html">
+<link rel="import" href="../../styles/dialog-style.html">
 
 <dom-module id="dynamic-visibility-selector">
     <template>
-        <style>
-            paper-menu-button {
-                padding: 0;
-                color: grey;
-            }
-
-            paper-icon-button {
-                padding: 0 4px 8px 4px;
-                width: 20px;
-                height: 20px;
-            }
+        <style include="scrollbar-style buttons-style dialog-style shared-styles">
 
             paper-listbox {
                 max-height: 33vh;
@@ -35,11 +28,11 @@
                 background: var(--app-background-color-dark);
             }
         </style>
-        <paper-menu-button id="visibilityType" horizontal-align="left" dynamic-align="true" opened="{{visibilityOpened}}" allow-outside-scroll>
+        <paper-menu-button id="visibilityType" class="button--icon-btn" horizontal-align="left" dynamic-align="true" opened="{{visibilityOpened}}" allow-outside-scroll>
             <paper-icon-button id="hc_menu" class="form-title-bar-btn" icon="icons:visibility-off" slot="dropdown-trigger" alt="menu" on-tap="_showVisibilitySelector"></paper-icon-button>
             <paper-listbox slot="dropdown-content">
-                <template is="dom-repeat" items="[[availableVisibilityType]]" as="act">
-                    <paper-item id="[[act.id]]" class="link" on-tap="addVisibilityType">[[_localizeVisibilityType(sct.label)]]</paper-item>
+                <template is="dom-repeat" items="[[availableVisibilityType]]" as="avt">
+                    <paper-item id="[[avt.id]]" class="link" on-tap="addVisibilityType">[[_localizeVisibilityType(avt.code)]]</paper-item>
                 </template>
             </paper-listbox>
         </paper-menu-button>
@@ -112,13 +105,14 @@
                 e.stopPropagation();
 
                 if(e.target.id) {
+                    this.set('availableVisibilityType', this.listOfVisibilityType)
                     this.root.querySelector('#visibilityType').open();
                 }
 
             }
 
             addConfidentialityType(e) {
-                const type = this.subcontactType && this.subcontactType.find(type => e.target.id === type.id) || null
+                const type = this.availableVisibilityType && this.availableVisibilityType.find(type => e.target.id === type.id) || null
                 if (!type) {
                     return;
                 }
@@ -126,8 +120,8 @@
 
             }
 
-            _localizeVisibilityType(label){
-                return label[this.language]
+            _localizeVisibilityType(code){
+                return this.localize('visibility-'+code, code, this.language)
             }
 
         }

@@ -4,20 +4,13 @@
 <link rel="import" href="../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../styles/scrollbar-style.html">
+<link rel="import" href="../../styles/buttons-style.html">
+<link rel="import" href="../../styles/dialog-style.html">
 
 <dom-module id="dynamic-confidentiality-selector">
     <template>
-        <style>
-            paper-menu-button {
-                padding: 0;
-                color: grey;
-            }
-
-            paper-icon-button {
-                padding: 0 4px 8px 4px;
-                width: 20px;
-                height: 20px;
-            }
+        <style include="scrollbar-style buttons-style dialog-style shared-styles">
 
             paper-listbox {
                 max-height: 33vh;
@@ -35,11 +28,11 @@
                 background: var(--app-background-color-dark);
             }
         </style>
-            <paper-menu-button id="confidentialityType" horizontal-align="left" dynamic-align="true" opened="{{confidentialityOpened}}" allow-outside-scroll>
+            <paper-menu-button id="confidentialityType" class="button--icon-btn" horizontal-align="left" dynamic-align="true" opened="{{confidentialityOpened}}" allow-outside-scroll>
                 <paper-icon-button id="hc_menu" class="form-title-bar-btn" icon="icure-svg-icons:privacy" slot="dropdown-trigger" alt="menu" on-tap="_showConfidentialitySelector"></paper-icon-button>
                 <paper-listbox slot="dropdown-content">
                     <template is="dom-repeat" items="[[availableConfidentialityType]]" as="act">
-                        <paper-item id="[[act.id]]" class="link" on-tap="addConfidentialityType">[[_localizeConfidentialityType(sct.label)]]</paper-item>
+                        <paper-item id="[[act.id]]" class="link" on-tap="addConfidentialityType">[[_localizeConfidentialityType(act.code)]]</paper-item>
                     </template>
                 </paper-listbox>
             </paper-menu-button>
@@ -112,13 +105,14 @@
                 e.stopPropagation();
 
                 if(e.target.id) {
+                    this.set('availableConfidentialityType', this.listOfConfidentialityType)
                     this.root.querySelector('#confidentialityType').open();
                 }
 
             }
 
             addConfidentialityType(e) {
-                const type = this.subcontactType && this.subcontactType.find(type => e.target.id === type.id) || null
+                const type = this.availableConfidentialityType && this.availableConfidentialityType.find(type => e.target.id === type.id) || null
                 if (!type) {
                     return;
                 }
@@ -126,8 +120,8 @@
 
             }
 
-            _localizeConfidentialityType(label){
-                return label[this.language]
+            _localizeConfidentialityType(code){
+                return this.localize('confidentiality-'+code, code, this.language)
             }
 
         }

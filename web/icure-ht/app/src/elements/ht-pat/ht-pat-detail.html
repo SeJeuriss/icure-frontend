@@ -2471,6 +2471,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             on-medication-detail="_medicationDetail"
                             on-medications-detail="_medicationsDetail"
                             contact-type-list="[[contactTypeList]]"
+                            list-of-confidentiality-type="[[listOfConfidentialityType]]"
+                            list-of-visibility-type="[[listOfVisibilityType]]"
                             on-contact-saved="contactChanged"
                             on-open-charts-dialog="_openChartsDialog"
                             on-add-other="addOther"
@@ -3363,6 +3365,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     selectedCarePathInfo:{
                         type: Object,
                         value: () => {}
+                    },
+                    listOfConfidentialityType:{
+                        type: Array,
+                        value: () => []
+                    },
+                    listOfVisibilityType:{
+                        type: Array,
+                        value: () => []
                     }
 
                 };
@@ -3427,7 +3437,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this._updateGlobalHcp();
 
                 this.api.code().findPaginatedCodes('be', 'BE-CONTACT-TYPE', '')
-                    .then(ct =>this.set("contactTypeList", _.orderBy(ct.rows, ['code'], ['asc'])))
+                    .then(ct => this.set("contactTypeList", _.orderBy(ct.rows, ['code'], ['asc'])))
+                    .then(() => this.api.code().findCodes("be", "org.taktik.icure.entities.embed.Confidentiality"))
+                    .then(confidentiality => this.set('listOfConfidentialityType', _.orderBy(confidentiality, ['code'], ['asc'])))
+                    .then(() => this.api.code().findCodes("be", "org.taktik.icure.entities.embed.Visibility"))
+                    .then(visibility => this.set('listOfVisibilityType', _.orderBy(visibility, ['code'], ['asc'])))
 
                 this._setColsWidth()
 
