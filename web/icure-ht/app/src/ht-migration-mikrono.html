@@ -7,6 +7,7 @@
     </template>
 
     <script>
+        import moment from 'moment/src/moment'
         class HtMigrationMikrono extends Polymer.TkLocalizerMixin(Polymer.Element) {
             static get is() {
                 return 'ht-migration-mikrono';
@@ -45,12 +46,13 @@
             migrateAllPricareAgendasToMikrono() {
                 this.api.user().listUsers().then(users => {
                     const listOfUsers = users.rows
-                    const listOfActivesUsersWithAgenda = listOfUsers && listOfUsers.filter(u => u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && u.status && u.status === "ACTIVE" && u.id !== this.user.id) || []
-                    return listOfActivesUsersWithAgenda
+                    //const listOfActivesUsersWithAgenda = listOfUsers && listOfUsers.filter(u => u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && u.status && u.status === "ACTIVE" && u.id !== this.user.id) || []
+                    //return listOfActivesUsersWithAgenda
+                    return listOfUsers && listOfUsers.filter(u => u && u.login.includes('@')) || []
                 }).then(userlist => {
                     console.log("start createMikronoAgendaForEachUser", userlist)
                     return this.createMikronoAgendaForEachUser(userlist).then(() => {
-                        console.log("start migrateAllPricareAgendasToMikrono");
+                        console.log("start migrateAllAppointmentTypesToMikrono");
                         return this.migrateAllAppointmentTypesToMikrono().then(() => {
                             console.log("start migrateAppointmentsForEachUser", userlist);
                             return this.migrateAppointmentsForEachUser(userlist)
@@ -59,9 +61,29 @@
                 })
             }
 
+            migrateAllPricareAgendasToMikronoDEBUG() {
+                this.api.user().listUsers().then(users => {
+                    const listOfUsers = users.rows
+                    //const listOfActivesUsersWithAgenda = listOfUsers && listOfUsers.filter(u => u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && u.status && u.status === "ACTIVE" && u.id !== this.user.id) || []
+                    //return listOfActivesUsersWithAgenda
+                    return listOfUsers && listOfUsers.filter(u => u && u.login.includes('@')) || []
+                }).then(userlist => {
+                    console.log("start createMikronoAgendaForEachUser", userlist)
+                    //return this.createMikronoAgendaForEachUser(userlist).then(() => {
+                        console.log("start migrateAllAppointmentTypesToMikrono");
+                        return this.migrateAllAppointmentTypesToMikrono().then(() => {
+                            console.log("DONEEE")
+                            //console.log("start migrateAppointmentsForEachUser", userlist);
+                            //return this.migrateAppointmentsForEachUser(userlist)
+                        })
+                    //})
+                })
+            }
+
             createMikronoAgendaForEachUser(userlist) {
                 let promiseChain = Promise.resolve()
 
+                console.log("userlist: ", userlist)
                 userlist.forEach(user => {
                     promiseChain = promiseChain.then(() => {
                         console.log("start creating mikrono agenda for user", user)
@@ -76,6 +98,7 @@
 
                             if (mikronoUrl && mikronoUser && mikronoPassword && applicationTokens && applicationTokens.MIKRONO) {
                                 console.log("Agenda already exists", user, hcp)
+                                return true
                             } else {
                                 const addresses = hcp && hcp.addresses || null
                                 const workAddresses = addresses.find(adr => adr.addressType === "work") || null
@@ -96,6 +119,8 @@
                                                     console.log("Agenda created successfully", user, hcp)
                                                 } else {
                                                     console.log("mikronoError", {
+                                                        user: user,
+                                                        errorMsg: "no token found despite having registered user",
                                                         addresses: false,
                                                         workAddresses: false,
                                                         workMobile: false,
@@ -108,6 +133,8 @@
                                             })
                                         } else {
                                             console.log("mikronoError", {
+                                                user: user,
+                                                errorMsg: "error when registering user",
                                                 addresses: addresses ? true : false,
                                                 workAddresses: workAddresses ? true : false,
                                                 workMobile: workMobile ? true : false,
@@ -121,12 +148,14 @@
                                     })
                                 } else {
                                     console.log("mikronoError", {
+                                        user: user,
+                                        errorMsg: "no telecom",
                                         addresses: addresses ? true : false,
                                         workAddresses: workAddresses ? true : false,
                                         workMobile: workMobile ? true : false,
                                         workEmail: workEmail ? true : false,
                                         token: applicationTokens.MIKRONO ? true : false,
-                                        error: false
+                                        error: true
                                     })
                                 }
                             }
@@ -163,13 +192,15 @@
                         })
                     }).then(apps => {
 
-                        console.log(apps);
+                        console.log("appointmentTypes to be send to mikrono: ", apps);
 
                         if(apps && apps.length !== 0){
                             let prom = Promise.resolve([])
                             _.chunk(apps, 100).forEach(chunkOfAppointments => {
+                                console.log("send chunk of appointmentTypes: ", chunkOfAppointments);
                                 prom = prom.then(prevResults => this.api.bemikrono().createAppointmentTypes(chunkOfAppointments).then(appsResult => {
 
+                                    console.log("received appointmentTypes from mikrono: ", appsResult);
                                     _.forEach( chunkOfAppointments, (i=>{
                                         let oobj = _.get(i, "originalObject")
                                         oobj.mikronoId = i.mikronoId
@@ -190,6 +221,7 @@
                                 console.log("error when creating AppointmentTypes", e)
                                 return Promise.reject(e)
                             })
+                            return prom
                         }else{
                             console.log("created AppointmentTypes: nothing to create!")
                         }
