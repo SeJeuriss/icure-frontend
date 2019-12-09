@@ -1961,7 +1961,10 @@
 						this.api.patient().initConfidentialDelegation(this.patient, this.user)
 								.then(pat =>
 						this.api.contact().newInstance(this.user, pat, this.currentContact, true)
-								.then(ctc => this.saveCurrentContact())
+								.then(ctc => {
+									this.set("currentContact", ctc);
+									this.saveCurrentContact()
+								})
 								.then(ctc => this.dispatchEvent(new CustomEvent('contact-saved', {
 									detail: {
 										contact: ctc,
