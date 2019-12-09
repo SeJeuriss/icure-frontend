@@ -142,6 +142,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: flex;
                 flex-direction: column;
                 height: 100%;
+                position: relative;
             }
 
             .padding-0{
@@ -443,7 +444,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 left: 4px;
                 top: 4px;
                 background:var(--app-secondary-color);
-                color:var(--app-text-color);
+                color:var(--app-text-color-light);
                 height:20px;
                 width:20px;
                 z-index: 4;
@@ -1031,8 +1032,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     display:none;
                 }
                 .btn-pat-close {
-                    top: 16px;
-                    left: 37vw;
+                    top: 4px;
+                    left: inherit;
+                    right: 4px;
                 }
             }
 
@@ -1757,15 +1759,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             .horizontal{
-                flex-flow: row nowrap;
                 display: flex;
+                flex-flow: row nowrap;
                 flex-direction: row;
-                flex-wrap: nowrap;
                 flex-basis: 100%;
             }
 
             #contactFilterPanel{
-                flex-grow: 1
+                flex-grow: 1;
+                flex-shrink: 1;
+                width: 0;
             }
 
             .ctc-info-icon{
@@ -3735,6 +3738,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     if(((this.genInsNiss && this.genInsNiss !=='') || (this.patient.ssin && this.patient.ssin !== '')) && !(this.genInsOA && this.genInsOA !=='')){
                         return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                             .then(hcp => {
+                                console.log("getGenIns.getGeneralInsurabilityUsingGET on date", dStart);
                                     return this.api.fhc().Geninscontroller().getGeneralInsurabilityUsingGET(
                                         this.genInsNiss ? this.genInsNiss.trim() : this.cleanNiss(this.patient.ssin),
                                         asMMH ? this.api.tokenIdMH : this.api.tokenId, asMMH ? this.api.keystoreIdMH : this.api.keystoreId, asMMH ? this.api.credentials.ehpasswordMH : this.api.credentials.ehpassword,
@@ -3937,7 +3941,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     return (this.patient.ssin && this.api.tokenId) ? this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
                         Promise.all([
                             this.api.fhc().Consentcontroller().getPatientConsentUsingGET(_.get(this.api, 'keystoreId', null), _.get(this.api, 'tokenId', null), _.get(this.api, 'credentials.ehpassword', null), _.get(hcp, 'nihii', null), _.get(hcp, 'ssin', null), _.get(hcp, 'firstName', null), _.get(hcp, 'lastName', null), _.get(this.patient, 'ssin', null), _.get(this.patient, 'firstName', null), _.get(this.patient, 'lastName', null)),
-                            this.api.fhc().Hubcontroller().getPatientConsentUsingGET1(this.hubEndPoint, _.get(this.api, "keystoreId", null), _.get(this.api, "tokenId", null), _.get(this.api, "credentials.ehpassword", null), _.get(hcp, "lastName", null), _.get(hcp, "firstName", null), _.get(hcp, "nihii", null), _.get(hcp, "ssin", null), _.get(this, 'hcpZip', null), _.get(this.patient, "ssin", null))
+                            this.hubSupportsConsent ? this.api.fhc().Hubcontroller().getPatientConsentUsingGET1(this.hubEndPoint, _.get(this.api, "keystoreId", null), _.get(this.api, "tokenId", null), _.get(this.api, "credentials.ehpassword", null), _.get(hcp, "lastName", null), _.get(hcp, "firstName", null), _.get(hcp, "nihii", null), _.get(hcp, "ssin", null), _.get(this, 'hcpZip', null), _.get(this.patient, "ssin", null)) : null
                         ])
                         .then(([nationalResp, hubResp]) => {
                             console.log("nationalTlResp", nationalResp)
@@ -4546,9 +4550,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         this.set("flatrateMsg", res.flatrateStatus.errors.map(err => this.localize(err, err, this.language)).join());
                         console.log("flatrateMsg", this.flatrateMsg);
                     }
-                    flatRateUtil.checkGenins([res]).then(res2 => {
-                        console.log("flatrate res genins", res2);
-                    })
+                    // flatRateUtil.checkGenins([res]).then(res2 => {
+                    //     console.log("flatrate res genins", res2);
+                    // })
                 });
 
                 //console.log("Before load "+(+new Date() - now))
@@ -4582,6 +4586,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         this.set("patientWillServices",patientWillServices);
                     });
                     this.api.contact().filterServices(ctcs, s => s.tags.find(c => c.type === 'CD-ITEM' && ['healthcareelement', 'healthissue', 'familyrisk', 'risk', 'socialrisk', 'adr', 'allergy', 'medication', 'surgery', 'professionalrisk'].includes(c.code)) && !idServicesInHes.includes(s.id)).then(hesAsServices => {
+                        // hesAsServices.forEach(h => {
+                        //     if (h.id && /^Medication_\d{19}_\d*$/.test(h.id)) {
+                        //         if (!_.get(h, `content[${this.language}].medicationValue`)) {
+                        //             const medicationValue = this.api.contact().medicationValue(h, this.language);
+                        //             Object.assign(h.content, _.fromPairs([[this.language, {medicationValue: medicationValue}]]));
+                        //             // MEDISPRING medication to prescription
+                        //             if (h.tags && h.tags.length) {
+                        //                 h.tags = h.tags.filter(tag => !(tag.type === "CD-ITEM" && tag.code === "medication") && !(tag.type === "ICURE" && tag.code === "PRESC"));
+                        //                 h.tags.push(this.api.code().normalize({id: "ICURE|PRESC|1"}));
+                        //                 h.label = "Prescription";
+                        //             }
+                        //         }
+                        //     }
+                        // });
                         const svcHes = hesAsServices.filter(s => !s.tags.some(t => t.type === 'CD-ITEM' && t.code === 'medication')).map(svc => this._makeHeFromSvc(svc))
 
                         const oneWeekAgo = moment().subtract(7, 'days')
@@ -4810,6 +4828,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     if (!dlg.opened) this.set('curGenInsResp', null)
                     //api.MHContactPersonName
                     //api.MHContactPersonSsin
+                    console.log("getGeneralInsurabilityUsingGET on date", dStart);
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => this.api.fhc().Geninscontroller().getGeneralInsurabilityUsingGET(
                         this.cleanNiss(patient.ssin),
                         this.api.tokenId ? this.api.tokenId : this.api.tokenIdMH, this.api.tokenId ? this.api.keystoreId : this.api.keystoreIdMH, this.api.tokenId ? this.api.credentials.ehpassword : this.api.credentials.ehpasswordMH,
@@ -5071,7 +5090,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         this.$["consentStatus"].classList.remove('consentOk');
                         this.$["consentStatus"].classList.remove('pendingConsent');
 
-                        !_.isEmpty(_.get(patientConsent, "nationalResp.consent", {})) && !_.isEmpty(_.get(patientConsent, "hubResp", {})) ? this.$['consentStatus'].classList.add("consentOk") :
+                        !_.isEmpty(_.get(patientConsent, "nationalResp.consent", {})) && (!_.isEmpty(_.get(patientConsent, "hubResp", {}))  || !this.hubSupportsConsent) ? this.$['consentStatus'].classList.add("consentOk") :
                             !_.isEmpty(_.get(patientConsent, "nationalResp.consent", {})) || !_.isEmpty(_.get(patientConsent, "hubResp", {})) ? this.$['consentStatus'].classList.add("pendingConsent") :
                                 this.$['consentStatus'].classList.add("noConsent")
 

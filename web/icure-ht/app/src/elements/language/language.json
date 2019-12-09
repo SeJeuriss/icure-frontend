@@ -2420,7 +2420,9 @@
 		"present" : "Present",
 		"not-present" : "Not present",
 		"pleaseConfirm": "Please confirm",
-		"flatrate-err" : "Flatrate error"
+		"flatrate-err" : "Flatrate error",
+		"downloadList" : "Download list",
+		"downloadListAndFiles" : "Download list & files"
 	},
 	"fr": {
 		"createAccessLog" : "création d'un log d'accès",
@@ -3425,9 +3427,9 @@
 		"grp": "Groupe",
 		"grps": "Groupes d'utilisateurs",
 		"has_attach": "A une ou des annexes",
-		"has_doc_sub": "avez-vous une souscription au médecin ?",
-		"has_nur_sub": "avez-vous une souscription chez un infirmier ?",
-		"has_phy_sub": "avez-vous une souscription au physiothérapeute ?",
+		"has_doc_sub": "Contrat médecin",
+		"has_nur_sub": "Contrat infirmier",
+		"has_phy_sub": "Contrat kiné",
 		"hc_par": "Prestataires",
 		"hub_hcp_cs": "Consentement HCP",
 		"hub_hcp_cs_nok": "Consentement HCP pas OK",
@@ -4927,7 +4929,9 @@
 		"present" : "Présent",
 		"not-present" : "Pas présent",
 		"pleaseConfirm": "Veuillez s'il vous plait confirmer",
-		"flatrate-err" : "Données forfait"
+		"flatrate-err" : "Données forfait",
+		"downloadList" : "Télécharger la liste",
+		"downloadListAndFiles" : "Télécharger la liste et les fichiers"
 	},
 	"nl": {
 		"createAccessLog" : "maak een toegangslogboek",
@@ -7391,6 +7395,8 @@
 		"present" : "Aanwezig",
 		"not-present" : "Niet aanwezig",
 		"pleaseConfirm": "Please confirm",
-		"flatrate-err" : "Forfait gegevens"
+		"flatrate-err" : "Forfait gegevens",
+		"downloadList" : "Download list",
+		"downloadListAndFiles" : "Download list & files"
 	}
 }
