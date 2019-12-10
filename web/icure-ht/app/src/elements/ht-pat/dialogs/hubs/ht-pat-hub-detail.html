@@ -25,6 +25,7 @@
 <link rel="import" href="../../../../styles/dialog-style.html">
 <link rel="import" href="../../../../styles/scrollbar-style.html">
 <link rel="import" href="ht-pat-hub-sumehr-preview.html">
+<link rel="import" href="ht-pat-hub-medication-scheme-preview.html">
 <link rel="import" href="ht-pat-hub-transaction-view.html">
 <link rel="import" href="ht-pat-hub-history-viewer.html">
 <link rel="import" href="ht-pat-hub-diary-note.html">
@@ -533,11 +534,13 @@
                         </div>
                     </div>
                 </template>
+                <paper-button on-tap="_openPreviewMedicationScheme"><iron-icon icon="icons:backup" ></iron-icon> [[localize('upload_medicationScheme','Medication Scheme',language)]]</paper-button>
 <!--                <paper-button class="button button&#45;&#45;other" on-tap="_addDiaryNote"><iron-icon icon="vaadin:clipboard-cross" ></iron-icon> [[localize('add_diary_note','Add diary note',language)]]</paper-button>-->
             </div>
         </paper-dialog>
         <ht-pat-hub-diary-note id="htPatHubDiaryNote" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-diary-note>
         <ht-pat-hub-sumehr-preview id="htPatHubSumehrPreview" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-sumehr-preview>
+        <ht-pat-hub-medication-scheme-preview id="htPatHubMedicationSchemePreview" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-medication-scheme-preview>
         <ht-pat-hub-history-viewer id="htPatHubHistoryViewer" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-history-viewer>
         <ht-pat-hub-utils id="htPatHubUtils" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-utils>
     </template>
@@ -978,6 +981,10 @@
 
             _addDiaryNote(){
                 this.$['htPatHubDiaryNote'].open();
+            }
+
+            _openPreviewMedicationScheme(){
+                this.$['htPatHubMedicationSchemePreview'].open(this);
             }
 
             _openPreviewSumehr(){
