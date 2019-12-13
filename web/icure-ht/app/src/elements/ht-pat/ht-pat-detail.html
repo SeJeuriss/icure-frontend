@@ -7131,10 +7131,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _nbMedications(){
-                return this._getActifsMedications().length
+                return this._getActiveMedications().length
             }
 
-            _getActifsMedications(){
+            _getActiveMedications(){
                 const yesterday = moment().subtract(1, 'days')
                 return this.medications.filter(s => s.tags.some(c => c.type === 'CD-ITEM' && c.code === 'medication' && !_.values(s.content).some(c => c && c.medicationValue && c.medicationValue.endMoment && this.api.moment(c.medicationValue.endMoment).isBefore(yesterday))))
             }
