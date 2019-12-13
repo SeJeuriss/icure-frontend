@@ -1264,6 +1264,10 @@
                         type: Array,
                         value: () => []
                     },
+                    allMedications: {
+                        type: Array,
+                        value: () => []
+                    },
                     hcp:{
                         type: Object
                     },
@@ -1400,6 +1404,10 @@
                         type: Array,
                         value: []
                     },
+                    allPrescriptions:{
+                        type: Array,
+                        value: []
+                    },
                     filterHealthElement: {
                         type: String,
                         value: ""
@@ -1432,7 +1440,13 @@
             }
 
             static get observers() {
-                return ['_medicationsChanged(medications.*)', '_patientPlanChanged(medicationClassesWithPosology.*,prescriptionsClassesWithPosology.*)','_prescriptionsChanged(prescriptions.*)','_getPrescrMed(medicationClassesWithPosology.*,prescriptionsClassesWithPosology.*,filterPresentValue,startDatePresent,endDatePresent)']
+                return [
+                    '_medicationsChanged(allMedications.*)',
+                    '_patientPlanChanged(medicationClassesWithPosology.*,' +
+                    'prescriptionsClassesWithPosology.*)',
+                    '_prescriptionsChanged(allPrescriptions.*)',
+                    '_getPrescrMed(medicationClassesWithPosology.*,' +
+                    'prescriptionsClassesWithPosology.*,filterPresentValue,startDatePresent,endDatePresent)']
             }
 
             constructor() {
@@ -1864,6 +1878,7 @@
                         "meds" : _.uniq(_.concat(_.get(med, 'meds', []), _.get(presc, 'meds', []))).filter(med => {
                             const closeDate = this._getMedicationClosingDate(med.medication) ? moment(this._getMedicationClosingDate(med.medication),"DD/MM/YYYY") : false
                             const startDate= this.api.moment(_.get(this.api.contact().medicationValue(med.medication),"beginMoment",parseInt(moment().format("YYYYMMDD"))))
+
                             const betweenDate = (this.startDatePresent && moment(this.startDatePresent)) || (this.endDatePresent && moment(this.endDatePresent)) || false
                             if(betweenDate){
                                 if (this.startDatePresent && moment(this.startDatePresent) && this.endDatePresent && moment(this.endDatePresent))
@@ -1873,6 +1888,7 @@
                             }
                             else
                                 return closeDate ? closeDate.isSameOrAfter(moment()) : true
+
                         }).filter(med => this.filterPresentValue.length > 2 ? this._serviceDescription(med.medication).includes(this.filterPresentValue) : true)
                             .filter(med => this.filterHealthElement ? this._filterHealthElement(med.medication) : true)
                     };
@@ -1882,7 +1898,7 @@
 
             _prescriptionsChanged(){
                 const scores = this.api.contact().medication().regimenScores()
-                this.set('prescriptionsClassesWithPosology',_.sortBy(Object.values(this.prescriptions.filter(prescr => {
+                this.set('prescriptionsClassesWithPosology',_.sortBy(Object.values(this.allPrescriptions.filter(prescr => {
                     const medValue = this.api.contact().medicationValue(prescr)
                     return (medValue && medValue.endMoment || prescr.closingDate) ? this.api.moment(medValue && medValue.endMoment || prescr.closingDate).isSameOrAfter(moment()) : true
                 }).map( p => ({
@@ -1910,7 +1926,7 @@
 
             _medicationsChanged() {
                 const scores = this.api.contact().medication().regimenScores()
-                this.set('medicationClassesWithPosology',_.sortBy(Object.values(this.medications.map( m => ({
+                this.set('medicationClassesWithPosology',_.sortBy(Object.values(this.allMedications.map( m => ({
                     medication:m, regimenTable: this.extractRegimenSlices(((this.api.contact().preferredContent(m, this.language) || {}).medicationValue || {}).regimen, 'daily', [
                         x => x < scores.beforebreakfast,
                         x => x === scores.beforebreakfast,
