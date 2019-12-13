@@ -865,6 +865,11 @@
                 margin-right: 4px;
             }
 
+            .filterHealthElement {
+                padding-top: 5px;
+                padding-left: 4px;
+            }
+
         </style>
 
         <paper-dialog id="medication-plan" always-on-top="true" no-cancel-on-outside-click="true">
@@ -885,6 +890,7 @@
                 <template is="dom-if" if="{{_isEqual(selectedTab,1)}}">
                     <div class="header-content">
                         <paper-input always-float-label id="filter" label="[[localize('search','Search',language)]]" value="{{filterPresentValue}}" autofocus></paper-input>
+                        <vaadin-combo-box id="filterHealthElement" class="filterHealthElement" filtered-items="[[linkables]]" item-label-path="descr" item-value-path="id" label="[[localize('healthElement','healthElement',language)]]" value="{{filterHealthElement}}" on-value-changed="_filterHealthElementChanged"></vaadin-combo-box>
                         <vaadin-date-picker id="startDatePresent" value="{{startDatePresent}}" max="[[endDatePresent]]" label="[[localize('from2', 'Du', language)]]"></vaadin-date-picker>
                         <vaadin-date-picker id="endDatePresent" value="{{endDatePresent}}" min="[[startDatePresent]]" label="[[localize('to2', 'Au', language)]]"></vaadin-date-picker>
                     </div>
@@ -1389,6 +1395,10 @@
                         type: Array,
                         value: []
                     },
+                    filterHealthElement: {
+                        type: String,
+                        value: ""
+                    },
                     filterPresentValue:{
                         type: String,
                         value: ""
@@ -1827,6 +1837,19 @@
                 this._updateLinks(link);
             }
 
+            _filterHealthElementChanged(e) {
+                const filter = this.shadowRoot.querySelector('#filterHealthElement');
+                if (!filter) return;
+                this.filterHealthElement = filter.value;
+                this._getPrescrMed();
+            }
+
+            _filterHealthElement(service) {
+                const link = this.links.find(link => link.service.id === service.id);
+                if (!link) return true;
+                return link.hes.some(he => he.id === this.filterHealthElement);
+            }
+
             _getPrescrMed(){
                 const prescTab =_.sortBy(_.compact(_.get(this,'medicationClassesWithPosology',[]).map(val => !this.prescriptionsClassesWithPosology.find(lowVal => lowVal.letter===val.letter) ? {letter : val.letter, meds:[]} : {}).concat(this.prescriptionsClassesWithPosology)),'letter')
                 const medTab =_.sortBy(_.compact(_.get(this,'prescriptionsClassesWithPosology',[]).map(val => !this.medicationClassesWithPosology.find(lowVal => lowVal.letter===val.letter) ? {letter : val.letter, meds:[]} : {}).concat(this.medicationClassesWithPosology)),'letter')
@@ -1838,17 +1861,15 @@
                             const startDate= this.api.moment(_.get(this.api.contact().medicationValue(med.medication),"beginMoment",parseInt(moment().format("YYYYMMDD"))))
                             const betweenDate = (this.startDatePresent && moment(this.startDatePresent)) || (this.endDatePresent && moment(this.endDatePresent)) || false
                             if(betweenDate){
-                                if(this.startDatePresent && moment(this.startDatePresent) && this.endDatePresent && moment(this.endDatePresent)){
+                                if (this.startDatePresent && moment(this.startDatePresent) && this.endDatePresent && moment(this.endDatePresent))
                                     return (!closeDate || moment(this.startDatePresent).isSameOrBefore(closeDate)) && moment(this.endDatePresent).isSameOrAfter(startDate)
-                                }
-                                else{
+                                else
                                     return (!closeDate && moment(betweenDate).isSameOrAfter(startDate)) || moment(betweenDate).isBetween(startDate,closeDate)
-                                }
                             }
-                            else{
+                            else
                                 return closeDate ? closeDate.isSameOrAfter(moment()) : true
-                            }
-                        }).filter(med => this.filterPresentValue.length>2 ? this._serviceDescription(med.medication).includes(this.filterPresentValue) : true)
+                        }).filter(med => this.filterPresentValue.length > 2 ? this._serviceDescription(med.medication).includes(this.filterPresentValue) : true)
+                            .filter(med => this.filterHealthElement ? this._filterHealthElement(med.medication) : true)
                     };
                 }).filter(zipped => zipped.meds.length)
                 this.set("presentList", list);
