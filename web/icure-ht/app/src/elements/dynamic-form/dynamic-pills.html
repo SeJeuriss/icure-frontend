@@ -9,6 +9,10 @@
 <dom-module id="dynamic-pills">
     <template>
         <style include="icpc-styles">
+            :host {
+                --pill-height: 12px;
+            }
+
             span.he-pill {
                 border-radius: 10px;
                 -webkit-border-radius: 10px;
@@ -22,7 +26,7 @@
                 text-overflow: ellipsis;
                 line-height: 1;
                 margin-right: 4px;
-                height: 12px;
+                height: var(--pill-height, 12px);
                 cursor: pointer;
             }
 
