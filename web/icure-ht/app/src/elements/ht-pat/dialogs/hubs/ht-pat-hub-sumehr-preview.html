@@ -954,7 +954,7 @@
                                     .then(secretForeignKeys =>
                                         this.api.bekmehr().generateSumehrV2ExportWithEncryptionSupport(patientDto.id, this.user.healthcarePartyId, "fr", {
                                             secretForeignKeys: secretForeignKeys.extractedKeys,
-                                            recipient: null,
+                                            recipient: hcp,
                                             comment: this.myComment,
                                             excludedIds : excludedIds
                                         }).then(output =>
@@ -1148,7 +1148,7 @@
                                     .then(secretForeignKeys => {
                                         return this.api.bekmehr().generateSumehrV2ExportWithEncryptionSupport(patientDto.id, this.user.healthcarePartyId, "fr", {
                                             secretForeignKeys: secretForeignKeys.extractedKeys,
-                                            recipient: null,
+                                            recipient: hcp,
                                             comment: this.myComment,
                                             excludedIds : excludedIds
                                         }).then(output => {
