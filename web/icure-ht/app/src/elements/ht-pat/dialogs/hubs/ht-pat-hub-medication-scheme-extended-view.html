@@ -977,7 +977,7 @@
                         <div class="td td-comments span-4" style="flex-grow: 4; justify-content: space-between;">
                             <span class="left">[[localize('com','Comments',language)]]</span>
                         </div>
-                        <div class="td di-aft">local</div>
+                        <div class="td di-aft">Topaz</div>
                         <div class="td di-aft">Hub</div>
                         <div class="td di-aft">Action</div>
                     </div>
@@ -1004,7 +1004,10 @@
                                 </template>
                             </div>
                             <div class="td td--medicine span-5" style="flex-grow: 5;">
-                                <span class="left" title="[[_getMedicationName(medicationsWithPosology)]]">[[_getMedicationName(medicationsWithPosology)]]</span>
+                                <span class="left">
+                                    <iron-icon icon="vaadin:user" class="chronicIcon" title="[[_getResponsibleHcp(medicationsWithPosology.authors)]]"></iron-icon>
+                                    <span title="[[_getMedicationName(medicationsWithPosology)]]">[[_getMedicationName(medicationsWithPosology)]]</span>
+                                </span>
                             </div>
                             <div class="td span-3" style="flex-grow: 3;" title="[[_getPosology(medicationsWithPosology)]] [[_getDayInfo(medicationsWithPosology.regimen.0)]]"><span>[[_getPosology(medicationsWithPosology)]] [[_getDayInfo(medicationsWithPosology.regimen.0)]]</span></div>
                             <template is="dom-repeat" items="" as="regimen">
@@ -1406,6 +1409,14 @@
                             {code: "tsp", label: {fr: "cuillère à café", en: '', nl: ''}},
                             {code: "unt/h", label: {fr: "unités par heure", en: '', nl: ''}}
                         ]
+                    },
+                    medications:{
+                        type: Array,
+                        value: () => []
+                    },
+                    prescriptions:{
+                        type: Array,
+                        value: () => []
                     }
                 }
             }
@@ -1420,6 +1431,7 @@
 
             dataProvider(){
                 console.log(this.medicationScheme)
+                this.transformMedicationAndPrescription()
                 this.set('currentMedicationScheme', this._getMedicationSchemeFromTransactionSet(this.medicationScheme))
             }
 
@@ -1552,6 +1564,12 @@
 
             _medicationClass(m) {
                 return (m.idKmehr%2 == 0) ? 'even' : 'odd'
+            }
+
+
+            transformMedicationAndPrescription(){
+                console.log(this.medications)
+                console.log(this.prescriptions)
             }
 
             //create easy medicationscheme object
@@ -1725,6 +1743,10 @@
                     }
                 })
 
+            }
+
+            _getResponsibleHcp(authors){
+                return !_.isEmpty(authors.find(aut => _.get(aut, "cds", []).find(cd => _.get(cd, "value", null) === "persphysician"))) ? _.get(authors.find(aut => _.get(aut, "cds", []).find(cd => _.get(cd, "value", null) === "persphysician")), 'firstname', null)+" "+_.get(authors.find(aut => _.get(aut, "cds", []).find(cd => _.get(cd, "value", null) === "persphysician")), 'familyname', null) : _.get(_.last(authors), 'firstname', null)+" "+_.get(_.last(authors), 'familyname', null) || _.get(_.last(authors), 'name', null)
             }
 
         }
