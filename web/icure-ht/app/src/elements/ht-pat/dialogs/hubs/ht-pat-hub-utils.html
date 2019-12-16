@@ -118,6 +118,7 @@
                 const hubConfig = {};
                 switch (hub) {
                     case 'rsb':
+                        hubConfig.name = "RSB";
                         hubConfig.hubId = 1990000728;
                         hubConfig.hubEndPoint = environment ===  'acc' ? 'https://acchub.abrumet.be/hubservices/intrahub/v3/intrahub.asmx' : 'https://hub.abrumet.be/hubservices/intrahub/v3/intrahub.asmx';
                         hubConfig.hubSupportsConsent = true;
@@ -126,6 +127,7 @@
                         hubConfig.supportBreakTheGlass = false;
                         break;
                     case 'rsw':
+                        hubConfig.name = "RSW";
                         hubConfig.hubId = 1990000035;
                         hubConfig.hubEndPoint = environment === 'acc' ? 'https://acchub.reseausantewallon.be/HubServices/IntraHub/V3/IntraHub.asmx' : 'https://hub.reseausantewallon.be/HubServices/IntraHub/V3/IntraHub.asmx';
                         hubConfig.hubSupportsConsent = true;
@@ -134,6 +136,7 @@
                         hubConfig.supportBreakTheGlass =  false;
                         break;
                     case 'cozo':
+                        hubConfig.name = "COZO";
                         hubConfig.hubId = 1990000134;
                         hubConfig.hubEndPoint = environment === 'acc' ? 'https://servicestest.cozo.be/IntrahubServiceTest/servicev3.asmx' : 'https://services.cozo.be/IntrahubService/servicev3.asmx';
                         hubConfig.hubSupportsConsent = false;
@@ -142,6 +145,7 @@
                         hubConfig.supportBreakTheGlass = false;
                         break;
                     case 'vitalink':
+                        hubConfig.name = "VITALINK";
                         hubConfig.hubId = 1990001916;
                         hubConfig.hubEndPoint = environment === 'acc' ? 'https://vitalink-acpt.ehealth.fgov.be/vpmg/vitalink-gateway/IntraHubService' : 'https://vitalink.ehealth.fgov.be/vpmg/vitalink-gateway/IntraHubService';
                         hubConfig.hubSupportsConsent = false;
@@ -177,7 +181,10 @@
                 //3. Get putTransactionSet Response (FHC)
                 //4. handle error messages
                 //5. update services using the putTransactionSet Response
-                return this.checkMedicationServices(services).then(svcs => this.generateMedicationScheme(svcs)).then(msMessage => this.putTransactionSet(msMessage)).then(putResponse => this.handleResponse(putResponse, services))
+                return this.checkMedicationServices(services)
+                    .then(svcs => this.generateMedicationScheme(svcs, hubConfig, version))
+                    .then(msMessage => this.putTransactionSet(msMessage, hubConfig))
+                    .then(putResponse => this.handleResponse(putResponse, services))
             }
 
             checkMedicationServices(services){
@@ -185,19 +192,47 @@
                 return Promise.resolve(services);
             }
 
-            generateMedicationScheme(services){
-                //TODO: implement
-                return Promise.resolve({});
+            generateMedicationScheme(services, hubConfig, version){
+                return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
+                    this.api.patient().getPatientWithUser(this.user,this.patient.id)
+                        .then(patientDto =>
+                            this.api.crypto()
+                                .extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
+                                .then(secretForeignKeys =>
+                                    this.api.bekmehr().generateMedicationSchemeWithEncryptionSupport(patientDto.id, this.user.healthcarePartyId, this.language, {
+                                        secretForeignKeys: secretForeignKeys.extractedKeys,
+                                        recipient: hcp,
+                                        services : services,
+                                        comment: "medicationscheme",
+                                        recipientSafe: hubConfig.name,
+                                        version: version
+                                    }).then(output => output.text()).catch( error=> Promise.resolve({message:"error on generate", error: error}))
+                                )))
             }
 
-            putTransactionSet(msMessage){
-                //TODO: implement
-                return Promise.resolve({});
+            putTransactionSet(tsXML, hubConfig){
+                const myblob = new Blob([tsXML]);
+                return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                    .then(hcp => this.api.fhc().Hubcontroller().putTransactionSetUsingPOST(hubConfig.hubEndPoint,
+                        this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
+                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
+                        hubConfig.hubId,
+                        this.patient.ssin,
+                        myblob,
+                        hubConfig.hubPackageId, hubConfig.hubApplication
+                        )
+                    )
+                )
             }
 
             handleResponse(putResponse, services){
                 //TODO: implement
-                hasError(putResponse) ? Promise.resolve({error:""}): Promise.resolve(this.mergeResponse(putResponse, services));
+                this.hasError(putResponse) ? Promise.resolve({error:"has an error", response:putResponse}): Promise.resolve(this.mergeResponse(putResponse, services));
+            }
+
+            hasError(putResponse){
+                //TODO: implement
+                return false;
             }
 
             mergeResponse(putResponse, services){
