@@ -223,12 +223,14 @@
             }
 
             handleResponse(putResponse, services, hubConfig){
-                this.hasError(putResponse) ? Promise.resolve({error:"has an error", response:putResponse}): Promise.resolve(this.mergeResponse(putResponse, services, hubConfig));
+                return this.hasError(putResponse) ? Promise.resolve({error:"has an error", response:putResponse}): Promise.resolve(this.mergeResponse(putResponse, services, hubConfig));
             }
 
             hasError(putResponse){
                 //TODO: implement
-                return false;
+                const ack = putResponse.acknowledge;
+                if(!ack.isComplete) console.log("response with error", putResponse);
+                return !ack.isComplete;
             }
 
             // private String medicationSchemeIdOnSafe;
