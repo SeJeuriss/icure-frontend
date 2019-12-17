@@ -460,7 +460,9 @@
                 <paper-button class="button" on-tap="_closeDialogs">[[localize('clo','Close',language)]]</paper-button>
                 <paper-button class="button button--save" on-tap="_generateMedicationScheme" disabled="[[isLoading]]"><iron-icon icon="icons:cloud-download"></iron-icon> [[localize('export_medicationscheme','Export MedicationScheme',language)]]</paper-button>
 
-                <paper-button class="button button--save" on-tap="_runImportMedicationScheme" disabled="[[isLoading]]"><iron-icon icon="icons:cloud-download"></iron-icon> [[localize('import_medicationscheme','Import MedicationScheme',language)]]</paper-button>
+                <paper-button class="button button--save" on-tap="_generateAndPutMedicationScheme" disabled="[[isLoading]]"><iron-icon icon="icons:cloud-download"></iron-icon> [[localize('update_medicationscheme','Update MedicationScheme',language)]]</paper-button>
+
+<!--                <paper-button class="button button&#45;&#45;save" on-tap="_runImportMedicationScheme" disabled="[[isLoading]]"><iron-icon icon="icons:cloud-download"></iron-icon> [[localize('import_medicationscheme','Import MedicationScheme',language)]]</paper-button>-->
 
                 <paper-button class="button button--save" on-tap="_openCommentDialogTest" disabled="[[isLoading]]"><iron-icon icon="icons:cloud-download"></iron-icon> [[localize('export_sumehr','Export Sumehr',language)]]</paper-button>
                 <template is="dom-if" if="[[_allowUpload(hubSumehrReady, noHubUpload)]]">
@@ -646,6 +648,10 @@
                     hubXml:{
                         type: String,
                         value: null
+                    },
+                    hubConfig:{
+                        type: Object,
+                        value: null
                     }
                 };
             }
@@ -753,6 +759,7 @@
                 this.set('patientHubInfo', null);
                 this.set('breakTheGlassReason', null);
 
+                this.hubConfig = hubConfig ;
                 this.hubId = hubConfig.hubId;
                 this.hubEndPoint = hubConfig.hubEndPoint;
                 this.set("hubSupportsConsent", hubConfig.hubSupportsConsent);
@@ -1032,6 +1039,21 @@
                 }
             }
 
+            _generateAndPutMedicationScheme(){
+                //TODO: testvalues:
+                const version = 1;
+                //TODO: get the services
+                if (this.patient) {
+                    //this.hubConfig
+                    this._getMedicationServices().then(services => this.$["htPatHubUtils"].putMedicationScheme(this.hubConfig, services, version)).then(svcs => console.log("services after processing", svcs));
+                }
+            }
+
+            _getMedicationServices(){
+                return Promise.resolve([]);
+            }
+
+
             _generateMedicationScheme(){
                 if (this.patient) {
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
@@ -1077,54 +1099,6 @@
                                             }).catch( error=> console.log(error))
                                         }
                                     )))
-                }
-            }
-
-            _generateSumehrV2(){
-                if (this.patient) {
-                    const excludedIds = this._getItemsToExclude();
-                    this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
-                        this.api.patient().getPatientWithUser(this.user,this.patient.id)
-                            .then(patientDto =>
-                                this.api.crypto()
-                                    .extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
-                                    .then(secretForeignKeys => {
-                                        return this.api.bekmehr().generateSumehrV2ExportWithEncryptionSupport(patientDto.id, this.user.healthcarePartyId, "fr", {
-                                            secretForeignKeys: secretForeignKeys.extractedKeys,
-                                            recipient: hcp,
-                                            comment: this.myComment,
-                                            excludedIds : excludedIds
-                                        }).then(output => {
-                                            let reader = new FileReader();
-                                            const myself = this;
-                                            reader.onload = function() {
-                                                // console.log("sumehr = ", reader.result);
-                                            }
-                                            reader.readAsText(output);
-
-
-                                            //creation of the xml file
-                                            let file = typeof output === "string" ? new Blob([output] ,{type: "application/xml"}) : output
-
-                                            //creation the downloading link
-                                            let a = document.createElement("a");
-                                            document.body.appendChild(a);
-                                            a.style = "display: none";
-
-                                            //download the new file
-                                            let url = window.URL.createObjectURL(file);
-                                            a.href = url;
-                                            a.download = (patientDto.lastName || "Doe").replace(" ","_") + "_" + (patientDto.firstName || "John").replace(" ","_") + "_" + (moment().format("x"))+"_sumehr.xml";
-                                            a.click();
-                                            window.URL.revokeObjectURL(url);
-
-                                            document.body.removeChild(a);
-
-                                            if(this.$['commentDialog']) this.$['commentDialog'].close();
-                                            this.$["medicationSchemePreviewDialog"].close();
-                                        }).catch( error=> console.log(error))
-                                    })
-                            ))
                 }
             }
 
