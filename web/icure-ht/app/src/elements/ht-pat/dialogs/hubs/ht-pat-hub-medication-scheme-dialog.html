@@ -82,7 +82,7 @@
                     <ht-spinner active="[[isLoading]]"></ht-spinner>
                 </div>
                 <div class="ms-content">
-                    <ht-pat-hub-medication-scheme-extended-view class="p4" id="htPatHubMedicationSchemeExtendedView" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" resources="[[resources]]" medication-scheme="[[medicationScheme]]" medications="[[medications]]" prescriptions="[[prescriptions]]"></ht-pat-hub-medication-scheme-extended-view>
+                    <ht-pat-hub-medication-scheme-extended-view class="p4" id="htPatHubMedicationSchemeExtendedView" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" resources="[[resources]]" medication-scheme="[[medicationScheme]]" medications="[[medications]]" prescriptions="[[prescriptions]]" contacts="[[contacts]]"></ht-pat-hub-medication-scheme-extended-view>
                 </div>
                   </div>
             <div class="buttons">
@@ -161,6 +161,10 @@
                         value: () => []
                     },
                     prescriptions:{
+                        type: Array,
+                        value: () => []
+                    },
+                    contacts: {
                         type: Array,
                         value: () => []
                     }

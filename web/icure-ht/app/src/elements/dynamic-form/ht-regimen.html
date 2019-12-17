@@ -152,9 +152,6 @@
                         type: Object,
                         value: () => {}
                     },
-                    unit: {
-                        type: String
-                    },
                     quantityFactor: {
                         type: Object,
                         notify: true,
@@ -172,7 +169,6 @@
 
             constructor() {
                 super();
-                this.unit = this.localize("uni", "Unités");
             }
 
             ready() {

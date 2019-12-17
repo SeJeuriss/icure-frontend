@@ -1417,6 +1417,10 @@
                     prescriptions:{
                         type: Array,
                         value: () => []
+                    },
+                    contacts: {
+                        type: Array,
+                        value: () => []
                     }
                 }
             }
@@ -1710,12 +1714,104 @@
                 return _.uniq(_.flatMap(_.get(simplifiedMs, 'msElems', []), msElem =>_.flatMap( _.get(msElem, 'regimen', []), reg=>_.flatMap(reg, ritm => _.get(ritm, 'dayTime', null)))).filter(it => !isNaN(it))).sort()
             }
 
+            _createMedication(data) {
+                const medicationContent = {medicationValue: {regimen: [], substitutionAllowed: true}, stringValue: data.medicationHubId};
+                const medication = {
+                    content: _.fromPairs([[this.language, medicationContent]]),
+                    codes: [],
+                    tags: []
+                };
+
+                const medicationValue = medicationContent.medicationValue;
+
+                data.regimen && data.regimen.length && data.regimen.forEach(subReg => subReg && subReg.length && subReg.forEach(dataReg => {
+                    medicationValue.regimen.push({
+                        administratedQuantity: {
+                            quantity: dataReg.quantity,
+                            administrationUnit: this.api.code().normalize(`CD-ADMINISTRATIONUNIT|${dataReg.administrationUnit}|1`)
+                        },
+                        dayPeriod: this.api.code().normalize(`CD-DAYPERIOD|${dataReg.dayTime.toLowerCase()}|1`)
+                    });
+                }));
+
+                const isMedication = !data.endmoment;
+
+                if (data.compoundPrescription) {
+                    medicationValue.compoundPrescription = data.compoundPrescription;
+                } else {
+                    const dataProduct = _.get(data, "medicinalproduct", _.get(data, "substanceproduct"));
+                    if (!dataProduct) return null;
+
+                    const code = _.get(dataProduct, "intendedcds", []).find(cd => cd.s === "CD_VMPGROUP" || cd.s === "CD_INNCLUSTER" || cd.s === "CD_DRUG_CNK");
+                    const drugType = (code.s === "CD_VMPGROUP") ? "CD-VMPGROUP" :
+                        (code.s === "CD_INNCLUSTER") ? "CD-INNCLUSTER" :
+                            (code.s === "CD_DRUG_CNK") ? "CD-DRUG-CNK" :
+                                "compoundPrescription";
+
+                    const product = {
+                        intendedname: dataProduct.intendedname,
+                        intendedcds: [{type: drugType, code: code.value}]
+                    };
+
+                    medication.codes.push(this.api.code().normalize(data.endmoment ? "CD-ITEM|medication|1" : "ICURE|PRESC|1"));
+                    medication.tags.push(this.api.code().normalize(`${drugType}|${code.value}|1`));
+
+                    Object.assign(medicationValue, data.medicinalproduct ? {medicinalproduct: product} : {substanceproduct: product});
+                    Object.assign(medicationValue, {
+                        instructionsForPatient: _.get(data, "posology.text.value", ""),
+                        beginMoment: moment(data.beginmoment, 'DD/MM/YYYY', true).format('YYYYMMDD')
+                    });
+                    if (data.endmoment) {
+                        Object.assign(medicationContent.medicationValue, {endMoment: moment(data.endmoment, 'DD/MM/YYYY', true).format('YYYYMMDD')});
+                    }
+                }
+
+                const contactDate = parseInt(moment(data.beginmoment, 'DD/MM/YYYY', true).format("YYYYMMDDHHmmss"));
+                medication.label = data.endmoment ? "Prescription": "Medication";
+                medication.id = this.api.crypto().randomUuid();
+                const service = this.api.contact().service().newInstance(this.user, medication);
+
+                //@todo: check if that service already exists
+                const createdContact = this.contacts.find(ctc => ctc.services.some(svc => {
+                    const medicationValue = this.api.contact().medicationValue(svc, this.language);
+                    return medicationValue && medicationValue.stringValue === data.medicationHubId;
+                }));
+
+                if (createdContact) {
+                    // @todo
+                    // this.api.contact().modifyContact(createdContact)
+                } else {
+                    const contact = this.api.contact().newInstance(this.user, this.patient, {
+                        openingDate: contactDate,
+                        closingDate: contactDate,
+                        author: this.user.id,
+                        responsible: this.user.healthcarePartyId,
+                        subContacts: []
+                    });
+                    (contact.services || (contact.services = [])).push(service);
+                    this.api.contact().createContactWithUser(this.user, contact)
+                        .then(contact => this.api.register(contact, "contact"));
+                }
+            }
+
+
             _synchronizeItemToLocal(e){
                 e.stopPropagation()
                 if(_.get(e, 'currentTarget.dataItem', null)){
-                    let info  =_.get(_.get(this, 'currentMedicationScheme.msElems', []).find(el => _.get(el, 'uniqId', null) === _.get(e, 'currentTarget.dataItem.uniqId', null)), 'synchronizationInfo', null)
-                    _.get(info, 'hubToLocal', false) ? info.hubToLocal = false : info.hubToLocal = true
+                    let data = _.get(this, 'currentMedicationScheme.msElems', []).find(el => _.get(el, 'uniqId', null) === _.get(e, 'currentTarget.dataItem.uniqId', null));
+                    let info  =_.get(data, 'synchronizationInfo', null)
+                    _.get(info, 'hubToLocal', false) ? info.hubToLocal = false : info.hubToLocal = true;
+
+                    const medication = this._createMedication(data);
+
                 }
+
+                // const newMedication = _.cloneDeep(m.newMedication);
+                // ((newMedication.tags || (newMedication.tags = [])).find(tag => tag.type === "CD-ITEM") || (newMedication.tags[newMedication.tags.length] = {type: "CD-ITEM", version: "1"})).code = "medication";
+                // newMedication.label = this.localize('medication', 'medication', this.language);
+                // newMedication.id = this.api.crypto().randomUuid();
+                // return this.saveNewService(this.api.contact().service().newInstance(this.user, newMedication));
+
             }
 
             _synchronizeItemToHub(e){

@@ -1,0 +1,1332 @@
+[
+  {
+    "samCode": "274",
+    "eHealthCode": "00006",
+    "label": "Poudre pour suspension intravésicale"
+  },
+  {
+    "samCode": "736",
+    "eHealthCode": "00006",
+    "label": "Solution injectable à libération prolongée"
+  },
+  {
+    "samCode": "700",
+    "eHealthCode": "00006",
+    "label": "Instillation d'une solution intraoculaire"
+  },
+  {
+    "samCode": "622",
+    "eHealthCode": "00006",
+    "label": "Solution à diluer pour solution pour irrigation intraoculaire"
+  },
+  {
+    "samCode": "605",
+    "eHealthCode": "00006",
+    "label": "Solution pour pulvérisation sublinguale"
+  },
+  {
+    "samCode": "598",
+    "eHealthCode": "00006",
+    "label": "Poudre pour colle"
+  },
+  {
+    "samCode": "594",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour solution pour nébulisation"
+  },
+  {
+    "samCode": "523",
+    "eHealthCode": "00006",
+    "label": "Matrice pour colle"
+  },
+  {
+    "samCode": "517",
+    "eHealthCode": "00006",
+    "label": "Gaz médicinal liquéfié"
+  },
+  {
+    "samCode": "22",
+    "eHealthCode": "00006",
+    "label": "Solution à diluer pour solution cutanée"
+  },
+  {
+    "samCode": "28",
+    "eHealthCode": "00006",
+    "label": "Solution à diluer pour solution buvable"
+  },
+  {
+    "samCode": "512",
+    "eHealthCode": "00006",
+    "label": "Gaz médicinal cryogénique"
+  },
+  {
+    "samCode": "33",
+    "eHealthCode": "00006",
+    "label": "Solution à diluer injectable"
+  },
+  {
+    "samCode": "511",
+    "eHealthCode": "00006",
+    "label": "Solution pour pulvérisation transdermique"
+  },
+  {
+    "samCode": "505",
+    "eHealthCode": "00006",
+    "label": "Suspension injectable en seringue préremplie"
+  },
+  {
+    "samCode": "504",
+    "eHealthCode": "00006",
+    "label": "Solution injectable en seringue préremplie"
+  },
+  {
+    "samCode": "491",
+    "eHealthCode": "00006",
+    "label": "Solution pour prick-test"
+  },
+  {
+    "samCode": "489",
+    "eHealthCode": "00006",
+    "label": "Solution de précurseur radiopharmaceutique"
+  },
+  {
+    "samCode": "480",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour suspension injectable en seringue préremplie"
+  },
+  {
+    "samCode": "471",
+    "eHealthCode": "00006",
+    "label": "Poudre et gel pour gel"
+  },
+  {
+    "samCode": "469",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour solution injectable en seringue pré-remplie"
+  },
+  {
+    "samCode": "468",
+    "eHealthCode": "00006",
+    "label": "Poudre et suspension pour suspension injectable"
+  },
+  {
+    "samCode": "467",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour dispersion injectable"
+  },
+  {
+    "samCode": "464",
+    "eHealthCode": "00006",
+    "label": "Solution buccale/laryngopharyngée"
+  },
+  {
+    "samCode": "57",
+    "eHealthCode": "00006",
+    "label": "Solution dentaire"
+  },
+  {
+    "samCode": "460",
+    "eHealthCode": "00006",
+    "label": "Solution pour pulvérisation buccale"
+  },
+  {
+    "samCode": "459",
+    "eHealthCode": "00006",
+    "label": "Emulsion pour pulvérisation buccale"
+  },
+  {
+    "samCode": "442",
+    "eHealthCode": "00006",
+    "label": "Granulés gastro-résistants à libération prolongée"
+  },
+  {
+    "samCode": "432",
+    "eHealthCode": "00006",
+    "label": "Système transdermique"
+  },
+  {
+    "samCode": "83",
+    "eHealthCode": "00006",
+    "label": "Granulés effervescents"
+  },
+  {
+    "samCode": "84",
+    "eHealthCode": "00006",
+    "label": "Poudre effervescente"
+  },
+  {
+    "samCode": "427",
+    "eHealthCode": "00006",
+    "label": "Gaz médicinal comprimé"
+  },
+  {
+    "samCode": "426",
+    "eHealthCode": "00006",
+    "label": "Film buccogingival"
+  },
+  {
+    "samCode": "88",
+    "eHealthCode": "00006",
+    "label": "Emulsion injectable"
+  },
+  {
+    "samCode": "425",
+    "eHealthCode": "00006",
+    "label": "Suspension injectable à libération prolongée"
+  },
+  {
+    "samCode": "422",
+    "eHealthCode": "00006",
+    "label": "Film orodispersible"
+  },
+  {
+    "samCode": "92",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour solution pour instillation endotrachéobronchique"
+  },
+  {
+    "samCode": "95",
+    "eHealthCode": "00006",
+    "label": "Suspension pour instillation endotrachéobronchique"
+  },
+  {
+    "samCode": "413",
+    "eHealthCode": "00006",
+    "label": "Dispositif cutané"
+  },
+  {
+    "samCode": "409",
+    "eHealthCode": "00006",
+    "label": "Solution pour colle"
+  },
+  {
+    "samCode": "405",
+    "eHealthCode": "00006",
+    "label": "Poudre pour suspension implantable"
+  },
+  {
+    "samCode": "402",
+    "eHealthCode": "00006",
+    "label": "Emulsion et suspension pour émulsion injectable"
+  },
+  {
+    "samCode": "398",
+    "eHealthCode": "00006",
+    "label": "Poudre pour suspension oral/rectal"
+  },
+  {
+    "samCode": "397",
+    "eHealthCode": "00006",
+    "label": "Solution pour circuit extracorporel"
+  },
+  {
+    "samCode": "387",
+    "eHealthCode": "00006",
+    "label": "Solution buvable/rectale"
+  },
+  {
+    "samCode": "376",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour solution intravésicale"
+  },
+  {
+    "samCode": "368",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour suspension intravésicale"
+  },
+  {
+    "samCode": "361",
+    "eHealthCode": "00006",
+    "label": "Solution sublinguale"
+  },
+  {
+    "samCode": "358",
+    "eHealthCode": "00006",
+    "label": "Solution pour hémodialyse/hémofiltration"
+  },
+  {
+    "samCode": "354",
+    "eHealthCode": "00006",
+    "label": "Solution intravésicale/injectable"
+  },
+  {
+    "samCode": "120",
+    "eHealthCode": "00006",
+    "label": "Granulés gastro-résistants"
+  },
+  {
+    "samCode": "121",
+    "eHealthCode": "00006",
+    "label": "Granulés gastrorésistants pour suspension buvable"
+  },
+  {
+    "samCode": "347",
+    "eHealthCode": "00006",
+    "label": "Solution vaginale"
+  },
+  {
+    "samCode": "342",
+    "eHealthCode": "00006",
+    "label": "Système de diffusion vaginal"
+  },
+  {
+    "samCode": "338",
+    "eHealthCode": "00006",
+    "label": "Bâton pour usage urétral"
+  },
+  {
+    "samCode": "128",
+    "eHealthCode": "00006",
+    "label": "Solution gingivale"
+  },
+  {
+    "samCode": "129",
+    "eHealthCode": "00006",
+    "label": "Granulés"
+  },
+  {
+    "samCode": "130",
+    "eHealthCode": "00006",
+    "label": "Granulés et solvant pour suspension buvable"
+  },
+  {
+    "samCode": "133",
+    "eHealthCode": "00006",
+    "label": "Granulés pour solution buvable"
+  },
+  {
+    "samCode": "134",
+    "eHealthCode": "00006",
+    "label": "Granulés pour suspension buvable"
+  },
+  {
+    "samCode": "136",
+    "eHealthCode": "00006",
+    "label": "Plante(s) pour tisane"
+  },
+  {
+    "samCode": "336",
+    "eHealthCode": "00006",
+    "label": "Dispositif transdermique"
+  },
+  {
+    "samCode": "322",
+    "eHealthCode": "00006",
+    "label": "Sirop"
+  },
+  {
+    "samCode": "321",
+    "eHealthCode": "00006",
+    "label": "Suspension injectable"
+  },
+  {
+    "samCode": "319",
+    "eHealthCode": "00006",
+    "label": "Suspension et granules effervescents pour suspension buvable"
+  },
+  {
+    "samCode": "311",
+    "eHealthCode": "00006",
+    "label": "Solvant pour préparation parentérale"
+  },
+  {
+    "samCode": "310",
+    "eHealthCode": "00006",
+    "label": "Solution pour dialyse péritonéale"
+  },
+  {
+    "samCode": "309",
+    "eHealthCode": "00006",
+    "label": "Solution pour conservation d'organe"
+  },
+  {
+    "samCode": "307",
+    "eHealthCode": "00006",
+    "label": "Solution intravésicale"
+  },
+  {
+    "samCode": "306",
+    "eHealthCode": "00006",
+    "label": "Solution injectable"
+  },
+  {
+    "samCode": "303",
+    "eHealthCode": "00006",
+    "label": "Solution pour hémofiltration"
+  },
+  {
+    "samCode": "162",
+    "eHealthCode": "00006",
+    "label": "Système de diffusion intra-utérin"
+  },
+  {
+    "samCode": "167",
+    "eHealthCode": "00006",
+    "label": "Solution pour irrigation"
+  },
+  {
+    "samCode": "168",
+    "eHealthCode": "00006",
+    "label": "Trousse pour préparation radiopharmaceutique"
+  },
+  {
+    "samCode": "171",
+    "eHealthCode": "00006",
+    "label": "Equivalent tissulaire vivant"
+  },
+  {
+    "samCode": "295",
+    "eHealthCode": "00006",
+    "label": "Suspension rectale"
+  },
+  {
+    "samCode": "174",
+    "eHealthCode": "00006",
+    "label": "Lyophilisat pour solution injectable"
+  },
+  {
+    "samCode": "294",
+    "eHealthCode": "00006",
+    "label": "Solution rectale"
+  },
+  {
+    "samCode": "287",
+    "eHealthCode": "00006",
+    "label": "Précurseur radiopharmaceutique"
+  },
+  {
+    "samCode": "286",
+    "eHealthCode": "00006",
+    "label": "Générateur radiopharmaceutique"
+  },
+  {
+    "samCode": "283",
+    "eHealthCode": "00006",
+    "label": "Granulés à libération prolongée"
+  },
+  {
+    "samCode": "275",
+    "eHealthCode": "00006",
+    "label": "Poudre pour sirop"
+  },
+  {
+    "samCode": "191",
+    "eHealthCode": "00006",
+    "label": "Solution pour bain de bouche"
+  },
+  {
+    "samCode": "273",
+    "eHealthCode": "00006",
+    "label": "Poudre pour suspension injectable"
+  },
+  {
+    "samCode": "270",
+    "eHealthCode": "00006",
+    "label": "Poudre pour solution intravésicale"
+  },
+  {
+    "samCode": "269",
+    "eHealthCode": "00006",
+    "label": "Poudre pour solution injectable"
+  },
+  {
+    "samCode": "267",
+    "eHealthCode": "00006",
+    "label": "Poudre pour suspension rectale"
+  },
+  {
+    "samCode": "265",
+    "eHealthCode": "00006",
+    "label": "Poudre pour suspension buvable"
+  },
+  {
+    "samCode": "203",
+    "eHealthCode": "00006",
+    "label": "Solution pour pulvérisation nasale"
+  },
+  {
+    "samCode": "204",
+    "eHealthCode": "00006",
+    "label": "Solution pour pulvérisation nasale/solution buccale"
+  },
+  {
+    "samCode": "205",
+    "eHealthCode": "00006",
+    "label": "Suspension pour pulvérisation nasale"
+  },
+  {
+    "samCode": "208",
+    "eHealthCode": "00006",
+    "label": "Solution pour nébulisation"
+  },
+  {
+    "samCode": "264",
+    "eHealthCode": "00006",
+    "label": "Poudre pour solution buvable"
+  },
+  {
+    "samCode": "257",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour suspension injectable"
+  },
+  {
+    "samCode": "256",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour solution injectable"
+  },
+  {
+    "samCode": "253",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour suspension injectable à libération prolongée"
+  },
+  {
+    "samCode": "252",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour suspension buvable"
+  },
+  {
+    "samCode": "251",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour solution buvable"
+  },
+  {
+    "samCode": "246",
+    "eHealthCode": "00006",
+    "label": "Poudre et solvant pour solution cutanée"
+  },
+  {
+    "samCode": "239",
+    "eHealthCode": "00006",
+    "label": "Granules"
+  },
+  {
+    "samCode": "220",
+    "eHealthCode": "00006",
+    "label": "Liquide oral"
+  },
+  {
+    "samCode": "221",
+    "eHealthCode": "00006",
+    "label": "Lyophilisat oral"
+  },
+  {
+    "samCode": "231",
+    "eHealthCode": "00006",
+    "label": "Solution buccale"
+  },
+  {
+    "samCode": "223",
+    "eHealthCode": "00006",
+    "label": "Poudre orale"
+  },
+  {
+    "samCode": "224",
+    "eHealthCode": "00006",
+    "label": "Solution buvable"
+  },
+  {
+    "samCode": "225",
+    "eHealthCode": "00006",
+    "label": "Suspension buvable"
+  },
+  {
+    "samCode": "291",
+    "eHealthCode": "00003",
+    "label": "Mousse rectale"
+  },
+  {
+    "samCode": "178",
+    "eHealthCode": "00003",
+    "label": "Vernis à ongles médicamenteux"
+  },
+  {
+    "samCode": "235",
+    "eHealthCode": "00003",
+    "label": "Gel périodontal"
+  },
+  {
+    "samCode": "623",
+    "eHealthCode": "00003",
+    "label": "Solution pour application cutanée/solution buccale à diluer"
+  },
+  {
+    "samCode": "218",
+    "eHealthCode": "00003",
+    "label": "Gel oral"
+  },
+  {
+    "samCode": "584",
+    "eHealthCode": "00003",
+    "label": "Poudre et solvant pour suspension pour application cutanée"
+  },
+  {
+    "samCode": "212",
+    "eHealthCode": "00003",
+    "label": "Pommade"
+  },
+  {
+    "samCode": "519",
+    "eHealthCode": "00003",
+    "label": "Gel, poudre et solvant pour gel"
+  },
+  {
+    "samCode": "38",
+    "eHealthCode": "00003",
+    "label": "Crème"
+  },
+  {
+    "samCode": "510",
+    "eHealthCode": "00003",
+    "label": "Gel transdermique"
+  },
+  {
+    "samCode": "40",
+    "eHealthCode": "00003",
+    "label": "Emulsion cutanée"
+  },
+  {
+    "samCode": "201",
+    "eHealthCode": "00003",
+    "label": "Poudre nasale"
+  },
+  {
+    "samCode": "200",
+    "eHealthCode": "00003",
+    "label": "Pommade nasale"
+  },
+  {
+    "samCode": "41",
+    "eHealthCode": "00003",
+    "label": "Mousse cutanée"
+  },
+  {
+    "samCode": "199",
+    "eHealthCode": "00003",
+    "label": "Gel nasal"
+  },
+  {
+    "samCode": "43",
+    "eHealthCode": "00003",
+    "label": "Pâte pour application cutanée"
+  },
+  {
+    "samCode": "44",
+    "eHealthCode": "00003",
+    "label": "Poudre pour application cutanée"
+  },
+  {
+    "samCode": "45",
+    "eHealthCode": "00003",
+    "label": "Solution pour application cutanée"
+  },
+  {
+    "samCode": "48",
+    "eHealthCode": "00003",
+    "label": "Poudre pour pulvérisation cutanée"
+  },
+  {
+    "samCode": "181",
+    "eHealthCode": "00003",
+    "label": "Emplâtre médicamenteux"
+  },
+  {
+    "samCode": "230",
+    "eHealthCode": "00003",
+    "label": "Pâte buccale"
+  },
+  {
+    "samCode": "289",
+    "eHealthCode": "00003",
+    "label": "Crème rectale"
+  },
+  {
+    "samCode": "222",
+    "eHealthCode": "00003",
+    "label": "Pâte orale"
+  },
+  {
+    "samCode": "292",
+    "eHealthCode": "00003",
+    "label": "Gel rectal"
+  },
+  {
+    "samCode": "293",
+    "eHealthCode": "00003",
+    "label": "Pommade rectale"
+  },
+  {
+    "samCode": "49",
+    "eHealthCode": "00003",
+    "label": "Solution pour pulvérisation cutanée"
+  },
+  {
+    "samCode": "51",
+    "eHealthCode": "00003",
+    "label": "Bâton pour application cutanée"
+  },
+  {
+    "samCode": "298",
+    "eHealthCode": "00003",
+    "label": "Shampoing"
+  },
+  {
+    "samCode": "52",
+    "eHealthCode": "00003",
+    "label": "Suspension pour application cutanée"
+  },
+  {
+    "samCode": "54",
+    "eHealthCode": "00003",
+    "label": "Gel dentaire"
+  },
+  {
+    "samCode": "90",
+    "eHealthCode": "00003",
+    "label": "Gel endocervical"
+  },
+  {
+    "samCode": "96",
+    "eHealthCode": "00003",
+    "label": "Crème ophtalmique"
+  },
+  {
+    "samCode": "229",
+    "eHealthCode": "00003",
+    "label": "Gel buccal"
+  },
+  {
+    "samCode": "384",
+    "eHealthCode": "00003",
+    "label": "Pommade auriculaire/ophtalmique"
+  },
+  {
+    "samCode": "377",
+    "eHealthCode": "00003",
+    "label": "Gel intestinal"
+  },
+  {
+    "samCode": "105",
+    "eHealthCode": "00003",
+    "label": "Gel ophtalmique"
+  },
+  {
+    "samCode": "335",
+    "eHealthCode": "00003",
+    "label": "Pâte dentifrice"
+  },
+  {
+    "samCode": "108",
+    "eHealthCode": "00003",
+    "label": "Pommade ophtalmique"
+  },
+  {
+    "samCode": "337",
+    "eHealthCode": "00003",
+    "label": "Gel urétral"
+  },
+  {
+    "samCode": "126",
+    "eHealthCode": "00003",
+    "label": "Gel gingival"
+  },
+  {
+    "samCode": "362",
+    "eHealthCode": "00003",
+    "label": "Pâte périodontale"
+  },
+  {
+    "samCode": "341",
+    "eHealthCode": "00003",
+    "label": "Crème vaginale"
+  },
+  {
+    "samCode": "124",
+    "eHealthCode": "00003",
+    "label": "Gel"
+  },
+  {
+    "samCode": "345",
+    "eHealthCode": "00003",
+    "label": "Gel vaginal"
+  },
+  {
+    "samCode": "9",
+    "eHealthCode": "00004",
+    "label": "Gélule"
+  },
+  {
+    "samCode": "280",
+    "eHealthCode": "00004",
+    "label": "Gélule à libération prolongée"
+  },
+  {
+    "samCode": "184",
+    "eHealthCode": "00004",
+    "label": "Gélule à libération modifiée"
+  },
+  {
+    "samCode": "117",
+    "eHealthCode": "00004",
+    "label": "Gélule gastro-résistante"
+  },
+  {
+    "samCode": "226",
+    "eHealthCode": "00005",
+    "label": "Comprimé orodispersible"
+  },
+  {
+    "samCode": "731",
+    "eHealthCode": "00005",
+    "label": "Comprimés dispersibles pour dispensateur de dose"
+  },
+  {
+    "samCode": "101",
+    "eHealthCode": "00005",
+    "label": "Comprimé à libération prolongée"
+  },
+  {
+    "samCode": "317",
+    "eHealthCode": "00005",
+    "label": "Comprimé sublingual"
+  },
+  {
+    "samCode": "12",
+    "eHealthCode": "00005",
+    "label": "Comprimé à croquer"
+  },
+  {
+    "samCode": "194",
+    "eHealthCode": "00005",
+    "label": "Comprimé buccogingival muco-adhésif"
+  },
+  {
+    "samCode": "7",
+    "eHealthCode": "00005",
+    "label": "Comprimé buccogingival"
+  },
+  {
+    "samCode": "189",
+    "eHealthCode": "00005",
+    "label": "Comprimé à libération modifiée"
+  },
+  {
+    "samCode": "323",
+    "eHealthCode": "00005",
+    "label": "Comprimé"
+  },
+  {
+    "samCode": "328",
+    "eHealthCode": "00005",
+    "label": "Comprimé pour suspension rectale"
+  },
+  {
+    "samCode": "13",
+    "eHealthCode": "00005",
+    "label": "Comprimé enrobé"
+  },
+  {
+    "samCode": "16",
+    "eHealthCode": "00005",
+    "label": "Comprimé à sucer"
+  },
+  {
+    "samCode": "720",
+    "eHealthCode": "00005",
+    "label": "Comprimé pour solution pour application cutanée"
+  },
+  {
+    "samCode": "299",
+    "eHealthCode": "00005",
+    "label": "Comprimé pour solution buvable"
+  },
+  {
+    "samCode": "282",
+    "eHealthCode": "00005",
+    "label": "Comprimé pelliculé à libération prolongée"
+  },
+  {
+    "samCode": "17",
+    "eHealthCode": "00005",
+    "label": "Comprimé dispersible"
+  },
+  {
+    "samCode": "65",
+    "eHealthCode": "00005",
+    "label": "Comprimé dispersible/à croquer"
+  },
+  {
+    "samCode": "85",
+    "eHealthCode": "00005",
+    "label": "Comprimé effervescent"
+  },
+  {
+    "samCode": "123",
+    "eHealthCode": "00005",
+    "label": "Comprimé gastro-résistant"
+  },
+  {
+    "samCode": "350",
+    "eHealthCode": "00005",
+    "label": "Comprimé vaginal"
+  },
+  {
+    "samCode": "110",
+    "eHealthCode": "00005",
+    "label": "Comprimé pelliculé"
+  },
+  {
+    "samCode": "719",
+    "eHealthCode": "00005",
+    "label": "Comprimé pour administration dans l'eau de boisson"
+  },
+  {
+    "samCode": "735",
+    "eHealthCode": "00006",
+    "label": "Granulés en récipient unidose"
+  },
+  {
+    "samCode": "632",
+    "eHealthCode": "00006",
+    "label": "Gel ophtalmique en récipient unidose"
+  },
+  {
+    "samCode": "240",
+    "eHealthCode": "00006",
+    "label": "Granules en récipient unidose"
+  },
+  {
+    "samCode": "448",
+    "eHealthCode": "00006",
+    "label": "Solution pour pulvérisation nasale en récipient unidose"
+  },
+  {
+    "samCode": "440",
+    "eHealthCode": "00006",
+    "label": "Collyre en solution en récipient unidose"
+  },
+  {
+    "samCode": "145",
+    "eHealthCode": "00006",
+    "label": "Poudre pour inhalation en récipient unidose"
+  },
+  {
+    "samCode": "486",
+    "eHealthCode": "00007",
+    "label": "Collyre en émulsion"
+  },
+  {
+    "samCode": "215",
+    "eHealthCode": "00007",
+    "label": "Solution buvable en gouttes"
+  },
+  {
+    "samCode": "587",
+    "eHealthCode": "00007",
+    "label": "Poudre et solvant pour solution auriculaire en gouttes"
+  },
+  {
+    "samCode": "104",
+    "eHealthCode": "00007",
+    "label": "Collyre en suspension"
+  },
+  {
+    "samCode": "532",
+    "eHealthCode": "00007",
+    "label": "Poudre et solvant pour suspension nasale en gouttes"
+  },
+  {
+    "samCode": "197",
+    "eHealthCode": "00007",
+    "label": "Solution nasale en gouttes"
+  },
+  {
+    "samCode": "100",
+    "eHealthCode": "00007",
+    "label": "Collyre à libération prolongée"
+  },
+  {
+    "samCode": "99",
+    "eHealthCode": "00007",
+    "label": "Poudre et solvant pour collyre en suspension"
+  },
+  {
+    "samCode": "69",
+    "eHealthCode": "00007",
+    "label": "Poudre et solvant pour suspension auriculaire en gouttes"
+  },
+  {
+    "samCode": "98",
+    "eHealthCode": "00007",
+    "label": "Poudre et solvant pour collyre en solution"
+  },
+  {
+    "samCode": "454",
+    "eHealthCode": "00007",
+    "label": "Liquide oral en gouttes"
+  },
+  {
+    "samCode": "102",
+    "eHealthCode": "00007",
+    "label": "Collyre en solution"
+  },
+  {
+    "samCode": "70",
+    "eHealthCode": "00007",
+    "label": "Solution auriculaire en gouttes"
+  },
+  {
+    "samCode": "615",
+    "eHealthCode": "00007",
+    "label": "Poudre et solvant pour solution nasale en gouttes"
+  },
+  {
+    "samCode": "71",
+    "eHealthCode": "00007",
+    "label": "Suspension auriculaire en gouttes"
+  },
+  {
+    "samCode": "216",
+    "eHealthCode": "00007",
+    "label": "Suspension buvable en gouttes"
+  },
+  {
+    "samCode": "428",
+    "eHealthCode": "00009",
+    "label": "Kit pour implant"
+  },
+  {
+    "samCode": "416",
+    "eHealthCode": "00009",
+    "label": "Suspension pour implantation"
+  },
+  {
+    "samCode": "447",
+    "eHealthCode": "00009",
+    "label": "Implant intravitréen avec applicateur"
+  },
+  {
+    "samCode": "137",
+    "eHealthCode": "00009",
+    "label": "Implant"
+  },
+  {
+    "samCode": "138",
+    "eHealthCode": "00009",
+    "label": "Implant en chaîne"
+  },
+  {
+    "samCode": "521",
+    "eHealthCode": "00009",
+    "label": "Matrice implantable"
+  },
+  {
+    "samCode": "87",
+    "eHealthCode": "00010",
+    "label": "Emulsion pour perfusion"
+  },
+  {
+    "samCode": "418",
+    "eHealthCode": "00010",
+    "label": "Poudre pour solution à diluer pour solution injectable/pour perfusion"
+  },
+  {
+    "samCode": "356",
+    "eHealthCode": "00010",
+    "label": "Poudre et solvant pour solution injectable/pour perfusion"
+  },
+  {
+    "samCode": "716",
+    "eHealthCode": "00010",
+    "label": "Poudre pour solution à diluer et solution pour perfusion"
+  },
+  {
+    "samCode": "629",
+    "eHealthCode": "00010",
+    "label": "Emulsion injectable/pour perfusion en seringue préremplie"
+  },
+  {
+    "samCode": "353",
+    "eHealthCode": "00010",
+    "label": "Solution injectable/pour perfusion"
+  },
+  {
+    "samCode": "612",
+    "eHealthCode": "00010",
+    "label": "Poudre pour dispersion pour perfusion"
+  },
+  {
+    "samCode": "406",
+    "eHealthCode": "00010",
+    "label": "Poudre pour suspension pour perfusion"
+  },
+  {
+    "samCode": "245",
+    "eHealthCode": "00010",
+    "label": "Poudre et solvant pour solution à diluer pour perfusion"
+  },
+  {
+    "samCode": "304",
+    "eHealthCode": "00010",
+    "label": "Solution pour perfusion"
+  },
+  {
+    "samCode": "438",
+    "eHealthCode": "00010",
+    "label": "Dispersion à diluer pour perfusion"
+  },
+  {
+    "samCode": "551",
+    "eHealthCode": "00010",
+    "label": "Gaz et solvant pour dispersion injectable/pour perfusion"
+  },
+  {
+    "samCode": "255",
+    "eHealthCode": "00010",
+    "label": "Poudre et solvant pour solution pour perfusion"
+  },
+  {
+    "samCode": "439",
+    "eHealthCode": "00010",
+    "label": "Dispersion pour perfusion"
+  },
+  {
+    "samCode": "478",
+    "eHealthCode": "00010",
+    "label": "Poudre, dispersion et solvant pour dispersion à diluer pour dispersion pour perfusion"
+  },
+  {
+    "samCode": "19",
+    "eHealthCode": "00010",
+    "label": "Solution à diluer et solvant pour solution pour perfusion"
+  },
+  {
+    "samCode": "481",
+    "eHealthCode": "00010",
+    "label": "Poudre pour dispersion à diluer pour dispersion pour perfusion"
+  },
+  {
+    "samCode": "357",
+    "eHealthCode": "00010",
+    "label": "Solution à diluer pour solution injectable/pour perfusion"
+  },
+  {
+    "samCode": "271",
+    "eHealthCode": "00010",
+    "label": "Poudre pour solution injectable/pour perfusion"
+  },
+  {
+    "samCode": "32",
+    "eHealthCode": "00010",
+    "label": "Solution à diluer pour perfusion"
+  },
+  {
+    "samCode": "496",
+    "eHealthCode": "00010",
+    "label": "Solution injectable/pour perfusion en seringue préremplie"
+  },
+  {
+    "samCode": "497",
+    "eHealthCode": "00010",
+    "label": "Solution pour perfusion en système d'administration"
+  },
+  {
+    "samCode": "260",
+    "eHealthCode": "00010",
+    "label": "Poudre pour solution à diluer pour perfusion"
+  },
+  {
+    "samCode": "89",
+    "eHealthCode": "00010",
+    "label": "Emulsion injectable/pour perfusion"
+  },
+  {
+    "samCode": "268",
+    "eHealthCode": "00010",
+    "label": "Poudre pour solution pour perfusion"
+  },
+  {
+    "samCode": "151",
+    "eHealthCode": "00011",
+    "label": "Liquide pour inhalation par vapeur"
+  },
+  {
+    "samCode": "262",
+    "eHealthCode": "00011",
+    "label": "Poudre pour solution pour inhalation par nébuliseur"
+  },
+  {
+    "samCode": "210",
+    "eHealthCode": "00011",
+    "label": "Solution pour inhalation par nébuliseur"
+  },
+  {
+    "samCode": "144",
+    "eHealthCode": "00011",
+    "label": "Poudre pour inhalation en gélule"
+  },
+  {
+    "samCode": "415",
+    "eHealthCode": "00011",
+    "label": "Poudre et solvant pour solution pour inhalation par nébuliseur"
+  },
+  {
+    "samCode": "142",
+    "eHealthCode": "00011",
+    "label": "Gaz pour inhalation"
+  },
+  {
+    "samCode": "278",
+    "eHealthCode": "00011",
+    "label": "Solution pour inhalation en flacon pressurisé"
+  },
+  {
+    "samCode": "211",
+    "eHealthCode": "00011",
+    "label": "Suspension pour inhalation par nébuliseur"
+  },
+  {
+    "samCode": "279",
+    "eHealthCode": "00011",
+    "label": "Suspension pour inhalation en flacon pressurisé"
+  },
+  {
+    "samCode": "143",
+    "eHealthCode": "00011",
+    "label": "Poudre pour inhalation"
+  },
+  {
+    "samCode": "524",
+    "eHealthCode": "00011",
+    "label": "Solution à inhaler"
+  },
+  {
+    "samCode": "154",
+    "eHealthCode": "00011",
+    "label": "Solution pour inhalation par vapeur"
+  },
+  {
+    "samCode": "213",
+    "eHealthCode": "00012",
+    "label": "Insert ophtalmique"
+  },
+  {
+    "samCode": "219",
+    "eHealthCode": "00013",
+    "label": "Gomme orale"
+  },
+  {
+    "samCode": "177",
+    "eHealthCode": "00013",
+    "label": "Gomme à mâcher médicamenteuse"
+  },
+  {
+    "samCode": "140",
+    "eHealthCode": "00014",
+    "label": "Compresse imprégnée"
+  },
+  {
+    "samCode": "141",
+    "eHealthCode": "00014",
+    "label": "Tampon imprégné"
+  },
+  {
+    "samCode": "238",
+    "eHealthCode": "00017",
+    "label": "Ovule"
+  },
+  {
+    "samCode": "10",
+    "eHealthCode": "00018",
+    "label": "Capsule molle"
+  },
+  {
+    "samCode": "118",
+    "eHealthCode": "00018",
+    "label": "Capsule molle gastro-résistante"
+  },
+  {
+    "samCode": "11",
+    "eHealthCode": "00018",
+    "label": "Capsule molle à mâcher"
+  },
+  {
+    "samCode": "340",
+    "eHealthCode": "00018",
+    "label": "Capsule molle vaginale"
+  },
+  {
+    "samCode": "234",
+    "eHealthCode": "00019",
+    "label": "Pâte à sucer"
+  },
+  {
+    "samCode": "172",
+    "eHealthCode": "00019",
+    "label": "Pastille"
+  },
+  {
+    "samCode": "500",
+    "eHealthCode": "00021",
+    "label": "Suspension injectable en cartouche"
+  },
+  {
+    "samCode": "499",
+    "eHealthCode": "00021",
+    "label": "Solution injectable en cartouche"
+  },
+  {
+    "samCode": "503",
+    "eHealthCode": "00022",
+    "label": "Suspension injectable en stylo prérempli"
+  },
+  {
+    "samCode": "653",
+    "eHealthCode": "00022",
+    "label": "Poudre et solvant pour suspension injectable à libération prolongée en stylo prérempli"
+  },
+  {
+    "samCode": "502",
+    "eHealthCode": "00022",
+    "label": "Solution injectable en stylo prérempli"
+  },
+  {
+    "samCode": "318",
+    "eHealthCode": "00026",
+    "label": "Suppositoire"
+  },
+  {
+    "samCode": "436",
+    "eHealthCode": "00030",
+    "label": "Granulés enrobés en sachet"
+  },
+  {
+    "samCode": "644",
+    "eHealthCode": "00030",
+    "label": "Granulés en sachet"
+  },
+  {
+    "samCode": "455",
+    "eHealthCode": "00030",
+    "label": "Solution buvable en sachet"
+  },
+  {
+    "samCode": "640",
+    "eHealthCode": "00030",
+    "label": "Granulés pour solution buvable en sachet"
+  },
+  {
+    "samCode": "602",
+    "eHealthCode": "00030",
+    "label": "Suspension buvable en sachet"
+  },
+  {
+    "samCode": "655",
+    "eHealthCode": "00030",
+    "label": "Poudre pour solution buvable en sachet"
+  },
+  {
+    "samCode": "614",
+    "eHealthCode": "00030",
+    "label": "Poudre orale en sachet"
+  }
+]
