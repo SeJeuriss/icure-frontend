@@ -194,15 +194,16 @@
             }
 
             generateMedicationScheme(services, version, hubConfig){
+                let enc = new TextDecoder("utf-8");
                 return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
                     this.api.patient().getPatientWithUser(this.user,this.patient.id)
-                        .then(patientDto => this.api.bekmehr().generateMedicationSchemeExport(patientDto.id, this.language, version, {
+                        .then(patientDto => this.api.bekmehr().generateMedicationSchemeExport(patientDto.id, this.language, hubConfig.name, version, {
                                 recipient: hcp,
                                 services : services,
                                 comment: "medicationscheme",
                                 recipientSafe: hubConfig.name,
                                 version: version
-                            }).then(output => output.text()).catch( error=> Promise.resolve({message:"error on generate", error: error}))
+                            }).then(output => Promise.resolve(enc.decode(output))).catch( error=> Promise.resolve({message:"error on generate", error: error}))
                         ))
             }
 
@@ -211,7 +212,7 @@
                 return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                     .then(hcp => this.api.fhc().Hubcontroller().putTransactionSetUsingPOST(hubConfig.hubEndPoint,
                         this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
-                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
+                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, "1000",
                         hubConfig.hubId,
                         this.patient.ssin,
                         myblob,
