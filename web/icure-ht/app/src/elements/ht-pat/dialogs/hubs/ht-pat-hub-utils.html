@@ -179,12 +179,13 @@
                 //1. Generate Medicationscheme Kmehr Message (backend)
                 //2. Send Medicationscheme Kmehr Message To Hub: putTransactionSet (FHC)
                 //3. Get putTransactionSet Response (FHC)
+                //3.1. Get the transactionset (for detailled info) (optional)
                 //4. handle error messages
                 //5. update services using the putTransactionSet Response
                 return this.checkMedicationServices(services)
-                    .then(svcs => this.generateMedicationScheme(svcs, hubConfig, version))
+                    .then(svcs => this.generateMedicationScheme(svcs, version, hubConfig))
                     .then(msMessage => this.putTransactionSet(msMessage, hubConfig))
-                    .then(putResponse => this.handleResponse(putResponse, services))
+                    .then(putResponse => this.handleResponse(putResponse, services, hubConfig))
             }
 
             checkMedicationServices(services){
@@ -192,22 +193,17 @@
                 return Promise.resolve(services);
             }
 
-            generateMedicationScheme(services, hubConfig, version){
+            generateMedicationScheme(services, version, hubConfig){
                 return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
                     this.api.patient().getPatientWithUser(this.user,this.patient.id)
-                        .then(patientDto =>
-                            this.api.crypto()
-                                .extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
-                                .then(secretForeignKeys =>
-                                    this.api.bekmehr().generateMedicationSchemeWithEncryptionSupport(patientDto.id, this.user.healthcarePartyId, this.language, {
-                                        secretForeignKeys: secretForeignKeys.extractedKeys,
-                                        recipient: hcp,
-                                        services : services,
-                                        comment: "medicationscheme",
-                                        recipientSafe: hubConfig.name,
-                                        version: version
-                                    }).then(output => output.text()).catch( error=> Promise.resolve({message:"error on generate", error: error}))
-                                )))
+                        .then(patientDto => this.api.bekmehr().generateMedicationSchemeExport(patientDto.id, this.language, version, {
+                                recipient: hcp,
+                                services : services,
+                                comment: "medicationscheme",
+                                recipientSafe: hubConfig.name,
+                                version: version
+                            }).then(output => output.text()).catch( error=> Promise.resolve({message:"error on generate", error: error}))
+                        ))
             }
 
             putTransactionSet(tsXML, hubConfig){
@@ -225,9 +221,8 @@
                 )
             }
 
-            handleResponse(putResponse, services){
-                //TODO: implement
-                this.hasError(putResponse) ? Promise.resolve({error:"has an error", response:putResponse}): Promise.resolve(this.mergeResponse(putResponse, services));
+            handleResponse(putResponse, services, hubConfig){
+                this.hasError(putResponse) ? Promise.resolve({error:"has an error", response:putResponse}): Promise.resolve(this.mergeResponse(putResponse, services, hubConfig));
             }
 
             hasError(putResponse){
@@ -235,9 +230,76 @@
                 return false;
             }
 
-            mergeResponse(putResponse, services){
-                //TODO: implement
-                return services;
+            // private String medicationSchemeIdOnSafe;
+            // private Integer medicationSchemeSafeVersion;
+            // private Long medicationSchemeTimeStampOnSafe;
+            // private String medicationSchemeDocumentId;
+            // private String safeIdName; //can be: vitalinkuri, RSWID, RSBID
+            // private String idOnSafes; //medicationschemeelement : value of vitalinkuri, RSBID, RSWID
+            // private Long timestampOnSafe; //transaction date+time
+            // private Boolean changeValidated; //accept change on safe
+            // private Boolean newSafeMedication; //new medication on safe
+            // private String medicationUse; //free text
+            // private Boolean medicationChanged;
+            // private Boolean posologyChanged;
+
+            mergeResponse(putResponse, services, hubConfig){
+                //1. get transactionset id
+                //2. get transactionset from hub
+                //3. updated the services
+                const tsInfo = putResponse.transactions && putResponse.transactions.length > 0 ? putResponse.transactions[0].ids.find(id => id.s==="LOCAL") : null;
+                const tsSv = tsInfo.sv;
+                const tsSl = tsInfo.sl;
+                const tsId = tsInfo.value;
+                this.getTransactionSet(tsSv, tsSl, tsId, hubConfig).then(tsResp => {
+                    putResponse.transactions.forEach(trInfo  => {
+                        const idKmehr = trInfo.ids.find(id => id.s === "ID-KMEHR").value;
+                        const trOnHub = tsResp.folders[0].transactions.find(tr => tr.ids.find(id => id.s === "ID-KMEHR" && id.value === idKmehr)); //TODO: verify other id's (LOCAL)
+                        const idLocalSv = trInfo.ids.find(id => id.s === "LOCAL").sv;
+                        const idLocalSl = trInfo.ids.find(id => id.s === "LOCAL").sl;
+                        const idLocalValue = trInfo.ids.find(id => id.s === "LOCAL").value;
+                        const trTimeStamp = this.transactionDateTime(trOnHub);
+                        if(idKmehr === 1){ //set the medicationscheme ids to all services
+                            services.forEach(svc => {
+                                const med = this.api.contact().preferredContent(svc, this.language);
+                                med.medicationSchemeIdOnSafe = idLocalValue;
+                                med.safeIdName = idLocalSl;
+                                med.medicationSchemeTimeStampOnSafe = this.transactionDateTime(trOnHub);
+                            })
+                        } else {//set te medicationschemeElement ids to the corresponding service
+                            const svcId = this.iCureServiceId(trOnHub);
+                            const svc = svcId ? services.find(svc => svc.id === svcId) : services[idKmehr - 1];
+                            const med = this.api.contact().preferredContent(svc, this.language);
+                            med.idOnSafes = idLocalValue;
+                            med.timestampOnSafe = this.transactionDateTime(trOnHub);
+                        }
+                    });
+                    console.log("updated services", services);
+                    return services;
+                })
+            }
+
+            getTransactionSet(tsSv, tsSl, tsId, hubConfig){
+                return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                    .then(hcp => this.api.fhc().Hubcontroller().getTransactionSetUsingGET(hubConfig.hubEndPoint, this.api.keystoreId,
+                        this.api.tokenId, this.api.credentials.ehpassword,
+                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
+                        this.patient.ssin,
+                        tsSv, tsSl, tsId,
+                        hubConfig.hubPackageId, ""
+                    )
+                    )
+            }
+
+            transactionDateTime(tr){
+                const millis = tr.date.millis + tr.time.millis;
+                return millis;
+            }
+
+            iCureServiceId(tr){
+                const itm = tr.item.find(it => it.ids.find(id => id.sl === "iCure-Service"));
+                const svcId = itm.ids.find(id => id.sl === "iCure-Service") ? itm.ids.find(id => id.sl === "iCure-Service").value : null
+                return svcId;
             }
         }
         customElements.define(HtPatHubUtils.is, HtPatHubUtils);
