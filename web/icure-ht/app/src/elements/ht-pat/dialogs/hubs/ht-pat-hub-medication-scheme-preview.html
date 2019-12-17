@@ -1010,7 +1010,7 @@
                 }
             }
 
-            _generateMedicationScheme(){
+            _generateMedicationScheme_test(){
                 if (this.patient) {
                     this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
                         this.api.patient().getPatientWithUser(this.user,this.patient.id)
@@ -1025,36 +1025,58 @@
                                             recipientSafe:"vitalink",
                                             version: 1
                                         }).then(output => {
-                                            let reader = new FileReader();
-                                            const myself = this;
-                                            reader.onload = function() {
-                                                // console.log("sumehr = ", reader.result);
-                                            }
-                                            reader.readAsText(output);
-
-
-                                            //creation of the xml file
-                                            let file = typeof output === "string" ? new Blob([output] ,{type: "application/xml"}) : output
-
-                                            //creation the downloading link
-                                            let a = document.createElement("a");
-                                            document.body.appendChild(a);
-                                            a.style = "display: none";
-
-                                            //download the new file
-                                            let url = window.URL.createObjectURL(file);
-                                            a.href = url;
-                                            a.download = (patientDto.lastName || "Doe").replace(" ","_") + "_" + (patientDto.firstName || "John").replace(" ","_") + "_" + (moment().format("x"))+"_medicationscheme.xml";
-                                            a.click();
-                                            window.URL.revokeObjectURL(url);
-
-                                            document.body.removeChild(a);
-
-                                            // if(this.$['commentDialog']) this.$['commentDialog'].close();
-                                            // this.$["medicationSchemePreviewDialog"].close();
+                                            output.text().then(msg => console.log("ms msg", msg));
                                         }).catch( error=> console.log(error))
                                     }
                     )))
+                }
+            }
+
+            _generateMedicationScheme(){
+                if (this.patient) {
+                    this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
+                        this.api.patient().getPatientWithUser(this.user,this.patient.id)
+                            .then(patientDto =>
+                                this.api.crypto()
+                                    .extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
+                                    .then(secretForeignKeys => {
+                                            return this.api.bekmehr().generateMedicationSchemeWithEncryptionSupport(patientDto.id, this.user.healthcarePartyId, "fr", {
+                                                secretForeignKeys: secretForeignKeys.extractedKeys,
+                                                recipient: hcp,
+                                                comment: "medicationscheme",
+                                                recipientSafe:"vitalink",
+                                                version: 1
+                                            }).then(output => {
+                                                let reader = new FileReader();
+                                                const myself = this;
+                                                reader.onload = function() {
+                                                    // console.log("sumehr = ", reader.result);
+                                                }
+                                                reader.readAsText(output);
+
+
+                                                //creation of the xml file
+                                                let file = typeof output === "string" ? new Blob([output] ,{type: "application/xml"}) : output
+
+                                                //creation the downloading link
+                                                let a = document.createElement("a");
+                                                document.body.appendChild(a);
+                                                a.style = "display: none";
+
+                                                //download the new file
+                                                let url = window.URL.createObjectURL(file);
+                                                a.href = url;
+                                                a.download = (patientDto.lastName || "Doe").replace(" ","_") + "_" + (patientDto.firstName || "John").replace(" ","_") + "_" + (moment().format("x"))+"_medicationscheme.xml";
+                                                a.click();
+                                                window.URL.revokeObjectURL(url);
+
+                                                document.body.removeChild(a);
+
+                                                // if(this.$['commentDialog']) this.$['commentDialog'].close();
+                                                // this.$["medicationSchemePreviewDialog"].close();
+                                            }).catch( error=> console.log(error))
+                                        }
+                                    )))
                 }
             }
 
