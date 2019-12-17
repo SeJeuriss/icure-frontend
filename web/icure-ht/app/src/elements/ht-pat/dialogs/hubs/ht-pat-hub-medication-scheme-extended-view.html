@@ -1768,6 +1768,7 @@
             }
 
             _createMedication(data) {
+                console.log("data", data);
                 const medicationContent = {medicationValue: {regimen: [], substitutionAllowed: true}, stringValue: data.medicationHubId};
                 const medication = {
                     content: _.fromPairs([[this.language, medicationContent]]),
@@ -1884,9 +1885,11 @@
             }
 
             _synchronizeScheme(){
+                console.log("currentMedicationScheme", JSON.stringify(this.currentMedicationScheme));
+                const servicesToUpload = [];
                 _.get(this.currentMedicationScheme, "msElems", []).map(item => {
                     if(_.get(item, 'synchronizationInfo.localToHub', false)){
-
+                        servicesToUpload.push({});
                     }else if(_.get(item, 'synchronizationInfo.hubToLocal', false)){
                         const drugType = !_.isEmpty(_.get(item, 'medicinalproduct', {})) ? "CD-DRUG-CNK" : !_.isEmpty(_.get(item, 'substanceproduct', {})) ? "CD-VMPGROUP" : "compoundPrescription"
                     }
