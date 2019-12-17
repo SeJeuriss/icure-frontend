@@ -1452,8 +1452,6 @@
                 return medication && medication.medicinalproduct && medication.medicinalproduct.intendedname ? medication && medication.medicinalproduct && medication.medicinalproduct.intendedname :
                     medication && medication.substanceproduct && medication.substanceproduct.intendedname ? medication.substanceproduct.intendedname  :
                         medication && medication.compoundprescription !== null ? "Magistrale" : null
-
-
             }
 
             _getPosology(medication){
@@ -1596,14 +1594,7 @@
                         endmoment: _.get(med, "content."+this.language+".medicationValue.endMoment", null) ? moment(_.get(med, "content."+this.language+".medicationValue.endMoment", null), "YYYYMMDD").format('DD/MM/YYYY'): null,
                         temporality: null,
                         frequency: null,
-                        regimen: [],/*_.get(med, "content."+this.language+".medicationValue.regimen", []).map(reg => ({
-                            dayTime: null,
-                            dayNumber : null,
-                            quantity: null,
-                            administrationUnit: null,
-                            weekDay: null,
-                            weekNumber: null
-                        })),*/
+                        regimen: [this._composeRegimen(_.get(med, "content."+this.language+".medicationValue.regimen", []))],
                         regimenDayNumber: null,
                         regimenWeekDay: null,
                         regimenWeekNumber: null,
@@ -1627,6 +1618,23 @@
                         }
                     }
                 })
+            }
+
+            _composeRegimen(regimen){
+                let formatedRegimen = []
+                regimen.map(reg => {
+                    formatedRegimen.push({
+                        dayTime: _.get(reg, 'dayPeriod.code', null),
+                        dayNumber : null,
+                        quantity: _.get(reg, 'administratedQuantity.quantity', null),
+                        administrationUnit: _.get(reg, 'administratedQuantity.unit', null),
+                        weekDay: null,
+                        weekNumber: null
+                    })
+
+                })
+
+                return formatedRegimen
             }
 
             //create easy medicationscheme object
