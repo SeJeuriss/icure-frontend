@@ -1435,8 +1435,17 @@
 
             dataProvider(){
                 console.log(this.medicationScheme)
-                this.transformMedicationAndPrescription()
-                this.set('currentMedicationScheme', this._getMedicationSchemeFromTransactionSet(this.medicationScheme))
+                const medicScheme = this._getMedicationSchemeFromTransactionSet(this.medicationScheme)
+                this.set('currentMedicationScheme', {
+                    idKmehr: _.get(medicScheme, 'idKmehr', null),
+                    hubId: _.get(medicScheme, 'hubId', null),
+                    date: _.get(medicScheme, 'date', null),
+                    authors: _.get(medicScheme, 'authors', []),
+                    version: _.get(medicScheme, 'version', null),
+                    msElems: _.concat(_.get(medicScheme, 'msElems', []), this.transformMedicationAndPrescription()),
+                    msSusps: _.get(medicScheme, 'msSusps', []),
+                    times:  _.get(medicScheme, 'times', [])
+                })
             }
 
             _getMedicationName(medication){
@@ -1574,6 +1583,46 @@
             transformMedicationAndPrescription(){
                 console.log(this.medications)
                 console.log(this.prescriptions)
+                return _.concat(_.get(this, 'medications', []), _.get(this, 'prescriptions', [])).map(med => {
+                    return {
+                        idKmehr: null,
+                        medicationHubId: null,
+                        adaptationflag: null,
+                        adaptationtype: null,
+                        compoundprescription: _.get(med, "content."+this.language+".medicationValue.compoundprescription", null),
+                        medicinalproduct: _.get(med, "content."+this.language+".medicationValue.medicinalProduct", null),
+                        substanceproduct: _.get(med, "content."+this.language+".medicationValue.substanceproduct", null),
+                        beginmoment: _.get(med, "content."+this.language+".medicationValue.beginMoment", null) ? moment(_.get(med, "content."+this.language+".medicationValue.beginMoment", null), "YYYYMMDD").format('DD/MM/YYYY'): null,
+                        endmoment: _.get(med, "content."+this.language+".medicationValue.endMoment", null) ? moment(_.get(med, "content."+this.language+".medicationValue.endMoment", null), "YYYYMMDD").format('DD/MM/YYYY'): null,
+                        temporality: null,
+                        frequency: null,
+                        regimen: [],/*_.get(med, "content."+this.language+".medicationValue.regimen", []).map(reg => ({
+                            dayTime: _.get(reg, 'dayPeriod.code', null),
+                            dayNumber : null,
+                            quantity: null,
+                            administrationUnit: null,
+                            weekDay: null,
+                            weekNumber: null
+                        })),*/
+                        regimenDayNumber: null,
+                        regimenWeekDay: null,
+                        regimenWeekNumber: null,
+                        posology: null,
+                        suspensions: null,
+                        usePresent: null,
+                        useTexts: _.get(med, "content."+this.language+".medicationValue.instructionForPatient", null),
+                        date: null,
+                        beginTimeStamp: _.get(med, "content."+this.language+".medicationValue.beginMoment", null),
+                        authors: [],
+                        uniqId: this.api.crypto().randomUuid(),
+                        synchronizationInfo: {
+                            availableOnHub: false,
+                            availableOnLocal: true,
+                            localToHub: false,
+                            hubToLocal: false
+                        }
+                    }
+                })
             }
 
             //create easy medicationscheme object
