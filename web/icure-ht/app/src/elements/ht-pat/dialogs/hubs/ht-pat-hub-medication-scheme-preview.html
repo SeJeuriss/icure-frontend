@@ -652,6 +652,10 @@
                     hubConfig:{
                         type: Object,
                         value: null
+                    },
+                    services:{
+                        type: Array,
+                        value: () => []
                     }
                 };
             }
@@ -682,10 +686,12 @@
                 this.async(this.notifyResize, 1);
             }
 
-            open(parentDialog, tranRespPromise, hubXmlPromise) {
-                console.log("open ms preview");
+            open(parentDialog, tranRespPromise, hubXmlPromise, services) {
+                this.set('services', services);
+                console.log("open ms preview", services);
                 this.set('parentDialog', parentDialog);
                 this.$['medicationSchemePreviewDialog'].open();
+                this._refresh();
 
                 if(tranRespPromise) {
                     tranRespPromise.then(tranResp => {
@@ -1050,7 +1056,7 @@
             }
 
             _getMedicationServices(){
-                return Promise.resolve([]);
+                return Promise.resolve(this.services);
             }
 
 
@@ -1062,7 +1068,7 @@
                                 this.api.crypto()
                                     .extractDelegationsSFKs(patientDto, this.user.healthcarePartyId)
                                     .then(secretForeignKeys => {
-                                            return this.api.bekmehr().generateMedicationSchemeWithEncryptionSupport(patientDto.id, this.user.healthcarePartyId, "fr", {
+                                            return this.api.bekmehr().generateMedicationSchemeWithEncryptionSupport(patientDto.id, this.user.healthcarePartyId, "fr", "vitalink", 1, {
                                                 secretForeignKeys: secretForeignKeys.extractedKeys,
                                                 recipient: hcp,
                                                 comment: "medicationscheme",

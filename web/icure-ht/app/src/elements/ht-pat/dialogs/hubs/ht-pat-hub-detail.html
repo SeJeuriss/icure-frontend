@@ -681,6 +681,10 @@
                         type: Array,
                         value: () => []
                     },
+                    services:{
+                        type: Array,
+                        value: () => []
+                    },
                     directToUpload:{
                         type: Boolean,
                         value: false
@@ -735,7 +739,7 @@
                 this.showSumehrContainer = !this.showSumehrContainer;
             }
 
-            open(directToUpload) {
+            open(directToUpload, services) {
                 this.set('revokableTransaction', false);
                 this.set('showSumehrContainer', false);
                 this.set('directToUpload', directToUpload ? true : false)
@@ -746,6 +750,7 @@
 
                 this._refresh();
 
+                this.set('services', services);
             }
 
             _refresh(){
@@ -984,7 +989,7 @@
             }
 
             _openPreviewMedicationScheme(e){
-                this.$['htPatHubMedicationSchemePreview'].open(this, this._getHubTransactionMessage(this.selectedTransaction), this._getHubTransactionXML(this.selectedTransaction));
+                this.$['htPatHubMedicationSchemePreview'].open(this, this._getHubTransactionMessage(this.selectedTransaction), this._getHubTransactionXML(this.selectedTransaction), this.services);
             }
 
             _openPreviewSumehr(){

@@ -3657,7 +3657,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _openHubDialog(e){
                 e.stopPropagation();
                 if(this._checkForEhealthSession() === true && ((!!_.size(_.get(this.currentTherLinks, 'hubResp.therapeuticLinks', [])) && !_.isEmpty(_.get(this.currentConsents, "hubResp", {}))) || !this.hubSupportsConsent)){
-                    this.$['patHubDetail'].open();
+                    this.$['patHubDetail'].open(false, this._getActiveMedications(this.medications));
                 }else{
                     this._checkForEhealthSession() === false ? this._ehealthErrorNotification() : null
                     !!_.size(_.get(this.currentTherLinks, 'hubResp.therapeuticLinks', [])) ? this._therLinkErrorNotification() : null
