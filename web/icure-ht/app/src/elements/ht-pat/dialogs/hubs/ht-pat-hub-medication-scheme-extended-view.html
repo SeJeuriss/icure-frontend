@@ -1552,9 +1552,9 @@
                 //return regimen.dayNumber ? (this.localize("daynr", "Day #", this.language) + regimen.dayNumber + ":") :
                 //    (regimen.weekday ? ((regimen.weekNumber ? (this.localize("weeknr", "Week #", this.language) + regimen.weekNumber + ":") : "") + this.localize(regimen.weekday, regimen.weekday, this.language) + ":") : (""));
 
-                return regimen && regimen.find(r => r.dayNumber) && regimen.find(r => r.dayNumber).dayNumber ? (this.localize("daynr", "Day # ", this.language) + regimen.find(r => r.dayNumber).dayNumber) :
-                    regimen && regimen.find(r => r.weekNumber) && regimen.find(r => r.weekNumber).weekNumber ? (this.localize("weeknr", "Week # ", this.language) + regimen.find(r => r.weekNumber).weekNumber) :
-                        regimen && regimen.find(r => r.weekDay) && regimen.find(r => r.weekDay).weekDay ? (this.localize(regimen.find(r => r.weekDay).weekDay, regimen.find(r => r.weekDay).weekDay, this.language)): ""
+                return Array.isArray(regimen) && (regimen || []).find(r => _.get(r, 'dayNumber', null)) && _.get(regimen.find(r => _.get(r, 'dayNumber', null)), 'dayNumber', null) ? (this.localize("daynr", "Day # ", this.language) + _.get(regimen.find(r => _.get(r, 'dayNumber', null)), 'dayNumber', null)) :
+                    Array.isArray(regimen) && (regimen || []).find(r => _.get(r, 'weekNumber', null)) && _.get(regimen.find(r => _.get(r, 'weekNumber', null)), 'weekNumber', null) ? (this.localize("weeknr", "Week # ", this.language) + _.get(regimen.find(r => _.get(r, 'weekNumber', null)), 'weekNumber', null)) :
+                        Array.isArray(regimen) && (regimen || []).find(r => _.get(r, 'weekDay', null)) && _.get(regimen.find(r => _.get(r, 'weekDay', null)), 'weekDay', null) ? (this.localize(_.get(regimen.find(r => _.get(r, 'weekDay', null)), 'weekDay', null), _.get(regimen.find(r => _.get(r, 'weekDay', null)), 'weekDay', null), this.language)): ""
             }
 
             _getTimeDesc(time){
@@ -1597,7 +1597,7 @@
                         temporality: null,
                         frequency: null,
                         regimen: [],/*_.get(med, "content."+this.language+".medicationValue.regimen", []).map(reg => ({
-                            dayTime: _.get(reg, 'dayPeriod.code', null),
+                            dayTime: null,
                             dayNumber : null,
                             quantity: null,
                             administrationUnit: null,
@@ -1607,10 +1607,14 @@
                         regimenDayNumber: null,
                         regimenWeekDay: null,
                         regimenWeekNumber: null,
-                        posology: null,
+                        posology: {
+                            text: {
+                                value: _.get(med, "content."+this.language+".medicationValue.instructionForPatient", null)
+                            }
+                        },
                         suspensions: null,
                         usePresent: null,
-                        useTexts: _.get(med, "content."+this.language+".medicationValue.instructionForPatient", null),
+                        useTexts: [],
                         date: null,
                         beginTimeStamp: _.get(med, "content."+this.language+".medicationValue.beginMoment", null),
                         authors: [],
