@@ -729,6 +729,12 @@
                     </paper-dropdown-menu>
                 </div>
                 <template is="dom-repeat" items="[[regimenKeys]]">
+<!--                    <ht-regimen-day-->
+<!--                            api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"-->
+<!--                            period-config="[[periodConfig]]" regimen-config="[[regimenConfig]]" regimen="{{medicationContent.medicationValue.regimen}}" key="[[item]]"-->
+<!--                            medication-unit="[[medicationDetail.unit]]" administration-unit="[[medicationDetail.administrationUnit]]" weekday-codes="[[weekdayCodes]]" occurrences="[[regimenKeys.length]]"-->
+<!--                            quantity-factor=[[quantityFactorValue]] on-regimen-changed="_regimenChanged" on-regimen-delete="_removeRegimen">-->
+<!--                    </ht-regimen-day>-->
                     <ht-regimen-day
                             api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"
                             period-config="[[periodConfig]]" regimen-config="[[regimenConfig]]" regimen="{{medicationContent.medicationValue.regimen}}" key="[[item]]"
@@ -851,6 +857,7 @@
         import _ from 'lodash/lodash'
         import moment from 'moment/src/moment'
         import {parse} from "../../../../bower_components/shadycss/src/css-parse";
+        import {pharmacode} from "../../../../bower_components/JsBarcode/src/barcodes/pharmacode";
 
         class MedicationDetails extends Polymer.TkLocalizerMixin(Polymer.Element) {
             static get is() {
@@ -1089,6 +1096,14 @@
                     commentSeparator: {
                         type: String,
                         value: " - "
+                    },
+                    administrationUnits: {
+                        type: Array,
+                        value: () => []
+                    },
+                    pharmaCodesAdminUnits: {
+                        type: Array,
+                        value: () => []
                     }
                 }
             }
@@ -1497,6 +1512,7 @@
                                 packDisplayValue: updatedAmpp && updatedAmpp.packDisplayValue,
                                 samCode: _.get(updatedAmpp, "amp.code", ""),
                                 samDate: samDate,
+                                amp: updatedAmpp.amp
                             });
                             if (lastAmpps.some(ampp => ampp.publicDmpp.code === medication.id)) {
                                 console.log("CNK ok");
@@ -1522,6 +1538,14 @@
                 }
             }
 
+            _getAdminUnitFromPharmaCode(code) {
+                if(!this.pharmaCodesAdminUnits.length) {
+                    this.pharmaCodesAdminUnits = require("./src/pharmacodes-adminunits.json");
+                }
+                const eHealthCode = (this.pharmaCodesAdminUnits.find(p => p.samCode === code) || {eHealthCode: "00006"}).eHealthCode;
+                return (this.administrationUnits.find(a => a.code === eHealthCode) || this.administrationUnits.find(a => a.code === "000006"));
+            }
+
             _medicationChanged(medication) {
                 if (!medication) return;
 
@@ -1545,6 +1569,9 @@
 
                         const commentForPatient = this._extractCommentForPatient();
 
+                        const pharmaceuticalForm = _.get(medication, "amp.components[0].pharmaceuticalForms[0]", "");
+                        const administrationUnit = this._getAdminUnitFromPharmaCode(_.get(pharmaceuticalForm, "code", ""));
+
                         this.set("medicationDetail", Object.assign(
                             medication,
                             {
@@ -1558,7 +1585,10 @@
                                 renewal: !!this.medicationContent.medicationValue.renewal ? "allowed" : "forbidden",
                                 isConfidential: ((medication.newMedication.tags || []).find(tag => tag.type === "org.taktik.icure.entities.embed.Confidentiality") || {code: ""}).code === "secret",
                                 substitutionAllowed: this.medicationContent.medicationValue.substitutionAllowed ? "true" : "false",
-                                commentForPatient: commentForPatient
+                                commentForPatient: commentForPatient,
+                                // unit: _.get(pharmaceuticalForm, "name[" + this.language + "]", this.localize("uni", "Unités")),
+                                // administrationUnit: this._getAdminUnitFromPharmaCode(_.get(pharmaceuticalForm, "code", ""))
+                                unit: _.get(administrationUnit, "label[" + this.language + "]", this.localize("uni", "Unité(s)"))
                             }
                         ));
                         this.set("initializingDate", false);
@@ -1768,6 +1798,11 @@
                         if (this.timeUnits && this.timeUnits.length) return Promise.resolve();
                         return this.api.code().findCodes("be", "CD-TIMEUNIT")
                             .then(timeUnits => this.push("timeUnits", ..._.orderBy(_.filter(timeUnits, i => ["ns", "us", "ms", "s", "min"].indexOf(_.trim(_.get(i, "code"))) === -1), ['label.fr'], 'asc')))
+                    })
+                    .then(() => {
+                        if (this.administrationUnits && this.administrationUnits.length) return Promise.resolve();
+                        return this.api.code().findCodes("be", "CD-ADMINISTRATIONUNIT")
+                            .then(administrationUnits => this.push("administrationUnits", ...administrationUnits.filter(a => a.version === "1.3")))
                     });
             }
 

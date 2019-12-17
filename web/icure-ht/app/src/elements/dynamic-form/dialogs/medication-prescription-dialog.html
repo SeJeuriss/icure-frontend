@@ -2491,9 +2491,10 @@
                                 return Object.assign(vmpGroup, {
                                         id: id,
                                         intendedName: _.get(vmpGroup, "name[" + this.language + "]", ""),
-                                        unit: _.get(amp, "components[0].pharmaceuticalForms[0].name[" + this.language + "]", ""),
+                                        // unit: _.get(amp, "components[0].pharmaceuticalForms[0].name[" + this.language + "]", ""),
                                         atcCodes: atcCodes,
-                                        allergies: allergies
+                                        allergies: allergies,
+                                        amp: amp
                                     });
                             })
                         })
@@ -2511,7 +2512,8 @@
                             "atcCat": _.get(vmpGroup, "atcCodes[0][0]", ""),
                             "allergies": vmpGroup.allergies,
                             "allergyType": this._getAllergyType(vmpGroup.allergies),
-                            "unit": vmpGroup.unit,
+                            // "unit": vmpGroup.unit,
+                            "amp": vmpGroup.amp,
                             "noSwitchReason": vmpGroup.noSwitchReason,
                             "type": "substance"
                         };
@@ -2544,12 +2546,14 @@
                                 if (row.ampps && row.ampps.length) {
                                     return ampps.concat(row.ampps.map(ampp => {
                                         const now = moment().valueOf();
+                                        // const pharmaceuticalForm = _.get(row, "components[0].pharmaceuticalForms[0]", "");
                                         const publicDmpp = ampp.dmpps.find(dmpp => dmpp.deliveryEnvironment === "P");
                                         const currentReimbursement = publicDmpp && publicDmpp.reimbursements && publicDmpp.reimbursements.length && publicDmpp.reimbursements.find(reimbursement => reimbursement.from < now && (!reimbursement.to || reimbursement.to > now ));
                                         const groupId = row.vmp && row.vmp.vmpGroup && row.vmp.vmpGroup.id || "";
                                         const hasChildren = (level === 0) && !!groupId;
                                         const id = publicDmpp && publicDmpp.codeType === 'CNK' && publicDmpp.code;
-                                        const unit = _.get(row, "components[0].pharmaceuticalForms[0].name[" + this.language + "]", "");
+                                        // const unit = _.get(pharmaceuticalForm, "name[" + this.language + "]", "");
+                                        // const pharmaceuticalCode = _.get(pharmaceuticalForm, "code", "");
                                         const atcCodes = ampp.atcs && ampp.atcs.map(atc => atc.code) || [];
                                         const allergies = this.allergies.filter(allergy => (allergy.cnk && (id === allergy.cnk)) || (atcCodes && atcCodes.some(atcCode => atcCode === allergy.atcCode) || ""));
                                         const dividable = !(_.get(row, "components[0].dividable", "") === "X");
@@ -2565,7 +2569,8 @@
                                             currentReimbursement: currentReimbursement,
                                             intendedName: (ampp.prescriptionName && ampp.prescriptionName[this.language]) || (publicDmpp && publicDmpp.prescriptionName && publicDmpp.prescriptionName[this.language]) || (ampp.abbreviatedName && ampp.abbreviatedName[this.language]) || '',
                                             posologyNote: ampp.posologyNote && ampp.posologyNote[this.language] || "",
-                                            unit: unit,
+                                            // unit: unit,
+                                            // pharmaceuticalCode: pharmaceuticalCode,
                                             atcCodes: atcCodes,
                                             allergies: allergies,
                                             dividable: dividable,
@@ -2641,7 +2646,8 @@
                             "publicPrice": ampp.id && ampp.publicPrice.toFixed(2) + "€",
                             "priceIndex": ampp.id && ampp.priceIndex || 3,
                             "catIcon": this._catIconSamV2(ampp),
-                            "unit": ampp.unit,
+                            // "unit": ampp.unit,
+                            // "pharmaceuticalCode": ampp.pharmaceuticalCode,
                             "amp": ampp.amp,
                             "posologyNote": ampp.posologyNote,
                             "dividable": ampp.dividable,

@@ -80,6 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="dialogs/hubs/ht-pat-hub-transaction-view.html">
 <link rel="import" href="../ht-msg/ht-msg-import-doc-dialog.html">
 <link rel="import" href="dialogs/hubs/ht-pat-hub-detail.html">
+<link rel="import" href="dialogs/hubs/ht-pat-hub-medication-scheme-dialog.html">
 <link rel="import" href="dialogs/hubs/ht-pat-hub-upload.html">
 <link rel="import" href="dialogs/hubs/ht-pat-hub-utils.html">
 <link rel="import" href="./dialogs/ht-pat-fusion-dialog.html">
@@ -963,15 +964,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 display: block;
             }
 
-            #insuranceStatus.medicalHouse, #edmgStatus.edmgPending, #tlStatus.tlPending, #rnConsultStatus.rnConsultPending, #consentStatus.pendingConsent, #sumehrStatus.sumehrChange{
+            #insuranceStatus.medicalHouse, #edmgStatus.edmgPending, #tlStatus.tlPending, #rnConsultStatus.rnConsultPending, #consentStatus.pendingConsent, #sumehrStatus.sumehrChange, #medicationSchemaStatus.medSchChanged{
                 --paper-fab-background: var(--app-status-color-pending);
             }
 
-            #insuranceStatus.noInsurance, #hubStatus.noAccess, #tlStatus.noTl, #consentStatus.noConsent, #edmgStatus.edmgNOk, #rnConsultStatus.rnConsultNOk, #sumehrStatus.noSumehr{
+            #insuranceStatus.noInsurance, #hubStatus.noAccess, #tlStatus.noTl, #consentStatus.noConsent, #edmgStatus.edmgNOk, #rnConsultStatus.rnConsultNOk, #sumehrStatus.noSumehr, #medicationSchemaStatus.noMedSch{
                 --paper-fab-background: var(--app-status-color-nok);
             }
 
-            #insuranceStatus.insuranceOk, #hubStatus.accessOk, #tlStatus.tlOk, #consentStatus.consentOk, #edmgStatus.edmgOk, #rnConsultStatus.rnConsultOk, #sumehrStatus.sumehr {
+            #insuranceStatus.insuranceOk, #hubStatus.accessOk, #tlStatus.tlOk, #consentStatus.consentOk, #edmgStatus.edmgOk, #rnConsultStatus.rnConsultOk, #sumehrStatus.sumehr, #medicationSchemaStatus.medSchOk {
                 --paper-fab-background: var(--app-status-color-ok);
             }
 
@@ -1932,6 +1933,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                         <paper-tooltip position="top" for="hubStatus">Hub</paper-tooltip>
                                         <paper-fab id="sumehrStatus" mini icon="editor:format-list-bulleted" on-tap="_openHubDialogDirectToUpload"></paper-fab>
                                         <paper-tooltip position="top" for="sumehrStatus">[[sumehrStatusDesc]]</paper-tooltip>
+                                        <paper-fab id="medicationSchemaStatus" mini icon="vaadin:pills" on-tap="_openMedicationSchemaDialog"></paper-fab>
+                                        <paper-tooltip position="top" for="medicationSchemaStatus">[[localize('med-sc', 'Medication schema', language]]</paper-tooltip>
                                         <paper-fab id="edmgStatus" mini icon="vaadin:clipboard-pulse" on-tap="_openEdmgDialog"></paper-fab>
                                         <paper-tooltip position="top" for="edmgStatus">[[localize('edmg','e-DMG',language)]]
                                             <template is="dom-if" if="[[refPeriods.length]]">
@@ -2942,6 +2945,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <ht-pat-hub-utils id="htPatHubUtils" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-utils>
         <ht-pat-care-path-detail-dialog id="htPatCarePathDetailDialog" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" contacts="[[contacts]]" current-contact="[[currentContact]]" resources="[[resources]]" selected-care-path-info="[[selectedCarePathInfo]]" active-health-elements="[[activeHealthElements]]" on-save-care-path="_refreshFromServices" on-closing-care-path="refreshPatient"></ht-pat-care-path-detail-dialog>
         <ht-pat-care-path-list-dialog id="htPatCarePathListDialog" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" resources="[[resources]]" active-health-elements="[[activeHealthElements]]" on-open-care-path-detail-dialog="_openCarePathDetail"></ht-pat-care-path-list-dialog>
+        <ht-pat-hub-medication-scheme-dialog id="htPatHubMedicationSchemeDialog" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" resources="[[resources]]" hub-end-point="[[hubEndPoint]]" hub-id="[[hubId]]" hub-application="[[hubApplication]]" hub-package-id="[[hubPackageId]]" medications="[[medications]]" prescriptions="[[prescriptions]]" contacts="[[contacts]]"></ht-pat-hub-medication-scheme-dialog>
 
     </template>
     <script>
@@ -7137,6 +7141,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 const yesterday = moment().subtract(1, 'days');
                 const today = moment();
                 return this.medications.filter(s => s.tags.some(c => c.type === 'CD-ITEM' && c.code === 'medication' && !_.values(s.content).some(c => c && c.medicationValue && (c.medicationValue.endMoment && this.api.moment(c.medicationValue.endMoment).isBefore(yesterday)) || (c.medicationValue.endOfLife && this.api.moment(c.medicationValue.endOfLife).isBefore(today)))));
+            }
+
+            _openMedicationSchemaDialog(e){
+                e.stopPropagation()
+                this.$["htPatHubMedicationSchemeDialog"]._open()
             }
 
         }

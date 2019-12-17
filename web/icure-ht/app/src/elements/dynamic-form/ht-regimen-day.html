@@ -341,7 +341,7 @@
                 </div>
                 <div class="extra-line">
                     <template is="dom-repeat" items="[[extras]]" as="extra">
-                        <ht-regimen id="extra[[extra.code]]" extra="{{extra}}" unit="[[medicationDetail.bufferUnit]]" quantity-factor="[[quantityFactor]]" on-extra-changed="_extraChanged"></ht-regimen>
+                        <ht-regimen id="extra[[extra.code]]" extra="{{extra}}" quantity-factor="[[quantityFactor]]" on-extra-changed="_extraChanged"></ht-regimen>
                     </template>
                 </div>
             </div>
@@ -384,6 +384,10 @@
                     medicationUnit: {
                         type: String,
                         value: ""
+                    },
+                    administrationUnit: {
+                        type: Object,
+                        value: {}
                     },
                     quantityFactor: {
                         type: Object,
@@ -497,7 +501,8 @@
                 const regItem = {
                     administratedQuantity: {
                         quantity: this.quantityFactor.denominator > 1 && this.quantityFactor.numLabel || parseInt(quantity, 10) || "",
-                        unit: this.medicationUnit,
+                        unit: this.medicationUnit
+                        // administrationUnit: this.administrationUnit
                     }
                 };
                 if (timeKey && timeValue) {
