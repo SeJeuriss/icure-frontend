@@ -186,6 +186,9 @@
                     .then(svcs => this.generateMedicationScheme(svcs, version, hubConfig))
                     .then(msMessage => this.putTransactionSet(msMessage, hubConfig))
                     .then(putResponse => this.handleResponse(putResponse, services, hubConfig))
+                    .finally(() => {
+                        this.dispatchEvent(new CustomEvent('update-ms', {detail: {}, bubbles: true, composed: true}))
+                    })
             }
 
             checkMedicationServices(services){
