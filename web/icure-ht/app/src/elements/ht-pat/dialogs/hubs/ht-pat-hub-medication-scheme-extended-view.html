@@ -1809,8 +1809,8 @@
                     const dataProduct = _.get(data, "medicinalproduct", _.get(data, "substanceproduct"));
                     if (!dataProduct) return null;
 
-                    const code = _.get(dataProduct, "intendedcds", []).find(cd => cd.s === "CD_VMPGROUP" || cd.s === "CD_INNCLUSTER" || cd.s === "CD_DRUG_CNK");
-                    const drugType = (code.s === "CD_VMPGROUP") ? "CD-VMPGROUP" :
+                    const code =  _.get(dataProduct, "intendedcds", []).length > 0 && _.get(dataProduct, "intendedcds", [])[0].code ? {value: _.get(dataProduct, "intendedcds", [])[0].code} : _.get(dataProduct, "intendedcds", []).find(cd => cd.s === "CD_VMPGROUP" || cd.s === "CD_INNCLUSTER" || cd.s === "CD_DRUG_CNK");
+                    const drugType = _.get(dataProduct, "intendedcds", []).length > 0 && _.get(dataProduct, "intendedcds", [])[0].type ? _.get(dataProduct, "intendedcds", [])[0].type : (code.s === "CD_VMPGROUP") ? "CD-VMPGROUP" :
                         (code.s === "CD_INNCLUSTER") ? "CD-INNCLUSTER" :
                             (code.s === "CD_DRUG_CNK") ? "CD-DRUG-CNK" :
                                 "compoundPrescription";
@@ -1836,6 +1836,10 @@
                 medication.label = data.endmoment ? "Prescription" : "Medication";
                 medication.id = this.api.crypto().randomUuid();
                 return this.api.contact().service().newInstance(this.user, medication);
+            }
+
+            dashToLoDash(t){
+                return t.replace("-", "_");
             }
 
             _getServiceSignature(svc) {
@@ -1946,12 +1950,17 @@
                 const servicesToUpload = [];
                 _.get(this.currentMedicationScheme, "msElems", []).map(item => {
                     if(_.get(item, 'synchronizationInfo.localToHub', false)){
-                        servicesToUpload.push({});
+                        const med = this._createMedication(item)
+                        servicesToUpload.push(med);
                     }else if(_.get(item, 'synchronizationInfo.hubToLocal', false)){
                         const drugType = !_.isEmpty(_.get(item, 'medicinalproduct', {})) ? "CD-DRUG-CNK" : !_.isEmpty(_.get(item, 'substanceproduct', {})) ? "CD-VMPGROUP" : "compoundPrescription"
+                        //these are to be stored local
+                    }else if(_.get(item, 'synchronizationInfo.localToHub', false)){
+                        const med = this._createMedication(item)
+                        servicesToUpload.push(med);
                     }
                 })
-
+                console.log("servicesToUpload", JSON.stringify(servicesToUpload));
             }
 
             _getResponsibleHcp(authors){
