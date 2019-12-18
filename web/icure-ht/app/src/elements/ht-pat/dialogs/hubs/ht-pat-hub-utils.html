@@ -248,8 +248,8 @@
             hasError(putResponse){
                 //TODO: implement
                 const ack = putResponse.acknowledge;
-                if(!ack.isComplete) console.log("response with error", putResponse);
-                return !ack.isComplete;
+                if(!ack.iscomplete) console.log("response with error", putResponse);
+                return !ack.iscomplete;
             }
 
             // private String medicationSchemeIdOnSafe;
