@@ -1502,7 +1502,7 @@
                     period >= 19700101000000 ? period.toString() : null
 
                if(period >= 100) console.log("Concerned period = ", concernPeriod)
-               return regimen && regimen.filter(r => period == 12 ? _.toLower(r.dayTime) === 'evening' || _.toLower(r.dayTime) === 'night' || _.toLower(r.dayTime) === 'thehourofsleep'  : _.toLower(r.dayTime) === concernPeriod).reduce((tot, r) => tot + Number(r.quantity), 0) || null
+               return regimen && regimen.filter(r => period === 12 ? _.toLower(r.dayTime) === 'evening' || _.toLower(r.dayTime) === 'night' || _.toLower(r.dayTime) === 'thehourofsleep'  : _.toLower(r.dayTime) === concernPeriod).reduce((tot, r) => tot + Number(r.quantity), 0) || null
             }
 
             _getOtherRegimen(regimen){
@@ -1586,6 +1586,8 @@
                 console.log(this.medications)
                 console.log(this.prescriptions)
                 return _.concat(_.get(this, 'medications', []), _.get(this, 'prescriptions', [])).map(med => {
+                    const beginMoment = _.get(med, "content."+this.language+".medicationValue.beginMoment", null);
+                    const endMoment = _.get(med, "content."+this.language+".medicationValue.endMoment", null);
                     return {
                         idKmehr: null,
                         medicationHubId: null,
@@ -1594,8 +1596,8 @@
                         compoundprescription: _.get(med, "content."+this.language+".medicationValue.compoundprescription", null),
                         medicinalproduct: _.get(med, "content."+this.language+".medicationValue.medicinalProduct", null),
                         substanceproduct: _.get(med, "content."+this.language+".medicationValue.substanceproduct", null),
-                        beginmoment: _.get(med, "content."+this.language+".medicationValue.beginMoment", null) ? moment(_.get(med, "content."+this.language+".medicationValue.beginMoment", null), "YYYYMMDD").format('DD/MM/YYYY'): null,
-                        endmoment: _.get(med, "content."+this.language+".medicationValue.endMoment", null) ? moment(_.get(med, "content."+this.language+".medicationValue.endMoment", null), "YYYYMMDD").format('DD/MM/YYYY'): null,
+                        beginmoment: beginMoment ? moment(beginMoment, "YYYYMMDD").format('DD/MM/YYYY'): null,
+                        endmoment: endMoment ? moment(endMoment, "YYYYMMDD").format('DD/MM/YYYY'): null,
                         temporality: null,
                         frequency: null,
                         regimen: [this._composeRegimen(_.get(med, "content."+this.language+".medicationValue.regimen", []))],
@@ -1611,7 +1613,7 @@
                         usePresent: null,
                         useTexts: [],
                         date: null,
-                        beginTimeStamp: _.get(med, "content."+this.language+".medicationValue.beginMoment", null),
+                        beginTimeStamp: beginMoment,
                         authors: [],
                         uniqId: this.api.crypto().randomUuid(),
                         synchronizationInfo: {
@@ -1655,6 +1657,7 @@
                 //  item[1]: medication info (medication, dates, posology, regimen, frequency, ...)
                 //  item[2]: medication use /optional (?)
                 const elems = msElemTrs.map(elTr => {
+                    const dateFromHub = this._getDateFromHub(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null));
                     let el = {
                         idKmehr: _.get(_.get(elTr, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
                         medicationHubId: _.get(_.get(elTr, 'ids', []).find(id => _.get(id, 's', null) === "LOCAL"), 'value', null),
@@ -1676,7 +1679,7 @@
                         usePresent: !!_.get(_.get(elTr, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0),
                         useTexts: _.get(_.get(_.get(elTr, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0), 'texts', []),
                         date: null,
-                        beginTimeStamp: this._getDateFromHub(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null)) ? moment(this._getDateFromHub(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null)), 'DD/MM/YYYY').format('YYYYMMDD') : null,
+                        beginTimeStamp: dateFromHub ? moment(dateFromHub, 'DD/MM/YYYY').format('YYYYMMDD') : null,
                         authors: _.get(elTr, 'author.hcparties', []),
                         uniqId: this.api.crypto().randomUuid(),
                         synchronizationInfo: {
@@ -1799,7 +1802,7 @@
                             quantity: dataReg.quantity,
                             administrationUnit: this.api.code().normalize(`CD-ADMINISTRATIONUNIT|${dataReg.administrationUnit}|1`)
                         }},
-                        dataReg && dataReg.dayTime ? ( dataReg.dayTime.millisOfDay !== null ? {timeOfDay: +moment(dataReg.dayTime.millisOfDay).format('HHmmss')} : {dayPeriod: this.api.code().normalize(`CD-DAYPERIOD|${dataReg.dayTime.toLowerCase()}|1`)} ) : {})
+                        dataReg && dataReg.dayTime ? ( dataReg.dayTime.millisOfDay || dataReg.dayTime.millisOfDay === 0 ? {timeOfDay: +moment(dataReg.dayTime.millisOfDay).format('HHmmss')} : {dayPeriod: this.api.code().normalize(`CD-DAYPERIOD|${dataReg.dayTime.toLowerCase()}|1`)} ) : {})
                     );
                 }));
 
@@ -1828,7 +1831,7 @@
                     Object.assign(medicationValue, data.medicinalproduct ? {medicinalProduct: product} : {substanceProduct: product});
                     Object.assign(medicationValue, {
                         posology: _.get(data, "posology.text.value", ""),
-                        beginMoment: moment(data.beginmoment, 'DD/MM/YYYY', true).format('YYYYMMDD')
+                        beginMoment: data.beginmoment ? moment(data.beginmoment, 'DD/MM/YYYY', true).format('YYYYMMDD') : null
                     });
                     if (data.endmoment) {
                         Object.assign(medicationContent.medicationValue, {endMoment: moment(data.endmoment, 'DD/MM/YYYY', true).format('YYYYMMDD')});
@@ -1890,7 +1893,7 @@
                     }
                     return this.api.contact().modifyContact(contact);
                 } else {
-                    const contactDate = parseInt(moment(medicationValue.beginMoment, 'YYYYMMDD', true).format("YYYYMMDDHHmmss"));
+                    const contactDate = medicationValue.beginMoment ? parseInt(moment(medicationValue.beginMoment, 'YYYYMMDD', true).format("YYYYMMDDHHmmss")) : null;
                     return this.api.contact().newInstance(this.user, this.patient, {
                         openingDate: contactDate,
                         closingDate: contactDate,
