@@ -1981,7 +1981,7 @@
                 //this.set('isLoading',tru0
                 this.hubConfig = hubConfig ;
 
-                this.$["htPatHubUtils"].putMedicationScheme(this.hubConfig, servicesToUpload, this.msElems.version).then(svcs => console.log("services after processing", svcs));
+                this.$["htPatHubUtils"].putMedicationScheme(this.hubConfig, servicesToUpload, this.currentMedicationScheme.version).then(svcs => console.log("services after processing", svcs));
             }
 
             _getResponsibleHcp(authors){
