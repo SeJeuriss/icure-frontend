@@ -189,7 +189,19 @@
             }
 
             checkMedicationServices(services){
-                //TODO: implement
+                services.forEach(s => {
+                    _.values(s.content).forEach(c => {
+                        if (c.medicationValue) {
+                            if(c.medicationValue.beginMoment === 'Invalid date') {
+                                c.medicationValue.beginMoment = +new Date()
+                            }
+                            if(c.medicationValue.endMoment === 'Invalid date') {
+                                delete c.medicationValue.endMoment
+                            }
+                        }
+                        delete c.stringValue
+                    })
+                })
                 return Promise.resolve(services);
             }
 
@@ -203,7 +215,11 @@
                                 comment: "medicationscheme",
                                 recipientSafe: hubConfig.name,
                                 version: version
-                            }).then(output => Promise.resolve(enc.decode(output))).catch( error=> Promise.resolve({message:"error on generate", error: error}))
+                            }).then(output => {
+                                return Promise.resolve(enc.decode(output));
+                            }).catch(error=> {
+                                return Promise.resolve({message: "error on generate", error: error});
+                            })
                         ))
             }
 
