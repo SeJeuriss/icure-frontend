@@ -349,7 +349,7 @@
                 background-color: rgba(0, 0, 0, .2);
                 box-shadow: var(--app-shadow-elevation-1);
             }
-            
+
             @keyframes inputShadows{
                 from{ box-shadow: inset 0 0 0 rgba(0, 0, 0, .2); }
                 to{ box-shadow: inset 0 0 50px rgba(0, 0, 0, .2); }
@@ -1627,11 +1627,12 @@
             _composeRegimen(regimen){
                 let formatedRegimen = []
                 regimen.map(reg => {
+                    const administrationUnit = _.get(reg, 'administratedQuantity.unit', null);
                     formatedRegimen.push({
                         dayTime: _.get(reg, 'dayPeriod.code', null),
                         dayNumber : null,
                         quantity: _.get(reg, 'administratedQuantity.quantity', null),
-                        administrationUnit: _.get(reg, 'administratedQuantity.unit', null),
+                        administrationUnit: administrationUnit && administrationUnit.match(/[0-9]+|cm|dropsperminute|gm|internationalunits|mck\/h|mck\/kg\/minute|measure|mg\/h|ml\/h|tbl|tsp|unt\/h|mg|mg\/ml/) ? administrationUnit : '00006',
                         weekDay: null,
                         weekNumber: null
                     })
@@ -1793,13 +1794,13 @@
                 const medicationValue = medicationContent.medicationValue;
 
                 data.regimen && data.regimen.length && data.regimen.forEach(subReg => subReg && subReg.length && subReg.forEach(dataReg => {
-                    medicationValue.regimen.push({
+                    medicationValue.regimen.push(Object.assign({
                         administratedQuantity: {
                             quantity: dataReg.quantity,
                             administrationUnit: this.api.code().normalize(`CD-ADMINISTRATIONUNIT|${dataReg.administrationUnit}|1`)
-                        },
-                        dayPeriod: this.api.code().normalize(`CD-DAYPERIOD|${dataReg.dayTime.toLowerCase()}|1`)
-                    });
+                        }},
+                        dataReg && dataReg.dayTime ? ( dataReg.dayTime.millisOfDay !== null ? {timeOfDay: +moment(dataReg.dayTime.millisOfDay).format('HHmmss')} : {dayPeriod: this.api.code().normalize(`CD-DAYPERIOD|${dataReg.dayTime.toLowerCase()}|1`)} ) : {})
+                    );
                 }));
 
                 const isMedication = !data.endmoment;
@@ -1826,7 +1827,7 @@
 
                     Object.assign(medicationValue, data.medicinalproduct ? {medicinalProduct: product} : {substanceProduct: product});
                     Object.assign(medicationValue, {
-                        instructionsForPatient: _.get(data, "posology.text.value", ""),
+                        posology: _.get(data, "posology.text.value", ""),
                         beginMoment: moment(data.beginmoment, 'DD/MM/YYYY', true).format('YYYYMMDD')
                     });
                     if (data.endmoment) {
@@ -1950,15 +1951,12 @@
                 console.log("currentMedicationScheme", JSON.stringify(this.currentMedicationScheme));
                 const servicesToUpload = [];
                 _.get(this.currentMedicationScheme, "msElems", []).map(item => {
-                    if(_.get(item, 'synchronizationInfo.localToHub', false)){
+                    if(_.get(item, 'synchronizationInfo.localToHub', false) || _.get(item, 'synchronizationInfo.availableOnHub', false)){
                         const med = this._createMedication(item)
                         servicesToUpload.push(med);
                     }else if(_.get(item, 'synchronizationInfo.hubToLocal', false)){
                         const drugType = !_.isEmpty(_.get(item, 'medicinalproduct', {})) ? "CD-DRUG-CNK" : !_.isEmpty(_.get(item, 'substanceproduct', {})) ? "CD-VMPGROUP" : "compoundPrescription"
                         //these are to be stored local
-                    }else if(_.get(item, 'synchronizationInfo.localToHub', false)){
-                        const med = this._createMedication(item)
-                        servicesToUpload.push(med);
                     }
                 })
                 console.log("servicesToUpload", JSON.stringify(servicesToUpload));
