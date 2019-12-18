@@ -1264,6 +1264,9 @@
     <script>
         import * as models from 'icc-api/dist/icc-api/model/models';
         import moment from 'moment/src/moment';
+        import hu from "../../../../../bower_components/moment/src/locale/hu";
+        const md5 = require('md5');
+
 
         class HtPatHubMedicationSchemeExtendedView extends Polymer.TkLocalizerMixin(Polymer.Element) {
             static get is() {
@@ -1776,8 +1779,10 @@
             }
 
             _createMedication(data) {
-                console.log("data", data);
-                const medicationContent = {medicationValue: {regimen: [], substitutionAllowed: true}, stringValue: data.medicationHubId};
+                const medicationContent = {
+                    medicationValue: {regimen: [], substitutionAllowed: true},
+                    stringValue: data.medicationHubId
+                };
                 const medication = {
                     content: _.fromPairs([[this.language, medicationContent]]),
                     codes: [],
@@ -1818,7 +1823,7 @@
                     medication.codes.push(this.api.code().normalize(data.endmoment ? "CD-ITEM|medication|1" : "ICURE|PRESC|1"));
                     medication.tags.push(this.api.code().normalize(`${drugType}|${code.value}|1`));
 
-                    Object.assign(medicationValue, data.medicinalproduct ? {medicinalproduct: product} : {substanceproduct: product});
+                    Object.assign(medicationValue, data.medicinalproduct ? {medicinalProduct: product} : {substanceProduct: product});
                     Object.assign(medicationValue, {
                         instructionsForPatient: _.get(data, "posology.text.value", ""),
                         beginMoment: moment(data.beginmoment, 'DD/MM/YYYY', true).format('YYYYMMDD')
@@ -1828,31 +1833,70 @@
                     }
                 }
 
-                const contactDate = parseInt(moment(data.beginmoment, 'DD/MM/YYYY', true).format("YYYYMMDDHHmmss"));
-                medication.label = data.endmoment ? "Prescription": "Medication";
+                medication.label = data.endmoment ? "Prescription" : "Medication";
                 medication.id = this.api.crypto().randomUuid();
-                const service = this.api.contact().service().newInstance(this.user, medication);
+                return this.api.contact().service().newInstance(this.user, medication);
+            }
 
-                //@todo: check if that service already exists
-                const createdContact = this.contacts.find(ctc => ctc.services.some(svc => {
-                    const medicationValue = this.api.contact().medicationValue(svc, this.language);
-                    return medicationValue && medicationValue.stringValue === data.medicationHubId;
+            _getServiceSignature(svc) {
+                // build with intendedName, beginMoment, ... to complete
+                const medicationValue = this.api.contact().medicationValue(svc, this.language);
+                const intendedName = _.get(medicationValue, "medicinalProduct.intendedname" , _.get(medicationValue, "substanceProduct.intendedname", _.get(medicationValue, "compoundPrescription", "")));
+                return md5(JSON.stringify([intendedName, medicationValue.beginMoment, (medicationValue.endMoment || "")]));
+            }
+
+            _getServiceContact(hubId) {
+                return this.contacts.find(ctc => ctc.services.some(svc => {
+                    const content = this.api.contact().preferredContent(svc, this.language);
+                    return content && content.stringValue === hubId;
                 }));
+            }
 
-                if (createdContact) {
-                    // @todo
-                    // this.api.contact().modifyContact(createdContact)
+            _compareMedication(hubSvc) {
+                const hubId = (this.api.contact().preferredContent(hubSvc, this.language) || {stringValue: ""}).stringValue;
+                let contact = this._getServiceContact(hubId);
+                // common compare convention: 0 means identical.
+                if (!contact) return 1;
+                const localSvc = contact.services.find(svc => {
+                    const content = this.api.contact().preferredContent(svc, this.language);
+                    return content && content.stringValue === hubId;
+                });
+                if (!localSvc) return 1;
+                return this._getServiceSignature(localSvc) === this._getServiceSignature(hubSvc) ? 0 : 1;
+            }
+
+            _overrideLocalMedication(hubSvc) {
+                //@todo: check if that service already exists
+                const medicationValue = this.api.contact().medicationValue(hubSvc, this.language);
+                const hubId = (this.api.contact().preferredContent(hubSvc, this.language) || {stringValue: ""}).stringValue;
+                let contact = this._getServiceContact(hubId);
+                if (contact) {
+                    const localSvc = contact.services.find(svc => {
+                        const content = this.api.contact().preferredContent(svc, this.language);
+                        return content && content.stringValue === hubId;
+                    });
+                    contact.services.splice(contact.services.indexOf(localSvc), 1, hubSvc);
+                    const csc = contact.subContacts.find(csc => csc.services.indexOf(localSvc.id) > -1);
+                    if (csc) {
+                        csc.services.splice(csc.services.indexOf(localSvc.id), 1, {serviceId: hubSvc.id});
+                    } else {
+                        contact.subContacts.push({services: [{serviceId: hubSvc.id}]});
+                    }
+                    return this.api.contact().modifyContact(contact);
                 } else {
-                    const contact = this.api.contact().newInstance(this.user, this.patient, {
+                    const contactDate = parseInt(moment(medicationValue.beginMoment, 'YYYYMMDD', true).format("YYYYMMDDHHmmss"));
+                    return this.api.contact().newInstance(this.user, this.patient, {
                         openingDate: contactDate,
                         closingDate: contactDate,
                         author: this.user.id,
                         responsible: this.user.healthcarePartyId,
                         subContacts: []
-                    });
-                    (contact.services || (contact.services = [])).push(service);
-                    this.api.contact().createContactWithUser(this.user, contact)
-                        .then(contact => this.api.register(contact, "contact"));
+                    })
+                        .then(contact => {
+                            (contact.services || (contact.services = [])).push(hubSvc);
+                            contact.subContacts.push({services: [{serviceId: hubSvc.id}]});
+                            return this.api.contact().createContactWithUser(this.user, contact);
+                        })
                 }
             }
 
@@ -1864,7 +1908,12 @@
                     let info  =_.get(data, 'synchronizationInfo', null)
                     _.get(info, 'hubToLocal', false) ? info.hubToLocal = false : info.hubToLocal = true;
 
-                    const medication = this._createMedication(data);
+                    const hubSvc = this._createMedication(data);
+                    if (this._compareMedication(hubSvc) !== 0) {
+                        // @todo: ask user which one to keep
+                        // for example, user wants to update local medication
+                        this._overrideLocalMedication(hubSvc);
+                    }
 
                 }
 
