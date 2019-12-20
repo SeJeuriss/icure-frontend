@@ -1736,7 +1736,7 @@
                     //link to msElem by idKmehr
                     const lnk = _.get(_.head(_.get(el, 'lnks', [])), 'url', null)
 
-                    const matches = lnk.match(/(\d+)/);
+                    const matches = lnk && lnk.match(/(\d+)/) || [];
                     const lnkIdKmehr = _.size(matches) > 0 ? _.head(matches) : null;
                     if(lnkIdKmehr){
                         let trToSusp = _.get(ms, 'msElems', []).find(elm => _.get(elm, 'idKmehr', null) === lnkIdKmehr);
