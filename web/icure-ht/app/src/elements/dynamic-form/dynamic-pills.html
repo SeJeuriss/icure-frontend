@@ -9,6 +9,10 @@
 <dom-module id="dynamic-pills">
     <template>
         <style include="icpc-styles">
+            :host {
+                --pill-height: 12px;
+            }
+
             span.he-pill {
                 border-radius: 10px;
                 -webkit-border-radius: 10px;
@@ -22,7 +26,7 @@
                 text-overflow: ellipsis;
                 line-height: 1;
                 margin-right: 4px;
-                height: 12px;
+                height: var(--pill-height, 12px);
                 cursor: pointer;
             }
 
@@ -41,12 +45,28 @@
             .exclude{
                 text-decoration: line-through;
             }
+
+            .multiline {
+                display: flex;
+                flex-flow: column;
+            }
+
         </style>
 
-        <template is="dom-repeat" items="[[healthElements]]" as="he">
-            <template is="dom-if" if="[[he.descr]]">
-                <span id="pill-[[he.id]]" class$="form-title-bar-btn he-pill [[_heColourStyle(he, highlightedHes.*)]] [[_isExcluded(he)]]" on-tap="_highlight">[[he.descr]]<iron-icon id="pill-[[he.id]]" class="closePillsBtn" icon="vaadin:close" on-tap="_deletePills"></iron-icon></span>
-
+        <template is="dom-if" if="[[newStyle]]">
+            <div class="multiline">
+                <template is="dom-repeat" items="[[healthElements]]" as="he" id="pills">
+                    <template is="dom-if" if="[[he.descr]]">
+                        <span id="pill-[[he.id]]" class$="form-title-bar-btn he-pill [[_heColourStyle(he, highlightedHes.*)]] [[_isExcluded(he)]]" on-tap="_highlight"><iron-icon id="pill-[[he.id]]" class="closePillsBtn" icon="vaadin:close" on-tap="_deletePills"></iron-icon>[[he.descr]]</span>
+                    </template>
+                </template>
+            </div>
+        </template>
+        <template is="dom-if" if="[[!newStyle]]">
+            <template is="dom-repeat" items="[[healthElements]]" as="he" id="pills">
+                <template is="dom-if" if="[[he.descr]]">
+                    <span id="pill-[[he.id]]" class$="form-title-bar-btn he-pill [[_heColourStyle(he, highlightedHes.*)]] [[_isExcluded(he)]]" on-tap="_highlight">[[he.descr]]<iron-icon id="pill-[[he.id]]" class="closePillsBtn" icon="vaadin:close" on-tap="_deletePills"></iron-icon></span>
+                </template>
             </template>
         </template>
     </template>
@@ -67,6 +87,10 @@ class DynamicPill extends Polymer.TkLocalizerMixin(Polymer.Element) {
             healthElements: {
                 type: Array,
                 value: () => []
+            },
+            newStyle: {
+                type: Boolean,
+                value: false
             }
         };
     }
@@ -77,6 +101,19 @@ class DynamicPill extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
     ready() {
         super.ready();
+    }
+
+    render(healthElements = null) {
+        console.log("render(1)");
+        if (healthElements) {
+            this.set("healthElements", healthElements);
+            console.log("render(2):" + healthElements)
+        }
+        const pills = this.shadowRoot.querySelector('#pills');
+        if (pills) {
+            pills.render();
+            console.log("render(3)");
+        }
     }
 
     _highlight(e) {

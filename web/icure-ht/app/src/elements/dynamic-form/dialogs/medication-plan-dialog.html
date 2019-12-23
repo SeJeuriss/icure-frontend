@@ -17,6 +17,10 @@
 <link rel="import" href="../../../styles/paper-tabs-style.html">
 <link rel="import" href="../../../styles/paper-input-style.html">
 
+<link rel="import" href="../dynamic-link.html">
+<link rel="import" href="../dynamic-pills.html">
+
+
 <link rel="import" href="../../../elements/ht-spinner/ht-spinner.html">
 
 <dom-module id="medication-plan-dialog">
@@ -240,7 +244,7 @@
                 font-weight: 700;
                 background-color: var(--app-background-color- );
                 z-index: 2;
-
+                height: 24px;
             }
 
             .th:first-child {
@@ -282,9 +286,20 @@
                 display: flex;
                 flex-flow: row nowrap;
                 color: var(--app-text-color);
+                min-height: 24px;
+            }
+
+            /*
+            .tr {
+                position: relative;
+                width: 100%;
+                display: flex;
+                flex-flow: row nowrap;
+                color: var(--app-text-color);
                 z-index: 1;
                 height: 24px;
             }
+            */
 
             /* .tr:not(.category):not(.th):not(.old) .td {
                 color: var(--app-text-color-light);
@@ -341,12 +356,31 @@
                 padding: 0.5em;
                 overflow: hidden;
                 min-width: 0px;
+                word-break: break-word;
+                white-space: nowrap;
+                border-right: 1px solid var(--app-background-color-dark);
+                font-size: var(--font-size-normal);
+            }
+
+            /*
+            .td {
+                position: relative;
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                justify-content: center;
+                flex-grow: 1;
+                flex-basis: 0;
+                padding: 0.5em;
+                overflow: hidden;
+                min-width: 0px;
                 z-index: 2;
                 word-break: break-word;
                 white-space: nowrap;
                 border-right: 1px solid var(--app-background-color-dark);
                 font-size: var(--font-size-normal);
             }
+            */
 
             .td span{
                 text-overflow: ellipsis;
@@ -357,6 +391,10 @@
 
             .td span.left{
                 text-align: left;
+            }
+
+            .td .links .pills dynamic-pills{
+                --pill-height: 14px;
             }
 
             .td-input{
@@ -421,6 +459,7 @@
                 top: calc(2 * 24px);
                 z-index: 2;
                 background: white;
+                height: 24px;
             }
 
             .reimbursed{
@@ -790,6 +829,52 @@
                 border-bottom: 1px solid var(--app-background-color-darker);
             }
 
+            paper-listbox table {
+
+            }
+            paper-listbox td {
+
+            }
+            paper-listbox tr {
+
+            }
+            paper-item table {
+
+            }
+            paper-item td {
+
+            }
+            paper-item tr {
+
+            }
+
+            .form-title-bar-btn {
+                height: 20px;
+                width: 20px;
+                padding: 2px;
+            }
+
+            .form-title-bar-btn paper-listbox{
+                padding: 0;
+            }
+
+            .form-title-bar-btn paper-listbox paper-item{
+                padding: 0 8px;
+                font-size: var(--font-size-normal);
+            }
+
+            .form-title-bar-btn paper-listbox paper-item iron-icon{
+                height: 12px;
+                width: 12px;
+                padding: 0;
+                margin-right: 4px;
+            }
+
+            .filterHealthElement {
+                padding-top: 5px;
+                padding-left: 4px;
+            }
+
         </style>
 
         <paper-dialog id="medication-plan" always-on-top="true" no-cancel-on-outside-click="true">
@@ -810,6 +895,7 @@
                 <template is="dom-if" if="{{_isEqual(selectedTab,1)}}">
                     <div class="header-content">
                         <paper-input always-float-label id="filter" label="[[localize('search','Search',language)]]" value="{{filterPresentValue}}" autofocus></paper-input>
+                        <vaadin-combo-box id="filterHealthElement" class="filterHealthElement" filtered-items="[[linkables]]" item-label-path="descr" item-value-path="id" label="[[localize('healthElement','healthElement',language)]]" value="{{filterHealthElement}}" on-value-changed="_filterHealthElementChanged"></vaadin-combo-box>
                         <vaadin-date-picker id="startDatePresent" value="{{startDatePresent}}" max="[[endDatePresent]]" label="[[localize('from2', 'Du', language)]]"></vaadin-date-picker>
                         <vaadin-date-picker id="endDatePresent" value="{{endDatePresent}}" min="[[startDatePresent]]" label="[[localize('to2', 'Au', language)]]"></vaadin-date-picker>
                     </div>
@@ -836,10 +922,10 @@
                                     <span>[[localize('mom_dinner','Dinner',language)]]</span>
                                 </div>
                                 <div class="td" style="flex-grow: 2;">
-
+                                </div>
+                                <div class="td" style="flex-grow: 3;">
                                 </div>
                                 <div class="td" style="flex-grow: 4;">
-
                                 </div>
                             </div>
                             <div class="tr th">
@@ -883,6 +969,9 @@
                                 <div class="td" style="flex-grow: 2;">
                                     <span>[[localize('endDate','End Date',language)]]</span>
                                 </div>
+                                <div class="td" style="flex-grow: 3;">
+                                    <span>[[localize('healthElements','healthElements',language)]]</span>
+                                </div>
                                 <div class="td td-comments" style="flex-grow: 4; justify-content: space-between;">
                                     <span class="left">[[localize('com','Comments',language)]]</span>
                                     <paper-icon-button class="add-period-btn" on-tap="" icon="add-circle"></paper-icon-button>
@@ -912,6 +1001,7 @@
                                     <div class="td"></div>
                                     <div class="td"></div>
                                     <div class="td" style="flex-grow: 2;"></div>
+                                    <div class="td" style="flex-grow: 3;"></div>
                                     <div class="td" style="flex-grow: 4;"></div>
                                 </div>
                                 <template is="dom-repeat" items="[[medicationsWithPosology.meds]]" as="m">
@@ -919,6 +1009,26 @@
                                     <div class="td reimbursed">
                                         <iron-icon id="reimbursedStatus" icon="icons:euro-symbol" class$="reimbursed-status [[_hasValidChap4Class(m.medication)]]"></iron-icon>
                                         <paper-tooltip for="reimbursedStatus">[[_chap4Status(m.medication)]]</paper-tooltip>
+                                        <paper-tooltip position="bottom" for="linkhe">[[localize('link_he','Link Health Element',language)]]</paper-tooltip>
+                                        <paper-menu-button class="form-title-bar-btn" horizontal-align="right" dynamic-align="true" vertical-offset="26">
+                                            <paper-icon-button id="linkhe" class="form-title-bar-btn" icon="icons:link" slot="dropdown-trigger" alt="menu"></paper-icon-button>
+                                            <paper-listbox slot="dropdown-content">
+                                                <template is="dom-repeat" items="[[linkables]]" as="he">
+                                                    <template is="dom-if" if="[[he.id]]">
+                                                        <paper-item id="[[he.id]]" data-service="[[m.medication.id]]" class$="link [[_isExcluded(he)]]" on-tap="_link">
+                                                            <label class$="colour-code [[he.colour]]">
+                                                                <span></span>
+                                                            </label>[[he.descr]]</paper-item>
+                                                    </template>
+                                                    <template is="dom-if" if="[[!he.id]]">
+                                                        <paper-item id="[[he.idService]]" data-service="[[m.medication.id]]" class$="link [[he.colour]]" on-tap="_link">
+                                                            <label class="colour-code">
+                                                                <span></span>
+                                                            </label>[[he.descr]]</paper-item>
+                                                    </template>
+                                                </template>
+                                            </paper-listbox>
+                                        </paper-menu-button>
                                     </div>
                                     <div class="td td--medicine" style="flex-grow: 5;">
                                         <span class="left">[[_serviceDescription(m.medication)]]</span>
@@ -970,6 +1080,13 @@
                                         </div>
                                     </template>
                                     <div class="td" style="flex-grow: 2;"><span>[[_getMedicationClosingDate(m.medication)]]</span></div>
+                                    <div class="td" style="flex-grow: 3;">
+                                        <div class="links">
+                                            <div class="pills">
+                                                <dynamic-pills id="pills_[[m.medication.id]]" new-style="true" data-service="[[m.medication.id]]" health-elements="[[_getLinkedHealthElements(m.medication, refresher)]]" on-unlink-to-health-element="_unlink"></dynamic-pills>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="td td--comments" style="flex-grow: 4;"><span class="left">[[m.medication.instructionForPatient]]</span></div>
                                 </div>
                             </template>
@@ -1147,6 +1264,10 @@
                         type: Array,
                         value: () => []
                     },
+                    allMedications: {
+                        type: Array,
+                        value: () => []
+                    },
                     hcp:{
                         type: Object
                     },
@@ -1283,6 +1404,14 @@
                         type: Array,
                         value: []
                     },
+                    allPrescriptions:{
+                        type: Array,
+                        value: []
+                    },
+                    filterHealthElement: {
+                        type: String,
+                        value: ""
+                    },
                     filterPresentValue:{
                         type: String,
                         value: ""
@@ -1297,13 +1426,27 @@
                     },
                     presentList:{
                         type: Array,
-                        value : []
+                        value: []
+                    },
+                    linkables: {
+                        type: Array,
+                        value: []
+                    },
+                    refresher: {
+                        type: Number,
+                        value: 0
                     }
                 }
             }
 
             static get observers() {
-                return ['_medicationsChanged(medications.*)', '_patientPlanChanged(medicationClassesWithPosology.*,prescriptionsClassesWithPosology.*)','_prescriptionsChanged(prescriptions.*)','_getPrescrMed(medicationClassesWithPosology.*,prescriptionsClassesWithPosology.*,filterPresentValue,startDatePresent,endDatePresent)']
+                return [
+                    '_medicationsChanged(allMedications.*)',
+                    '_patientPlanChanged(medicationClassesWithPosology.*,' +
+                    'prescriptionsClassesWithPosology.*)',
+                    '_prescriptionsChanged(allPrescriptions.*)',
+                    '_getPrescrMed(medicationClassesWithPosology.*,' +
+                    'prescriptionsClassesWithPosology.*,filterPresentValue,startDatePresent,endDatePresent)']
             }
 
             constructor() {
@@ -1412,12 +1555,22 @@
 
             }
 
+            _setColors(healthElements, codes) {
+                healthElements.forEach(he => {
+                    const icp = _.get(he, 'codes', []).find(c => c.type === 'ICPC' || c.type === 'ICPC2');
+                    if (_.get(icp, 'code', null)) {
+                        const code = codes.find(c => c.subCodes.includes(icp.code));
+                        if (code)
+                            he.colour = _.get(code, 'descr.colour', null);
+                    }
+                })
+            }
+
             setContacts(contacts) {
 
                 let prescriptions = [];
 
                 this._contacts = contacts;
-
                 this._contacts.forEach(contact => {
                     _.get(contact, "subContacts", []).forEach(subContact => {
                         _.get(subContact, "services", []).forEach(service => {
@@ -1430,6 +1583,7 @@
                 })
 
                 this.set("isLoading", true)
+                console.log("loading");
 
                 if (this.shadowRoot.querySelector("#prescription-history"))
                     this.shadowRoot.querySelector("#prescription-history").setPrescriptions([]);
@@ -1438,7 +1592,6 @@
                     .then(hcp => this.set("hcp", hcp))
                     .then(() => (_.get(this.api, "tokenId", null) && _.get(this.patient, 'ssin', null) ? this.api.fhc().Recipecontroller().listOpenPrescriptionsByPatientUsingGET(_.get(this.api, 'keystoreId', null), _.get(this.api, 'tokenId', null), "persphysician", _.get(this.hcp, 'nihii', null), _.get(this.hcp, 'ssin', null), _.get(this.hcp, 'lastName', null), _.get(this.patient, 'ssin', null), _.get(this.api, 'credentials.ehpassword', null)) : Promise.resolve([])))
                     .then(openPrescriptions => {
-                        console.log(openPrescriptions);
                         prescriptions.forEach(prescription => {
                             const found = !!_.get(prescription, 'rid', null) && openPrescriptions.some(p => p.rid === _.get(prescription, 'rid', null));
                             const medicationValue = this.api.contact().preferredContent(prescription.service, this.language).medicationValue;
@@ -1454,6 +1607,7 @@
                             else if ((status & STATUS_SENT) && !(status & STATUS_REVOKED))
                                 status |= STATUS_DELIVERED;
                             if (status & STATUS_DELIVERED)
+                                status = STATUS_DELIVERED | STATUS_SENT;
                                 status = STATUS_DELIVERED | STATUS_SENT;
                             if (status & STATUS_REVOKED)
                                 status = STATUS_REVOKED | STATUS_SENT;
@@ -1485,11 +1639,40 @@
                         return Promise.all(promises).then(() => {
                             this.shadowRoot.querySelector("#prescription-history").hcp = this.hcp;
                             this.shadowRoot.querySelector("#prescription-history").setPrescriptions(prescriptions);
-                            Promise.all(getFeedback).then((fbs) => {
-                                console.log("get feedbacks");
+                            return Promise.all(getFeedback).then((fbs) => {
+                                this.links = [];
+                                const services = prescriptions.map(p => p.service);
+                                const contacts = _.uniq(prescriptions.map(p => p.contact));
+                                const subContacts = contacts.flatMap(c => _.get(c, 'subContacts', []).filter(sc => sc.healthElementId));
+                                this.links = services.map(service => {
+                                    return {
+                                        service: service,
+                                        hes: subContacts.filter(sc => _.get(sc, 'services', []).some(s => s.serviceId === service.id)).map(sc => sc.healthElementId)
+                                    }
+                                })
+                                const healthElementsIds = _.uniq(subContacts.map(sc => sc.healthElementId));
+                                const getHealthElements = healthElementsIds.map(id => this.api.helement().getHealthElement(id));
+                                return Promise.all(getHealthElements).then(healthElements => {
+                                    this.links.forEach(link => {
+                                        link.hes = link.hes.map(id => healthElements.find(he => he.id === id));
+                                    })
+                                    const codes = _.compact(healthElements.map(he => he.codes.find(c => c.type === 'ICPC' || c.type === 'ICPC2'))).map(x => x.code);
+                                    return this.api.code().icpcChapters(codes).then(resCodes => {
+                                        this.links.forEach(link => {
+                                            link.colors = this._setColors(link.hes, resCodes);
+                                            // const pills = this.shadowRoot.querySelector('#pills_' + link.service.id);
+                                            // if (pills)
+                                            //     pills.render(link ? link.hes : null);
+                                        })
+                                        console.log("loaded");
+                                    })
+                                })
                             });
                         }).finally(() => {
+                            this._getPrescrMed();
                             this.set("isLoading", false)
+                            this.set("refresher", this.refresher + 1);
+                            console.log("refresh");
                         });
                     })
             }
@@ -1639,35 +1822,83 @@
                 return regsTable
             }
 
+            _updateLinks(link) {
+                const pills = this.shadowRoot.querySelector('#pills_' + link.service.id);
+                if (pills)
+                    pills.render(link ? link.hes : null);
+                this.set("refresher", this.refresher + 1);
+                this.dispatchEvent(new CustomEvent("update-service", {
+                    detail: {
+                        service: link.service,
+                        hes: link.hes
+                    },
+                    bubbles: true,
+                    composed: true
+                }))
+            }
+
+            _link(e) {
+                const he = this.linkables.find(he => he.id === e.currentTarget.id);
+                const link = this.links.find(link => link.service.id === e.target.dataService);
+                if (!link) return;
+                if (!link.hes.some(he => he.id === e.target.id))
+                    link.hes.push(he);
+                this._updateLinks(link);
+            }
+
+            _unlink(e) {
+                const id = _.get(e, "detail.healthElement.id", null);
+                if (!id) return;
+
+                const link = this.links.find(link => link.service.id === e.target.dataService);
+                if (!link) return;
+                link.hes = link.hes.filter(he => he.id !== id);
+                this._updateLinks(link);
+            }
+
+            _filterHealthElementChanged(e) {
+                const filter = this.shadowRoot.querySelector('#filterHealthElement');
+                if (!filter) return;
+                this.filterHealthElement = filter.value;
+                this._getPrescrMed();
+            }
+
+            _filterHealthElement(service) {
+                const link = this.links.find(link => link.service.id === service.id);
+                if (!link) return true;
+                return link.hes.some(he => he.id === this.filterHealthElement);
+            }
+
             _getPrescrMed(){
                 const prescTab =_.sortBy(_.compact(_.get(this,'medicationClassesWithPosology',[]).map(val => !this.prescriptionsClassesWithPosology.find(lowVal => lowVal.letter===val.letter) ? {letter : val.letter, meds:[]} : {}).concat(this.prescriptionsClassesWithPosology)),'letter')
                 const medTab =_.sortBy(_.compact(_.get(this,'prescriptionsClassesWithPosology',[]).map(val => !this.medicationClassesWithPosology.find(lowVal => lowVal.letter===val.letter) ? {letter : val.letter, meds:[]} : {}).concat(this.medicationClassesWithPosology)),'letter')
-                this.set("presentList", _.zipWith(medTab, prescTab,(med,presc) =>{
+                const list = _.zipWith(medTab, prescTab,(med,presc) =>{
                     return {
                         "letter" : _.get(med, 'letter', null),
                         "meds" : _.uniq(_.concat(_.get(med, 'meds', []), _.get(presc, 'meds', []))).filter(med => {
                             const closeDate = this._getMedicationClosingDate(med.medication) ? moment(this._getMedicationClosingDate(med.medication),"DD/MM/YYYY") : false
                             const startDate= this.api.moment(_.get(this.api.contact().medicationValue(med.medication),"beginMoment",parseInt(moment().format("YYYYMMDD"))))
+
                             const betweenDate = (this.startDatePresent && moment(this.startDatePresent)) || (this.endDatePresent && moment(this.endDatePresent)) || false
                             if(betweenDate){
-                                if(this.startDatePresent && moment(this.startDatePresent) && this.endDatePresent && moment(this.endDatePresent)){
+                                if (this.startDatePresent && moment(this.startDatePresent) && this.endDatePresent && moment(this.endDatePresent))
                                     return (!closeDate || moment(this.startDatePresent).isSameOrBefore(closeDate)) && moment(this.endDatePresent).isSameOrAfter(startDate)
-                                }
-                                else{
+                                else
                                     return (!closeDate && moment(betweenDate).isSameOrAfter(startDate)) || moment(betweenDate).isBetween(startDate,closeDate)
-                                }
                             }
-                            else{
+                            else
                                 return closeDate ? closeDate.isSameOrAfter(moment()) : true
-                            }
-                        }).filter(med => this.filterPresentValue.length>2 ? this._serviceDescription(med.medication).includes(this.filterPresentValue) : true)
+
+                        }).filter(med => this.filterPresentValue.length > 2 ? this._serviceDescription(med.medication).includes(this.filterPresentValue) : true)
+                            .filter(med => this.filterHealthElement ? this._filterHealthElement(med.medication) : true)
                     };
-                }).filter(zipped => zipped.meds.length))
+                }).filter(zipped => zipped.meds.length)
+                this.set("presentList", list);
             }
 
             _prescriptionsChanged(){
                 const scores = this.api.contact().medication().regimenScores()
-                this.set('prescriptionsClassesWithPosology',_.sortBy(Object.values(this.prescriptions.filter(prescr => {
+                this.set('prescriptionsClassesWithPosology',_.sortBy(Object.values(this.allPrescriptions.filter(prescr => {
                     const medValue = this.api.contact().medicationValue(prescr)
                     return (medValue && medValue.endMoment || prescr.closingDate) ? this.api.moment(medValue && medValue.endMoment || prescr.closingDate).isSameOrAfter(moment()) : true
                 }).map( p => ({
@@ -1695,7 +1926,7 @@
 
             _medicationsChanged() {
                 const scores = this.api.contact().medication().regimenScores()
-                this.set('medicationClassesWithPosology',_.sortBy(Object.values(this.medications.map( m => ({
+                this.set('medicationClassesWithPosology',_.sortBy(Object.values(this.allMedications.map( m => ({
                     medication:m, regimenTable: this.extractRegimenSlices(((this.api.contact().preferredContent(m, this.language) || {}).medicationValue || {}).regimen, 'daily', [
                         x => x < scores.beforebreakfast,
                         x => x === scores.beforebreakfast,
@@ -1812,7 +2043,13 @@
                 )
             }
 
-            _getMedicationClosingDate(med){
+            _getLinkedHealthElements(med) {
+                console.log("_getLinkedHealthElements");
+                const link = this.links.find(link => link.service.id === med.id);
+                return _.get(link, 'hes', null);
+            }
+
+            _getMedicationClosingDate(med) {
                 if(med) {
                     const medValue = this.api.contact().medicationValue(med)
                     return this._longDateFormat(medValue && medValue.endMoment, med.closingDate)
