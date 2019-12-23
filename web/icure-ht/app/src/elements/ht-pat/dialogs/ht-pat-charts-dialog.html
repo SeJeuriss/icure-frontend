@@ -286,12 +286,15 @@
         const curves = require('./rsrc/growth-curves.json')
 
         const growthCurves = [
-            //{ id: "HeadWeeks", code: "head", period: "weeks" },
-            //{ id: "HeadMonths", code: "head", period: "months" },
-            { id: "HeightWeeks", code: "height", period: "weeks" },
-            { id: "HeightMonths", code: "height", period: "months" },
-            { id: "WeightWeeks", code: "weight", period: "weeks" },
-            { id: "WeightMonths", code: "weight", period: "months" }
+            //{ id: "HeadWeeks", code: "head", period: "weeks", filter: "weeks" },
+            //{ id: "HeadMonths", code: "head", period: "months", filter: "months" },
+            { id: "HeightWeeks", code: "height", period: "weeks", filter: "weeks" },
+            { id: "HeightMonths", code: "height", period: "months", filter: "months" },
+            { id: "WeightWeeks", code: "weight", period: "weeks", filter: "weeks" },
+            { id: "WeightMonths", code: "weight", period: "months", filter: "months" },
+            { id: "BMIWeeks", code: "bmi", period: "weeks", filter: "weeks" },
+            { id: "BMIMonths1", code: "bmi", period: "months", filter: "months1" },
+            { id: "BMIMonths2", code: "bmi", period: "months", filter: "months2" }
         ]
 
         class HtPatChartsDialog extends Polymer.TkLocalizerMixin(Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element)) {
@@ -843,6 +846,22 @@
                 return self.api.moment(s.valueDate).diff(dateOfBirth, 'months') < 60;
             }
 
+            _inMonths1(self, s, dateOfBirth) {
+                return self.api.moment(s.valueDate).diff(dateOfBirth, 'months') < 24;
+            }
+
+            _inMonths2(self, s, dateOfBirth) {
+                const diff = self.api.moment(s.valueDate).diff(dateOfBirth, 'months');
+                return diff >= 24 && diff < 60;
+            }
+
+            _getFilter(id) {
+                if (id === "months") return this._inMonths;
+                if (id === "months1") return this._inMonths1;
+                if (id === "months2") return this._inMonths2;
+                return this._inWeeks;
+            }
+
             _compareValueDates(a, b) {
                 return this.api.moment(b).diff(this.api.moment(a));
             }
@@ -923,8 +942,8 @@
                 const dateOfBirth = this.api.moment(this.patient.dateOfBirth);
                 growthCurves.forEach(curve => {
                     const name = gender + curve.id
-                    const filter = curve.period === "weeks" ? this._inWeeks : this._inMonths;
-                    const services = this._sort(this._getServices().filter(s => filter(this, s, dateOfBirth) && this._hasTag(s, curve.code) && this._hasValue(s)));
+                    const filter = this._getFilter(curve.filter);
+                    const services = this._sort(this._getServices().filter(s => s.valueDate && filter(this, s, dateOfBirth) && this._hasTag(s, curve.code) && this._hasValue(s)));
                     if (services.length > 0) {
                         const labels = services.map(s => s.valueDate);
                         const values = services.map(s => this._getValue(s));
