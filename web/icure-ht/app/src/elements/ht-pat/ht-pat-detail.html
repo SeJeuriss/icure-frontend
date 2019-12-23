@@ -4090,7 +4090,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         })
                     }
 
-                    updates = _.uniq(updates.filter(c => c.id !== contact.id));
+                    //updates = _.uniq(updates.filter(c => c.id !== contact.id));
+                    updates = _.uniq(updates);
                     const promises = updates.map(contact => {
                         return this.api.contact().modifyContactWithUser(this.user, contact)
                     });
@@ -4099,6 +4100,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         contacts.forEach(contact => this._updateClone(e, contact.services));
                         this._saveContactAndNotify(contact, e)
                     });
+
+                    if (e.detail.callback) {
+                        this.api.contact().filterServices(this.contacts, s => s.tags.find(t => t.type === 'ICURE' && t.code === "PRESC" || t.type === 'CD-ITEM' && t.code === "medication")).then(svcs => {
+                            this.set("treatmentHistory", svcs);
+                            this.set("allPrescriptions", svcs.filter(svc => svc.tags.some(t => t.type === "ICURE" && t.code === "PRESC")));
+                            this.set("allMedications", svcs.filter(svc => svc.tags.some(t => t.type === 'CD-ITEM' && t.code === "medication")));
+                            e.detail.callback();
+                        })
+                    }
 
                     return;
                 }

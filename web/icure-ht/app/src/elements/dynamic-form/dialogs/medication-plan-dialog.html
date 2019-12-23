@@ -463,7 +463,7 @@
             }
 
             .reimbursed{
-                width: 24px;
+                width: 48px;
                 max-width: 24px;
                 box-sizing: border-box;
                 padding: 0;
@@ -875,7 +875,38 @@
                 padding-left: 4px;
             }
 
+            .cdc-content {
+                display: flex;
+                flex-flow: column nowrap;
+                font-size: 18px;
+            }
+
+            .modalDialog {
+                height: 300px;
+                width: 500px;
+                z-index: 3000;
+            }
+
+            .dline {
+                margin-top: 20px;
+                margin-left:40px!important;
+            }
+
         </style>
+
+        <paper-dialog class="modalDialog" id="confirmDeleteDialog">
+            <h2 class="modal-title">[[localize('','Supprimer une médication',language)]]</h2>
+            <div class="content">
+                <div class="cdc-content m-t-50">
+                    <div class="dline">Voulez-vous supprimer la médication ci-dessous ?</div>
+                    <div class="dline">[[_serviceDescription(service)]]</div>
+                </div>
+            </div>
+            <div class="buttons">
+                <paper-button class="button button--save" on-tap="_confirmDelete">[[localize('yes','Oui',language)]]</paper-button>
+                <paper-button class="button" on-tap="_cancelDelete">[[localize('no','Non',language)]]</paper-button>
+            </div>
+        </paper-dialog>
 
         <paper-dialog id="medication-plan" always-on-top="true" no-cancel-on-outside-click="true">
 
@@ -1031,6 +1062,7 @@
                                         </paper-menu-button>
                                     </div>
                                     <div class="td td--medicine" style="flex-grow: 5;">
+                                        <paper-icon-button data-rid="[[m.medication.id]]" class="form-title-bar-btn" icon="icons:delete" on-tap="_delete"></paper-icon-button>
                                         <span class="left">[[_serviceDescription(m.medication)]]</span>
                                     </div>
                                     <div class="td" style="flex-grow: 2;"><span>[[_servicePosology(m.medication)]]</span></div>
@@ -1087,7 +1119,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="td td--comments" style="flex-grow: 4;"><span class="left">[[m.medication.instructionForPatient]]</span></div>
+                                    <div class="td td--comments" style="flex-grow: 4;">
+                                        <span class="left">[[m.medication.instructionForPatient]]</span>
+                                    </div>
                                 </div>
                             </template>
                             </template>
@@ -1224,6 +1258,7 @@
                 <!--<paper-button dialog-confirm autofocus on-tap="" class="button button--save">[[localize('add_medication','Add Medication',language)]]</paper-button>-->
             </div>
         </paper-dialog>
+
     </template>
     <script>
 
@@ -1255,6 +1290,10 @@
                     isLoading: {
                         type: Boolean,
                         value: false
+                    },
+                    service: {
+                        type: Object,
+                        value : {}
                     },
                     selectedTab: {
                         type: Number,
@@ -1856,6 +1895,32 @@
                 this._updateLinks(link);
             }
 
+            _delete(e) {
+                const id = e.target.dataRid;
+                const service = this.allPrescriptions.find(s => s.id === id) || this.allMedications.find(s => s.id === id);
+                if (!service) return;
+                this.service = service;
+                this.$['confirmDeleteDialog'].open();
+            }
+
+            _cancelDelete() {
+                this.$['confirmDeleteDialog'].close();
+            }
+
+            _confirmDelete() {
+                this.$['confirmDeleteDialog'].close();
+                this.service.endOfLife = +new Date() * 1000;
+                this.dispatchEvent(new CustomEvent("update-service", {
+                    detail: {
+                        callback: this._refresh,
+                        service: this.service,
+                        hes: []
+                    },
+                    bubbles: true,
+                    composed: true
+                }))
+            }
+
             _filterHealthElementChanged(e) {
                 const filter = this.shadowRoot.querySelector('#filterHealthElement');
                 if (!filter) return;
@@ -1869,7 +1934,12 @@
                 return link.hes.some(he => he.id === this.filterHealthElement);
             }
 
-            _getPrescrMed(){
+            _refresh() {
+                this._getPrescrMed();
+                this.set("refresher", this.refresher + 1);
+            }
+
+            _getPrescrMed() {
                 const prescTab =_.sortBy(_.compact(_.get(this,'medicationClassesWithPosology',[]).map(val => !this.prescriptionsClassesWithPosology.find(lowVal => lowVal.letter===val.letter) ? {letter : val.letter, meds:[]} : {}).concat(this.prescriptionsClassesWithPosology)),'letter')
                 const medTab =_.sortBy(_.compact(_.get(this,'prescriptionsClassesWithPosology',[]).map(val => !this.medicationClassesWithPosology.find(lowVal => lowVal.letter===val.letter) ? {letter : val.letter, meds:[]} : {}).concat(this.medicationClassesWithPosology)),'letter')
                 const list = _.zipWith(medTab, prescTab,(med,presc) =>{
