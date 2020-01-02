@@ -109,9 +109,12 @@
             <div>
                 <paper-icon-button class$="control-button right [[custom]]" icon="icons:remove" on-tap="decrease"></paper-icon-button>
             </div>
-            <div id="counter-label" class$="quantity-label [[custom]]">[[quantity]]</div>
+            <div id="counter-label" class$="quantity-label [[custom]]">[[_format(quantity)]]</div>
             <div>
                 <paper-icon-button class$="control-button left [[custom]]" icon="icons:add" on-tap="increase"></paper-icon-button>
+            </div>
+            <div>
+                <paper-icon-button class$="control-button left [[custom]]" icon="icons:more-vert" on-tap="_divide"></paper-icon-button>
             </div>
         </div>
     </template>
@@ -180,14 +183,36 @@
                 }
             }
 
+            _quantity() {
+                return parseInt(this.quantity) || 0;
+            }
+
+            _quantityValue() {
+                return this._quantity() % 1000;
+            }
+
+            _quantityUnit() {
+                return Math.floor(this._quantity() / 1000);
+            }
+
+            _divide() {
+                const value = this._quantityValue();
+                const unit = this._quantityUnit() + 1;
+                this.set("quantity", unit < 4 ? (unit * 1000) + value : value);
+            }
+
+            _format() {
+                const value = this._quantityValue().toString();
+                const unit = this._quantityUnit() + 1;
+                return unit > 1 ? value + "/" + unit.toString() : value;
+            }
+
             decrease() {
                 if (this.quantityFactor && this.quantityFactor.denominator > 1) {
                     this.set("quantity", 0);
                 } else {
-                    const quantityValue = parseInt(this.quantity) || 0;
-                    if (quantityValue > 0) {
-                        this.set("quantity", quantityValue - 1);
-                    }
+                    const value = this._quantity();
+                    this.set("quantity", value % 1000 > 1 ? value - 1 : 0);
                 }
             }
 
@@ -195,8 +220,8 @@
                 if (this.quantityFactor && this.quantityFactor.denominator > 1) {
                     this.set("quantity", this.quantityFactor.numLabel);
                 } else {
-                    const quantityValue = parseInt(this.quantity) || 0;
-                    this.set("quantity", quantityValue + 1);
+                    const value = this._quantity();
+                    this.set("quantity", value % 1000 < 999 ? value + 1 : 0);
                 }
             }
 
@@ -215,12 +240,7 @@
             mouseUp(e) {
                 console.log("mouseUp");
                 if (this.mouseIsDown) {
-                    if (this.quantityFactor && this.quantityFactor.denominator > 1) {
-                        this.set("quantity", this.quantityFactor.numLabel);
-                    } else {
-                        const quantityValue = parseInt(this.quantity) || 0;
-                        this.set("quantity", quantityValue + 1);
-                    }
+                    this.increase();
                     this.mouseIsDown = false;
                 }
             }
