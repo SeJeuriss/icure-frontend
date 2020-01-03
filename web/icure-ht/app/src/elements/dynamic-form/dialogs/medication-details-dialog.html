@@ -1,5 +1,6 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../../bower_components/vaadin-material-theme/vaadin-grid.html">
+<link rel="import" href="../../../../bower_components/vaadin-text-field/vaadin-text-area.html">
 <link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="../../../../bower_components/vaadin-button/vaadin-button.html">
 <link rel="import" href="../../../../bower_components/vaadin-grid/vaadin-grid-column-group.html">
@@ -276,6 +277,20 @@
                 padding: 0 16px;
             }
 
+            .modalDialog {
+                height: 200px;
+                width: 400px;
+                z-index: 3000;
+            }
+
+            .cdc-content {
+                display: flex;
+                flex-flow: column nowrap;
+                font-size: 14px;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+
         </style>
 
         <paper-dialog id="medication-details-dialog" always-on-top="true" no-cancel-on-outside-click="true">
@@ -288,12 +303,28 @@
             <div class="buttons">
                 <paper-button dialog-confirm autofocus on-tap="cancel" class="button">[[localize('can','Cancel',language)]]</paper-button>
                 <template is="dom-if" if="[[!isPrescription]]">
-                    <paper-button dialog-confirm autofocus on-tap="endAndClose" class="button button--other">[[localize('clo2','End',language)]]</paper-button>
+                    <paper-button autofocus on-tap="_suspend" class="button button--other">[[localize('clo2','End',language)]]</paper-button>
                     <paper-button dialog-confirm autofocus on-tap="EOLAndClose" class="button button--other">[[localize('del','Delete',language)]]</paper-button>
                 </template>
                 <paper-button dialog-confirm autofocus on-tap="saveAndClose" class="button button--save">[[localize('save','Save',language)]]</paper-button>
             </div>
         </paper-dialog>
+
+        <paper-dialog class="modalDialog" id="confirmSuspensionDialog">
+            <h2 class="modal-title">[[localize('','Confirmer la suspension',language)]]</h2>
+            <div class="content">
+                <div class="cdc-content">
+                    <div>
+                        <vaadin-text-area style="width: 100%; max-height: 100px;" class="textarea-style" id="suspensionReason" label="[[localize('reason','Motif',language)]]" value="{{suspensionReason}}"></vaadin-text-area>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <paper-button class="button" on-tap="_cancelSuspension">[[localize('can','Cancel',language)]]</paper-button>
+                <paper-button class="button button--save" on-tap="_confirmSuspension">[[localize('confirm','Confirm',language)]]</paper-button>
+            </div>
+        </paper-dialog>
+
     </template>
     <script>
 
@@ -347,12 +378,14 @@
                         type: Number,
                         value: 0
                     },
-
+                    suspensionReason: {
+                        type: String,
+                        value: null
+                    },
                     isPrescription: {
                         type: Boolean,
                         value: false
                     },
-
                     allergies: {
                         type: Array,
                         value: () => []
@@ -495,8 +528,35 @@
                 this.close();
             }
 
+            _suspend(e) {
+                this.$['confirmSuspensionDialog'].open();
+            }
+
+            _cancelSuspension() {
+                this.$['confirmSuspensionDialog'].close();
+            }
+
+            _confirmSuspension() {
+                this.$['confirmSuspensionDialog'].close();
+                const today = parseInt(moment().subtract(1, 'days').format("YYYYMMDD"))
+                let suspension = _.get(this, "medicationContent.medicationValue.suspension", []);
+                suspension.push({
+                    beginMoment: today,
+                    suspensionReason: this.suspensionReason,
+                });
+                this.set("medicationContent.medicationValue.suspension", suspension);
+                this.endAndClose();
+            }
+
+            _closeDialogs() {
+                this.set("_bodyOverlay", false);
+                _.map( this.shadowRoot.querySelectorAll('.modalDialog'), i=> i && typeof i.close === "function" && i.close() )
+            }
+
             close() {
                 this.set("medicationContent", null);
+                if (this.$['medication-details-dialog'])
+                    this.$['medication-details-dialog'].close();
             }
 
             save() {
