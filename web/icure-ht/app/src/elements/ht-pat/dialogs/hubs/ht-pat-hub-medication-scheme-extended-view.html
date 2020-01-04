@@ -1785,23 +1785,28 @@
 
             _createAuthor(data){
                 const auth = data.authors[0];
-
-                const id =  this.api.crypto().randomUuid();
-                const lastName = auth.familyname;
-                const firstName = auth.firstname;
-                const nihii = "";
-                const ssin = "";
-                //TODO: address
-                //TODO: telecoms
-                const aut = {
-                    "id" : id,
-                    "name": lastName + " " + firstName,
-                    "lastName": lastName,
-                    "firstName": firstName,
-                    "nihii": nihii,
-                    "ssin": ssin
-                };
-                return aut;
+                if(auth) {
+                    const id = this.api.crypto().randomUuid();
+                    const lastName = auth.familyname;
+                    const firstName = auth.firstname;
+                    const nihii = "";
+                    const ssin = "";
+                    //TODO: address
+                    //TODO: telecoms
+                    const aut = {
+                        "id": id,
+                        "name": lastName + " " + firstName,
+                        "lastName": lastName,
+                        "firstName": firstName,
+                        "nihii": nihii,
+                        "ssin": ssin
+                    };
+                    return aut;
+                }
+                else
+                {
+                    return {};
+                }
             }
 
             _createMedication(data) {
@@ -1980,7 +1985,7 @@
                         const hcp = this._createAuthor(item);
                         const med = this._createMedication(item);
                         //TODO: set the author id of the medication service to hcp.id
-                        med.author = hcp.id;
+                        if (hcp.id) med.author = hcp.id;
                         servicesToUpload.push(med);
                         serviceAuthors.push(hcp);
                     }else if(_.get(item, 'synchronizationInfo.hubToLocal', false)){
