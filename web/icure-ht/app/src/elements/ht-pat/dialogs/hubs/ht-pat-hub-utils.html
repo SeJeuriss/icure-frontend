@@ -174,7 +174,7 @@
                 return {}
             }
 
-            putMedicationScheme(hubConfig, services, version){
+            putMedicationScheme(hubConfig, services, serviceAuthors, version, isTest){
                 //0. Check Data (optional) (frontend)
                 //1. Generate Medicationscheme Kmehr Message (backend)
                 //2. Send Medicationscheme Kmehr Message To Hub: putTransactionSet (FHC)
@@ -183,8 +183,8 @@
                 //4. handle error messages
                 //5. update services using the putTransactionSet Response
                 return this.checkMedicationServices(services)
-                    .then(svcs => this.generateMedicationScheme(svcs, version, hubConfig))
-                    .then(msMessage => this.putTransactionSet(msMessage, hubConfig))
+                    .then(svcs => this.generateMedicationScheme(svcs, serviceAuthors, version, hubConfig))
+                    .then(msMessage => this.putTransactionSet(msMessage, hubConfig, isTest))
                     .then(putResponse => this.handleResponse(putResponse, services, hubConfig))
                     .finally(() => {
                         this.dispatchEvent(new CustomEvent('update-ms', {detail: {}, bubbles: true, composed: true}))
@@ -208,13 +208,14 @@
                 return Promise.resolve(services);
             }
 
-            generateMedicationScheme(services, version, hubConfig){
+            generateMedicationScheme(services, serviceAuthors, version, hubConfig){
                 let enc = new TextDecoder("utf-8");
                 return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
                     this.api.patient().getPatientWithUser(this.user,this.patient.id)
                         .then(patientDto => this.api.bekmehr().generateMedicationSchemeExport(patientDto.id, this.language, hubConfig.name, version, {
                                 recipient: hcp,
                                 services : services,
+                                serviceAuthors : serviceAuthors,
                                 comment: "medicationscheme",
                                 recipientSafe: hubConfig.name,
                                 version: version
@@ -226,9 +227,9 @@
                         ))
             }
 
-            putTransactionSet(tsXML, hubConfig){
+            putTransactionSet(tsXML, hubConfig, isTest){
                 const myblob = new Blob([tsXML]);
-                return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                return isTest ? Promise.resolve({message: "test: not sent", acknowledge: {isComplete:false}, error: ""}) : this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                     .then(hcp => this.api.fhc().Hubcontroller().putTransactionSetUsingPOST(hubConfig.hubEndPoint,
                         this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
                         hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, "1000",
