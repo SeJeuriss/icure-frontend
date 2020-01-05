@@ -1805,12 +1805,12 @@
                     // --> merge address and telecom by type
                     auth.addresses.forEach(adr => {
                        const ad = {
-                           addressType: _.get(adr.cds.find(cd => cd.s === "CD_ADDRESS"), 'value', ''),
-                           street: "BS",
-                           houseNumber: "340",
-                           postboxNumber: "",
-                           postalCode: "9090",
-                           city: "MElle",
+                           addressType: _.get(adr.cds.find(cd => cd.s === "CD_ADDRESS"), 'value', 'work'),
+                           street: _.get(adr, 'street', ''),
+                           houseNumber: _.get(adr, 'housenumber', ''),
+                           postboxNumber: _.get(adr, 'postboxnumber', ''),
+                           postalCode: _.get(adr, 'zip', ''),
+                           city: _.get(adr, 'city', ''),
                            country: _.get(_.get(adr, 'country', {cd:{value: "be", s:"CD_FED_COUNTRY"}}).cd, 'value', 'be'),
                            telecoms: []
                        };
