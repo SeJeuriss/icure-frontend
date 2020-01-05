@@ -1789,18 +1789,33 @@
                     const id = this.api.crypto().randomUuid();
                     const lastName = auth.familyname;
                     const firstName = auth.firstname;
-                    const nihii = "";
-                    const ssin = "";
+                    const nihii = _.get(auth.ids.find(id => id.s === "ID_HCPARTY"), 'value', '');
+                    const ssin = _.get(auth.ids.find(id => id.s === "INSS"), 'value', '');
+                    const aut = {
+                        id: id,
+                        name: lastName + " " + firstName,
+                        lastName: lastName,
+                        firstName: firstName,
+                        nihii: nihii,
+                        ssin: ssin,
+                        addresses: []
+                    };
                     //TODO: address
                     //TODO: telecoms
-                    const aut = {
-                        "id": id,
-                        "name": lastName + " " + firstName,
-                        "lastName": lastName,
-                        "firstName": firstName,
-                        "nihii": nihii,
-                        "ssin": ssin
-                    };
+                    // --> merge address and telecom by type
+                    auth.addresses.forEach(adr => {
+                       const ad = {
+                           addressType: _.get(adr.cds.find(cd => cd.s === "CD_ADDRESS"), 'value', ''),
+                           street: "BS",
+                           houseNumber: "340",
+                           postboxNumber: "",
+                           postalCode: "9090",
+                           city: "MElle",
+                           country: _.get(_.get(adr, 'country', {cd:{value: "be", s:"CD_FED_COUNTRY"}}).cd, 'value', 'be'),
+                           telecoms: []
+                       };
+                       aut.addresses.push(ad);
+                    });
                     return aut;
                 }
                 else
