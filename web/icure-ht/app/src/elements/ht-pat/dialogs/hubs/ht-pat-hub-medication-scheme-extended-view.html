@@ -1842,7 +1842,7 @@
                 if (data.compoundPrescription) {
                     medicationValue.compoundPrescription = data.compoundPrescription;
                 } else {
-                    const dataProduct = _.get(data, "medicinalproduct", _.get(data, "substanceproduct"));
+                    const dataProduct = _.get(data, "medicinalproduct",  _.get(data, "substanceproduct"));
                     if (!dataProduct) return null;
 
                     const code =  _.get(dataProduct, "intendedcds", []).length > 0 && _.get(dataProduct, "intendedcds", [])[0].code ? {value: _.get(dataProduct, "intendedcds", [])[0].code} : _.get(dataProduct, "intendedcds", []).find(cd => cd.s === "CD_VMPGROUP" || cd.s === "CD_INNCLUSTER" || cd.s === "CD_DRUG_CNK");
@@ -1991,7 +1991,11 @@
                         const med = this._createMedication(item);
                         //TODO: set the author id of the medication service to hcp.id
                         if (hcp.id && med) med.author = hcp.id;
-                        servicesToUpload.push(med);
+                        if (med){
+                            servicesToUpload.push(med)
+                        } else{
+                            console.log("_createMedication Failed for ", item)
+                        };
                         serviceAuthors.push(hcp);
                     }else if(_.get(item, 'synchronizationInfo.hubToLocal', false)){
                         const drugType = !_.isEmpty(_.get(item, 'medicinalproduct', {})) ? "CD-DRUG-CNK" : !_.isEmpty(_.get(item, 'substanceproduct', {})) ? "CD-VMPGROUP" : "compoundPrescription"
