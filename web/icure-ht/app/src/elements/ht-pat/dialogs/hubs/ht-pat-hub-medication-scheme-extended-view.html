@@ -1801,7 +1801,7 @@
                            postboxNumber: _.get(adr, 'postboxnumber', ''),
                            postalCode: _.get(adr, 'zip', ''),
                            city: _.get(adr, 'city', ''),
-                           country: _.get(_.get(adr, 'country', {cd:{value: "be", s:"CD_FED_COUNTRY"}}).cd, 'value', 'be'),
+                           country: 'be', //_.get(_.get(adr, 'country', {cd:{value: "be", s:"CD_FED_COUNTRY"}}).cd, 'value', 'be'),
                            telecoms: []
                        };
                        aut.addresses.push(ad);
@@ -1990,7 +1990,7 @@
                         const hcp = this._createAuthor(item);
                         const med = this._createMedication(item);
                         //TODO: set the author id of the medication service to hcp.id
-                        if (hcp.id) med.author = hcp.id;
+                        if (hcp.id && med) med.author = hcp.id;
                         servicesToUpload.push(med);
                         serviceAuthors.push(hcp);
                     }else if(_.get(item, 'synchronizationInfo.hubToLocal', false)){
