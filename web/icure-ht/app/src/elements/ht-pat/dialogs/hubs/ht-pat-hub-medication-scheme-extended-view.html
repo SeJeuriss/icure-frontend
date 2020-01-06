@@ -1801,7 +1801,8 @@
                            postboxNumber: _.get(adr, 'postboxnumber', ''),
                            postalCode: _.get(adr, 'zip', ''),
                            city: _.get(adr, 'city', ''),
-                           country: _.get(_.get(adr, 'country', {cd:{value: "be", s:"CD_FED_COUNTRY"}}).cd, 'value', 'be'),
+                           //country: _.get(_.get(adr, 'country', {cd:{value: "be", s:"CD_FED_COUNTRY"}}).cd, 'value', 'be'),
+                           country: !!_.trim(_.get(adr, 'country.cd.value')) ? _.get(adr, 'country.cd.value') : 'be',
                            telecoms: []
                        };
                        aut.addresses.push(ad);
