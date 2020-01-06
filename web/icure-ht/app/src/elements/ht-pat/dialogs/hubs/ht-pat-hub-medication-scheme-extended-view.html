@@ -2018,7 +2018,7 @@
                 //this.set('isLoading',tru0
                 this.hubConfig = hubConfig ;
 
-                this.$["htPatHubUtils"].putMedicationScheme(this.hubConfig, servicesToUpload, serviceAuthors, this.currentMedicationScheme.version, true).then(svcs => console.log("services after processing", svcs));
+                this.$["htPatHubUtils"].putMedicationScheme(this.hubConfig, servicesToUpload, serviceAuthors, this.currentMedicationScheme.version, false).then(svcs => console.log("services after processing", svcs));
             }
 
             _getResponsibleHcp(authors){
