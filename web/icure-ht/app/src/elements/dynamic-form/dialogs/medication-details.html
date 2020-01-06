@@ -1286,11 +1286,21 @@
                 }
             }
 
+            _getPosology() {
+                const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
+                return posology.replace(/(\d+) (Unités)/g, (a, b, c) => {
+                    const quantity = b % 1000;
+                    const unit = Math.floor(b / 1000) + 1;
+                    return quantity + (unit < 2 ? " " + c : "/" + unit);
+                })
+            }
+
             _regimenChanged() {
                 if (!this.medicationContent || !this.medicationContent.medicationValue || !this.medicationDetail) return;
                 this._updateStats();
                 this.medicationContent.medicationValue.instructionForPatient = "";
-                const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
+                //const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
+                const posology = this._getPosology();
                 this.set("medicationDetail.posology", posology);
                 const separator = posology && this.medicationDetail.commentForPatient && this.commentSeparator || "";
                 this.medicationContent.medicationValue.instructionForPatient = posology + separator + this.medicationDetail.commentForPatient;
@@ -1300,7 +1310,8 @@
                 if (!this.medicationContent || !this.medicationContent.medicationValue) return;
                 const instructionForPatient = this.medicationContent.medicationValue.instructionForPatient;
                 this.medicationContent.medicationValue.instructionForPatient = "";
-                const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
+                //const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
+                const posology = this._getPosology();
                 const comment = instructionForPatient && instructionForPatient.replace(posology, "") || "";
                 const index =  comment ? comment.indexOf(this.commentSeparator) : -1;
                 return (index < 0) ? comment : comment.slice(this.commentSeparator.length);
