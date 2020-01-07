@@ -28,6 +28,8 @@
     import {IccMessageXApi} from 'icc-api/dist/icc-x-api/icc-message-x-api'
     import {IccClassificationXApi} from 'icc-api/dist/icc-x-api/icc-classification-x-api'
 
+    import {ElectronApi} from 'electron-topaz-api/src/api/ElectronApi'
+
     class IccApi extends Polymer.Element {
         static get is() {
             return 'icc-api'
@@ -43,7 +45,7 @@
                 headers30s: {
                     type: Object,
                     value: {"Content-Type": "application/json",
-                    "X-CLIENT-SIDE-TIMEOUT":"30000"},
+                        "X-CLIENT-SIDE-TIMEOUT":"30000"},
                     notify: true
                 },
                 headers60s: {
@@ -111,6 +113,10 @@
                 tmpLogging:{
                     type:Boolean,
                     value:false
+                },
+                electronHost:{
+                    type : String,
+                    value : "http://127.0.0.1:16042"
                 }
             }
         }
@@ -175,7 +181,7 @@
             this.bekmehricc = new IccBekmehrXApi(this.host, this.headers, this.contacticc, this.helementicc)
             this.accesslogicc = new IccAccesslogXApi(this.host, this.headers, this.cryptoicc)
 
-            this.medexicc = new api.iccMedexApi(this.host, this.headers)
+            this.desktopApi = new ElectronApi(this.electronHost)
 
 
             const toObserve = [
@@ -371,15 +377,16 @@
             return this.$['fhc-api'];
         }
 
+        electron(){
+            return this.desktopApi;
+        }
+
         calendaritem(){
             return this.calendaritemicc
         }
 
         calendaritemtype(){
             return this.calendaritemtypeicc
-        }
-        medex(){
-            return this.medexicc
         }
 
         localize(e, lng) {
@@ -1024,41 +1031,41 @@
 
         }
 
-         _Spy(toObserve) {
+        _Spy(toObserve) {
             //j'utilise les objects car ca passe en pointeur!!!!
-             /*
-            let mainLog = {}
-            let tmpLogging= {isDoing :false}
-            let chargedPatients = {patients : []}
+            /*
+           let mainLog = {}
+           let tmpLogging= {isDoing :false}
+           let chargedPatients = {patients : []}
 
-            const add = this._addNewCurrentLog.bind(this);
-            const setMain = this._setMainLog.bind(this);
+           const add = this._addNewCurrentLog.bind(this);
+           const setMain = this._setMainLog.bind(this);
 
-            toObserve.map(item =>{
-                const obj = item[0]
-                const methods = item[1]
-                methods.map(method =>{
-                    let spy = {
-                        object : obj,
-                        args: [],
-                        method : method
-                    };
-                    let original = obj[method];
-                    spy.original=original
-                    obj[method] = function() {
-                        spy.args = [].slice.apply(arguments);
-                        if(!this.preventLogging && !tmpLogging.isDoing){
-                            if(spy.method!=="newInstance"){
-                                add(spy,mainLog,tmpLogging,chargedPatients)
-                            }
-                            else {mainLog=setMain(spy)}
-                        }
-                        return original.apply(obj, spy.args)
-                    }.bind(this);
-                })
-            })
-            */
-         }
+           toObserve.map(item =>{
+               const obj = item[0]
+               const methods = item[1]
+               methods.map(method =>{
+                   let spy = {
+                       object : obj,
+                       args: [],
+                       method : method
+                   };
+                   let original = obj[method];
+                   spy.original=original
+                   obj[method] = function() {
+                       spy.args = [].slice.apply(arguments);
+                       if(!this.preventLogging && !tmpLogging.isDoing){
+                           if(spy.method!=="newInstance"){
+                               add(spy,mainLog,tmpLogging,chargedPatients)
+                           }
+                           else {mainLog=setMain(spy)}
+                       }
+                       return original.apply(obj, spy.args)
+                   }.bind(this);
+               })
+           })
+           */
+        }
 
         _addNewCurrentLog(info,mainLog,tmpLogging,chargedPatients){
             this.user().getCurrentUser().then(user=>{
