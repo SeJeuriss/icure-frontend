@@ -283,24 +283,6 @@
                 padding-right: 4px;
             }
 
-            /*paper-input-container {*/
-            /*    --paper-input-container-focus-color: var(--app-primary-color);*/
-            /*    --paper-input-container-label: {*/
-            /*        color: var(--app-text-color);*/
-            /*        opacity: 1;*/
-            /*    };*/
-            /*    --paper-input-container-underline-disabled: {*/
-            /*        border-bottom: 1px solid var(--app-text-color);*/
-
-            /*    };*/
-            /*    --paper-input-container-color: var(--app-text-color);*/
-            /*}*/
-
-            /*paper-dropdown-menu {*/
-            /*    width: 140px;*/
-            /*    height: 22px;*/
-            /*}*/
-
             .comment {
                 width: 100%;
                 margin-right: 8px;
@@ -570,12 +552,6 @@
                 position: relative;
                 display: inline-block;
             }
-            /*.title h5 {*/
-            /*    margin: 0;*/
-            /*    position: absolute;*/
-            /*    bottom: -4px;*/
-            /*    display: flex;*/
-            /*}*/
 
             .title-header {
                 display: flex;
@@ -638,10 +614,6 @@
             .comment paper-input {
                 width: 100%;
             }
-
-            /*iron-autogrow-textarea {*/
-            /*    --iron-autogrow-textarea_-_padding: 4px 8px 0;*/
-            /*}*/
 
         </style>
         <div class$="container [[_customContainer(closable)]]">
@@ -716,24 +688,14 @@
                             <label slot="label" class="color-status">[[localize('proposed_posology','Posologie proposée',language)]]</label>
                             <iron-autogrow-textarea slot="input" disabled value="[[medicationDetail.posologyNote]]"></iron-autogrow-textarea>
                         </paper-input-container>
-<!--                        <paper-icon-button class="button&#45;&#45;icon-btn" icon="content-copy" role="button" on-tap="_copyPosologyNote"></paper-icon-button>-->
                     </div>
                 </template>
-                <div class="regimen-line display-type-regimen">
-                    <paper-dropdown-menu always-float-label id="unit" label="[[localize('portion', 'Portion', language)]]" disabled="[[!medicationDetail.dividable]]">
-                        <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{quantityFactor}}">
-                            <template is="dom-repeat" items="[[quantityFactors]]">
-                                <paper-item id="[[item.id]]" value="[[item]]">[[localize(item.label, item.numLabel, language)]]</paper-item>
-                            </template>
-                        </paper-listbox>
-                    </paper-dropdown-menu>
-                </div>
                 <template is="dom-repeat" items="[[regimenKeys]]">
                     <ht-regimen-day
                             api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"
                             period-config="[[periodConfig]]" regimen-config="[[regimenConfig]]" regimen="{{medicationContent.medicationValue.regimen}}" key="[[item]]"
                             medication-unit="[[medicationDetail.unit]]" weekday-codes="[[weekdayCodes]]" occurrences="[[regimenKeys.length]]"
-                            quantity-factor=[[quantityFactorValue]] on-regimen-changed="_regimenChanged" on-regimen-delete="_removeRegimen">
+                            on-regimen-changed="_regimenChanged" on-regimen-delete="_removeRegimen">
                     </ht-regimen-day>
                 </template>
                 <div class="regimen-line display-type-regimen">
@@ -812,10 +774,6 @@
                     </template>
                 </div>
                 <div class="regimen-line display-type-regimen">
-                    <!--
-                    <vaadin-checkbox checked="[[medicationContent.medicationValue.substitutionAllowed]]" id="substitutionAllowed" on-checked-changed="_substitutionAllowedChanged">[[localize('substitution', 'Substitution', language)]]</vaadin-checkbox>
-                    <vaadin-checkbox id="renewal" checked=[[medicationContent.medicationValue.isRenewal]] on-checked-changed="_renewalValueChanged">[[localize('renewal', 'Renewal', language)]]</vaadin-checkbox>
-                    -->
                     <template is="dom-if" if="[[medicationContent.isPrescription]]">
                         <paper-dropdown-menu always-float-label id="medicRenewal" label="[[localize('renewal', 'Renouvellement', language)]]">
                             <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{medicationDetail.renewal}}">
@@ -836,14 +794,7 @@
                         </template>
                     </template>
                 </div>
-<!--                deprecated-->
-<!--                <div class="regimen-line display-type-regimen comment">-->
-<!--                    <paper-input-container always-float-label="true">-->
-<!--                        <label slot="label" class="color-status">[[localize('comments-for-pharmacist','Commentaires pour le pharmacien',language)]]</label>-->
-<!--                        <iron-autogrow-textarea slot="input" value="{{medicationContent.medicationValue.commentForDelivery}}"></iron-autogrow-textarea>-->
-<!--                    </paper-input-container>-->
-<!--                </div>-->
-            </div> 
+            </div>
         </div>
     </template>
     <script>
@@ -966,14 +917,6 @@
                         type: Number,
                         value: 0
                     },
-                    // medication: {
-                    //     type: Object,
-                    //     value: null
-                    // },
-                    quantityFactor: {
-                        type: Object,
-                        value: null
-                    },
                     totalQuantity: {
                         type: Number,
                         value: 0
@@ -994,15 +937,6 @@
                     medicationId: {
                         type: String,
                         value: ""
-                    },
-                    quantityFactors: {
-                        type: Array,
-                        value: () => [
-                            {id: "one", label: "quantity_factor_one", numLabel: "1", denominator: 1},
-                            {id: "half", label: "quantity_factor_half", numLabel: "1/2", denominator: 2},
-                            {id: "third", label: "quantity_factor_third", numLabel: "1/3", denominator: 3},
-                            {id: "quarter", label: "quantity_factor_quarter", numLabel: "1/4", denominator: 4}
-                        ]
                     },
                     weekdayKeys: {
                         type: Array,
@@ -1100,14 +1034,12 @@
                     '_changeDuration(duration)',
                     '_regimenChanged(medicationContent.medicationValue, medicationDetail.commentForPatient, medicationContent.medicationValue.regimen.*)',
                     '_medicationChanged(medication, medication.*)',
-                    '_quantityFactorChanged(quantityFactor)',
                     '_periodChanged(periodConfig)',
                     '_renewalChanged(medicationDetail.renewal)',
                     '_reimbursementReasonChanged(reimbursementReason)',
                     '_renewalTimeUnitChanged(renewalTimeUnit)',
                     '_isConfidentialChanged(medicationDetail.isConfidential)',
                     '_substitutionAllowedChanged(medicationDetail.substitutionAllowed)'
-
                 ];
             }
 
@@ -1192,17 +1124,11 @@
                 }
             }
 
-            _isPortion() {
-                return this.quantityFactor.denominator > 1;
-            }
-
             _reimbursementReasonChanged() {
-                if (!this.reimbursementReason) {
+                if (!this.reimbursementReason)
                     this.set("medicationContent.medicationValue.reimbursementReason", null);
-                }
-                else {
+                else
                     this.set("medicationContent.medicationValue.reimbursementReason", this.reimbursementReason);
-                }
             }
 
             _renewalTimeUnitChanged() {
@@ -1231,24 +1157,6 @@
                 }
             }
 
-            _quantityFactorChanged() {
-                const regimen = _.get(this.medicationContent, "medicationValue.regimen", "");
-                if (!regimen) return;
-                regimen.filter(reg => reg.administratedQuantity && reg.administratedQuantity.quantity || "")
-                    .forEach(reg => {
-                        const quantity = reg.administratedQuantity.quantity;
-                        reg.administratedQuantity.unit = this.medicationDetail.unit || this.localize("uni", "Unités");
-                        reg.administratedQuantity.quantity = this.quantityFactor.denominator > 1 && this.quantityFactor.numLabel || parseInt(quantity) || "";
-                    });
-                this.set("quantityFactorValue", this.quantityFactor);
-                this.notifyPath("medicationContent.medicationValue", "changed");
-            }
-
-            // _medicationDetailChanged(e) {
-            //     console.log("__medicationDetailChanged()", this.medicationDetail)
-            //     this.dispatchEvent(new CustomEvent('value-changed', {detail: {id: this.medicationDetail.id}, bubbles: true, composed: true}))
-            // }
-
             _hasAllergies(item) {
                 return item && item.allergies && item.allergies.length;
             }
@@ -1271,10 +1179,6 @@
                 return (date || altDate) && this.api.moment((date || altDate)).format("YY") || "";
             }
 
-            _any(a,b,c,d,e) {
-                return a||b||c||d||e
-            }
-
             _getCodeLabel(code){
                 return code && code[this.language]
             }
@@ -1286,21 +1190,11 @@
                 }
             }
 
-            _getPosology() {
-                const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
-                return posology.replace(/(\d+) (Unités)/g, (a, b, c) => {
-                    const quantity = b % 1000;
-                    const unit = Math.floor(b / 1000) + 1;
-                    return quantity + (unit < 2 ? " " + c : "/" + unit);
-                })
-            }
-
             _regimenChanged() {
                 if (!this.medicationContent || !this.medicationContent.medicationValue || !this.medicationDetail) return;
                 this._updateStats();
                 this.medicationContent.medicationValue.instructionForPatient = "";
-                //const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
-                const posology = this._getPosology();
+                const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
                 this.set("medicationDetail.posology", posology);
                 const separator = posology && this.medicationDetail.commentForPatient && this.commentSeparator || "";
                 this.medicationContent.medicationValue.instructionForPatient = posology + separator + this.medicationDetail.commentForPatient;
@@ -1310,14 +1204,16 @@
                 if (!this.medicationContent || !this.medicationContent.medicationValue) return;
                 const instructionForPatient = this.medicationContent.medicationValue.instructionForPatient;
                 this.medicationContent.medicationValue.instructionForPatient = "";
-                //const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
-                const posology = this._getPosology();
+                const posology = this.api.contact().medication().posologyToString(this.medicationContent.medicationValue || {}, this.language);
                 const comment = instructionForPatient && instructionForPatient.replace(posology, "") || "";
                 const index =  comment ? comment.indexOf(this.commentSeparator) : -1;
                 return (index < 0) ? comment : comment.slice(this.commentSeparator.length);
             }
 
             _updateStats() {
+                // @todo: to be fixed / adapted by Axel
+                return;
+
                 if (!this.quantityFactor) return;
                 const regimen = _.get(this.medicationContent, "medicationValue.regimen", "");
                 if (!regimen) return;
@@ -1369,9 +1265,8 @@
                         }
                     }
 
-                    if (availableDoses < 0) {
+                    if (availableDoses < 0)
                         provisionDays--;
-                    }
                 }
 
                 const totalQuantity = Math.round(totalTakes / this.quantityFactor.denominator);
@@ -1394,28 +1289,26 @@
             }
 
             _changeBeginMoment() {
-                if (this.medicationDetail) { // begin moment can NOT be empty
-                    if (!this._beginMoment()) {
-                        this.set("medicationDetail.beginMomentAsString", moment().format("YYYY-MM-DD"))
-                    } else {
-                        if (this.medicationDetail.endMomentAsString && !this.initializingDate) {
-                            const endMoment = this._beginMoment().add(this.duration, "days");
-                            this.set("medicationDetail.endMomentAsString", endMoment.format("YYYY-MM-DD"));
-                            this.set("medicationContent.medicationValue.endMoment", parseInt(endMoment.format("YYYYMMDD"), 10));
-                        } else {
-                            this.set("medicationContent.medicationValue.endMoment", null);
-                        }
-                        this.set("medicationContent.medicationValue.beginMoment", parseInt(this._beginMoment().format("YYYYMMDD"), 10));
-                        this._updateStats();
-                    }
+                if (!this.medicationDetail) return
+                if (!this._beginMoment())
+                    this.set("medicationDetail.beginMomentAsString", moment().format("YYYY-MM-DD"))
+                else {
+                    if (this.medicationDetail.endMomentAsString && !this.initializingDate) {
+                        const endMoment = this._beginMoment().add(this.duration, "days");
+                        this.set("medicationDetail.endMomentAsString", endMoment.format("YYYY-MM-DD"));
+                        this.set("medicationContent.medicationValue.endMoment", parseInt(endMoment.format("YYYYMMDD"), 10));
+                    } else
+                        this.set("medicationContent.medicationValue.endMoment", null);
+                    this.set("medicationContent.medicationValue.beginMoment", parseInt(this._beginMoment().format("YYYYMMDD"), 10));
+                    this._updateStats();
                 }
             }
 
             _changeEndMoment() {
                 if (this.medicationDetail && this._beginMoment()) {
-                    if (!this._endMoment()) {
+                    if (!this._endMoment())
                         this.set("duration", "");
-                    } else {
+                    else {
                         let endMoment = this._endMoment();
                         let duration = endMoment.diff(this._beginMoment(), "days");
                         if (duration < 0) {
@@ -1432,9 +1325,8 @@
 
             _changeDuration() {
                 if (this.medicationDetail && this._beginMoment()) {
-                    if (this.duration === "0") {
+                    if (this.duration === "0")
                         this.set("duration", "");
-                    }
                     else if (!this.duration) {
                         this.set("medicationDetail.endMomentAsString", "");
                         this.set("medicationContent.medicationValue.endMoment", null);
@@ -1452,13 +1344,15 @@
             }
 
             _setSpinnerBusy() {
-                this.dispatchEvent(new CustomEvent('spinner-busy', {
-                    detail: {}, bubbles: true, composed: true
-                }));
+                this._dispatchEvent('spinner-busy');
             }
 
             _setSpinnerIdle() {
-                this.dispatchEvent(new CustomEvent('spinner-idle', {
+                this._dispatchEvent('spinner-idle');
+            }
+
+            _dispatchEvent(event) {
+                this.dispatchEvent(new CustomEvent(event, {
                     detail: {}, bubbles: true, composed: true
                 }));
             }
@@ -1491,9 +1385,8 @@
                                             publicDmpp: ampp.dmpps.find(dmpp => dmpp.deliveryEnvironment === "P" && dmpp.codeType === "CNK" && dmpp.from < now && (!dmpp.to || dmpp.to > now))
                                         });
                                     }));
-                                } else {
+                                } else
                                     return validAmpps;
-                                }
                             }, []);
 
                             const lastAmpps = validAmpps && validAmpps.filter(ampp => ampp.publicDmpp);
@@ -1509,9 +1402,9 @@
                                 samCode: _.get(updatedAmpp, "amp.code", ""),
                                 samDate: samDate,
                             });
-                            if (lastAmpps.some(ampp => ampp.publicDmpp.code === medication.id)) {
+                            if (lastAmpps.some(ampp => ampp.publicDmpp.code === medication.id))
                                 console.log("CNK ok");
-                            } else {
+                            else {
                                 const updatedCnk = updatedAmpp.publicDmpp.code;
                                 const oldCnk = medication.id;
                                 console.log("CNK too old: current CNK: " + oldCnk + "; latest: " + updatedCnk);
@@ -1528,9 +1421,8 @@
                             console.log(err);
                             return medication;
                         })
-                } else {
+                } else
                     return Promise.resolve(medication);
-                }
             }
 
             _medicationChanged(medication) {
@@ -1539,9 +1431,8 @@
                 this._setSpinnerBusy();
                 this._checkCnk(medication)
                     .then(medication => {
-                        if (this.cachedBoxes && this.cachedBoxes !== medication.boxes) {
+                        if (this.cachedBoxes && this.cachedBoxes !== medication.boxes)
                             this._updateStats();
-                        }
                         this.cachedBoxes = medication.boxes;
 
                         this.set("medicationDetail", null);
@@ -1549,7 +1440,7 @@
                         const content = this.content || this.extractContentWithIdFromMedicationService(medication.newMedication, medication.options.isNew, medication.options.isPrescription);
                         this.set("medicationContent", content);
 
-                        this._initmedicationContent();
+                        this._initMedicationContent();
 
                         const today = this.api.moment(Date.now());
                         this.set("initializingDate", true);
@@ -1580,16 +1471,12 @@
                         // this.set("reimbursementReason", reimb && this.reimbursementCodeRecipe.find(item => item.code === reimb.code) || this.reimbursementCodeRecipe.find(item => item.code === "notreimbursable"));
                         this.set("reimbursementReason", reimb && this.reimbursementCodeRecipe.find(item => item.code === reimb.code) || "");
 
-                        const quantitySample = _.get(this.medicationContent, "medicationValue.regimen[0].administratedQuantity.quantity", "");
-                        this.set("quantityFactor", quantitySample && !parseInt(quantitySample, 10) && this.quantityFactors.find(q => q.numLabel === quantitySample) || this.quantityFactors[0]);
-
                         // @todo: month (dayNumber) and date
                         const period = _.has(this.medicationContent, "medicationValue.regimen[0].weekday") ? "weeklyPosology" : "dailyPosology" ;
-                        if (this.periodConfig.id !== period) {
+                        if (this.periodConfig.id !== period)
                             this.set("periodConfig", this.periodConfigs.find(config => config.id === period));
-                        } else {
+                        else
                             this._periodChanged();
-                        }
                         this._updateStats();
                     })
                     .finally(() => this._setSpinnerIdle());
@@ -1606,9 +1493,9 @@
                 this.splice("regimenKeys", 0, this.regimenKeys.length);
                 let regimen = _.get(this.medicationContent, "medicationValue.regimen", "");
                 if (this.periodConfig.id === "weeklyPosology") {
-                    if (!regimen.length) {
+                    if (!regimen.length)
                         this.push("regimenKeys", this.periodConfig.keys[0]);
-                    } else {
+                    else {
                         const keyId = this.periodConfig.keyId;
                         if (keyId === "weekday") {
                             const regimenKeys = regimen.filter((e, i, a) => a.findIndex(x => x[keyId].code === e[keyId].code) === i)
@@ -1619,9 +1506,8 @@
                             // @todo: dayNumber and date cases
                         }
                     }
-                } else {
+                } else
                     this.push("regimenKeys", "none");
-                }
                 this._updatePeriodConfigs();
             }
 
@@ -1644,7 +1530,7 @@
             }
 
             _canDeleteRegimen() {
-                return (this.regimenKeys.length > 1);
+                return this.regimenKeys.length > 1;
             }
 
             _addRegimen() {
@@ -1664,9 +1550,9 @@
                 if (this.regimenKeys.length < 2) return;
                 const keyId = this.periodConfig.keyId;
                 let regimen = _.get(this.medicationContent, "medicationValue.regimen", "");
-                if (keyId === "weekday") {
+                if (keyId === "weekday")
                     regimen = regimen.filter(reg => reg.weekday && reg.weekday.code != key)
-                } else {
+                else {
                     // @ todo dayNumber and date
                 }
                 this.set("medicationContent.medicationValue.regimen", regimen);
@@ -1674,67 +1560,9 @@
                 this._updatePeriodConfigs();
             }
 
-
-            _all(a,b) { return a && b }
-
             _regimenLines() {
                 return this.medicationContent && this.medicationContent.medicationValue && this.medicationContent.medicationValue.regimen || []
             }
-
-            // extractContentWithIdFromMedicationService(m, isNew, isPres) {
-            //     const content = this.api.contact().preferredContent(m, this.language)  || (m.content[this.language] = {
-            //         medicationValue: {regimen: []},
-            //         medicationUnit: this.localize("generic_unit", "unit")
-            //     });
-            //     return {
-            //         id: m.id,
-            //         codes: m.codes,
-            //         medicationValue: content.medicationValue,
-            //         medicationUnit: content.medicationUnit,
-            //         isNew: isNew || false,
-            //         isPrescription: m.isPrescription || isPres || false,
-            //         isMedication: m.tags && m.tags.length && m.tags.some(tag => tag.type === "CD-ITEM" && tag.code === "medication") || false
-            //     };
-            // }
-
-            // open(medicationDetail, medicationContent, boxes) {
-            //     const preferredContent = this.api.contact().preferredContent(medicationDetail, this.language);
-            //     if (!medicationContent || !medicationContent.isNew) { // medicationContent.isNew==false when opening an existing medication
-            //         // do not set a default date if not defined, for the user to see when a medication has no date
-            //         const start = (preferredContent && preferredContent.medicationValue && preferredContent.medicationValue.beginMoment)
-            //             || (medicationDetail.valueDate)
-            //             || (medicationDetail.openingDate);
-            //         const end = (preferredContent && preferredContent.medicationValue && preferredContent.medicationValue.endMoment)
-            //             || (medicationDetail.closingDate);
-            //         medicationContent = this.extractContentWithIdFromMedicationService(medicationDetail, false, medicationContent.isPrescription);
-            //         medicationContent.beginMomentAsString = start && this.api.moment(start).format('YYYY-MM-DD') || null;
-            //         medicationContent.endMomentAsString = end && this.api.moment(end).format('YYYY-MM-DD') || null;
-            //     } else { // new medication, should set a default start date
-            //         medicationContent.beginMomentAsString = this.api.moment(Date.now()).format("YYYY-MM-DD");
-            //     }
-            //
-            //     this.set('medicationContent', medicationContent);
-            //     this._initmedicationContent();
-            //     this.set('medicationDetail', {
-            //         boxes: boxes || 1,
-            //         medicPriority: this.medicationContent.medicationValue.priority === "high" ? 2 : this.medicationContent.medicationValue.priority === "middle" ? 1 : 0,
-            //         renewal: !!this.medicationContent.medicationValue.renewal,
-            //         newMedication: medicationDetail,
-            //         options: {
-            //             createMedication: this.medicationContent.createMedication,
-            //             isPrescription: this.medicationContent.isPrescription,
-            //             isNew: this.medicationContent.isNew
-            //         }
-            //     });
-            //
-            //     this.set('medicationMustBeCreated', false):
-            //     this.set('openAddDropDown', false);
-            //
-            //     const medicationControl = this.$['medication-detail'];
-            //     medicationControl.init()
-            //         .catch(err => console.log(err))
-            //         .finally(() => medicationControl.open());
-            // }
 
             init() {
                 return new Promise(resolve => {
@@ -1744,13 +1572,11 @@
                             .then(customCodes => this.push("dayPeriodCodes", ...codes.concat(customCodes))))
                         .then(() => Promise.all(this.regimenConfig.map(reg => {
                                 let dayPeriod = this.dayPeriodCodes.find(dayPeriod => dayPeriod.code === reg.id);
-                                if (!dayPeriod) {
+                                if (!dayPeriod)
                                     dayPeriod = {code: reg.id, type: "CD-DAYPERIOD"};
-                                }
                                 Object.assign(reg, {dayPeriod: dayPeriod});
-                                if (!dayPeriod.label || !dayPeriod.label[this.language]) {
+                                if (!dayPeriod.label || !dayPeriod.label[this.language])
                                     dayPeriod.label = _.fromPairs([[this.language, _.lowerCase(_.trim(this.localize(`ms_${reg.id}`, reg.id)))]]);
-                                }
                             }))
                         )
                         .then(() => resolve())
@@ -1788,12 +1614,7 @@
                 this.splice("medicationContent.medicationValue.regimen", 0, regimen.length);
             }
 
-            _copyPosologyNote() {
-                this._resetAll();
-                this.set("medicationDetail.commentForPatient", this.medicationDetail.posologyNote);
-            }
-
-            _initmedicationContent(){
+            _initMedicationContent(){
                 this.medicationContent.medicationValue && !this.medicationContent.medicationValue.regimen ? this.set('medicationContent.medicationValue.regimen', []) : null
             }
 
@@ -1802,10 +1623,9 @@
                 // list && list.length > 0 ? this.set('medications', _.clone(list)) : (list.newMedication && this.set('medications',[list])) || this.set('medications', [])
                 // ----------------------------------------------------------------------------------------------
                 list && list.length > 0 ? this.set('medications', _.clone(list)) : this.set('medications', [])
-                if (this.medications.length) {
-                    this.open(this.medications[0], this.extractContentWithIdFromMedicationService(this.medications[0].newMedication, true, this.medications[0].options.isPrescription), this.medications[0].boxes);
-                    this.set('selectedMedication',0);
-                }
+                if (!this.medications.length) return;
+                this.open(this.medications[0], this.extractContentWithIdFromMedicationService(this.medications[0].newMedication, true, this.medications[0].options.isPrescription), this.medications[0].boxes);
+                this.set('selectedMedication',0);
             }
 
             _localize(s) {
@@ -1813,7 +1633,6 @@
             }
 
             _changeMedicPriority() {
-                // console.log('_changeMedicPriority')
                 if (this.medicationContent) {
                     const priority = this.medicationContent.medicationValue.priority?
                         this.medicationContent.medicationValue.priority=== 2 ? 'high' :
@@ -1828,21 +1647,17 @@
             }
 
             EOLAndClose(){
-                const today = parseInt(moment().subtract(1, 'days').format("YYYYMMDD"), 10)
-                this.set("medicationDetail.newMedication.endOfLife", today)
-                this.save()
-                this.close()
+                this.saveAndClose("medicationDetail.newMedication.endOfLife")
             }
 
             endAndClose(){
-                const yesterday = parseInt(moment().subtract(1, 'days').format("YYYYMMDD"), 10)
-                this.set("medicationContent.medicationValue.endMoment", yesterday)
-                this.save()
-                this.close()
+                this.saveAndClose("medicationContent.medicationValue.endMoment")
             }
 
-            saveAndClose() {
-                this.save() // instant save
+            saveAndClose(dateAttribute) {
+                const yesterday = parseInt(moment().subtract(1, 'days').format("YYYYMMDD"), 10)
+                this.set(dateAttribute, yesterday)
+                this.save()
                 this.close()
             }
 
@@ -1856,23 +1671,8 @@
                 console.log(regs);
             }
 
-            // _changeReimbursementItem(item) {
-            //     if(item && item.id){
-            //         const reimbursementItem = this.reimbursementCodeRecipe.find(r => r.id === item.id)
-            //         this.set("medicationContent.medicationValue.reimbursementReason", reimbursementItem)
-            //     }
-            // }
-            //
-            // _substitutionChanged(e) {
-            //     this.set('medicationContent.medicationValue.substitutionAllowed', e.detail.value === 0);
-            // }
-            //
-            // _substitutionAllowedChanged(e) {
-            //     this.set('medicationContent.medicationValue.substitutionAllowed', e.target.checked);
-            // }
-
             _changeRenewalTimeUnitItem(item, unitValue, decimalValue){
-                if(item && item.id){
+                if (item && item.id) {
                     const timeUnitItem = this.timeUnit.find(r => r.id === item.id)
                     this.set("medicationContent.medicationValue.renewal", {
                         decimal: decimalValue,

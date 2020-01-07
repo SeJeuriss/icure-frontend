@@ -49,17 +49,6 @@
                     padding: 0;
                 }
             }
-            /*.regimen-line.block paper-dropdown-menu {*/
-            /*    margin-right: 8px;*/
-            /*    --paper-dropdown-menu-input: {*/
-            /*        height: 42px;*/
-            /*        padding: 0;*/
-            /*    };*/
-            /*    --paper-input-container: {*/
-            /*        padding: 0;*/
-            /*    };*/
-            /*    --paper-input-container-focus-color: var(--app-primary-color);*/
-            /*}*/
 
             .regimen-line.block span{
                 margin-right: 4px;
@@ -281,53 +270,53 @@
                     <div class="a_m gc-header">[[localize('','Couché',language)]]</div>
 
                     <div class="b_a">
-                        <ht-regimen-item class="left" id="afterwakingup" quantity="{{afterwakingup}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="left" id="afterwakingup" quantity="{{afterwakingup}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="b_bcd">
-                        <ht-regimen-item class="big" id="morning" quantity="{{morning}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="big" id="morning" quantity="{{morning}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="b_e">
-                        <ht-regimen-item class="small" id="betweenbreakfastandlunch" quantity="{{betweenbreakfastandlunch}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="small" id="betweenbreakfastandlunch" quantity="{{betweenbreakfastandlunch}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="b_fgh">
-                        <ht-regimen-item class="big" id="midday" quantity="{{midday}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="big" id="midday" quantity="{{midday}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="b_i">
-                        <ht-regimen-item class="small" id="betweenlunchanddinner" quantity="{{betweenlunchanddinner}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="small" id="betweenlunchanddinner" quantity="{{betweenlunchanddinner}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="b_jkl">
-                        <ht-regimen-item class="big" id="evening" quantity="{{evening}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="big" id="evening" quantity="{{evening}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="b_m">
-                        <ht-regimen-item class="right" id="thehourofsleep" quantity="{{thehourofsleep}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="right" id="thehourofsleep" quantity="{{thehourofsleep}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
 
                     <div class="c_b">
-                        <ht-regimen-item class="bottom-left" id="beforebreakfast" quantity="{{beforebreakfast}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-left" id="beforebreakfast" quantity="{{beforebreakfast}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="c_c">
-                        <ht-regimen-item class="bottom-center" id="duringbreakfast" quantity="{{duringbreakfast}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-center" id="duringbreakfast" quantity="{{duringbreakfast}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="c_d">
-                        <ht-regimen-item class="bottom-right" id="afterbreakfast" quantity="{{afterbreakfast}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-right" id="afterbreakfast" quantity="{{afterbreakfast}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="c_f">
-                        <ht-regimen-item class="bottom-left" id="beforelunch" quantity="{{beforelunch}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-left" id="beforelunch" quantity="{{beforelunch}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="c_g">
-                        <ht-regimen-item class="bottom-center" id="duringlunch" quantity="{{duringlunch}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-center" id="duringlunch" quantity="{{duringlunch}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="c_h">
-                        <ht-regimen-item class="bottom-right" id="afterlunch" quantity="{{afterlunch}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-right" id="afterlunch" quantity="{{afterlunch}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="c_j">
-                        <ht-regimen-item class="bottom-left" id="beforedinner" quantity="{{beforedinner}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-left" id="beforedinner" quantity="{{beforedinner}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="c_k">
-                        <ht-regimen-item class="bottom-center" id="duringdinner" quantity="{{duringdinner}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-center" id="duringdinner" quantity="{{duringdinner}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                     <div class="c_l">
-                        <ht-regimen-item class="bottom-right" id="afterdinner" quantity="{{afterdinner}}" quantity-factor=[[quantityFactor]] on-quantity-changed="_quantityChanged"></ht-regimen-item>
+                        <ht-regimen-item class="bottom-right" id="afterdinner" quantity="{{afterdinner}}" on-quantity-changed="_quantityChanged"></ht-regimen-item>
                     </div>
                 </div>
                 <template is="dom-if" if="[[devShow]]">
@@ -341,7 +330,7 @@
                 </div>
                 <div class="extra-line">
                     <template is="dom-repeat" items="[[extras]]" as="extra">
-                        <ht-regimen id="extra[[extra.code]]" extra="{{extra}}" unit="[[medicationDetail.bufferUnit]]" quantity-factor="[[quantityFactor]]" on-extra-changed="_extraChanged"></ht-regimen>
+                        <ht-regimen id="extra[[extra.code]]" extra="{{extra}}" unit="[[medicationDetail.bufferUnit]]" on-extra-changed="_extraChanged"></ht-regimen>
                     </template>
                 </div>
             </div>
@@ -385,10 +374,6 @@
                         type: String,
                         value: ""
                     },
-                    quantityFactor: {
-                        type: Object,
-                        value: {}
-                    },
                     extras:{
                         type: Array,
                         value: () => []
@@ -428,7 +413,7 @@
             }
             static get observers() {
                 return [
-                    "_updateView(quantityFactor, regimen.*, key)"
+                    "_updateView(regimen.*, key)"
                 ];
             }
 
@@ -471,9 +456,8 @@
                     this.set(base.id, this._getDayPeriodQuantity(base.dayPeriod));
                 });
 
-                if (this.extras && this.extras.length) {
+                if (this.extras && this.extras.length)
                     this.splice("extras", 0, this.extras.length);
-                }
                 this.regimen.filter(reg => this._filterRegimenItemByKey(reg) && !reg.dayPeriod).forEach(reg => {
                     this.push("extras", {
                         code: reg.timeOfDay,
@@ -493,25 +477,27 @@
                 return this.get(id);
             }
 
+            _addItem(index, quantity, timeKey, timeValue) {
+                const updated = this._createRegItem(quantity, timeKey, timeValue);
+                if (index > -1)
+                    this.splice("regimen", index, 1, updated);
+                else
+                    this.push("regimen", updated);
+            }
+
             _createRegItem(quantity, timeKey, timeValue) {
                 const regItem = {
                     administratedQuantity: {
-                        quantity: this.quantityFactor.denominator > 1 && this.quantityFactor.numLabel || parseInt(quantity, 10) || "",
+                        quantity: quantity > 0 ? quantity : "",
                         unit: this.medicationUnit,
                     }
                 };
-                if (timeKey && timeValue) {
+                if (timeKey && timeValue)
                     regItem[timeKey] = timeValue;
-                }
-
                 const keyId = this.periodConfig.keyId;
-                if (keyId) {
-                    if (keyId === "weekday") {
-                        regItem[keyId] = this.weekdayCodes.find(weekdayCode => weekdayCode.code === this.key);
-                    } else {
-                        regItem[keyId] = this.key;
-                    }
-                }
+                if (keyId)
+                    regItem[keyId] = (keyId === "weekday") ?
+                        this.weekdayCodes.find(weekdayCode => weekdayCode.code === this.key) : this.key;
                 return regItem;
             }
 
@@ -520,18 +506,10 @@
                 const dayPeriod = (this.regimenConfig.find(reg => reg.id === id) || {dayPeriod: ""}).dayPeriod;
                 if (!dayPeriod) return;
                 const index = this.regimen.findIndex(reg => this._filterRegimenItemByKey(reg) && reg.dayPeriod && reg.dayPeriod.code === dayPeriod.code);
-                if (quantity) {
-                    const updated = this._createRegItem(quantity, "dayPeriod", dayPeriod);
-                    if (index > -1) {
-                        this.splice("regimen", index, 1, updated);
-                    } else {
-                        this.push("regimen", updated);
-                    }
-                } else {
-                    if (index > -1) {
-                        this.splice("regimen", index, 1);
-                    }
-                }
+                if (quantity)
+                    this._addItem(index, quantity, "dayPeriod", dayPeriod);
+                else if (index > -1)
+                    this.splice("regimen", index, 1);
             }
 
             _quantityChanged(e) {
@@ -539,7 +517,6 @@
                 let quantity = e.currentTarget.quantity;
                 if (quantity === "") return;
                 this._updateDayPeriodRegimen(id, quantity);
-
                 this.regimenConfig.filter(reg => reg.parentId === id).forEach(reg => {
                     this._setQuantity(reg.id);
                     this._updateDayPeriodRegimen(reg.id);
@@ -549,7 +526,6 @@
                     this._setQuantity(reg.parentId);
                     this._updateDayPeriodRegimen(reg.parentId);
                 }
-                // this._updateDayPeriodRegimen(id, quantity);
             }
 
             _canReset() {
@@ -559,7 +535,6 @@
             _reset() {
                 if (!this.regimen) return;
                 this.regimen.filter(reg => this._filterRegimenItemByKey(reg)).map(reg => this.regimen.indexOf(reg)).sort((a, b) => (b - a)).map(index => this.splice("regimen", index, 1));
-                // this.regimen = this.regimen.filter(reg => !this._filterRegimenItemByKey(reg));
                 this._updateView();
             }
 
@@ -568,19 +543,8 @@
                 const time = moment(this.time,['HH:mm','HHmm']);
                 const timeOfDay = parseInt(time.format("HHmmss"), 10);
                 const index = this.regimen.findIndex(reg => this._filterRegimenItemByKey(reg) && reg.timeOfDay && reg.timeOfDay === timeOfDay);
-                let quantity = 0;
-                if (this.quantityFactor.denominator > 1) {
-                    if (index > -1) return;
-                    quantity = this.quantityFactor.numLabel;
-                } else {
-                    quantity = ((index > -1) && parseInt(this.regimen[index].administratedQuantity.quantity, 10) || 0) + 1;
-                }
-                const updated = this._createRegItem(quantity, "timeOfDay", timeOfDay);
-                if (index > -1) {
-                    this.splice("regimen", index, 1, updated);
-                } else {
-                    this.push("regimen", updated);
-                }
+                const quantity = ((index > -1) && parseFloat(this.regimen[index].administratedQuantity.quantity) || 0) + 1;
+                this._addItem(index, quantity, "timeOfDay", timeOfDay);
                 this._updateView();
             }
 
@@ -590,19 +554,10 @@
                 if (!extra) return;
                 if (!this.regimen) return;
                 const index = this.regimen.findIndex(reg => this._filterRegimenItemByKey(reg) && reg.timeOfDay && !reg.dayPeriod && reg.timeOfDay === extra.code);
-
-                if (quantity) {
-                    const updated = this._createRegItem(quantity, "timeOfDay", extra.code);
-                    if (index > -1) {
-                        this.splice("regimen", index, 1, updated);
-                    } else {
-                        this.push("regimen", updated);
-                    }
-                } else {
-                    if (index > -1) {
-                        this.splice("regimen", index, 1);
-                    }
-                }
+                if (quantity)
+                    this._addItem(index, quantity, "timeOfDay", extra.code);
+                else if (index > -1)
+                    this.splice("regimen", index, 1);
                 this._updateView();
             }
         }

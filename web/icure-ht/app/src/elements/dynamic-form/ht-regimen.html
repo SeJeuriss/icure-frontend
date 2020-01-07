@@ -49,11 +49,11 @@
             .quantity-label:hover {
                 background: var(--app-secondary-color-dark);
             }
-
             .quantity-label:focus {
                 background: var(--app-secondary-color-dark);
                 color: #fafafa;
             }
+            .quantity_label { grid-area: quantity_label; }
 
             .control-button {
                 --paper-icon-button: {
@@ -64,7 +64,6 @@
                     padding: 2px;
                 };
             }
-
             .control-button:hover {
                 background: var(--app-secondary-color-dark);
 
@@ -74,61 +73,34 @@
                 color: #fafafa;
             }
 
-            /*.decrease-button:hover {*/
-            /*    --paper-icon-button: {*/
-            /*        background: var(--app-text-color-light);*/
-            /*        color: var(--app-secondary-color);*/
-            /*    }*/
-            /*}*/
-            /*.decrease-button:focus {*/
-            /*    --paper-icon-button: {*/
-            /*        background: #fafafa;*/
-            /*    }*/
-            /*}*/
-
             .grid-container {
                 display: grid;
-                grid-template-columns: auto auto auto auto;
+                grid-template-columns: auto auto auto auto auto;
                 grid-template-rows: 24px;
-                grid-template-areas: "time_tag button_increase quantity_label button_decrease";
+                grid-template-areas: "time_tag button_decrease quantity_label button_increase button_divide";
             }
 
             .time_tag { grid-area: time_tag; }
-            .button_increase { grid-area: button_increase; }
-            .quantity_label { grid-area: quantity_label; }
             .button_decrease { grid-area: button_decrease; }
+            .button_increase { grid-area: button_increase; }
+            .button_divide { grid-area: button_divide; }
 
         </style>
-
-        <!--
-        <div id="container" class="extra">
-            <span>[[extra.quantity]] prise(s) à [[time]]</span>
-            <paper-icon-button icon="icons:close" on-tap="_delete">
-            </paper-icon-button>
-        </div>
-        -->
 
         <div class="grid-container dose-tag">
             <div class="time_tag time-label">[[time]]</div>
             <div class="button_decrease">
                 <paper-icon-button class="control-button" icon="icons:remove" on-tap="decrease"></paper-icon-button>
             </div>
-            <div class="quantity_label quantity-label" on-tap="increase">[[extra.quantity]]</div>
+            <div class="quantity_label quantity-label" on-tap="increase">[[_format(extra.*, unit)]]</div>
             <div class="button_increase">
                 <paper-icon-button class="control-button" icon="icons:add" on-tap="increase"></paper-icon-button>
             </div>
+            <div class="button_divide">
+                <paper-icon-button class="control-button" icon="icons:more-vert" on-tap="_divide"></paper-icon-button>
+            </div>
         </div>
 
-<!--        <div class="dose-tag">-->
-<!--            <div class="time-label">[[time]]</div>-->
-<!--            <div>-->
-<!--                <paper-icon-button class="control-button" icon="icons:add" on-tap="increase"></paper-icon-button>-->
-<!--            </div>-->
-<!--            <div id="counter-label" class="quantity-label" on-tap="increase">[[extra.quantity]]</div>-->
-<!--            <div>-->
-<!--                <paper-icon-button class="control-button" icon="icons:remove" on-tap="decrease"></paper-icon-button>-->
-<!--            </div>-->
-<!--        </div>-->
     </template>
     <script>
 
@@ -148,19 +120,14 @@
                     time: {
                         type: String
                     },
+                    unit: {
+                        type: Number,
+                        value: 0
+                    },
                     extra: {
                         type: Object,
                         value: () => {}
                     },
-                    unit: {
-                        type: String
-                    },
-                    quantityFactor: {
-                        type: Object,
-                        notify: true,
-                        value: null
-                    }
-
                 };
             }
 
@@ -170,52 +137,66 @@
                 ];
             }
 
+            static get units() {
+                return [ 1.00, 0.50, 0.33, 0.25 ];
+            }
+
             constructor() {
                 super();
-                this.unit = this.localize("uni", "Unités");
             }
 
             ready() {
                 super.ready();
             }
 
-            // refresh() {
-            //     console.log("refresh " + this.extra.code);
-            //     this.notifyPath("extra.quantity");
-            // }
+            _getUnit() {
+                return HtRegimen.units[this.unit];
+            }
 
-            increase() {
-                if (this.quantityFactor && this.quantityFactor.denominator > 1) {
-                    this.set("extra.quantity", this.quantityFactor.numLabel);
-                } else {
-                    const quantityValue = parseInt(this.extra.quantity) || 0;
-                    this.set("extra.quantity", quantityValue + 1);
-                }
+            _getValue() {
+                return Math.floor((parseFloat(this.extra.quantity) || 0) / this._getUnit());
+            }
+
+            _setValue(value) {
+                this.innerCall = true;
+                this.set("extra.quantity", this.unit != 2 ?
+                    value * this._getUnit() :
+                    Math.round((Math.floor(value / 3) + ((value % 3) * 0.33)) * 100) / 100);
+            }
+
+            _format() {
+                const unit = this.unit + 1;
+                const value = this._getValue().toString();
+                return unit > 1 ? value + "/" + unit.toString() : value;
+            }
+
+            _divide() {
+                const value = this._getValue();
+                this.set("unit", (this.unit + 1) % 4);
+                this._setValue(value);
             }
 
             decrease() {
-                if (this.quantityFactor && this.quantityFactor.denominator > 1) {
-                    this.set("extra.quantity", 0);
-                } else {
-                    const quantityValue = parseInt(this.extra.quantity) || 0;
-                    if (quantityValue > 0) {
-                        this.set("extra.quantity", quantityValue - 1);
-                    }
-                }
+                this._setValue(this._getValue() - 1);
             }
 
-            // _delete() {
-            //     this.dispatchEvent(new CustomEvent("delete-extra", {
-            //         detail: {extra: this.extra},
-            //         bubbles: true
-            //     }));
-            // }
+            increase() {
+                this._setValue(this._getValue() + 1);
+            }
 
             _extraChanged() {
                 console.log("extraChanged");
                 this.set("time",
                     (Math.floor(this.extra.code / 10000) % 100).toString().padStart(2, '0') + ":" +
                     (Math.floor(this.extra.code / 100) % 100).toString().padStart(2, '0'));
+                if (!this.innerCall) {
+                    const decimals = (this.extra.quantity * 100) % 100;
+                    if (decimals == 50) this.unit = 1;
+                    else if (decimals == 33 || decimals == 66) this.unit = 2;
+                    else if (decimals == 25 || decimals == 75) this.unit = 3;
+                    else this.unit = 0;
+                }
+                this.innerCall = false;
             }
         }
 
