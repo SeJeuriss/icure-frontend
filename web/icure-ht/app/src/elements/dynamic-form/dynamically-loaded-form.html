@@ -306,7 +306,10 @@
 								))
 					}
 
-                    this.dataProvider.computeFormulas(["OnLoadPropertiesEditor"])
+                    if(!this.dataProvider.isLoaded){
+                    	this.dataProvider.isLoaded =true;
+						this.dataProvider.computeFormulas(["OnLoadPropertiesEditor"])
+					}
 
                     if ((this.form.template || {}).layout) {
                         const layoutItems = _.flatten(_.flatten(this.form.template.layout.sections.map(s => s.formColumns)).map(c => c.formDataList))
@@ -470,6 +473,7 @@
                 };
 
                 const self = {
+                	isLoaded : false,
                     subFormsMap: {},
                     servicesMap: {},
 					parentForm: form.parent ? this._getFormParent(this.dataProvider,form.parent) : {},
@@ -868,7 +872,10 @@
 								))
 							}
 
-							subDataProvider.computeFormulas(["OnLoadPropertiesEditor"])
+							if(!subDataProvider.isLoaded){
+								subDataProvider.isLoaded=true;
+								subDataProvider.computeFormulas(["OnLoadPropertiesEditor"])
+							}
 
 							return self.subFormsMap[[subForm.id, subForm.descr, idx]] || ((self.subFormsMap[[subForm.id, key, idx]] = {
 								dataMap: _.fromPairs(_.flatten(_.flatten(subForm.template.layout.sections.map(s => s.formColumns)).map(c => c.formDataList)).map(f => [f.name, 1])),
