@@ -1,6 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../styles/shared-styles.html">
 <link rel="import" href="../../styles/buttons-style.html">
+<link rel="import" href="../icons/medication-icons.html">
 
 <dom-module id="ht-regimen-item">
     <template>
@@ -95,7 +96,8 @@
                 <paper-icon-button class$="control-button left [[custom]]" icon="icons:add" on-tap="increase"></paper-icon-button>
             </div>
             <div>
-                <paper-icon-button class$="control-button left [[custom]]" icon="icons:more-vert" on-tap="_divide"></paper-icon-button>
+<!--                <paper-icon-button class$="control-button left [[custom]]" icon="medication-svg-icons:one-quarter" on-tap="_divide"></paper-icon-button>-->
+                <paper-icon-button class$="control-button left [[custom]]" icon="medication-svg-icons:[[getDivisionIconId(unit)]]" on-tap="_divide"></paper-icon-button>
             </div>
         </div>
     </template>
@@ -146,6 +148,10 @@
 
             static get units() {
                 return [ 1.00, 0.50, 0.33, 0.25 ];
+            }
+
+            static get divisionIconIds() {
+                return ["one-full", "one-half", "one-third", "one-quarter"];
             }
 
             constructor() {
@@ -219,6 +225,10 @@
                     this.increase();
                     this.mouseIsDown = false;
                 }
+            }
+
+            getDivisionIconId() {
+                return HtRegimenItem.divisionIconIds[this.unit];
             }
 
             _quantityChanged() {
