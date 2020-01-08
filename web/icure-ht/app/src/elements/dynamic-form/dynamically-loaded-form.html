@@ -306,6 +306,8 @@
 								))
 					}
 
+                    this.dataProvider.computeFormulas(["OnLoadPropertiesEditor"])
+
                     if ((this.form.template || {}).layout) {
                         const layoutItems = _.flatten(_.flatten(this.form.template.layout.sections.map(s => s.formColumns)).map(c => c.formDataList))
                         this.set('dataMap', _.fromPairs(layoutItems.map(f => [f.name, 1])))
@@ -551,15 +553,25 @@
                                         status = gen.next() //Execute lines one by one
                                     }
 
-                                    const compValue = status.value !== null ? status.value : (lifecycles.includes('OnCreate') ? typeof comp.li.defaultValue === "object" ? this.api.contact().contentValue(comp.li.defaultValue[0])  : comp.li.defaultValue : null)
 
-                                    ;['StringEditor', 'PopupMenuEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'string') && self.setStringValue(comp.name, compValue, false);
-                                    ;['NumberEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'number') && self.setNumberValue(comp.name, compValue === 0 ? 0 : (Number(compValue.toFixed(3)) || null), false);
-                                    ;['MeasureEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'number') && self.setMeasureValue(comp.name, {value: Number(compValue.toFixed(3))} || null, false);
-                                    ;['MeasureEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'object') && self.setMeasureValue(comp.name, Number(compValue.toFixed(3)) || null, false);
-                                    ;['DateTimeEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'number') && self.setDateValue(comp.name, status.value || null, false);
-                                    ;['DateTimeEditor'].includes(comp.li.editor.key) && (typeof compValue === 'string') && self.setDateValue(comp.name,isNaN(Date.parse(compValue)) ? compValue : Date.parse(compValue) || null, false);
-                                    ;['CheckBoxEditor'].includes(comp.li.editor.key) && (typeof compValue === 'boolean') && self.setBooleanValue(comp.name, compValue || false,false);
+									if(lifecycles.includes("OnLoadPropertiesEditor")){
+											if(status.value!=={}){
+												_.map(status.value,(value,key)=>{
+													comp.li.editor[key]=value
+												})
+											}
+									}
+									else{
+										const compValue = status.value !== null ? status.value : (lifecycles.includes('OnCreate') ? typeof comp.li.defaultValue === "object" ? this.api.contact().contentValue(comp.li.defaultValue[0])  : comp.li.defaultValue : null)
+
+										;['StringEditor', 'PopupMenuEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'string') && self.setStringValue(comp.name, compValue, false);
+										;['NumberEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'number') && self.setNumberValue(comp.name, compValue === 0 ? 0 : (Number(compValue.toFixed(3)) || null), false);
+										;['MeasureEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'number') && self.setMeasureValue(comp.name, {value: Number(compValue.toFixed(3))} || null, false);
+										;['MeasureEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'object') && self.setMeasureValue(comp.name, Number(compValue.toFixed(3)) || null, false);
+										;['DateTimeEditor'].includes(comp.li.editor.key) && (!compValue || typeof compValue === 'number') && self.setDateValue(comp.name, status.value || null, false);
+										;['DateTimeEditor'].includes(comp.li.editor.key) && (typeof compValue === 'string') && self.setDateValue(comp.name,isNaN(Date.parse(compValue)) ? compValue : Date.parse(compValue) || null, false);
+										;['CheckBoxEditor'].includes(comp.li.editor.key) && (typeof compValue === 'boolean') && self.setBooleanValue(comp.name, compValue || false,false);
+									}
 
                                     this.root.querySelector('#dynamic-form') && this.root.querySelector('#dynamic-form').notify((rootPath.length ? rootPath + '.' : '') + comp.name)
 
@@ -855,6 +867,8 @@
 														.forEach(ftguid => subDataProvider.addSubForm(fdl.name, ftguid)))
 								))
 							}
+
+							subDataProvider.computeFormulas(["OnLoadPropertiesEditor"])
 
 							return self.subFormsMap[[subForm.id, subForm.descr, idx]] || ((self.subFormsMap[[subForm.id, key, idx]] = {
 								dataMap: _.fromPairs(_.flatten(_.flatten(subForm.template.layout.sections.map(s => s.formColumns)).map(c => c.formDataList)).map(f => [f.name, 1])),
