@@ -6,6 +6,7 @@ import {UtilsClass} from "icc-api/dist/icc-x-api/crypto/utils"
 import moment from 'moment/src/moment'
 import levenshtein from 'js-levenshtein'
 import { Base64 } from 'js-base64';
+import {ElectronApi} from "electron-topaz-api";
 
 
 
@@ -56,6 +57,8 @@ onmessage = e => {
         const iccFormXApi		    = new iccXApi.IccFormXApi(iccHost, iccHeaders,iccCryptoXApi)
         const iccPatientXApi        = new iccXApi.IccPatientXApi(iccHost, iccHeaders, iccCryptoXApi, iccContactXApi, iccFormXApi, iccHelementXApi, iccIccInvoiceXApi, iccDocumentXApi, iccHcpartyXApi, iccClassificationXApi)
         const iccMessageXApi        = new iccXApi.IccMessageXApi(iccHost, iccHeaders, iccCryptoXApi, iccInsuranceApi, iccEntityrefApi, iccIccInvoiceXApi, iccDocumentXApi, iccReceiptXApi, iccPatientXApi)
+
+		const electronApi			= new ElectronApi("http://127.0.0.1:16042")
 
         let totalNewMessages = {
             INBOX: 0,
@@ -529,9 +532,9 @@ onmessage = e => {
 
         icureApi.getVersion()
         .then(icureVersion => appVersions.backend = _.trim(icureVersion))
-        .then(() => fetch("http://127.0.0.1:16042/ok", {method:"GET"}).then(() => true).catch(() => false))
+        .then(() => electronApi.checkAvailable())
         .then(isElectron => appVersions.isElectron = !!isElectron)
-        .then(() => fetch("http://127.0.0.1:16042/getVersion", {method:"GET"}).then((response) => response.json()).catch(() => false))
+        .then(() => electronApi.getVersion())
         .then(electronVersion => appVersions.electron = _.trim(_.get(electronVersion,"version","-")))
         .then(() => autoDeleteMessages())
         .finally(()=>{
