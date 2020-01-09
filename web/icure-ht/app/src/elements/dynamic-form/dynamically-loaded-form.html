@@ -632,31 +632,33 @@
                     },
                     getOrCreateContent: (svc, lng) => svc && (svc.content && this.api.contact().preferredContent(svc, lng) || ((svc.content || (svc.content = {}))[lng] = {})),
                     //Returns an array of svcStructs (a svcStruct is a map with the ctc, the svc and the subContacts this svc belongs to). All svcStructs share the same svc id. If there is a choice between several series of services. Pick the one that preferably appears in the contact.
-                    getServicesLineForContact: label => {
+                    //here 1 svcStruct
+					getServicesLineForContact: label => {
                         const sss = self.services(label);
-                        return sss && (sss.find(svcs => svcs.find(ss => ss.ctc.id === this.contact.id)) || sss[0]) || [];
+                        return sss && sss.find(svcs => svcs.find(ss => ss.ctc.id === this.contact.id))|| sss[0] || [];
                     },
+					// map of svcStruct
                     getServicesLinesForContact: label => {
                         const sss = self.services(label);
-                        return sss && (sss.filter(svcs => svcs.find(ss => !ss.ctc || ss.ctc.id === this.contact.id)) || sss[0]) || [];
+                        return sss && sss.filter(svcs => svcs.find(ss => !ss.ctc || ss.ctc.id === this.contact.id)) || sss[0] || [];
                     },
                     getServiceInContact: label => {
                         const ssLine = self.getServicesLineForContact(label);
                         return ssLine && ssLine.find(ss => !this.api.after(ss.ctc.created, this.contact.created));
                     },
                     getServicesInContact: label => {
-                        const ssLines = self.getServicesLinesForContact(label);
+                        const ssLines = _.flatten(self.getServicesLinesForContact(label));
                         return ssLines && ssLines.filter(ss => !ss.ctc || !this.api.after(ss.ctc.created, this.contact.created));
                     },
                     wasModified: label => {
                         const s = self.getServiceInContact(label);
                         return s && (this.api.before(s.ctc.openingDate, this.contact.openingDate) || this.api.before(s.ctc.created, this.contact.created));
                     },
-                    isModifiedAfter: label => {
+                    isModifiedAfter: label => {//@todo check if need lines
                         const s = self.getServicesLineForContact(label);
                         return s && s[0] && s[0] !== self.getServiceInContact(label);
                     },
-                    latestModification: label => {
+                    latestModification: label => {//@todo check if need lines
                         const s = self.getServicesLineForContact(label);
                         return s && s[0] && this._timeFormat(s[0].ctc.openingDate);
                     },
@@ -744,7 +746,7 @@
                         const s = !original ? self.getServicesLineForContact(label)[0] : self.getServiceInContact(label);
                         return s && s.svc && ((s.svc.endOfLife && this.localize('service_mod_del','Modified or deleted service',this.language)===this.form.template.name) || !s.svc.endOfLife) && s.svc.valueDate;
                     },
-                    getValue: (label) => {
+                    getValue: (label) => {//@todo check if need lines
                     	const valContainers = self.getValueContainers(label)
 
 						if (valContainers && valContainers.length > 1) {
@@ -755,10 +757,17 @@
 						}
 					},
                     getRawValue: (label) => {
-                        const s = self.getServicesLineForContact(label)[0];
-                        const c = s && s.svc && this.api.contact().preferredContent(s.svc, this.language)
-
-                        return c && (c.measureValue && (c.measureValue.value || c.measureValue.value === 0) ? c.measureValue.value : this.api.contact().contentValue(c))
+                        const ss = self.getServicesLinesForContact(label);
+                        if( ss.length>1){
+                        	return ss.map(s =>{
+								const c = s && s.length && s[0] && s[0].svc && this.api.contact().preferredContent(s[0].svc, this.language)
+								return c && (c.measureValue && (c.measureValue.value || c.measureValue.value === 0) ? c.measureValue.value : this.api.contact().contentValue(c))
+							})
+						}else{
+                        	const s = ss[0]
+							const c = s && s.length && s[0] && s[0].svc && this.api.contact().preferredContent(s[0].svc, this.language)
+							return c && (c.measureValue && (c.measureValue.value || c.measureValue.value === 0) ? c.measureValue.value : this.api.contact().contentValue(c))
+						}
                     },
                     setStringValue: function (label, value, save = true) {
                         const currentValue = self.getStringValue(label)
@@ -858,6 +867,9 @@
                     },
                     getSubForms: function (key) {
                         return (form.children || []).filter(f => !key || f.descr === key).map((subForm, idx) => {
+                        	if(self.subFormsMap[[subForm.id, subForm.descr, idx]] && self.subFormsMap[[subForm.id, subForm.descr, idx]].dataProvider){
+								return self.subFormsMap[[subForm.id, subForm.descr, idx]]
+							}
 							const subDataProvider = this.getDataProvider(subForm, (rootPath.length ? rootPath + '.' : '') + key + '.' + idx)
 							if (!subForm.hasBeenInitialized) {
 								subForm.hasBeenInitialized = true
@@ -877,7 +889,7 @@
 								subDataProvider.computeFormulas(["OnLoadPropertiesEditor"])
 							}
 
-							return self.subFormsMap[[subForm.id, subForm.descr, idx]] || ((self.subFormsMap[[subForm.id, key, idx]] = {
+							return ((self.subFormsMap[[subForm.id, key, idx]] = {
 								dataMap: _.fromPairs(_.flatten(_.flatten(subForm.template.layout.sections.map(s => s.formColumns)).map(c => c.formDataList)).map(f => [f.name, 1])),
                                 dataProvider: subDataProvider,
                                 template: subForm.template.layout,
