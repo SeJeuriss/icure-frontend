@@ -757,7 +757,7 @@
 						}
 					},
                     getRawValue: (label) => {
-                        const ss = self.getServicesLinesForContact(label).filter(s => !s.svc.endOfLife);
+                        const ss = self.getServicesLinesForContact(label).map(s => s.filter(struc=> !struc.svc.endOfLife)).filter(s =>s.length);
                         if( ss.length>1){
                         	return ss.map(s =>{
 								const c = s && s.length && s[0] && s[0].svc && this.api.contact().preferredContent(s[0].svc, this.language)
