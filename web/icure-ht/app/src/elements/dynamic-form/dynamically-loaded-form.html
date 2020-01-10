@@ -701,11 +701,6 @@
 												tags: _.unionBy(createdSvc.tags, container.tags && container.tags.map(_.cloneDeep), "type")
                                         	}));
                                 }
-                                const ss = self.servicesMap[label].find(s => s.svc.id===container.id)
-								if(ss){
-									_.pull(self.servicesMap,ss)
-								}
-
 								return true;
                             }
                             return false;
@@ -762,7 +757,7 @@
 						}
 					},
                     getRawValue: (label) => {
-                        const ss = self.getServicesLinesForContact(label);
+                        const ss = self.getServicesLinesForContact(label).filter(s => !s.svc.endOfLife);
                         if( ss.length>1){
                         	return ss.map(s =>{
 								const c = s && s.length && s[0] && s[0].svc && this.api.contact().preferredContent(s[0].svc, this.language)
