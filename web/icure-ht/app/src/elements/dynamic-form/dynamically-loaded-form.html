@@ -700,8 +700,13 @@
 												codes: container.codes && container.codes.map(_.cloneDeep),
 												tags: _.unionBy(createdSvc.tags, container.tags && container.tags.map(_.cloneDeep), "type")
                                         	}));
-                                    return true;
                                 }
+                                const ss = self.servicesMap[label].find(s => s.svc.id===container.id)
+								if(ss){
+									_.pull(self.servicesMap,ss)
+								}
+
+								return true;
                             }
                             return false;
                         }).find(x => x);
