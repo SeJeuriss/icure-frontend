@@ -89,15 +89,14 @@
         </style>
         <div id="counter" class$="base [[custom]]">
             <div>
-                <paper-icon-button class$="control-button right [[custom]]" icon="icons:remove" on-tap="decrease"></paper-icon-button>
+                <paper-icon-button class$="control-button left [[custom]]" icon="icons:remove" on-tap="decrease"></paper-icon-button>
             </div>
             <div id="counter-label" class$="quantity-label [[custom]]">[[_format(quantity, unit)]]</div>
             <div>
-                <paper-icon-button class$="control-button left [[custom]]" icon="icons:add" on-tap="increase"></paper-icon-button>
+                <paper-icon-button class$="control-button [[custom]]" icon="icons:add" on-tap="increase"></paper-icon-button>
             </div>
             <div>
-<!--                <paper-icon-button class$="control-button left [[custom]]" icon="medication-svg-icons:one-quarter" on-tap="_divide"></paper-icon-button>-->
-                <paper-icon-button class$="control-button left [[custom]]" icon="medication-svg-icons:[[getDivisionIconId(unit)]]" on-tap="_divide"></paper-icon-button>
+                <paper-icon-button class$="control-button right [[custom]]" icon="medication-svg-icons:[[getIcon(unit)]]" on-tap="_divide"></paper-icon-button>
             </div>
         </div>
     </template>
@@ -136,22 +135,48 @@
                     resetTimer: {
                         type: Object,
                         value: null
+                    },
+                    parts: {
+                        type: Number,
+                        value: 1
+                    },
+                    availableUnits: {
+                        type: Array,
+                        value: () => HtRegimenItem.units
                     }
                 };
             }
 
             static get observers() {
                 return [
-                    "_quantityChanged(quantity)"
+                    "_quantityChanged(quantity)",
+                    "_partsChanged(parts)"
                 ];
             }
 
             static get units() {
-                return [ 1.00, 0.50, 0.33, 0.25 ];
-            }
-
-            static get divisionIconIds() {
-                return ["one-full", "one-half", "one-third", "one-quarter"];
+                return [
+                    {
+                        size: 1.00,
+                        icon: "one-full",
+                        denominator: "1"
+                    },
+                    {
+                        size: 0.50,
+                        icon: "one-half",
+                        denominator: "2"
+                    },
+                    {
+                        size: 0.33,
+                        icon: "one-third",
+                        denominator: "3"
+                    },
+                    {
+                        size: 0.25,
+                        icon: "one-quarter",
+                        denominator: "4"
+                    }
+                ]
             }
 
             constructor() {
@@ -173,7 +198,15 @@
             }
 
             _getUnit() {
-                return HtRegimenItem.units[this.unit];
+                return this.availableUnits[this.unit].size;
+            }
+
+            _getDenominator() {
+                return this.availableUnits[this.unit].denominator;
+            }
+
+            getIcon() {
+                return this.availableUnits[this.unit].icon;
             }
 
             _getValue() {
@@ -182,20 +215,19 @@
 
             _setValue(value) {
                 this.innerCall = true;
-                this.set("quantity", this.unit != 2 ?
-                    value * this._getUnit() :
-                    Math.round((Math.floor(value / 3) + ((value % 3) * 0.33)) * 100) / 100);
+                this.set("quantity", this._getDenominator() === "3" ?
+                    Math.round((Math.floor(value / 3) + ((value % 3) * 0.33)) * 100) / 100 :
+                    value * this._getUnit());
             }
 
             _format() {
-                const unit = this.unit + 1;
                 const value = this._getValue().toString();
-                return unit > 1 ? value + "/" + unit.toString() : value;
+                return this.unit > 0 ? value + "/" + this._getDenominator() : value;
             }
 
             _divide() {
                 const value = this._getValue();
-                this.set("unit", (this.unit + 1) % 4);
+                this.set("unit", (this.unit + 1) % this.availableUnits.length);
                 this._setValue(value);
             }
 
@@ -227,8 +259,15 @@
                 }
             }
 
-            getDivisionIconId() {
-                return HtRegimenItem.divisionIconIds[this.unit];
+            _setUnitIndex(decimals) {
+                let denominator;
+                if (decimals == 50) denominator = "2";
+                else if (decimals == 33 || decimals == 66) denominator = "3";
+                else if (decimals == 25 || decimals == 75) denominator = "4";
+                else denominator = "1";
+
+                const unit = this.availableUnits.findIndex(availableUnit => availableUnit.denominator === denominator);
+                this.unit = unit > -1 ? unit : 0;
             }
 
             _quantityChanged() {
@@ -236,12 +275,21 @@
                 this.set("custom", this.quantity && "positive" || "");
                 if (!this.innerCall) {
                     const decimals = (this.quantity * 100) % 100;
-                    if (decimals == 50) this.unit = 1;
-                    else if (decimals == 33 || decimals == 66) this.unit = 2;
-                    else if (decimals == 25 || decimals == 75) this.unit = 3;
-                    else this.unit = 0;
+                    this._setUnitIndex(decimals);
                 }
                 this.innerCall = false;
+            }
+
+            _partsChanged() {
+                const availableUnitsCount = this.availableUnits.length;
+                if (this.parts === 4) {
+                    this.splice("availableUnits", 0, availableUnitsCount, HtRegimenItem.units[0], HtRegimenItem.units[1], HtRegimenItem.units[3]);
+                }
+                else if (this.parts > 1) {
+                    this.splice("availableUnits", 0, availableUnitsCount, HtRegimenItem.units[0], HtRegimenItem.units[this.parts - 1]);
+                } else if (availableUnitsCount !== HtRegimenItem.units.length) {
+                    this.splice("availableUnits", 0, availableUnitsCount, ...HtRegimenItem.units);
+                }
             }
         }
 

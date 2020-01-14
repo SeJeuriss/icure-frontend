@@ -694,7 +694,7 @@
                     <ht-regimen-day
                             api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]"
                             period-config="[[periodConfig]]" regimen-config="[[regimenConfig]]" regimen="{{medicationContent.medicationValue.regimen}}" key="[[item]]"
-                            medication-unit="[[medicationDetail.unit]]" weekday-codes="[[weekdayCodes]]" occurrences="[[regimenKeys.length]]"
+                            medication-unit="[[medicationDetail.unit]]" weekday-codes="[[weekdayCodes]]" occurrences="[[regimenKeys.length]]" parts="[[medicationDetail.parts]]"
                             on-regimen-changed="_regimenChanged" on-regimen-delete="_removeRegimen">
                     </ht-regimen-day>
                 </template>
@@ -1004,10 +1004,6 @@
                         type: Boolean,
                         value: false
                     },
-                    canShowQuantityInfo: {
-                        type: Boolean,
-                        value: false
-                    },
                     cachedBoxes: {
                         type: String,
                         value: ""
@@ -1211,23 +1207,19 @@
             }
 
             _updateStats() {
-                // @todo: to be fixed / adapted by Axel
-                return;
-
-                if (!this.quantityFactor) return;
                 const regimen = _.get(this.medicationContent, "medicationValue.regimen", "");
                 if (!regimen) return;
 
                 const end = this._endMoment();
                 const begin = this._beginMoment();
 
-                let availableDoses = parseInt(_.get(this.medicationDetail, "packDisplayValue", 0), 10) * parseInt(_.get(this.medicationDetail, "boxes", 0), 10) * this.quantityFactor.denominator;
+                let availableDoses = parseInt(_.get(this.medicationDetail, "packDisplayValue", 0), 10) * parseInt(_.get(this.medicationDetail, "boxes", 0), 10);
                 const keys= this.periodConfig.id === "weeklyPosology" ? this.weekdayKeys : [""];
                 let currentDayNumber = this.periodConfig.id === "weeklyPosology" ? begin.weekday() : 0;
 
                 let takes = keys.map(key => regimen.reduce((total, period) => {
                         if (!key || _.get(period, "weekday.code", 0) === key) {
-                            total += (this.quantityFactor.denominator > 1) && 1 || parseInt(period.administratedQuantity.quantity, 10) || 0;
+                            total += parseFloat(period.administratedQuantity.quantity) || 0;
                         }
                         return total;
                     }, 0)
@@ -1238,17 +1230,9 @@
                     return total;
                 }, 0);
 
-                // this.set("totalTakesPerPeriod", totalTakesPerPeriod);
-
-                const totalQuantityPerPeriod = Math.round(totalTakesPerPeriod / this.quantityFactor.denominator);
-
-                // this.set("totalQuantityPerPeriod", totalQuantityPerPeriod);
                 this.set("canShowProvisionInfo", this.medicationContent.isPrescription && availableDoses > 0 && totalTakesPerPeriod > 0);
 
                 let medicationDays = end ? end.diff(begin, "days") : 0;
-
-                this.set("canShowQuantityInfo", medicationDays && totalTakesPerPeriod);
-
                 let provisionDays = 0;
                 let totalTakes = 0;
 
@@ -1269,8 +1253,7 @@
                         provisionDays--;
                 }
 
-                const totalQuantity = Math.round(totalTakes / this.quantityFactor.denominator);
-
+                const totalQuantity = Math.round(totalTakes);
                 const endProvisionMoment = this._beginMoment().add(provisionDays, "days");
 
                 this.set("provisionDays", provisionDays);
@@ -1397,7 +1380,7 @@
                                 leafletLink: _.get(updatedAmpp, `leafletLink.${this.language}`, ""),
                                 ctiExtended: updatedAmpp && updatedAmpp.ctiExtended,
                                 posologyNote: updatedAmpp && updatedAmpp.posologyNote,
-                                dividable: updatedAmpp && updatedAmpp.dividable,
+                                parts: updatedAmpp && parseInt(_.get(updatedAmpp, "amp.components[0].dividable", _.get(updatedAmpp, "amp.components[0].scored", "")), 10) || 1,
                                 packDisplayValue: updatedAmpp && updatedAmpp.packDisplayValue,
                                 samCode: _.get(updatedAmpp, "amp.code", ""),
                                 samDate: samDate,
@@ -1454,7 +1437,7 @@
                                 endMomentAsString: this.api.moment((content && content.medicationValue && content.medicationValue.endMoment) || (medication.newMedication && medication.newMedication.closingDate)) ? this.api.moment(content.medicationValue.endMoment || (medication.newMedication && medication.newMedication.closingDate)).format("YYYY-MM-DD") : null,
                                 deliveryMomentAsString: today.format("YYYY-MM-DD"),
                                 endExecMomentAsString: today.add(3, "months").subtract(1, "days").format("YYYY-MM-DD"),
-                                dividable: medication.dividable === undefined ? true : medication.dividable,
+                                parts: medication.parts || 1,
                                 packDisplayValue: medication.packDisplayValue || 0,
                                 medicPriority : this.medicationContent.medicationValue.priority === "high" ? 2 : this.medicationContent.medicationValue.priority === "middle" ? 1 : 0,
                                 renewal: !!this.medicationContent.medicationValue.renewal ? "allowed" : "forbidden",

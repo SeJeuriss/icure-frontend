@@ -97,7 +97,7 @@
                 <paper-icon-button class="control-button" icon="icons:add" on-tap="increase"></paper-icon-button>
             </div>
             <div class="button_divide">
-                <paper-icon-button class="control-button" icon="icons:more-vert" on-tap="_divide"></paper-icon-button>
+                <paper-icon-button class="control-button" icon="medication-svg-icons:[[getIcon(unit)]]" on-tap="_divide"></paper-icon-button>
             </div>
         </div>
 
@@ -128,17 +128,47 @@
                         type: Object,
                         value: () => {}
                     },
+                    parts: {
+                        type: Number,
+                        value: 1
+                    },
+                    availableUnits: {
+                        type: Array,
+                        value: () => HtRegimen.units
+                    }
                 };
             }
 
             static get observers() {
                 return [
-                    "_extraChanged(extra)"
+                    "_extraChanged(extra)",
+                    "_partsChanged(parts)"
                 ];
             }
 
             static get units() {
-                return [ 1.00, 0.50, 0.33, 0.25 ];
+                return [
+                    {
+                        size: 1.00,
+                        icon: "one-full",
+                        denominator: "1"
+                    },
+                    {
+                        size: 0.50,
+                        icon: "one-half",
+                        denominator: "2"
+                    },
+                    {
+                        size: 0.33,
+                        icon: "one-third",
+                        denominator: "3"
+                    },
+                    {
+                        size: 0.25,
+                        icon: "one-quarter",
+                        denominator: "4"
+                    }
+                ]
             }
 
             constructor() {
@@ -150,7 +180,15 @@
             }
 
             _getUnit() {
-                return HtRegimen.units[this.unit];
+                return this.availableUnits[this.unit].size;
+            }
+
+            _getDenominator() {
+                return this.availableUnits[this.unit].denominator;
+            }
+
+            getIcon() {
+                return this.availableUnits[this.unit].icon;
             }
 
             _getValue() {
@@ -159,20 +197,19 @@
 
             _setValue(value) {
                 this.innerCall = true;
-                this.set("extra.quantity", this.unit != 2 ?
-                    value * this._getUnit() :
-                    Math.round((Math.floor(value / 3) + ((value % 3) * 0.33)) * 100) / 100);
+                this.set("extra.quantity", this._getDenominator() === "3" ?
+                    Math.round((Math.floor(value / 3) + ((value % 3) * 0.33)) * 100) / 100 :
+                    value * this._getUnit());
             }
 
             _format() {
-                const unit = this.unit + 1;
                 const value = this._getValue().toString();
-                return unit > 1 ? value + "/" + unit.toString() : value;
+                return this.unit > 0 ? value + "/" + this._getDenominator() : value;
             }
 
             _divide() {
                 const value = this._getValue();
-                this.set("unit", (this.unit + 1) % 4);
+                this.set("unit", (this.unit + 1) % this.availableUnits.length);
                 this._setValue(value);
             }
 
@@ -184,6 +221,17 @@
                 this._setValue(this._getValue() + 1);
             }
 
+            _setUnitIndex(decimals) {
+                let denominator;
+                if (decimals == 50) denominator = "2";
+                else if (decimals == 33 || decimals == 66) denominator = "3";
+                else if (decimals == 25 || decimals == 75) denominator = "4";
+                else denominator = "1";
+
+                const unit = this.availableUnits.findIndex(availableUnit => availableUnit.denominator === denominator);
+                this.unit = unit > -1 ? unit : 0;
+            }
+
             _extraChanged() {
                 console.log("extraChanged");
                 this.set("time",
@@ -191,12 +239,21 @@
                     (Math.floor(this.extra.code / 100) % 100).toString().padStart(2, '0'));
                 if (!this.innerCall) {
                     const decimals = (this.extra.quantity * 100) % 100;
-                    if (decimals == 50) this.unit = 1;
-                    else if (decimals == 33 || decimals == 66) this.unit = 2;
-                    else if (decimals == 25 || decimals == 75) this.unit = 3;
-                    else this.unit = 0;
+                    this._setUnitIndex(decimals);
                 }
                 this.innerCall = false;
+            }
+
+            _partsChanged() {
+                const availableUnitsCount = this.availableUnits.length;
+                if (this.parts === 4) {
+                    this.splice("availableUnits", 0, availableUnitsCount, HtRegimen.units[0], HtRegimen.units[1], HtRegimen.units[3]);
+                }
+                else if (this.parts > 1) {
+                    this.splice("availableUnits", 0, availableUnitsCount, HtRegimen.units[0], HtRegimen.units[this.parts - 1]);
+                } else if (availableUnitsCount !== HtRegimen.units.length) {
+                    this.splice("availableUnits", 0, availableUnitsCount, ...HtRegimen.units);
+                }
             }
         }
 

@@ -2552,7 +2552,7 @@
                                         const unit = _.get(row, "components[0].pharmaceuticalForms[0].name[" + this.language + "]", "");
                                         const atcCodes = ampp.atcs && ampp.atcs.map(atc => atc.code) || [];
                                         const allergies = this.allergies.filter(allergy => (allergy.cnk && (id === allergy.cnk)) || (atcCodes && atcCodes.some(atcCode => atcCode === allergy.atcCode) || ""));
-                                        const dividable = !(_.get(row, "components[0].dividable", "") === "X");
+                                        const parts = parseInt(_.get(row, "components[0].dividable", _.get(row, "components[0].scored", "")), 10) || 1;
                                         const samDate = publicDmpp && moment(publicDmpp.from).format("DD/MM/YYYY");
 
                                         return Object.assign(ampp, {
@@ -2568,7 +2568,7 @@
                                             unit: unit,
                                             atcCodes: atcCodes,
                                             allergies: allergies,
-                                            dividable: dividable,
+                                            parts: parts,
                                             samDate: samDate,
                                             amp: row
                                         })
@@ -2644,7 +2644,7 @@
                             "unit": ampp.unit,
                             "amp": ampp.amp,
                             "posologyNote": ampp.posologyNote,
-                            "dividable": ampp.dividable,
+                            "parts": ampp.parts,
                             "packDisplayValue": ampp.packDisplayValue,
                             "samCode": _.get(ampp, "amp.code", ""),
                             "samDate": ampp.samDate,
