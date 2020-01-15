@@ -46,7 +46,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../collapse-button/collapse-button.html">
 
 <link rel="import" href="../icons/icure-icons.html">
-<link rel="import" href="../../icd-styles.html">
+<link rel="import" href="../../styles/icd-styles.html">
 
 <link rel="import" href="../dynamic-form/entity-selector.html">
 <link rel="import" href="../dynamic-form/health-problem-selector.html">
@@ -342,6 +342,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     </paper-listbox>
                 </collapse-button>
             </template>
+
             <collapse-button id="accountcollapse">
                 <paper-item id="account" slot="sublist-collapse-item" class="menu-trigger menu-item" on-tap="toggleMenu" elevation="">
                     <div class="one-line-menu list-title account-line">
@@ -366,7 +367,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-item class="one-line-menu menu-item flex-start" id="account" data-submenu="edmgInformationSubMenu">
                         <iron-icon class="sub-menu-icon" icon="icons:folder"></iron-icon> [[localize('acc_edmg_info','Edmg informations',language)]]
                     </paper-item>-->
-
 
 
                     <template is="dom-if" if="[[_isElectronAvailable]]">
@@ -405,6 +405,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-item class="one-line-menu menu-item flex-start" id="reports" data-submenu="listOfAttestationSubMenu">
                         <iron-icon class="sub-menu-icon" icon="icons:list"></iron-icon> [[localize('lst_att','List of attestations',language)]]
                     </paper-item>
+                    <paper-item class="one-line-menu menu-item flex-start" id="reports" data-submenu="ageStructure">
+                        <iron-icon class="sub-menu-icon" icon="icons:timeline"></iron-icon> [[localize('age_structure','Age structure',language)]]
+                    </paper-item>
                 </paper-listbox>
             </collapse-button>
 
@@ -436,11 +439,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         type: Number,
                         value: null
                     },
-                    reportSelectionIndex:{
+                    accountSelectionIndex: {
                         type: Number,
                         value: null
                     },
-                    accountSelectionIndex: {
+                    reportSelectionIndex:{
                         type: Number,
                         value: null
                     },
@@ -464,7 +467,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             static get observers() {
-                return ['apiReady(user)','_managementSelectionIndexChanged(managementSelectionIndex)', '_accountSelectionIndexChanged(accountSelectionIndex)', '_reportSelectionIndexChanged(reportSelectionIndex)'];
+                return ['apiReady(user)',
+                    '_managementSelectionIndexChanged(managementSelectionIndex)',
+                    '_accountSelectionIndexChanged(accountSelectionIndex)',
+                    '_reportSelectionIndexChanged(reportSelectionIndex)'
+                ];
             }
 
             constructor() {
@@ -479,19 +486,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.api.isElectronAvailable().then(x=> this.set("_isElectronAvailable", !!x) ).catch(e=>{ /* False anyway */ })
             }
 
+            _select(id, name) {
+                const indexes = ['managementSelectionIndex', 'accountSelectionIndex', 'reportSelectionIndex'];
+                indexes.filter(item => item !== name).forEach(item => {
+                    this.set(item, null);
+                });
+                const ids = ['management', 'account', 'reports'];
+                ids.filter(item => item !== id).forEach(item => {
+                    this.shadowRoot.querySelector('#' + item).classList.remove('iron-selected')
+                });
+                //this.shadowRoot.querySelector('#' + id).classList.add('iron-selected')
+            }
+
             _management(e){
                 e.stopPropagation()
                 e.preventDefault()
 
                 this.dispatchEvent(new CustomEvent('selection-change', {detail: {selection: {item: 'management', submenu: 'usersManagementSubMenu'}}}));
-
-                //this.set('managementSelectionIndex', null)
-                this.set('accountSelectionIndex', null)
-                this.set('reportSelectionIndex', null)
-
-                //this.$.management.classList.add('iron-selected')
-                this.$.account.classList.remove('iron-selected')
-                this.$.reports.classList.remove('iron-selected')
+                this._select("management", "managementSelectionIndex");
             }
 
             _account(e){
@@ -499,14 +511,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 e.preventDefault()
 
                 this.dispatchEvent(new CustomEvent('selection-change', {detail: {selection: {item: 'account', submenu: 'accountSubMenu'}}}));
-
-                this.set('managementSelectionIndex', null)
-                //this.set('accountSelectionIndex', null)
-                this.set('reportSelectionIndex', null)
-
-                this.shadowRoot.querySelector('#management').classList.remove('iron-selected')
-                this.$.account.classList.add('iron-selected')
-                this.$.reports.classList.remove('iron-selected')
+                this._select("account", "accountSelectionIndex");
             }
 
             _report(e){
@@ -514,55 +519,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 e.preventDefault()
 
                 this.dispatchEvent(new CustomEvent('selection-change', {detail: {selection: {item: 'report', submenu: 'reportsSubMenu'}}}));
-
-                this.set('managementSelectionIndex', null)
-                this.set('accountSelectionIndex', null)
-                //this.set('reportSelectionIndex', null)
-
-                this.shadowRoot.querySelector('#management').classList.remove('iron-selected')
-                this.$.account.classList.remove('iron-selected')
-                this.$.reports.classList.add('iron-selected')
+                this._select("reports", "reportSelectionIndex");
             }
 
             _managementSelectionIndexChanged(){
                 if (this.managementSelectionIndex !== null && this.managementSelectionIndex !== undefined) {
                     this.dispatchEvent(new CustomEvent('selection-change', { detail: { selection: { item: this.managementSelectionItem.id, submenu: this.managementSelectionItem.dataset.submenu} } }));
-
-                    //this.set('managementSelectionIndex', null)
-                    this.set('accountSelectionIndex', null)
-                    this.set('reportSelectionIndex', null)
-
-                    this.shadowRoot.querySelector('#management').classList.remove('iron-selected')
-                    this.$.account.classList.remove('iron-selected')
-                    this.$.reports.classList.remove('iron-selected')
+                    this._select("management", "managementSelectionIndex");
                 }
             }
 
             _accountSelectionIndexChanged(){
                 if (this.accountSelectionIndex !== null && this.accountSelectionIndex !== undefined) {
                     this.dispatchEvent(new CustomEvent('selection-change', { detail: { selection: { item: this.accountSelectionItem.id, submenu: this.accountSelectionItem.dataset.submenu} } }));
-
-                    this.set('managementSelectionIndex', null)
-                   //this.set('accountSelectionIndex', null)
-                    this.set('reportSelectionIndex', null)
-
-                    this.shadowRoot.querySelector('#management').classList.remove('iron-selected')
-                    this.$.account.classList.remove('iron-selected')
-                    this.$.reports.classList.remove('iron-selected')
+                    this._select("account", "accountSelectionIndex");
                 }
             }
 
             _reportSelectionIndexChanged(){
                 if (this.reportSelectionIndex !== null && this.reportSelectionIndex !== undefined) {
                     this.dispatchEvent(new CustomEvent('selection-change', { detail: { selection: { item: this.reportSelectionItem.id, submenu: this.reportSelectionItem.dataset.submenu} } }));
-
-                    this.set('managementSelectionIndex', null)
-                    this.set('accountSelectionIndex', null)
-                    //this.set('reportSelectionIndex', null)
-
-                    this.shadowRoot.querySelector('#management').classList.remove('iron-selected')
-                    this.$.account.classList.remove('iron-selected')
-                    this.$.reports.classList.remove('iron-selected')
+                    this._select("reports", "reportSelectionIndex");
                 }
             }
 

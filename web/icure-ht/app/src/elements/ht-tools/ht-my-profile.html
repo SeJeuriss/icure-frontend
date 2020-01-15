@@ -24,35 +24,30 @@
 <link rel="import" href="../dynamic-form/validator/ht-iban-validator.html">
 <link rel="import" href="../dynamic-form/dynamic-bank-account.html">
 
+<link rel="import" href="../../styles/dialog-style.html">
+<link rel="import" href="../../styles/buttons-style.html">
+<link rel="import" href="../../styles/scrollbar-style.html">
+<link rel="import" href="../../styles/paper-tabs-style.html">
+<link rel="import" href="../../styles/shared-styles.html">
+
 <dom-module id="ht-my-profile">
 	<template>
-		<style>
-			paper-dialog {
-				width: 90%;
-				min-height:380px;
-				display:flex;
-				flex-flow: row wrap;
-				justify-content: space-between;
-				align-items: flex-start;
-			}
+		<style include="dialog-style buttons-style scrollbar-style paper-tabs-style shared-styles">
+
+			#dialog{
+                height: calc(98% - 12vh);
+                width: 98%;
+                max-height: calc(100% - 64px - 48px - 20px); /* 100% - header - margin - footer*/
+                min-height: 400px;
+                min-width: 800px;
+                top: 64px;
+            }
+
+
 			paper-input{
 				--paper-input-container-focus-color: var(--app-primary-color);
 				font-size:var(--form-font-size);
 			}
-
-            .top-gradient{
-                line-height:0;
-                font-size:0;
-                display:block;
-                background: linear-gradient(90deg, var(--app-secondary-color-dark), var(--app-secondary-color));
-                height:10px;
-                position:relative;
-                top:0;
-                left:0;
-                right:0;
-                margin:0;
-                border-radius:2px 2px 0 0;
-            }
 
 			.error {
 				color: #e53935;
@@ -63,23 +58,6 @@
 				text-align:center;
 			}
 
-			.modal-button{
-				--paper-button-ink-color: var(--app-secondary-color-dark);
-				color: var(--app-text-color);
-				font-weight: 400;
-				font-size: 14px;
-				height: 40px;
-				min-width: 100px;
-				padding: 10px 1.2em;
-				text-transform: capitalize;
-			}
-
-			.modal-button--save{
-				box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
-				background: var(--app-secondary-color);
-				color: var(--app-primary-color-dark);
-
-			}
 			.left-col, .right-col{
 				flex-grow: 1;
 				width: 50%;
@@ -96,57 +74,18 @@
             .col-40 { flex-grow: 1; width: 40%; box-sizing: border-box; float:left }
             .col-45 { flex-grow: 1; width: 45%; box-sizing: border-box; float:left }
             .col-50 { flex-grow: 1; width: 50%; box-sizing: border-box; float:left }
-			#dialog{
-                position: fixed;
-                overflow: hidden;
-                border-radius: 2px;
-                top: 50% !important;
-                left: 50% !important;
-                max-width: initial !important;
-                max-height: initial !important;
-                height: initial !important;
-                width: 80vw !important;
-                transform: translate(-50%,-50%);
-			}
+
 			#printable {
 				width: fit-content;
                 padding: 0 8px;
 			}
 
 			@media screen and (max-width:650px) {
-				#dialog {
-					height: 80vh;
-				}
 				div.left-col, div.right-col {
 					width: 100%;
 				}
 
 
-			}
-
-			paper-tabs {
-				background: var(--app-background-color);
-				--paper-tabs-selection-bar-color: var(--app-secondary-color);
-				--paper-tabs: {
-					color: var(--app-text-color);
-				};
-			}
-
-			paper-tab {
-				--paper-tab-ink: var(--app-text-color);
-			}
-
-			paper-tab.iron-selected {
-				font-weight: bold;
-			}
-
-			paper-tab.iron-selected iron-icon{
-				opacity: 1;
-			}
-
-			paper-tab iron-icon{
-				opacity: 0.5;
-				color: var(--app-text-color);
 			}
 
 			.administrative-panel {
@@ -157,6 +96,7 @@
 				grid-column: 2 / 4;
 				/*grid-template-columns: 40px 200px 200px 40px;*/
 				grid-row: 1 / 1;
+                position: relative;
 			}
 
 			.horizontal {
@@ -324,7 +264,7 @@
                 overflow: hidden;
                 border-bottom: 1px solid var(--app-background-color-dark);
                 box-sizing: border-box;
-                height: 50vh;
+                height: calc(100% - 92px);
                 overflow-y: auto;
             }
 
@@ -481,11 +421,6 @@
                 background: var(--app-background-color-darker);
             }
 
-            .modal-button--cancel {
-                background: transparent;
-                border: 1px solid var(--app-background-color-dark);
-            }
-
             .onlymobile {
                 display: none;
             }
@@ -495,9 +430,7 @@
             }
 
             @media screen and (max-width: 800px) {
-                paper-dialog#dialog {
-                    margin: 0;
-                }
+
 
                 .flex-horizontal {
                     flex-direction: column;
@@ -519,9 +452,8 @@
 
 		</style>
 
-		<paper-dialog id="dialog" opened="{{opened}}">
+		<paper-dialog id="dialog" class="myProfileDialog" opened="{{opened}}">
             <div class="administrative-panel">
-                <div class="top-gradient"></div>
 				<paper-tabs selected="{{tabs}}">
                     <paper-tab id="tab-access" class="adm-tab"><iron-icon icon="icons:lock" class="marginRight10"></iron-icon><span class="nomobile">[[localize('my_access','Mes accès',language)]]</span></paper-tab>
                     <paper-tab id="tab-details" class="adm-tab"><iron-icon icon="icons:account-circle" class="marginRight10"></iron-icon><span class="nomobile">[[localize('my_details','Mes coordonnées',language)]]</span></paper-tab>
@@ -609,7 +541,7 @@
                                                 id="hcp-search" filtered-items="[[contactListItem]]" item-label-path="hrLabel"
                                                 item-value-path="id" on-filter-changed="_hcpSearch" on-keydown="isEnterPressed"
                                                 label="[[localize('mhContactPerson','Personne de contact pour la facturation forfait',language)]]"
-                                                value="{{hcp.contactPersonHcpId}}">
+                                                value="{{contactPersonHcpId}}">
                                         </vaadin-combo-box>
                                     </template>
 
@@ -618,14 +550,14 @@
                                             id="mh-search" filtered-items="[[mhListItem]]" item-label-path="hrLabel"
                                             item-value-path="id" on-filter-changed="_mhSearch" on-keydown="isEnterPressed"
                                             label="[[localize('mhWhereIWork','Maison médicale où vous officiez (uniquement si d\'application)',language)]]"
-                                            value="{{hcp.parentId}}">
+                                            value="{{parentId}}">
                                         </vaadin-combo-box>
 
                                         <vaadin-combo-box
                                             id="supervisor-search" filtered-items="[[supervisorListItem]]" item-label-path="hrLabel"
                                             item-value-path="id" on-filter-changed="_superVisorSearch" on-keydown="isEnterPressed"
                                             label="[[localize('supervisor','Votre médecin référent (uniquement si vous êtes stagiaire)',language)]]"
-                                            value="{{hcp.supervisorId}}">
+                                            value="{{supervisorId}}">
                                         </vaadin-combo-box>
                                     </template>
 
@@ -639,6 +571,7 @@
                                                 <paper-item name="rsb">[[localize('rsw','RSB',language)]]</paper-item>
                                                 <paper-item name="rsw">[[localize('rsb','RSW',language)]]</paper-item>
                                                 <paper-item name="vitalink">[[localize('vitalink','Vitalink',language)]]</paper-item>
+                                                <paper-item name="cozo">[[localize('cozo','COZO',language)]]</paper-item>
                                             </paper-listbox>
                                         </paper-dropdown-menu>
                                         <paper-radio-group selected="{{userEHealthEnv}}">
@@ -819,19 +752,6 @@
                                 </div>
                             </template>
 
-
-
-                            <template is="dom-if" if="[[!allEDmgregistered]]">
-                                <div class="horizontal" style="margin-top:10px">
-                                    <div class="row">
-                                        <div class="col-35">&nbsp;</div>
-                                        <div class="col-30 textAlignCenter"><paper-button disabled="[[!registerEnabled]]" on-tap="_registerToEDMG" class="modal-button--save">[[localize('reg_dmg','Register to eDmg',language)]]</paper-button></div>
-                                        <div class="col-35">&nbsp;</div>
-                                    </div>
-                                </div>
-                                <div class="horizontal">&nbsp;</div>
-                            </template>
-
                         </div>
 
                     </page>
@@ -839,12 +759,12 @@
 
                 </iron-pages>
 			</div>
-
-
-
 			<div class="buttons">
-				<paper-button class="modal-button modal-button--cancel" dialog-dismiss>[[localize('clo','Close',language)]]</paper-button>
-				<paper-button class="modal-button modal-button--save" autofocus on-tap="confirm">[[localize('save','Save',language)]]</paper-button>
+				<paper-button class="button" dialog-dismiss>[[localize('clo','Close',language)]]</paper-button>
+                <template is="dom-if" if="[[_isEdmgRegitrationAvailable(allEDmgregistered, tabs)]]">
+                   <paper-button on-tap="_registerToEDMG" class="button button--other">[[localize('reg_dmg','Register to eDmg',language)]]</paper-button>
+                </template>
+				<paper-button class="button button--save" autofocus on-tap="confirm">[[localize('save','Save',language)]]</paper-button>
 			</div>
 		</paper-dialog>
 	</template>
@@ -981,8 +901,7 @@
                     },
                     adr:{
                         type: Object,
-                        value:{},
-                        observer : 'addressProChanged'
+                        value:{}
                     },
                     receiveMailAuto: {
                         type: Boolean,
@@ -1028,11 +947,26 @@
                         type: Array,
                         value: ()=>[]
                     },
+                    supervisorId:{
+                        type:String,
+                        value:'',
+                        observer : 'setHcp'
+                    },
+                    parentId:{
+                        type:String,
+                        value:'',
+                        observer : 'setHcp'
+                    },
+                    contactPersonHcpId:{
+                        type:String,
+                        value:'',
+                        observer : 'setHcp'
+                    }
                 };
             }
 
             static get observers() {
-                return ['apiReady(api,user,opened)', '_userChanged(user)','addressProChanged(adr,adr.*)', '_autoMailChanged(receiveMailAuto)', '_selectedPrinterChanged(selectedPrinter.*)'];
+                return ['apiReady(api,user,opened)', '_userChanged(user)', '_autoMailChanged(receiveMailAuto)', '_selectedPrinterChanged(selectedPrinter.*)'];
             }
 
             ready() {
@@ -1239,25 +1173,27 @@
 
                 if (this.user && this.api) {
 
-                    if(!_.size(_.get(this,"_cdHcPartySpecialities",[]))) this.api.code().findCodes("be", 'CD-HCPARTY')
+                    if (!_.size(_.get(this, "_cdHcPartySpecialities", []))) this.api.code().findCodes("be", 'CD-HCPARTY')
                         .then(specialities => this.set("_cdHcPartySpecialities", _
-                        .chain(specialities)
-                        .filter(sp => _.trim(_.get(sp,"code","")).substring(0,4) !== "dept" )
-                        .map(sp=>{return {
-                            id:sp.id,
-                            label: _.trim(_.get(sp,"label." + this.language)) ? _.trim(_.get(sp,"label." + this.language)) : _.trim(_.head(_.flatMap(_.get(sp,"label")))),
-                            labels: _.get(sp,"label", {}),
-                            links: !!_.size(_.get(sp,"links", [])) ? _.get(sp,"links") : _.get(sp,"links", [sp.id])
-                        }})
-                        .orderBy(["label"],["asc"])
-                        .value()
-                    ))
+                            .chain(specialities)
+                            .filter(sp => _.trim(_.get(sp, "code", "")).substring(0, 4) !== "dept")
+                            .map(sp => {
+                                return {
+                                    id: sp.id,
+                                    label: _.trim(_.get(sp, "label." + this.language)) ? _.trim(_.get(sp, "label." + this.language)) : _.trim(_.head(_.flatMap(_.get(sp, "label")))),
+                                    labels: _.get(sp, "label", {}),
+                                    links: !!_.size(_.get(sp, "links", [])) ? _.get(sp, "links") : _.get(sp, "links", [sp.id])
+                                }
+                            })
+                            .orderBy(["label"], ["asc"])
+                            .value()
+                        ))
 
                     if (this.opened) {
                         this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
-                            .then(hcp => this.hcp = this.api.register(hcp, 'hcp',null,true))
+                            .then(hcp => this.hcp = this.api.register(hcp, 'hcp', null, true))
                             .then(hcp => {
-                                const currentSpeciality = _.trim(_.get(hcp,"speciality","")).substring(0,4) === "pers" ? _.trim(_.get(hcp,"speciality","")).substring(4) : _.trim(_.get(hcp,"speciality",""))
+                                const currentSpeciality = _.trim(_.get(hcp, "speciality", "")).substring(0, 4) === "pers" ? _.trim(_.get(hcp, "speciality", "")).substring(4) : _.trim(_.get(hcp, "speciality", ""))
                                 const defaultSpeciality = "CD-HCPARTY|persphysician|1"
 
                                 // Old system used to rely on strings and not codes
@@ -1265,23 +1201,23 @@
                                     speciality: !_.trim(currentSpeciality) ?
                                         defaultSpeciality :
                                         currentSpeciality.indexOf("CD-HCPARTY") === -1 ? _.get(_.compact(_.map(this._cdHcPartySpecialities, i => !_.trim(currentSpeciality) || _.flatMap(i.labels).indexOf(currentSpeciality) === -1 ? false : i)), "[0].id", defaultSpeciality) :
-                                        _.trim(currentSpeciality)
+                                            _.trim(currentSpeciality)
                                 }))
 
                                 if (!hcp.languages || !hcp.languages.length) hcp.languages = ['en'];
-                                if (!hcp.type) hcp.type='persphysician';
-                                if (!hcp.billingType) hcp.billingType='flatRate';
+                                if (!hcp.type) hcp.type = 'persphysician';
+                                if (!hcp.billingType) hcp.billingType = 'flatRate';
 
                                 // Resolve for dataprovider / combobox
-                                if( hcp.supervisorId || hcp.parentId || hcp.contactPersonHcpId) {
+                                if (hcp.supervisorId || hcp.parentId || hcp.contactPersonHcpId) {
 
-                                    const hcpIdx = _.compact([hcp.supervisorId,hcp.parentId, hcp.contactPersonHcpId]).join(',')
+                                    const hcpIdx = _.compact([hcp.supervisorId, hcp.parentId, hcp.contactPersonHcpId]).join(',')
                                     this.api.hcparty().getHealthcareParties(hcpIdx).then(results => {
-                                        const supervisor = _.chain(results).filter({id:hcp.supervisorId}).head().value();
-                                        const parent = _.chain(results).filter({id:hcp.parentId}).head().value();
-                                        const contactPerson = _.chain(results).filter({id:hcp.contactPersonHcpId}).head().value();
+                                        const supervisor = _.chain(results).filter({id: hcp.supervisorId}).head().value();
+                                        const parent = _.chain(results).filter({id: hcp.parentId}).head().value();
+                                        const contactPerson = _.chain(results).filter({id: hcp.contactPersonHcpId}).head().value();
 
-                                        this.supervisorListItem = supervisor ? [{
+                                        this.set('supervisorListItem', supervisor ? [{
                                             id: supervisor.id,
                                             lastName: _.upperFirst(_.lowerCase(supervisor.lastName)),
                                             hrLabel:
@@ -1290,57 +1226,65 @@
                                                 (typeof supervisor.nihii === 'undefined' || !supervisor.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + supervisor.nihii) + ' ' +
                                                 (typeof supervisor.ssin === 'undefined' || !supervisor.ssin ? '' : ' - ' + this.localize('ssin', 'Registre national', language) + ': ' + supervisor.ssin.substr(0, 6) + '-' + supervisor.ssin.substr(6, 3) + '-' + supervisor.ssin.substr(8, 2)) + ' ' +
                                                 ''
-                                        }] : [];
+                                        }] : []);
+                                        this.set('supervisorId', supervisor ? supervisor.id : "")
 
-                                        this.mhListItem = parent ? [{
+                                        this.set('mhListItem', parent ? [{
                                             id: parent.id,
                                             name: _.upperFirst(_.lowerCase(parent.name)),
                                             hrLabel:
                                                 _.upperFirst(_.lowerCase(parent.name)) + ' ' +
                                                 (typeof parent.nihii === 'undefined' || !parent.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + parent.nihii) + ' ' +
                                                 ''
-                                        }] : [];
+                                        }] : []);
+                                        this.set('parentId', parent ? parent.id : "")
 
-                                        this.contactListItem = contactPerson ? [{
+                                        this.set('contactListItem', contactPerson ? [{
                                             id: contactPerson.id,
                                             name: _.upperFirst(_.lowerCase(contactPerson.name)),
                                             hrLabel:
                                                 _.upperFirst(_.lowerCase(contactPerson.name)) + ' ' +
                                                 (typeof contactPerson.nihii === 'undefined' || !contactPerson.nihii ? '' : ' - ' + this.localize('nihii', 'INAMI', language) + ': ' + contactPerson.nihii) + ' ' +
                                                 ''
-                                        }] : [];
+                                        }] : []);
+                                        this.set('contactPersonHcpId', contactPerson ? contactPerson.id : "")
 
                                     });
 
                                 }
 
                                 this._hcpChanged()
-                            })
+                            });
                     }
 
                 }
-
             }
 
             _hcpChanged() {
                 if(this.api && this.hcp) {
-                    this.api.getRegistry('hcp').listeners['hcp-profile'] = {target: this, callbacks: [() => this._hcpChanged()], pool: [this.hcp.id]}
-
-                    if(this.idAddress===-1){this.idAddress=this.hcp.addresses.findIndex(adr=> adr.addressType==="work")}
-                    let idxPhone = _.get(this,"hcp.addresses[this.idAddress].telecoms",[]).findIndex(tel => _.get(tel,"telecomType","")==="phone")
-                    let idxMail = _.get(this,"hcp.addresses[this.idAddress].telecoms",[]).findIndex(tel => _.get(tel,"telecomType","")==="email")
-                    this.idAddress>=0 ? this.set('adr',{
-                        addressType:"work",
-                        street:this.hcp.addresses[this.idAddress].street,
-                        houseNumber:this.hcp.addresses[this.idAddress].houseNumber,
-                        postboxNumber:this.hcp.addresses[this.idAddress].postboxNumber,
-                        postalCode:this.hcp.addresses[this.idAddress].postalCode,
-                        city:this.hcp.addresses[this.idAddress].city,
-                        country:this.hcp.addresses[this.idAddress].country,
-                        phoneNumber: this.hcp.addresses[this.idAddress].telecoms[idxPhone] && this.hcp.addresses[this.idAddress].telecoms[idxPhone].telecomNumber || '',
-                        proMail: this.hcp.addresses[this.idAddress].telecoms[idxMail] && this.hcp.addresses[this.idAddress].telecoms[idxMail].telecomNumber || ''
-                    }) : ""
+                    const address=this.hcp.addresses.find(adr=> adr.addressType==="work")
+                    if(address){
+                        const phone = address.telecoms.find(tel => tel && tel.telecomType==="phone")
+                        const mail = address.telecoms.find(tel => tel && tel.telecomType==="email")
+                        this.set('adr',{
+                            addressType:_.get(address,"addressType",""),
+                            street:_.get(address,"street",""),
+                            houseNumber:_.get(address,"houseNumber",""),
+                            postboxNumber:_.get(address,"postboxNumber",""),
+                            postalCode:_.get(address,"postalCode",""),
+                            city:_.get(address,"city",""),
+                            country:_.get(address,"country",""),
+                            phoneNumber: _.get(phone,"telecomNumber",""),
+                            proMail: _.get(mail,"telecomNumber","")
+                        })
+                    }
                 }
+            }
+
+            setHcp(){
+                this.set("hcp.supervisorId",this.supervisorId)
+                this.set("hcp.parentId",this.parentId)
+                this.set("hcp.contactPersonHcpId",this.contactPersonHcpId)
             }
 
             qrCode(login, secret) {
@@ -1379,14 +1323,10 @@
             }
 
             confirm() {
-
                 if ((!this.userPassword || this.userPassword.length > 7) && this.userPassword === this.userConfirmation) {
-
                     this.user.passwordHash = this.userPassword || this.user.passwordHash
-
                     let propHub = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.preferredhub')
                     propHub.typedValue.stringValue = this.userPreferredHub;
-
                     let propEnv = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.eHealthEnv')
                     propEnv.typedValue.stringValue = this.userEHealthEnv;
 
@@ -1409,7 +1349,8 @@
                             id: _.trim(spL)
                         }
                     })
-
+                    // 20200115 - Force speciality to "persphysician"
+                    _.assign(this.hcp, {speciality:"persphysician"})
                     Promise.all([this.api.user().modifyUser(this.user), this.api.hcparty().modifyHealthcareParty(this.hcp)])
                     .then(([user,hcp]) => {
                         this.api.register(hcp,'hcp');
@@ -1621,83 +1562,35 @@
 
             addressProChanged(){
                 if(!this.hcp)return;
-                if(this.idAddress===-1){this._findAddress()}
-
-                let idxPhone = this.hcp.addresses[this.idAddress].telecoms.findIndex(tel => tel && tel.telecomType==="phone")
-                let idxMail = this.hcp.addresses[this.idAddress].telecoms.findIndex(tel => tel && tel.telecomType==="email")
-                // console.log('addressProChanged',idxAddress,idxPhone,idxMail)
-                if(this.idAddress<0){
-                    this.push('hcp.addresses',{
-                        addressType:"work",
-                        street:this.adr.street || "",
-                        houseNumber:this.adr.houseNumber || "",
-                        postboxNumber:this.adr.postboxNumber || "",
-                        postalCode:this.adr.postalCode || "",
-                        city:this.adr.city || "",
-                        country:this.adr.country || "",
-                        telecoms: [
-                            {telecomType: "phone",telecomNumber:this.adr.phoneNumber || ""},
-                            {telecomType: "email",telecomNumber:this.adr.proMail || ""}
-                        ]
-                    })
-                    // console.log('add addr',this.hcp)
+                const idx = this.hcp.addresses.findIndex(ad => ad.addressType==="work")
+                const newAdd = {
+                    addressType:"work",
+                    street:_.get(this,"adr.street",""),
+                    houseNumber:_.get(this,"adr.houseNumber",""),
+                    postboxNumber:_.get(this,"adr.postboxNumber",""),
+                    postalCode:_.get(this,"adr.postalCode",""),
+                    city:_.get(this,"adr.city",""),
+                    country:_.get(this,"adr.country",""),
+                    telecoms : [
+                        {
+                            telecomType : "phone",
+                            telecomNumber : _.get(this,"adr.phoneNumber","")
+                        },
+                        {
+                            telecomType : "email",
+                            telecomNumber : _.get(this,"adr.proMail","")
+                        }
+                    ]
                 }
-                else if (idxPhone<0) {
-                    this.push('hcp.addresses.'+this.idAddress+'.telecoms',{telecomType: "phone",telecomNumber:this.adr.phoneNumber || ""})
-                    // console.log('add phone',this.hcp)
-                }
-                else if (idxMail<0) {
-                    this.push('hcp.addresses.'+this.idAddress+'.telecoms',{telecomType: "email",telecomNumber:this.adr.proMail || ""})
-                    // console.log('add mail',this.hcp)
-                }
-                else{
-                    this.set('hcp.addresses.'+this.idAddress+'.addressType',"work")
-                    this.set('hcp.addresses.'+this.idAddress+'.street',this.adr.street || "")
-                    this.set('hcp.addresses.'+this.idAddress+'.houseNumber',this.adr.houseNumber || "")
-                    this.set('hcp.addresses.'+this.idAddress+'.postboxNumber',this.adr.postboxNumber || "")
-                    this.set('hcp.addresses.'+this.idAddress+'.postalCode',this.adr.postalCode || "")
-                    this.set('hcp.addresses.'+this.idAddress+'.city',this.adr.city || "")
-                    this.set('hcp.addresses.'+this.idAddress+'.country',this.adr.country || "")
-                    this.set('hcp.addresses.'+this.idAddress+'.telecoms.'+idxPhone,{telecomType: "phone",telecomNumber:this.adr.phoneNumber || ""})
-                    this.set('hcp.addresses.'+this.idAddress+'.telecoms.'+idxMail,{telecomType: "email",telecomNumber:this.adr.proMail || ""})
-                    // console.log('success',this.hcp)
+                if(idx!==-1){
+                    this.set("hcp.addresses."+idx,newAdd)
+                }else{
+                    this.push("hcp.addresses",newAdd)
                 }
             }
 
-            _findAddress(){
-                let index=this.hcp.addresses.findIndex(addr => addr.addressType==="work" && this.adr.street===addr.street && this.adr.houseNumber===addr.houseNumber
-                    && this.adr.postboxNumber===addr.postboxNumber && this.adr.postalCode===addr.postalCode && this.adr.city===addr.city && this.adr.country===addr.country
-                    && (!this.adr.phoneNumber || this.adr.phoneNumber==="" || (this.adr.phoneNumber!=="" && addr.telecoms.find(tel => tel.telecomType==="phone" && this.adr.phoneNumber===tel.telecomNumber)))
-                    && (!this.adr.proMail || this.adr.proMail==="" || (this.adr.proMail!=="" && addr.telecoms.find(tel => tel.telecomType==="email" && this.adr.proMail===tel.telecomNumber))))
-                console.log(index,this.hcp)
-                if(index===-1){
-                    index=this.hcp.addresses.findIndex(addr => addr.addressType==="work" && this.adr.street===addr.street && this.adr.houseNumber===addr.houseNumber
-                        && this.adr.postboxNumber===addr.postboxNumber && this.adr.postalCode===addr.postalCode && this.adr.city===addr.city && this.adr.country===addr.country)
-                    if(index===-1){
-                        this.hcp.addresses.push({
-                            "addressType" : "work",
-                            "street" : this.adr.street,
-                            "houseNumber" : this.adr.houseNumber,
-                            "postboxNumber" : this.adr.postboxNumber,
-                            "postalCode" : this.adr.postalCode,
-                            "city" : this.adr.city,
-                            "country" : this.adr.country,
-                            "telecoms" : [
-                                {
-                                    "telecomType" : "phone",
-                                    "telecomNumber" : this.adr.phoneNumber || ""
-                                },
-                                {
-                                    "telecomType" : "email",
-                                    "telecomNumber" : this.adr.proMail || ""
-                                }
-                            ]
-                        })
-                        index = this.hcp.addresses.length-1
-                    }
-
-                    this.set("idAddress",index)
-                }
+            _isEdmgRegitrationAvailable(){
+               return !_.get(this, 'allEDmgregistered', null) && _.get(this, "tabs", 0) === 3
             }
         }
 
