@@ -217,6 +217,14 @@
 					</paper-radio-group>
 				</div>
 
+				<div class="grid">
+					<div class="label">[[localize('laterality','Laterality',language)]]</div>
+					<paper-radio-group selected="[[_laterality(entity)]]" class="flex" on-selected-changed="_lateralityChanged">
+						<paper-radio-button name="left">[[localize('left','Left',language)]]</paper-radio-button>
+						<paper-radio-button name="right">[[localize('right','Right',language)]]</paper-radio-button>
+					</paper-radio-group>
+				</div>
+
 				<div class="flex nowrap">
 					<div class="grid">
 						<div class="label">[[localize('st_da','Start Date',language)]] *</div>
@@ -757,6 +765,10 @@ class HealthProblemSelector extends Polymer.TkLocalizerMixin(Polymer.Element) {
 		return code && code.code ? code.code : "notsecret";
 	}
 
+	_laterality(){
+		return _.get(this.entity, 'laterality' , 'left');
+	}
+
 	_natureChanged(e) {
 		this._cdItemTagForEntity(this.entity, true).code = e.detail.value;
 
@@ -805,6 +817,10 @@ class HealthProblemSelector extends Polymer.TkLocalizerMixin(Polymer.Element) {
 
 	_confidentialityChanged(e){
 		this._tagForEntity(this.entity, 'org.taktik.icure.entities.embed.Confidentiality', 'notsecret').code = e.detail.value
+	}
+
+	_lateralityChanged(e){
+		this.entity.laterality = e.detail.value;
 	}
 
     _cellContent(item, column) {
