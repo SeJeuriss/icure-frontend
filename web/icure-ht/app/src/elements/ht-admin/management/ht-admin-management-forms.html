@@ -784,8 +784,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            */
-
             _init(){
                 this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                     .then(hcp => Promise.all([hcp, this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', this.language, 'dept', null, null, 200)]))
