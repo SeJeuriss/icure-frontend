@@ -1,0 +1,472 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../../../styles/shared-styles.html">
+<link rel="import" href="../../../styles/buttons-style.html">
+<link rel="import" href="../../../styles/dialog-style.html">
+<link rel="import" href="../../../styles/scrollbar-style.html">
+<link rel="import" href="../../../styles/paper-tabs-style.html">
+
+
+
+<dom-module id="physiotherapist-nmcl-list">
+    <template>
+        <style include="dialog-style scrollbar-style paper-tabs-style">
+            #physiotherapistNmclListDialog{
+                height: calc(98% - 12vh);
+                width: 98%;
+                max-height: calc(100% - 64px - 48px - 20px); /* 100% - header - margin - footer*/
+                min-height: 400px;
+                min-width: 800px;
+                top: 64px;
+            }
+
+            .physiotherapistNmclListDialog{
+                display: flex;
+                height: calc(100% - 45px);
+                max-height: calc(100% - 45px);
+                width: auto;
+                margin: 0;
+                padding: 0;
+            }
+
+            .pnl-menu-list{
+                height: 100%;
+                width: 30%;
+                background-color: var(--app-background-color-dark);
+                border-right: 1px solid var(--app-background-color-dark);
+                overflow: auto;
+                position: relative;
+            }
+
+            .pnl-menu-list-header{
+                height: 48px;
+                width: 100%;
+                border-bottom: 1px solid var(--app-background-color-darker);
+                background-color: var(--app-background-color-dark);
+                padding: 0 12px;
+                display: flex;
+                flex-flow: row wrap;
+                justify-content: flex-start;
+                align-items: center;
+                box-sizing: border-box;
+            }
+
+            .pnl-menu-view{
+                height: 100%;
+                width: 70%;
+                position: relative;
+                background: white;
+            }
+
+            .table {
+                display: flex;
+                flex-flow: column nowrap;
+                font-size: .8rem;
+                line-height: 1.5;
+                flex: 1 1 auto;
+                min-width: 900px;
+            }
+
+            .tr {
+                position: relative;
+                width: 100%;
+                display: flex;
+                flex-flow: row nowrap;
+                color: var(--app-text-color);
+                z-index: 1;
+                height: 24px;
+            }
+
+            .td {
+                position: relative;
+                display: flex;
+                flex-flow: row nowrap;
+                align-items: center;
+                justify-content: center;
+                flex-grow: 1;
+                flex-basis: 0;
+                padding: 6px;
+                overflow: hidden;
+                min-width: 0px;
+                z-index: 2;
+                word-break: break-word;
+                white-space: nowrap;
+                border-right: 1px solid var(--app-background-color-dark);
+                font-size: 13px;
+            }
+
+            .th {
+                font-weight: 700;
+                background-color: var(--app-background-color-dark);
+                height: auto!important;
+            }
+
+            .separator{
+                height: 20px;
+                width: auto;
+                background-color: var(--app-background-color-dark);
+            }
+
+            iron-pages{
+                height: calc(100% - 50px);
+                overflow: auto;
+            }
+
+            .separator-title{
+                margin-left: 10px;
+                font-weight: bold;
+            }
+
+            .fl{
+               justify-content: flex-start;
+            }
+
+        </style>
+
+
+
+        <paper-dialog id="physiotherapistNmclListDialog">
+            <div class="content physiotherapistNmclListDialog">
+                <div class="pnl-menu-list">
+                    <div class="pnl-menu-list-header">
+                        [[localize('', 'Selected nmcl code', language)]]
+                    </div>
+                    <div class="pnl-submenu-container">
+                        <template is="dom-repeat" items="[[nmclListToAdd]]" as="item">
+                            [[item]]
+                        </template>
+                    </div>
+                </div>
+                <div class="pnl-menu-view">
+                    <paper-tabs selected="{{tabs}}" >
+                        <paper-tab>
+                            <iron-icon class="tabIcon" icon="vaadin:list"></iron-icon> [[localize('','Nomenclature',language)]]
+                        </paper-tab>
+                    </paper-tabs>
+                    <iron-pages selected="[[tabs]]">
+                        <page>
+                            <div class="table">
+                                <div class="tr th">
+                                    <div class="td">[[localize('', 'Pathology', language)]]</div>
+                                    <div class="td">[[localize('', 'Nrml session', language)]]</div>
+                                    <div class="td">[[localize('', 'First session and folder creation', language)]]</div>
+                                    <div class="td">[[localize('', 'Code 1 to 9', language)]]</div>
+                                    <div class="td">[[localize('', 'Home allowance', language)]]</div>
+                                    <div class="td">[[localize('', 'Session after lg numb', language)]]</div>
+                                    <div class="td">[[localize('', 'Session + 60 min', language)]]</div>
+                                    <div class="td">[[localize('', 'Short session', language)]]</div>
+                                    <div class="td">[[localize('', 'Second session', language)]]</div>
+                                    <div class="td">[[localize('', 'Advisory examination', language)]]</div>
+                                    <div class="td">[[localize('', 'Examination and report ', language)]]</div>
+                                </div>
+                                <template is="dom-if" if="[[isConsultation]]">
+                                    <div class="tr">
+                                        <div class="td fl">[[localize('', 'Consultation', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560210">560210</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639855">639855</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="562671">562671</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560254">560254 (>18)</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560232">560232</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561470">561470</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560291">560291</paper-button></div>
+                                        <div class="td"></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isHomeVisit]]">
+                                    <div class="tr">
+                                        <div class="td fl">[[localize('', 'Home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560313">560313</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639855">639855</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="562671">562671</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639170">639170</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560350">560350 (>18)</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560335">560335</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561492">561492</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560394">560394</paper-button></div>
+                                        <div class="td"></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isRestHomeVisit]]">
+                                    <div class="tr">
+                                        <div class="td fl">[[localize('', 'Rest home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560571">560571</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639892">639892</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560615">560615</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560593">560593</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                    </div>
+                                </template>
+                                <div class="separator"><span class="separator-title">[[localize('', 'Perinatal', language)]]</span></div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Consultation', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561632">561632</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                </div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561654">561654</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                </div>
+                                <div class="separator"><span class="separator-title">[[localize('', 'E', language)]]</span></div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Consultation', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560895">560895</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560991">560991</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560910">560910</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560932">560932</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560976">560976</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560954">560954</paper-button></div>
+                                </div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561013">561013</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639133">639133</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561116">561116</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561035">561035</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561050">561050</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561094">561094</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561072">561072</paper-button></div>
+                                </div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Rest home', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561352">561352</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561374">561374</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561396">561396</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561411">561411</paper-button></div>
+                                </div>
+                                <div class="separator"><span class="separator-title">[[localize('', 'Flat rate A', language)]]</span></div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Consultation', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563216">563216</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td">​<paper-button class="nmclButton" on-tap="_addNmcl" id="562715">562715</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563253">563253 (>60)</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563231">563231</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561470">561470</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563290">563290</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563275">563275</paper-button></div>
+                                </div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563312">563312</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="​562715">​562715</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639192">639192</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563356">563356 (>60)</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563334">563334</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561492">561492</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563393">563393</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563371">563371</paper-button></div>
+                                </div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Rest home', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563496">563496</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563533">563533 (>60)</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563511">563511</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563555">563555</paper-button></div>
+                                </div>
+                                <div class="separator"><span class="separator-title">[[localize('', 'Flat rate B', language)]]</span></div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Consultation', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563813">563813</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563850">563850 (>60)</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563835">563835</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561470">561470</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563894">563894</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563872">563872</paper-button></div>
+                                </div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563916">563916</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639155">639155</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563953">563953 (>60)</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563931">563931</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561492">561492</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563990">563990</paper-button></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563975">563975</paper-button></div>
+                                </div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Rest home', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564093">564093</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564130">564130 (>60)</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564115">564115</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564152">564152</paper-button></div>
+                                </div>
+                                <div class="separator"><span class="separator-title">[[localize('', 'Palliative', language)]]</span></div>
+                                <div class="tr">
+                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564211">564211</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639111">639111</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564233">564233</paper-button></div>
+                                    <div class="td"></div>
+                                    <div class="td"></div>
+                                </div>
+                            </div>
+                        </page>
+                    </iron-pages>
+                </div>
+            </div>
+            <div class="buttons">
+                <paper-button class="button" on-tap="_closeDialog"><iron-icon icon="icons:close"></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+                <paper-button class="button button--save" on-tap="_add"><iron-icon icon="icons:refresh" ></iron-icon> [[localize('refresh','Refresh',language)]]</paper-button>
+            </div>
+        </paper-dialog>
+    </template>
+    <script>
+
+        class PhysiotherapistNmclList extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'physiotherapist-nmcl-list';
+            }
+
+            static get properties() {
+                return {
+                    api: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    tabs:{
+                        type: Number,
+                        value: 0
+                    },
+                    user:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    patient:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    currentContact:{
+                        type: Object,
+                        value: () => {}
+                    },
+                    nmclListToAdd:{
+                        type: Array,
+                        value: () => []
+                    },
+                    isConsultation:{
+                        type: Boolean,
+                        value: false
+                    },
+                    isHomeVisit:{
+                        type: Boolean,
+                        value: false
+                    },
+                    isRestHomeVisit:{
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            static get observers() {
+                return ['_consultationTypeChanged(currentContact, currentContact.*)'];
+            }
+
+            ready() {
+                super.ready();
+            }
+
+            openDialog(){
+                this.$['physiotherapistNmclListDialog'].open()
+            }
+
+            _closeDialog(){
+                this.$['physiotherapistNmclListDialog'].close()
+            }
+
+            _addNmcl(e){
+                if(_.get(e, 'target.id', null)){
+                    //const code = 'INAMI-RIZIV'+_.get(e, 'target.id', null)+'|1'
+                    //this.api.tarification().getTarification(code).then(info => {
+                        //this.push('nmclListToAdd', info)
+                    //})
+
+                    this.push('nmclListToAdd', _.get(e, 'target.id', null))
+                }
+            }
+
+            _consultationTypeChanged(){
+                this.set('isConsultation', false)
+                this.set('isHomeVisit', false)
+                this.set('isRestHomeVisit', false)
+
+                _.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null) === 1 ? this.set('isConsultation', true) :
+                    _.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null) === 2 ? this.set('isHomeVisit', true) :
+                        _.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null) === 6 ? this.set('isRestHomeVisit', true) :
+                            null
+            }
+
+        }
+        customElements.define(PhysiotherapistNmclList.is, PhysiotherapistNmclList);
+    </script>
+</dom-module>

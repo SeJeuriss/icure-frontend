@@ -110,7 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="./dialogs/team/ht-pat-admin-team-dialog.html">
 
-
+<link rel="import" href="./dialogs/physiotherapist-nmcl-list.html">
 
 <dom-module id="ht-pat-detail">
     <template>
@@ -2501,6 +2501,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             on-send-sub-form-via-emediattest="_sendSubformViaEmediattest"
                             on-upload-document="_hubUpload"
                             on-open-triptyque-dialog="_openTriptyqueDialog"
+                            on-open-physiotherapist-nmcl-list="_openPhysiotherapistNmclList"
                         >
                         </ht-pat-detail-ctc-detail-panel>
                 </template>
@@ -2970,6 +2971,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <ht-pat-care-path-list-dialog id="htPatCarePathListDialog" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" resources="[[resources]]" active-health-elements="[[activeHealthElements]]" on-open-care-path-detail-dialog="_openCarePathDetail"></ht-pat-care-path-list-dialog>
         <ht-pat-admin-team-dialog id="htPatAdminTeamDialog" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" selected-team-hcp="[[selectedTeamHcp]]" active-health-elements="[[activeHealthElements]]" inactive-health-elements="[[inactiveHealthElements]]"></ht-pat-admin-team-dialog>
 
+        <physiotherapist-nmcl-list id="physiotherapistNmclList"
+                                   api="[[api]]"
+                                   i18n="[[i18n]]"
+                                   language="[[language]]"
+                                   resources="[[resources]]"
+                                   user="[[user]]"
+                                   patient="[[patient]]"
+                                   current-contact="[[currentContact]]"
+        ></physiotherapist-nmcl-list>
 
     </template>
     <script>
@@ -7269,6 +7279,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             _openTeamInfoDialog(e){
                 this.set('selectedTeamHcp', _.get(e, 'detail.selectedHcpId', null))
                 this.$['htPatAdminTeamDialog']._openDialog()
+            }
+
+            _openPhysiotherapistNmclList(){
+                this.$['physiotherapistNmclList'].openDialog()
             }
 
         }

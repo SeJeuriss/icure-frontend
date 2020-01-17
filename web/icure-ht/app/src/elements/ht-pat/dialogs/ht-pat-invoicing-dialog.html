@@ -1070,6 +1070,11 @@
                 padding: 5px;
             }
 
+            .titleIcon{
+                height: 14px;
+                width: 14px;
+            }
+
         </style>
 
         <ht-inami-validator api="[[api]]" validator-name="ht-inami-validator"></ht-inami-validator>
@@ -1244,6 +1249,7 @@
                             <div class="title">
                                 <div class="title-txt">
                                     [[localize('nmcl','Nomenclature',language)]]
+                                    <paper-button on-tap="_openPhysiotherapistNmclCode" class="titleIcon"><iron-icon icon="vaadin:list"></iron-icon></paper-button>
                                 </div>
                             </div>
                             <div class="nmcl-list">
@@ -1611,6 +1617,7 @@
                 <paper-button class="button button--save" dialog-confirm on-tap="_confirmPayment">[[localize('validate','Validate',language)]]</paper-button>
             </div>
         </paper-dialog>
+
     </template>
     <script>
         import * as models from 'icc-api/dist/icc-api/model/models'
@@ -4722,6 +4729,10 @@
                     return this.localize('sup_train_nihii','NIHII supervisor',this.language)
                 }
 
+            }
+
+            _openPhysiotherapistNmclCode(){
+                this.dispatchEvent(new CustomEvent('open-physiotherapist-nmcl-list', {detail: {}, bubbles: true, composed: true}))
             }
         }
 
