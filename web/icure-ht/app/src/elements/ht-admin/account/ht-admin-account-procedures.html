@@ -41,12 +41,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
+<link rel="import" href="../../../styles/shared-styles.html">
+<link rel="import" href="../../../styles/dialog-style.html">
+<link rel="import" href="../../../styles/paper-tabs-style.html">
+<link rel="import" href="../../../styles/paper-input-style.html">
+<link rel="import" href="../../../styles/scrollbar-style.html">
+
+
 
 <dom-module id="ht-admin-account-procedures">
 
     <template>
 
-        <style include="shared-styles">
+        <style include="shared-styles dialog-style paper-tabs-style paper-input-style scrollbar-style">
 
             .procedures-panel{
                 width: 100%;
@@ -70,6 +77,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 width: auto;
                 margin: 0;
                 padding: 0;
+                position: relative;
+                background-color: white;
             }
 
             .package-list-container{
@@ -103,8 +112,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             .package-search-title{
                 height: 46px;
                 width: 100%;
-                background-color: var(--app-secondary-color);
-                border-bottom: 2px solid black;
+                background-color: var(--app-background-color-dark);
+                border-bottom: 2px solid var(--app-secondary-color);
             }
 
             .package-search-title-content{
@@ -222,6 +231,97 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 --paper-toggle-button-unchecked-ink-color: var(--paper-red-900);
             }
 
+            .sublist{
+                background:var(--app-light-color);
+                margin:0 0 0 0px;
+                padding:0;
+            }
+
+            .table-line-menu {
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+                align-items: center;
+                height: 100%;
+                width: 100%;
+            }
+
+            .table-line-menu-top{
+                padding-left: var(--padding-menu-item_-_padding-left);
+                padding-right: var(--padding-menu-item_-_padding-right);
+                box-sizing: border-box;
+            }
+
+            .table-line-menu div:not(:last-child){
+                height: 20px;
+                line-height: 20px;
+            }
+
+            .table-line-menu .code{
+                width: 15%;
+                padding-right: 4px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .table-line-menu .desc{
+                width: 75%;
+                padding-right: 4px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .table-line-menu .pat{
+                width: 4%;
+                padding-right: 4px;
+                padding-left: 4px;
+            }
+
+            .table-line-menu .codeTit{
+                width: 15%;
+                padding-right: 10px;
+            }
+
+            .table-line-menu .descTit{
+                width: 75%;
+                padding-right: 10px;
+            }
+
+
+            .table-line-menu .patTit{
+                width: 4%;
+                padding-left: 4px;
+                padding-right: 4px;
+                text-align: center;
+            }
+
+            .menu-item {
+                @apply --padding-menu-item;
+                height: 24px;
+                min-height: 24px;
+                font-size: var(--font-size-normal);
+                text-transform: inherit;
+                justify-content: space-between;
+                cursor: pointer;
+                @apply --transition;
+            }
+
+            .sublist .menu-item {
+                font-size: var(--font-size-normal);
+                min-height:20px;
+                height:20px;
+            }
+
+            .menu-item:hover{
+                background: var(--app-dark-color-faded);
+                @apply --transition;
+            }
+
+            .menu-item .iron-selected{
+                background:var(--app-primary-color);
+
+            }
+
         </style>
 
 
@@ -262,7 +362,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             [[localize('status','Status',language)]]
                         </template>
                         <template>
-                            <paper-toggle-button class="status" id="[[item.id]]" on-change="_toggleStatusChanged" checked="[[_getStatusOfPackage(item, item.*)]]"></paper-toggle-button>
+                            <paper-toggle-button class="status" id="[[item.id]]" on-change="_toggleStatusChanged" checked="[[_getStatusOfPackage(item.disabled)]]"></paper-toggle-button>
                         </template>
                     </vaadin-grid-column>
                 </vaadin-grid>
@@ -276,17 +376,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         <paper-input class="packageTitle" value="{{selectedPackageInfo.packageName}}" label="[[localize('adm-pack-name', 'Package name', language)]]"></paper-input>
                     </div>
                     <div class="package-list-of-procedure">
-                        <template is="dom-repeat" items="[[selectedPackageInfo.listOfProcedures]]">
-                            <div class="procedure-container">
-                                <div class="procedure-title">
-                                    [[_localizeLabel(item.label)]]
-                                    <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_deleteProcedureFromPackage" data-item-procedure$="[[item]]"></iron-icon>
-                                </div>
-                                <div class="procedure-description">
-
-                                </div>
+                        <paper-listbox id="" class="menu-content sublist" selectable="paper-item"  toggle-shift>
+                            <div class="table-line-menu table-line-menu-top">
+                                <div class="codeTit">[[localize('code','Code',language)]]</div>
+                                <div class="descTit">[[localize('label','Label',language)]]</div>
+                                <div class="patTit"></div>
                             </div>
-                        </template>
+                            <template is="dom-repeat" items="[[selectedPackageInfo.listOfProcedures]]" as="proc">
+                                <collapse-button>
+                                    <paper-item slot="sublist-collapse-item" id$="[[proc]]" data-item$="[[proc]]" aria-selected="[[selected]]" class$="menu-trigger menu-item [[isIronSelected(selected)]]">
+                                        <div id="subMenu" class="table-line-menu">
+                                            <div class="code">[[proc.code]]</div>
+                                            <div class="desc">[[_localizeLabel(proc.label)]]</div>
+                                            <div class="pat">
+                                                <iron-icon icon="vaadin:trash" class="trashIcon" on-tap="_deleteProcedureFromPackage" data-item-procedure$="[[proc]]"></iron-icon>
+                                            </div>
+                                        </div>
+                                    </paper-item>
+                                </collapse-button>
+                            </template>
+                        </paper-listbox>
                     </div>
                 </div>
                 <div class="package-search-container">
@@ -334,8 +443,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 </div>
             </div>
             <div class="buttons">
-                <paper-button class="modal-button" on-tap="_closePackageDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
-                <paper-button class="modal-button" on-tap="_savePackage"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
+                <paper-button class="button button--other" on-tap="_closePackageDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+                <paper-button class="button button--save" on-tap="_savePackage"><iron-icon icon="icons:save" class="mr5 smallIcon" ></iron-icon> [[localize('save','Save',language)]]</paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -446,6 +555,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _deleteProcedureFromPackage(e){
+                e.stopPropagation()
                 if(_.get(e, 'target.dataset.itemProcedure', null)){
                     const data = JSON.parse(_.get(e, 'target.dataset.itemProcedure', ''))
                     this.splice('selectedPackageInfo.listOfProcedures', _.indexOf(this.selectedPackageInfo.listOfProcedures, this.selectedPackageInfo.listOfProcedures.find(proc => proc.id === data.id)), 1)
@@ -559,7 +669,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 e.stopPropagation()
                 if(e.target.id){
                     const pack = this.listOfPackage.find(pack => pack.id === e.target.id)
-                    pack.disabled = e.target.checked
+                    pack.disabled = e.target.checked === true ? "false" : "true"
 
                     this.api.code().modifyCode(pack).then(newPack => {
                         this.splice('listOfPackage', _.indexOf(this.listOfPackage, this.listOfPackage.find(p => p.id === newPack.id)), 1)
@@ -571,8 +681,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 }
             }
 
-            _getStatusOfPackage(item){
-               //return item && item.disabled && item.disabled === true ? true : false
+            _getStatusOfPackage(status){
+                return status && status === "true" ? false : true
             }
 
 
