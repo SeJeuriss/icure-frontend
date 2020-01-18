@@ -1815,6 +1815,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 text-decoration: line-through;
             }
 
+            #dynamic-description-dialog{
+                height: 250px;
+                width: 500px;
+            }
+
+            .dynamic-description-content{
+                height: 150px;
+                overflow: auto;
+            }
+
         </style>
 
         <template is="dom-if" if="[[_bodyOverlay]]">
@@ -2502,6 +2512,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             on-upload-document="_hubUpload"
                             on-open-triptyque-dialog="_openTriptyqueDialog"
                             on-open-physiotherapist-nmcl-list="_openPhysiotherapistNmclList"
+                            on-open-dynamic-description-dialog="_openDynamicDescriptionDialog"
                         >
                         </ht-pat-detail-ctc-detail-panel>
                 </template>
@@ -2981,6 +2992,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                    current-contact="[[currentContact]]"
         ></physiotherapist-nmcl-list>
 
+        <paper-dialog id="dynamic-description-dialog">
+            <h4>Description</h4>
+            <div class="dynamic-description-content">
+                [[dynamicDescription]]
+            </div>
+            <div class="buttons">
+                <paper-button class="button button--save" on-tap="_closeDynamicDescriptionDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
+            </div>
+        </paper-dialog>
+
     </template>
     <script>
         import moment from 'moment/src/moment';
@@ -3413,8 +3434,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     selectedTeamHcp:{
                         type: String,
                         value: null
+                    },
+                    dynamicDescription:{
+                        type: String,
+                        value: null
                     }
-
                 };
             }
 
@@ -7283,6 +7307,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _openPhysiotherapistNmclList(){
                 this.$['physiotherapistNmclList'].openDialog()
+            }
+
+            _openDynamicDescriptionDialog(e){
+                this.set('dynamicDescription', _.get(e, 'detail.desc'))
+                this.$['dynamic-description-dialog'].open()
+            }
+
+            _closeDynamicDescriptionDialog(){
+                this.$['dynamic-description-dialog'].close()
             }
 
         }

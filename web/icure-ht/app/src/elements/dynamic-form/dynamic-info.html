@@ -59,15 +59,7 @@
                 color: var(--paper-grey-400);
             }
 
-            #description-dialog{
-                height: 250px;
-                width: 500px;
-            }
 
-            .description-content{
-                height: 150px;
-                overflow: auto;
-            }
 
             .buttons {
                 position: initial;
@@ -108,16 +100,6 @@
                 </paper-listbox>
             </paper-menu-button>
         </template>
-
-        <paper-dialog id="description-dialog">
-            <h4>Description</h4>
-            <div class="description-content">
-                [[linkedInfo.0.appendices.description]]
-            </div>
-            <div class="buttons">
-                <paper-button class="modal-button" on-tap="_closeDescriptionDialog"><iron-icon icon="icons:close" class="mr5 smallIcon" ></iron-icon> [[localize('clo','Close',language)]]</paper-button>
-            </div>
-        </paper-dialog>
 
     </template>
     <script>
@@ -192,7 +174,7 @@
 
             _showDescription(e){
                 e.stopPropagation()
-                _.get(this, 'linkedInfo.0.appendices.description', null)  !== null ? this.$['description-dialog'].open() : null
+                _.get(this, 'linkedInfo.0.appendices.description', null)  !== null ?  this.dispatchEvent(new CustomEvent('open-dynamic-description-dialog', {detail: {desc: _.get(this, 'linkedInfo.0.appendices.description', null)}, bubbles: true, composed: true})) : null
             }
 
             _redirectToLink(e){
@@ -201,13 +183,9 @@
 
             }
 
-            __redirectToVideo(e){
+            _redirectToVideo(e){
                 e.stopPropagation()
                 _.get(this, 'linkedInfo.0.appendices.video', null) !== null ? window.open(_.get(this, 'linkedInfo.0.appendices.video', null),'_blank') : null
-            }
-
-            _closeDescriptionDialog(){
-                this.$['description-dialog'].close()
             }
 
             _isDescription(info){
