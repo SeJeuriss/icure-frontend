@@ -125,6 +125,12 @@
                justify-content: flex-start;
             }
 
+            .ellipsis{
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: block;
+            }
+
         </style>
 
 
@@ -133,7 +139,7 @@
             <div class="content physiotherapistNmclListDialog">
                 <div class="pnl-menu-list">
                     <div class="pnl-menu-list-header">
-                        [[localize('', 'Selected nmcl code', language)]]
+                        [[localize('pnl-select-code', 'Selected nmcl code', language)]]
                     </div>
                     <div class="pnl-submenu-container">
                         <template is="dom-repeat" items="[[nmclListToAdd]]" as="item">
@@ -144,28 +150,29 @@
                 <div class="pnl-menu-view">
                     <paper-tabs selected="{{tabs}}" >
                         <paper-tab>
-                            <iron-icon class="tabIcon" icon="vaadin:list"></iron-icon> [[localize('','Nomenclature',language)]]
+                            <iron-icon class="tabIcon" icon="vaadin:list"></iron-icon> [[localize('pnl-nomenclature','Nomenclature',language)]]
                         </paper-tab>
                     </paper-tabs>
                     <iron-pages selected="[[tabs]]">
                         <page>
                             <div class="table">
                                 <div class="tr th">
-                                    <div class="td">[[localize('', 'Pathology', language)]]</div>
-                                    <div class="td">[[localize('', 'Nrml session', language)]]</div>
-                                    <div class="td">[[localize('', 'First session and folder creation', language)]]</div>
-                                    <div class="td">[[localize('', 'Code 1 to 9', language)]]</div>
-                                    <div class="td">[[localize('', 'Home allowance', language)]]</div>
-                                    <div class="td">[[localize('', 'Session after lg numb', language)]]</div>
-                                    <div class="td">[[localize('', 'Session + 60 min', language)]]</div>
-                                    <div class="td">[[localize('', 'Short session', language)]]</div>
-                                    <div class="td">[[localize('', 'Second session', language)]]</div>
-                                    <div class="td">[[localize('', 'Advisory examination', language)]]</div>
-                                    <div class="td">[[localize('', 'Examination and report ', language)]]</div>
+                                    <div class="td ellipsis"></div>
+                                    <div class="td ellipsis">[[localize('pnl-nrml-session', 'Nrml session', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-first-session', 'First session and folder creation', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-code-1-9', 'Code 1 to 9', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-home-allowance', 'Home allowance', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-session-after-lg', 'Session after lg numb', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-session-60', 'Session + 60 min', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-short-session', 'Short session', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-second-session', 'Second session', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-adv-exa', 'Advisory examination', language)]]</div>
+                                    <div class="td ellipsis">[[localize('pnl-exa-rep', 'Examination and report ', language)]]</div>
                                 </div>
+                                <div class="separator"><span class="separator-title">[[localize('pnl-ordinary-session', 'Ordinary session', language)]]</span></div>
                                 <template is="dom-if" if="[[isConsultation]]">
                                     <div class="tr">
-                                        <div class="td fl">[[localize('', 'Consultation', language)]]</div>
+                                        <div class="td fl ellipsis">[[localize('pnl-consult', 'Consultation', language)]]</div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560210">560210</paper-button></div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639855">639855</paper-button></div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="562671">562671</paper-button></div>
@@ -180,7 +187,7 @@
                                 </template>
                                 <template is="dom-if" if="[[isHomeVisit]]">
                                     <div class="tr">
-                                        <div class="td fl">[[localize('', 'Home', language)]]</div>
+                                        <div class="td fl ellipsis">[[localize('pnl-home-visit', 'Home', language)]]</div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560313">560313</paper-button></div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639855">639855</paper-button></div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="562671">562671</paper-button></div>
@@ -195,7 +202,7 @@
                                 </template>
                                 <template is="dom-if" if="[[isRestHomeVisit]]">
                                     <div class="tr">
-                                        <div class="td fl">[[localize('', 'Rest home', language)]]</div>
+                                        <div class="td fl ellipsis">[[localize('pnl-rest-home-visit', 'Rest home', language)]]</div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560571">560571</paper-button></div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639892">639892</paper-button></div>
                                         <div class="td"></div>
@@ -208,167 +215,193 @@
                                         <div class="td"></div>
                                     </div>
                                 </template>
-                                <div class="separator"><span class="separator-title">[[localize('', 'Perinatal', language)]]</span></div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Consultation', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561632">561632</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                </div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561654">561654</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                </div>
-                                <div class="separator"><span class="separator-title">[[localize('', 'E', language)]]</span></div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Consultation', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560895">560895</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560991">560991</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560910">560910</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560932">560932</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560976">560976</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560954">560954</paper-button></div>
-                                </div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561013">561013</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639133">639133</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561116">561116</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561035">561035</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561050">561050</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561094">561094</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561072">561072</paper-button></div>
-                                </div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Rest home', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561352">561352</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561374">561374</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561396">561396</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561411">561411</paper-button></div>
-                                </div>
-                                <div class="separator"><span class="separator-title">[[localize('', 'Flat rate A', language)]]</span></div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Consultation', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563216">563216</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td">​<paper-button class="nmclButton" on-tap="_addNmcl" id="562715">562715</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563253">563253 (>60)</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563231">563231</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561470">561470</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563290">563290</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563275">563275</paper-button></div>
-                                </div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563312">563312</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="​562715">​562715</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639192">639192</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563356">563356 (>60)</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563334">563334</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561492">561492</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563393">563393</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563371">563371</paper-button></div>
-                                </div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Rest home', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563496">563496</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563533">563533 (>60)</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563511">563511</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563555">563555</paper-button></div>
-                                </div>
-                                <div class="separator"><span class="separator-title">[[localize('', 'Flat rate B', language)]]</span></div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Consultation', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563813">563813</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563850">563850 (>60)</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563835">563835</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561470">561470</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563894">563894</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563872">563872</paper-button></div>
-                                </div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563916">563916</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639155">639155</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563953">563953 (>60)</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563931">563931</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561492">561492</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563990">563990</paper-button></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563975">563975</paper-button></div>
-                                </div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Rest home', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564093">564093</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564130">564130 (>60)</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564115">564115</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564152">564152</paper-button></div>
-                                </div>
-                                <div class="separator"><span class="separator-title">[[localize('', 'Palliative', language)]]</span></div>
-                                <div class="tr">
-                                    <div class="td fl">[[localize('', 'Home', language)]]</div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564211">564211</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639111">639111</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                    <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564233">564233</paper-button></div>
-                                    <div class="td"></div>
-                                    <div class="td"></div>
-                                </div>
+                                <template is="dom-if" if="[[!isRestHomeVisit]]">
+                                    <div class="separator"><span class="separator-title">[[localize('pnl-perinatal', 'Perinatal', language)]]</span></div>
+                                    <template is="dom-if" if="[[isConsultation]]">
+                                        <div class="tr">
+                                            <div class="td fl ellipsis">[[localize('pnl-consult', 'Consultation', language)]]</div>
+                                            <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561632">561632</paper-button></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                        </div>
+                                    </template>
+                                    <template is="dom-if" if="[[isHomeVisit]]">
+                                        <div class="tr">
+                                            <div class="td fl ellipsis">[[localize('pnl-home-visit', 'Home', language)]]</div>
+                                            <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561654">561654</paper-button></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                            <div class="td"></div>
+                                        </div>
+                                    </template>
+                                </template>
+                                <div class="separator"><span class="separator-title">[[localize('pnl-e', 'E', language)]]</span></div>
+                                <template is="dom-if" if="[[isConsultation]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-consult', 'Consultation', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560895">560895</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560991">560991</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560910">560910</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560932">560932</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560976">560976</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560954">560954</paper-button></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isHomeVisit]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-home-visit', 'Home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561013">561013</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639133">639133</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561116">561116</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561035">561035</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561050">561050</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561094">561094</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561072">561072</paper-button></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isRestHomeVisit]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-rest-home-visit', 'Rest home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561352">561352</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561374">561374</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561396">561396</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561411">561411</paper-button></div>
+                                    </div>
+                                </template>
+                                <div class="separator"><span class="separator-title">[[localize('pnl-flat-rate-a', 'Flat rate A', language)]]</span></div>
+                                <template is="dom-if" if="[[isConsultation]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-consult', 'Consultation', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563216">563216</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td">​<paper-button class="nmclButton" on-tap="_addNmcl" id="562715">562715</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563253">563253 (>60)</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563231">563231</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561470">561470</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563290">563290</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563275">563275</paper-button></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isHomeVisit]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-home-visit', 'Home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563312">563312</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="​562715">​562715</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639192">639192</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563356">563356 (>60)</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563334">563334</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561492">561492</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563393">563393</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563371">563371</paper-button></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isRestHomeVisit]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-rest-home-visit', 'Rest home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563496">563496</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563533">563533 (>60)</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563511">563511</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563555">563555</paper-button></div>
+                                    </div>
+                                </template>
+                                <div class="separator"><span class="separator-title">[[localize('pnl-flat-rate-b', 'Flat rate B', language)]]</span></div>
+                                <template is="dom-if" if="[[isConsultation]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-consult', 'Consultation', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563813">563813</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563850">563850 (>60)</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563835">563835</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561470">561470</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563894">563894</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563872">563872</paper-button></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isHomeVisit]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-home-visit', 'Home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563916">563916</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639155">639155</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563953">563953 (>60)</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563931">563931</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="561492">561492</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563990">563990</paper-button></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="563975">563975</paper-button></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isRestHomeVisit]]">
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-rest-home-visit', 'Rest home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564093">564093</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564130">564130 (>60)</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564115">564115</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564152">564152</paper-button></div>
+                                    </div>
+                                </template>
+                                <template is="dom-if" if="[[isHomeVisit]]">
+                                    <div class="separator"><span class="separator-title">[[localize('pnl-palliative', 'Palliative', language)]]</span></div>
+                                    <div class="tr">
+                                        <div class="td fl ellipsis">[[localize('pnl-home-visit', 'Home', language)]]</div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564211">564211</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639111">639111</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="564233">564233</paper-button></div>
+                                        <div class="td"></div>
+                                        <div class="td"></div>
+                                    </div>
+                                </template>
                             </div>
                         </page>
                     </iron-pages>
@@ -376,7 +409,7 @@
             </div>
             <div class="buttons">
                 <paper-button class="button" on-tap="_closeDialog"><iron-icon icon="icons:close"></iron-icon> [[localize('clo','Close',language)]]</paper-button>
-                <paper-button class="button button--save" on-tap="_add"><iron-icon icon="icons:refresh" ></iron-icon> [[localize('refresh','Refresh',language)]]</paper-button>
+                <paper-button class="button button--save" on-tap="_validNmcl"><iron-icon icon="icons:check" ></iron-icon> [[localize('valid','valid',language)]]</paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -429,7 +462,7 @@
             }
 
             static get observers() {
-                return ['_consultationTypeChanged(currentContact, currentContact.*)'];
+                return [];
             }
 
             ready() {
@@ -437,7 +470,17 @@
             }
 
             openDialog(){
+                this.set('isConsultation', false)
+                this.set('isHomeVisit', false)
+                this.set('isRestHomeVisit', false)
+
+                parseInt(_.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null)) === 1 ? this.set('isConsultation', true) :
+                    parseInt(_.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null)) === 2 ? this.set('isHomeVisit', true) :
+                        parseInt(_.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null)) === 6 ? this.set('isRestHomeVisit', true) :
+                            null
+
                 this.$['physiotherapistNmclListDialog'].open()
+
             }
 
             _closeDialog(){
@@ -455,15 +498,9 @@
                 }
             }
 
-            _consultationTypeChanged(){
-                this.set('isConsultation', false)
-                this.set('isHomeVisit', false)
-                this.set('isRestHomeVisit', false)
 
-                _.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null) === 1 ? this.set('isConsultation', true) :
-                    _.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null) === 2 ? this.set('isHomeVisit', true) :
-                        _.get(_.get(this.currentContact, 'tags', []).find(tag => _.get(tag, 'type', null) === "BE-CONTACT-TYPE"), 'code', null) === 6 ? this.set('isRestHomeVisit', true) :
-                            null
+            _validNmcl(){
+
             }
 
         }

@@ -1075,6 +1075,12 @@
                 width: 14px;
             }
 
+            .titleBtn{
+                float: right;
+                height: 14px;
+                width: 14px;
+            }
+
         </style>
 
         <ht-inami-validator api="[[api]]" validator-name="ht-inami-validator"></ht-inami-validator>
@@ -1249,7 +1255,7 @@
                             <div class="title">
                                 <div class="title-txt">
                                     [[localize('nmcl','Nomenclature',language)]]
-                                    <paper-button on-tap="_openPhysiotherapistNmclCode" class="titleIcon"><iron-icon icon="vaadin:list"></iron-icon></paper-button>
+                                    <paper-button class="titleBtn" on-tap="_openPhysiotherapistNmclCode"><iron-icon class="titleIcon" icon="vaadin:list"></iron-icon></paper-button>
                                 </div>
                             </div>
                             <div class="nmcl-list">

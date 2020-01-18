@@ -1918,7 +1918,7 @@
                     if(idx != -1){
                         this.currentContact.tags.splice(idx, 1);
                     }
-                    this.currentContact.tags.push(e.detail.type);
+                    this.push('currentContact.tags', e.detail.type);
                     this.notifyPath('currentContact.tags')
                     this.saveCurrentContact()
 							.then(ctc => this.dispatchEvent(new CustomEvent('contact-saved', { detail: {contact :ctc} , bubbles:true })))
