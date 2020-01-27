@@ -36,7 +36,7 @@
 <link rel="import" href="../../pdf-element/pdf-element.html">
 
 <link rel="import" href="../../../shared-styles.html">
-<link rel="import" href="../../../triptyque-styles.html">
+<link rel="import" href="../../../styles/triptyque-styles.html">
 <link rel="import" href="../../../styles/dialog-style.html">
 <link rel="import" href="../../../styles/notification-style.html">
 <link rel="import" href="../../../styles/spinner-style.html">
@@ -44,11 +44,16 @@
 
 
 <dom-module id="ht-pat-triptyque-dialog">
+
+
+
     <template>
+
         <style include="shared-styles dialog-style notification-style spinner-style scrollbar-style triptyque-styles"></style>
 
-        <paper-dialog id="triptyqueDialog" always-on-top="true" no-cancel-on-outside-click="true"
-                      no-cancel-on-esc-key="true">
+        <paper-dialog id="triptyqueDialog" always-on-top="true" no-cancel-on-outside-click="true" no-cancel-on-esc-key="true">
+
+
 
             <template is="dom-if" if="[[_isLoading]]">
                 <div id="loadingContainer">
@@ -67,112 +72,71 @@
 
                 <div class="panelNavigator m0 p0" id="panelNavigator_1">
 
-                    <h3 class="p0 mt0">[[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]] <span
-                            class="fspoint8em fw400">([[_formatTranslateGender(patient.gender)]] [[_ucFirst(patient.lastName)]] [[_ucFirst(patient.firstName)]] - [[_formatDateOfBirth(patient.dateOfBirth)]] - [[_dobToAge(patient.dateOfBirth)]] - [[patient.profession]])</span>
-                    </h3>
+                    <h2 class="modal-title mb0">[[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]]</h2>
 
-                    <vaadin-grid id="vaadinGridPlanOfAction" class="m0 p0 vaadinGridPlanOfAction"
-                                 items="[[_vaadinGridPlanOfActionDataToShow]]"
-                                 active-item="{{_vaadinGridPlanOfActionSelectedItem}}"
-                                 pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]"
-                                 on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged">
+                    <div class="content">
 
-                        <vaadin-grid-column width="100px" flex-grow="0">
-                            <template class="header">
-                                <vaadin-grid-sorter path="poaOpeningDateHr"><b>[[localize('dat','Date',language)]]</b>
-                                </vaadin-grid-sorter>
-                            </template>
-                            <template>[[item.poaOpeningDateHr]]</template>
-                        </vaadin-grid-column>
+                        <vaadin-grid id="vaadinGridPlanOfAction" class="m0 p0 vaadinGridPlanOfAction"
+                             items="[[_vaadinGridPlanOfActionDataToShow]]"
+                             active-item="{{_vaadinGridPlanOfActionSelectedItem}}"
+                             pageSize="[[_vaadinGridPlanOfActionMaxItemsPerPage]]"
+                             on-selected-items-changed="_vaadinGridPlanOfActionActiveItemChanged"
+                        >
 
-                        <vaadin-grid-column flex-grow="1">
-                            <template class="header">
-                                <vaadin-grid-sorter path="heDescr">[[localize('healthcareelement','Healthcare Elements',language)]]
-                                </vaadin-grid-sorter>
-                            </template>
-                            <template>[[item.heDescr]]</template>
-                        </vaadin-grid-column>
+                            <vaadin-grid-column width="100px" flex-grow="0">
+                                <template class="header"><vaadin-grid-sorter path="poaOpeningDateHr"><b>[[localize('dat','Date',language)]]</b></vaadin-grid-sorter></template>
+                                <template>[[item.poaOpeningDateHr]]</template>
+                            </vaadin-grid-column>
 
-                        <vaadin-grid-column flex-grow="1">
-                            <template class="header">
-                                <vaadin-grid-sorter path="poaName">[[localize('lab','Label',language)]]
-                                </vaadin-grid-sorter>
-                            </template>
-                            <template>[[item.poaName]]</template>
-                        </vaadin-grid-column>
+                            <vaadin-grid-column flex-grow="1">
+                                <template class="header"><vaadin-grid-sorter path="heDescr">[[localize('healthcareelement','Healthcare Elements',language)]]</vaadin-grid-sorter></template>
+                                <template>[[item.heDescr]]</template>
+                            </vaadin-grid-column>
 
-                        <vaadin-grid-column flex-grow="1">
-                            <template class="header">
-                                <vaadin-grid-sorter path="poaPrescriberHr">
-                                    [[localize('prescriber','Prescriber',language)]]
-                                </vaadin-grid-sorter>
-                            </template>
-                            <template>[[item.poaPrescriberHr]]</template>
-                        </vaadin-grid-column>
+                            <vaadin-grid-column flex-grow="1">
+                                <template class="header"><vaadin-grid-sorter path="poaName">[[localize('lab','Label',language)]]</vaadin-grid-sorter></template>
+                                <template>[[item.poaName]]</template>
+                            </vaadin-grid-column>
 
-                        <vaadin-grid-column flex-grow="1">
-                            <template class="header">
-                                <vaadin-grid-sorter path="poaPrestataireHr">
-                                    [[localize('persphysicianRole','Physician',language)]]
-                                </vaadin-grid-sorter>
-                            </template>
-                            <template>[[item.poaPrestataireHr]]</template>
-                        </vaadin-grid-column>
+                            <vaadin-grid-column flex-grow="1">
+                                <template class="header"><vaadin-grid-sorter path="poaPrescriberHr">[[localize('prescriber','Prescriber',language)]]</vaadin-grid-sorter></template>
+                                <template>[[item.poaPrescriberHr]]</template>
+                            </vaadin-grid-column>
 
-                        <vaadin-grid-column width="100px" flex-grow="0">
-                            <template class="header">
-                                <vaadin-grid-sorter path="poaNumberOfCares">[[localize('qua','Quantity',language)]]
-                                </vaadin-grid-sorter>
-                            </template>
-                            <template>[[item.poaNumberOfCaresMade]]/[[item.poaNumberOfCares]]</template>
-                        </vaadin-grid-column>
+                            <vaadin-grid-column flex-grow="1">
+                                <template class="header"><vaadin-grid-sorter path="poaPrestataireHr">[[localize('persphysicianRole','Physician',language)]]</vaadin-grid-sorter></template>
+                                <template>[[item.poaPrestataireHr]]</template>
+                            </vaadin-grid-column>
 
-                        <vaadin-grid-column width="150px" flex-grow="0">
-                            <template class="header">
-                                <vaadin-grid-sorter path="poaStatusHr">[[localize('sta','Status',language)]]
-                                </vaadin-grid-sorter>
-                            </template>
-                            <template>[[item.poaStatusHr]]</template>
-                        </vaadin-grid-column>
+                            <vaadin-grid-column width="100px" flex-grow="0">
+                                <template class="header"><vaadin-grid-sorter path="poaNumberOfCares">[[localize('qua','Quantity',language)]]</vaadin-grid-sorter></template>
+                                <template>[[item.poaNumberOfCaresMade]]/[[item.poaNumberOfCares]]</template>
+                            </vaadin-grid-column>
 
-                        <vaadin-grid-column width="50px" flex-grow="0">
-                            <template class="header"></template>
-                            <template>
-                                <paper-button class="tool-btn pl15 pr15" on-tap="_browseAppointments"
-                                              data-plan-of-action-id="[[item.id]]">
-                                    <iron-icon data-name="diary" icon="date-range" class="ml5"></iron-icon>
-                                    [[localize('diary','Diary',language)]]
-                                </paper-button>
-                            </template>
-                        </vaadin-grid-column>
+                            <vaadin-grid-column width="150px" flex-grow="0">
+                                <template class="header"><vaadin-grid-sorter path="poaStatusHr">[[localize('sta','Status',language)]]</vaadin-grid-sorter></template>
+                                <template>[[item.poaStatusHr]]</template>
+                            </vaadin-grid-column>
 
-                    </vaadin-grid>
+                            <vaadin-grid-column width="50px" flex-grow="0">
+                                <template class="header"></template>
+                                <template><paper-button class="tool-btn" on-tap="_browseAppointments" data-plan-of-action-id="[[item.id]]"><iron-icon data-name="diary" icon="date-range" class="ml5"></iron-icon>[[localize('diary','Diary',language)]]</paper-button></template>
+                            </vaadin-grid-column>
 
-                    <div class="vaadinGridBottomActions mt20">
-                        <div class="grid-size-indicator hideOnMobile"> [[_vaadinGridPageStart]] – [[_vaadinGridPageEnd]]
-                            [[localize('sur','sur',language)]] [[_vaadinGridTotalRecords]]
+                        </vaadin-grid>
+
+                        <div class="vaadinGridBottomActions mt10">
+                            <div class="grid-size-indicator hideOnMobile"> [[_vaadinGridPageStart]] – [[_vaadinGridPageEnd]] [[localize('sur','sur',language)]] [[_vaadinGridTotalRecords]]</div>
+                            <paper-icon-button id="previous-page-change" icon="chevron-left" class="vaadinGridPageToPageNavigation" on-tap="_gotoPreviousGridPage"></paper-icon-button>
+                            <paper-icon-button id="next-page-change" icon="chevron-right" class="vaadinGridPageToPageNavigation" on-tap="_gotoNextGridPage"></paper-icon-button>
+                            <div class="hideOnMobile"><paper-icon-button class="vaadinGridScrollToTop" icon="arrow-upward" on-tap="_scrollToTop"></paper-icon-button></div>
                         </div>
-                        <paper-icon-button id="previous-page-change" icon="chevron-left"
-                                           class="vaadinGridPageToPageNavigation"
-                                           on-tap="_gotoPreviousGridPage"></paper-icon-button>
-                        <paper-icon-button id="next-page-change" icon="chevron-right"
-                                           class="vaadinGridPageToPageNavigation"
-                                           on-tap="_gotoNextGridPage"></paper-icon-button>
-                        <div class="hideOnMobile">
-                            <paper-icon-button class="vaadinGridScrollToTop" icon="arrow-upward"
-                                               on-tap="_scrollToTop"></paper-icon-button>
-                        </div>
+
                     </div>
 
                     <div class="buttons">
-                        <paper-button on-tap="_closeTriptyqueDialog" class="modal-button modal-button--cancel">
-                            <iron-icon icon="icons:close" class=""></iron-icon>
-                            [[localize('clo','Close',language)]]
-                        </paper-button>
-                        <paper-button on-tap="_addPlanOfAction" class="modal-button modal-button--save">
-                            <iron-icon icon="icons:add-circle" class="mr0"></iron-icon>
-                            [[localize('createPlanOfAction','Create plan of action',language)]]
-                        </paper-button>
+                        <paper-button on-tap="_closeTriptyqueDialog" class="button button--other"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
+                        <paper-button on-tap="_addPlanOfAction" class="button button--save"><iron-icon icon="icons:add-circle" class="mr0"></iron-icon>[[localize('createPlanOfAction','Create plan of action',language)]]</paper-button>
                     </div>
 
                 </div>
@@ -183,17 +147,14 @@
 
             <template is="dom-if" if="[[_dialogParameters.actions.detail]]">
 
-                <h3 class="p0 mt0">[[localize('detailsPlanOfActions','Details plan of actions',language)]] <span
-                        class="fspoint8em fw400">([[_formatTranslateGender(patient.gender)]] [[_ucFirst(patient.lastName)]] [[_ucFirst(patient.firstName)]] - [[_formatDateOfBirth(patient.dateOfBirth)]] - [[_dobToAge(patient.dateOfBirth)]] - [[patient.profession]])</span>
-                </h3>
+                <h2 class="modal-title">[[localize('detailsPlanOfActions','Details plan of actions',language)]]</h2>
 
-                <div class="panelNavigator m0 p0 hasTabViews" id="panelNavigator_2">
+                <div class="content">
+
+                    <div class="panelNavigator m0 p0 hasTabViews" id="panelNavigator_2">
 
                     <div class="panelNavigatorAnchor">
-                        <paper-button on-tap="_closePlanOfAction">
-                            <iron-icon icon="hardware:keyboard-arrow-left"></iron-icon>
-                            [[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]]
-                        </paper-button>
+                        <paper-button on-tap="_closePlanOfAction"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon>[[localize('onGoingPlansOfActions','Ongoing plans of actions',language)]]</paper-button>
                     </div>
 
                     <div class="panelNavigatorContent p0 mt0">
@@ -204,15 +165,12 @@
 
 
                                 <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
-                                    <h4 class="textaligncenter uppercase">
-                                        <iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon>
-                                        [[localize('linkedPrescriptionToYourTriptyque','This prescription is linked to
-                                        your triptyque',language)]]:
-                                    </h4>
+                                    <h4 class="textaligncenter uppercase"><iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon>[[localize('linkedPrescriptionToYourTriptyque','This prescription is linked to your triptyque',language)]]:</h4>
                                     <div class="singleDocumentContainer"
                                          data-service-id$="[[_selectedPrescriptionObject.service.id]]"
                                          data-form-id$="[[_selectedPrescriptionObject.formId]]"
-                                         data-document-id$="[[_selectedPrescriptionObject.document.id]]">
+                                         data-document-id$="[[_selectedPrescriptionObject.document.id]]"
+                                    >
                                         <div class="header p10">
                                             <span class="date">[[_selectedPrescriptionObject.dateAndTimeHr]]</span>
                                             <paper-button class="p0 m0 fr" on-tap="_unlinkPdfPrescription"
@@ -220,17 +178,11 @@
                                                           data-service-id$="[[_selectedPrescriptionObject.service.id]]"
                                                           data-form-id$="[[_selectedPrescriptionObject.formId]]"
                                                           data-document-id$="[[_selectedPrescriptionObject.document.id]]">
-                                                <iron-icon icon="vaadin:unlink"
-                                                           id$="unlink-[[_selectedPrescriptionObject.service.id]]"></iron-icon>
+                                                <iron-icon icon="vaadin:unlink" id$="unlink-[[_selectedPrescriptionObject.service.id]]"></iron-icon>
                                             </paper-button>
-                                            <paper-tooltip for$="unlink-[[_selectedPrescriptionObject.service.id]]">
-                                                [[localize('unlinkPdf','Unlink PDF',language)]]
-                                            </paper-tooltip>
+                                            <paper-tooltip for$="unlink-[[_selectedPrescriptionObject.service.id]]">[[localize('unlinkPdf','Unlink PDF',language)]]</paper-tooltip>
                                         </div>
-                                        <div class="body p5 fspoint9em">
-                                            <iron-icon icon="image:picture-as-pdf" class="mr5 darkRed"></iron-icon>
-                                            [[_selectedPrescriptionObject.serviceTitle]]
-                                        </div>
+                                        <div class="body p5 fspoint9em"><iron-icon icon="image:picture-as-pdf" class="mr5 darkRed"></iron-icon>[[_selectedPrescriptionObject.serviceTitle]]</div>
                                         <template is="dom-if" if="[[_selectedPrescriptionBoolean]]">
                                             <dynamic-doc
                                                     id="selected-pdf-preview-[[_selectedPrescriptionObject.document.id]]"
@@ -321,28 +273,13 @@
 
                             </div>
                         </div>
-                        <div class="panelNavigatorAnchor bl0">
-                            <paper-button on-tap="_toggleCollapsePdfPanel">
-                                <iron-icon icon="hardware:keyboard-arrow-left"></iron-icon>
-                                [[localize('prescription','Prescription',language)]] PDF
-                            </paper-button>
-                        </div>
+                        <div class="panelNavigatorAnchor bl0"><paper-button on-tap="_toggleCollapsePdfPanel"><iron-icon icon="hardware:keyboard-arrow-left"></iron-icon>[[localize('prescription','Prescription',language)]] PDF</paper-button></div>
 
 
-                        <paper-tabs selected="{{_triptyqueDetailActiveTab}}" on-tap="_gotoTabIfsAllowed"
-                                    attr-for-selected="name" class="p0">
-                            <paper-tab class="dialogTab" name="prescriptionForm">
-                                <iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon>
-                                [[localize('prescription','Prescription',language)]]
-                            </paper-tab>
-                            <paper-tab class="dialogTab" name="summary">
-                                <iron-icon icon="icons:list" class="mr8 darkBlue"></iron-icon>
-                                [[localize('summary','Summary',language)]]
-                            </paper-tab>
-                            <paper-tab class="dialogTab" name="procedures">
-                                <iron-icon icon="vaadin:tools" class="mr8 darkBlue"></iron-icon>
-                                [[localize('proc(s)','Procedure(s)',language)]] <span class="batchNumber greenBg ml10">[[_totalExistingProceduresForCurrentPlanOfAction]]</span>
-                            </paper-tab>
+                        <paper-tabs selected="{{_triptyqueDetailActiveTab}}" on-tap="_gotoTabIfsAllowed" attr-for-selected="name" class="p0">
+                            <paper-tab class="dialogTab" name="prescriptionForm"><iron-icon icon="icons:assignment" class="mr8 darkBlue"></iron-icon>[[localize('prescription','Prescription',language)]]</paper-tab>
+                            <paper-tab class="dialogTab" name="summary"><iron-icon icon="icons:list" class="mr8 darkBlue"></iron-icon>[[localize('summary','Summary',language)]]</paper-tab>
+                            <paper-tab class="dialogTab" name="procedures"><iron-icon icon="vaadin:tools" class="mr8 darkBlue"></iron-icon>[[localize('proc(s)','Procedure(s)',language)]] <span class="batchNumber greenBg ml10">[[_totalExistingProceduresForCurrentPlanOfAction]]</span></paper-tab>
                         </paper-tabs>
 
 
@@ -898,22 +835,14 @@
 
 
                         <div class="buttons">
-                            <paper-button on-tap="_closePlanOfAction" class="modal-button modal-button--cancel">
-                                <iron-icon icon="icons:close" class=""></iron-icon>
-                                [[localize('clo','Close',language)]]
-                            </paper-button>
-                            <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_savePlanOfActrionsData"
-                                          class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--save">
-                                <iron-icon icon="icons:save" class=""></iron-icon>
-                                [[localize('save','Save',language)]]
-                            </paper-button>
-                            <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_XXXXXX"
-                                          class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] modal-button modal-button--cancel minw0">
-                                <iron-icon icon="icons:more-vert" class="mr0"></iron-icon>
-                            </paper-button>
+                            <paper-button on-tap="_closePlanOfAction" class="button button--other"><iron-icon icon="icons:close" class=""></iron-icon>[[localize('clo','Close',language)]]</paper-button>
+                            <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_savePlanOfActrionsData" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] button button--save"><iron-icon icon="icons:save" class=""></iron-icon>[[localize('save','Save',language)]]</paper-button>
+                            <paper-button disabled$=[[!_selectedPrescriptionBoolean]] on-tap="_XXXXXX" class$="[[_stringByValue('disabled', 'false', _selectedPrescriptionBoolean)]] button button--other minw0"><iron-icon icon="icons:more-vert" class="mr0"></iron-icon></paper-button>
                         </div>
 
                     </div>
+
+                </div>
 
                 </div>
 
@@ -921,22 +850,13 @@
             </template>
 
 
-            <div class="failedLabel" id="requiredFieldsLabel">
-                <iron-icon icon="clear"></iron-icon>
-                [[localize('fillInRequiredFields','Veuillez compléter les champs requis',language)]]
-            </div>
-            <div class="successLabel" id="confirmSaveLabel">
-                <iron-icon icon="check"></iron-icon>
-                [[localize('changesSuccessfullySaved','Changes successfully saved',language)]]
-            </div>
-            <div class="successLabel" id="confirmProcedureAdded">
-                <iron-icon icon="check"></iron-icon>
-                [[localize('proceduresSuccessfullyAdded','Procedures successfully added',language)]]
-            </div>
+            <div class="failedLabel" id="requiredFieldsLabel"><iron-icon icon="clear"></iron-icon>[[localize('fillInRequiredFields','Veuillez compléter les champs requis',language)]]</div>
+            <div class="successLabel" id="confirmSaveLabel"><iron-icon icon="check"></iron-icon>[[localize('changesSuccessfullySaved','Changes successfully saved',language)]]</div>
+            <div class="successLabel" id="confirmProcedureAdded"><iron-icon icon="check"></iron-icon>[[localize('proceduresSuccessfullyAdded','Procedures successfully added',language)]]</div>
+
 
 
         </paper-dialog>
-
 
     </template>
 

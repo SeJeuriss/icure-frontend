@@ -490,7 +490,9 @@
                     <template is="dom-if" if="[[!documentId]]"><template is="dom-if" if="[[isLoading]]"><ht-spinner active></ht-spinner></template></template>
 
                     <template is="dom-if" if="[[_imageMimeType(document.mainUti, document.otherUtis.*, dataUrl, data)]]">
-                        <div class="form-title">
+
+                        <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                            <div class="form-title">
                             [[_title(document.name, title)]]
                             <div>
 
@@ -554,6 +556,8 @@
 
                             </div>
                         </div>
+                        </template>
+
                         <template is="dom-if" if="[[_size(patientData)]]">
                             <div class="resInfos">
                                 <div class="patientInfos">
@@ -584,7 +588,8 @@
 
                     <template is="dom-if" if="[[_pdfMimeType(document.mainUti, document.otherUtis.*, dataUrl, data)]]">
 
-                        <div class="form-title">
+                        <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                            <div class="form-title">
                             <template is="dom-if" if="[[showExtendedTitle]]">
                                 [[_extendedTitle(document.name, document.created, document.modified, title)]]
                             </template>
@@ -647,6 +652,7 @@
 
                             </div>
                         </div>
+                        </template>
 
                         <template is="dom-if" if="[[_size(patientData)]]">
                             <div class="resInfos">
@@ -676,7 +682,9 @@
                     </template>
 
                     <template is="dom-if" if="[[_xmlMimeType(document.mainUti, document.otherUtis.*, dataUrl, data)]]">
-                        <div class="form-title">
+
+                        <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                            <div class="form-title">
                             [[_title(document.name, title)]]
                             <div>
 
@@ -734,6 +742,7 @@
 
                             </div>
                         </div>
+                        </template>
 
                         <template is="dom-if" if="[[_size(patientData)]]">
                             <div class="resInfos">
@@ -764,7 +773,9 @@
                 </template>
 
                 <template is="dom-if" if="[[_pdfRenderableMimeType(document.mainUti, document.otherUtis.*, null, data)]]">
-                    <div class="form-title">
+
+                    <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                        <div class="form-title">
                         [[_title(document.name, title)]]
                         <div>
 
@@ -809,6 +820,7 @@
 
                         </div>
                     </div>
+                    </template>
 
                     <template is="dom-if" if="[[_size(patientData)]]">
                         <div class="resInfos">
@@ -864,7 +876,9 @@
                     <template is="dom-if" if="[[attachmentContent.length]]">
 
                         <template is="dom-if" if="[[!isBodyTextOfEmail]]">
-                            <div class="form-title">
+
+                            <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                                <div class="form-title">
                                 [[_title(document.name, title)]]
                                 <div>
 
@@ -914,6 +928,8 @@
 
                                 </div>
                             </div>
+                            </template>
+
                             <template is="dom-if" if="[[_size(patientData)]]">
                                 <div class="resInfos">
                                     <div class="patientInfos">
@@ -942,7 +958,9 @@
                 </template>
 
                 <template is="dom-if" if="[[_unknownMimeType(document.mainUti, document.otherUtis.*, dataUrl, data)]]">
-                    <div class="form-title">
+
+                    <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                        <div class="form-title">
                         [[_title(document.name, title)]]
                         <div>
 
@@ -1000,6 +1018,7 @@
 
                         </div>
                     </div>
+                    </template>
 
                     <template is="dom-if" if="[[_size(patientData)]]">
                         <div class="resInfos">
@@ -1033,7 +1052,8 @@
 
                 <template is="dom-if" if="[[isLoading]]"><div class="spinnerContainer"><ht-spinner active></ht-spinner></div></template>
 
-                <div class="form-title bold">
+                <template is="dom-if" if="[[!forceNoDocumentHeader]]">
+                    <div class="form-title bold">
                     <span class="fs12em"><iron-icon icon="vaadin:flask" class="darkBlue w-20 m-r-5"></iron-icon> [[localize('boxtitle.labResult','Lab results',language)]] <span class="regular italic">([[labOrProtocolContentFirstItem.labo]])</span> - [[localize('prot','Protocol',language)]] <span class="darkBlue">#[[labOrProtocolContentFirstItem.protocol]]</span> - <span class="darkRed">[[labOrProtocolTotalPatients]] [[localize('singularOrPluralpatient','Patient(s)',language)]]</span></span>
                     <div>
 
@@ -1071,6 +1091,7 @@
 
                     </div>
                 </div>
+                </template>
 
                 <template is="dom-repeat" items="[[labOrProtocolContent]]" as="resInfo">
 
