@@ -2805,7 +2805,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 api="[[api]]" user="[[user]]" patient="[[patient]]"
                 i18n="[[i18n]]" language="[[language]]"
                 medications="[[medications]]" treatment-history="[[treatmentHistory]]" resources="[[resources]]"
-                on-save-medications="_saveMedications" on-new-medications="_createNewMedications">
+                on-save-medications="_saveMedications" on-new-medications="_createNewMedications" on-update-services="_updateServices">
         </medication-prescription-dialog>
         <medication-details-dialog id="medication-detail" api="[[api]]" user="[[user]]" i18n="[[i18n]]" patient="[[patient]]" language="[[language]]" resources="[[resources]]" selected-medication-content-with-id="{{selectedMedicationContentWithId}}" on-value-changed="_medicationDetailValueChanged"></medication-details-dialog>
         <medication-plan-dialog id="medication-plan" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" medications="[[medications]]" prescriptions="[[prescriptions]]" user="[[user]]" patient="[[patient]]" on-print-prescription="onPrintPrescription"></medication-plan-dialog>

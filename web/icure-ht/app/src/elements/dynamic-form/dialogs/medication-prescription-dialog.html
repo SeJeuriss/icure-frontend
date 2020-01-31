@@ -942,16 +942,12 @@
 
                             <!-- MASTERLY / TEMPLATE-->
 
-<!--                            <vaadin-grid-column width="40px" flex-grow="0">-->
-<!--                                <template>-->
-<!--                                    <template is="dom-if" if="[[_isMasterly(item.preparation)]]">-->
-<!--                                        <iron-icon icon="medication:masterly"></iron-icon>-->
-<!--                                    </template>-->
-<!--                                    <template is="dom-if" if="[[_isTemplate(item.preparation)]]">-->
-<!--                                        <iron-icon icon="medication:template"></iron-icon>-->
-<!--                                    </template>-->
-<!--                                </template>-->
-<!--                            </vaadin-grid-column>-->
+                            <vaadin-grid-column width="40px" flex-grow="0">
+                                <template>
+                                    <paper-icon-button id="[[item.id]]" class="list-item-icon--add" icon="av:not-interested"
+                                                       on-tap="_closeChronic"></paper-icon-button>
+                                </template>
+                            </vaadin-grid-column>
 
                             <!-- NAME / DOSAGE-->
 
@@ -2852,6 +2848,24 @@
 
             _addChronic(e) {
                 this._add("chronic-list", _.get(e, "target.id", ""));
+            }
+
+            _closeChronic(e) {
+                const medId = _.get(e, "target.id", "");
+                const grid = this.$["chronic-list"];
+                if (!grid || !medId) return;
+                const med = grid.drugsCache.find(res => res.id === medId);
+                const service = _.get(med, "service");
+                if (!service) return;
+
+                const medicationValue = (this.api.contact().preferredContent(service, this.language) || (service.content[this.language] = {medicationValue: {}})).medicationValue;
+                if (!medicationValue) return;
+                medicationValue.endMoment = parseInt(this.api.moment(Date.now()).subtract(1, 'days').format("YYYYMMDD"));
+                this.dispatchEvent(new CustomEvent('update-services', {detail: {service: service}, bubbles: true, composed: true}));
+
+                const index = this.medications.findIndex(t => t.id === service.id);
+                this.medications.splice(index, 1);
+                this._clear("chronic-list");
             }
 
             _addFromHistory(e) {
