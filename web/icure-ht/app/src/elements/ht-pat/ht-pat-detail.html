@@ -6473,7 +6473,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.set("refreshServicesDescription",this.refreshServicesDescription+1)
             }
 
-            getTypeContact(ctc){
+            getTypeContact(ctc){//@todo JULIEN : loop management for template
                 const descrPattern = this.user.properties.find(p => p.type.identifier === 'org.taktik.icure.preferred.contactDescription') || `{BE-CONTACT-TYPE} : {TZ-FORM-TITLE} <br/> {Motifs de contact}`
                 const templateKeys = descrPattern.match(/\{.+?\}/g).map(s => s.substring(1, s.length - 1))
                     .reduce((acc, s) => {
