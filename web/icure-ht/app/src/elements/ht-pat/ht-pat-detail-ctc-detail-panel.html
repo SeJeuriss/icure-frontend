@@ -1655,7 +1655,7 @@
 					if (activeFormTemplates[0] && activeFormTemplates[0].id) {
 						//Create a new form and link it to the currentContact
 						this.api.form().newInstance(this.user, this.patient, { contactId: this.currentContact.id, formTemplateId: activeFormTemplates[0].id, descr: activeFormTemplates[0].name }).then(f => this.api.form().createForm(f)).then(f => {
-							this.currentContact.subContacts.push({ formId: f.id, services: [] });
+							this.currentContact.subContacts.push({ formId: f.id, services: [], tags:[{type:"TZ-FORM-TITLE",code:f.descr,version:"1"}] });
 							return this.saveCurrentContact();
 						}).then(c => this._contactsChanged());
 					}
