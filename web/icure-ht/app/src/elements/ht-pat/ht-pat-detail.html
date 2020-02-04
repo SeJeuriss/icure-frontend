@@ -4183,6 +4183,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                         caller.onActionChanged(event.detail);
 
                     this.set("refresher", this.refresher + 1)
+                    this.set("refreshServicesDescription",this.refreshServicesDescription + 1);
 
                     return c;
                 }).catch(e => {
