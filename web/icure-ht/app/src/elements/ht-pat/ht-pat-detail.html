@@ -2805,7 +2805,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 api="[[api]]" user="[[user]]" patient="[[patient]]"
                 i18n="[[i18n]]" language="[[language]]"
                 medications="[[medications]]" treatment-history="[[treatmentHistory]]" resources="[[resources]]"
-                on-save-medications="_saveMedications" on-new-medications="_createNewMedications" on-update-services="_updateServices">
+                on-save-medications="_saveMedications" on-new-medications="_createMedications">
         </medication-prescription-dialog>
         <medication-details-dialog id="medication-detail" api="[[api]]" user="[[user]]" i18n="[[i18n]]" patient="[[patient]]" language="[[language]]" resources="[[resources]]" selected-medication-content-with-id="{{selectedMedicationContentWithId}}" on-value-changed="_medicationDetailValueChanged"></medication-details-dialog>
         <medication-plan-dialog id="medication-plan" api="[[api]]" i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" medications="[[medications]]" prescriptions="[[prescriptions]]" user="[[user]]" patient="[[patient]]" on-print-prescription="onPrintPrescription"></medication-plan-dialog>
@@ -4050,6 +4050,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 ).then(() => this._saveContactAndNotify(this.currentContact, e))
             }
 
+            // _refreshMedications() {
+            //     const combinedHes = (this.activeHealthElements || []).concat(this.inactiveHealthElements || []).concat(this.archivedHealthElements || []).concat(this.allergies || []).concat(this.risks || []).concat(this.familyrisks || []).concat(this.surgicalHealthElements || []);
+            //     const idServicesInHes = combinedHes.map(he => he.idService);
+            //     const sorter = x => [
+            //         ((x.codes || []).find(c => c.type === 'ICPC' || c.type === 'ICPC2') || {}).code || "\uff0f",
+            //         -(x.valueDate || x.openingDate || 0),
+            //         -(x.closingDate || 0)
+            //     ];
+            //     this.api.contact().findBy(this.user.healthcarePartyId, this.patient)
+            //         .then(ctcs => this.api.contact().filterServices(ctcs, s => s.tags.find(c => c.type === 'CD-ITEM' && c.code === 'medication') && !idServicesInHes.includes(s.id)))
+            //         .then(svcs => svcs.filter(svc => !(this.api.contact().medicationValue(svc, this.language) || {}).endMoment).sort((a, b) => (a.created || 0) - (b.created || 0)))
+            //         .then(hesAsServices => {
+            //             const medications = _.sortBy(hesAsServices.map(m => Object.assign(m, {colour: m.codes && m.codes.length && `ATC--${((m.codes.find(c => c.type === 'CD-ATC') || {code: 'V'}).code || 'V').substr(0, 1)}` || ""})), sorter);
+            //             this.splice('medications', 0, this.medications.length, ...medications);
+            //         })
+            // }
+
             _updateServices(e) {
                 let services = (e.detail.services || (e.detail.service && [e.detail.service]) || [] )
                 const heIds = e.detail.hes ? e.detail.hes.map(he => he.id) : [];
@@ -4107,24 +4124,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.saveContact(this.currentContact)
             }
 
-            updateMedication(svc) {
-                if (!svc.id) return;
-                svc.modified = +new Date();
-                const ctc = this.api.contact().contactOfService(this.get('contacts'), svc.id) || this.currentContact;
-                let sc = this.currentContact.subContacts.find(sc => sc.services.find(sId => svc.id));
-                if (!sc) {
-                    sc = ctc.subContacts.find(sc => sc.services.find(sId => svc.id)) || {};
-                    this.currentContact.subContacts.push(sc = { formId: sc.formId, planOfActionId: sc.planOfActionId, healthElementId: sc.healthElementId, services: [] });
-                    sc.services.push({ serviceId: svc.id });
-                }
-                const oldSvcIdx = this.currentContact.services.findIndex(s => s.id === svc.id);
-                if (oldSvcIdx > -1)
-                    this.currentContact.services.splice(oldSvcIdx, 1);
-                this.currentContact.services.push(svc);
-                return this.saveCurrentContact();
-            }
-
-            saveNewService(svc) {
+            _saveNewService(svc) {
                 svc.modified = +new Date();
                 if (!svc.id) {
                     svc.id = this.api.crypto().randomUuid();
@@ -4142,14 +4142,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 let sc = this.currentContact.subContacts.find(sc => sc.services.find(sId => svc.id));
                 if (!sc) {
                     sc = ctc.subContacts.find(sc => sc.services.find(sId => svc.id)) || {};
-                    this.currentContact.subContacts.push(sc = { formId: sc.formId, planOfActionId: sc.planOfActionId, healthElementId: sc.healthElementId, services: [] });
-                    sc.services.push({ serviceId: svc.id });
+                    this.currentContact.subContacts.push(sc = {
+                        formId: sc.formId,
+                        planOfActionId: sc.planOfActionId,
+                        healthElementId: sc.healthElementId,
+                        services: []
+                    });
+                    sc.services.push({serviceId: svc.id});
                 }
                 const oldSvcIdx = this.currentContact.services.findIndex(s => s.id === svc.id);
                 if (oldSvcIdx > -1) {
                     this.currentContact.services.splice(oldSvcIdx, 1);
                 }
                 this.currentContact.services.push(svc);
+            }
+
+            saveNewService(svc) {
+                this._saveNewService(svc);
                 return this.saveCurrentContact();
             }
 
@@ -5795,18 +5804,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }
 
             _addMedication(e) {
-                // const id = this.api.crypto().randomUuid();
-                // const medicationValue = { regimen: [] }
-                // const newMedication =  {
-                //     label: this.localize('medication','medication',this.language), id: id,
-                //     content: _.fromPairs([[this.language, { medicationValue: medicationValue }]]),
-                //     tags: (e.target.dataset.tags ? e.target.dataset.tags.split(',') : []).map(c => ({ id: c, type: c.split('|')[0], code: c.split('|')[1], version: c.split('|')[2] }))
-                // };
-
-                this.currentSelectMedicationEventDetail = null
-                // this.$['medication-prescription'].open(newMedication, { id: id, medicationValue: medicationValue, isNew: true } );
+                this.currentSelectMedicationEventDetail = null;
                 this.$['medication-prescription'].open(e.detail.service, {isPrescription: false});
-
             }
 
             _editMedication(e) {
@@ -5826,11 +5825,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.currentSelectMedicationEventDetail = e.detail
                 this.$['medication-selection'].open(e.detail.service, e.detail.content );
             }
-
-            // _selectMultiMedication(e) {
-            //     this.currentSelectMedicationEventDetail = e.detail
-            //     this.$['medication-prescription'].open(e.detail.service, {isPrescription: true});
-            // }
 
             _selectMultiMedication(e) {
                 this.currentMedicationDetailEventDetail = e.detail;
@@ -5853,76 +5847,34 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 this.$['medication-detail'].openList(e.detail.services);
             }
 
-            // _medicationCreated(e) {
-            //     if (this.currentSelectMedicationEventDetail && this.currentSelectMedicationEventDetail.onCreate) {
-            //         this.currentSelectMedicationEventDetail.onCreate(e)
-            //     } else {
-            //         if (!this.currentContact) {
-            //             return;
-            //         }
-            //         this._displayMedicationDetails(e)
-            //     }
-            // }
-
-            // _medicationsCreated(e) {
-            //     if (this.currentSelectMedicationEventDetail && this.currentSelectMedicationEventDetail.onCreate) {
-            //         this.currentSelectMedicationEventDetail.onCreate(e)
-            //     } else {
-            //         if (!this.currentContact) {
-            //             return;
-            //         }
-            //         this._displayMedicationDetails(e)
-            //     }
-            // }
-
-            // _medicationValueChanged(e) {
-            //     if (this.currentSelectMedicationEventDetail && this.currentSelectMedicationEventDetail.onValueChanged) {
-            //         this.currentSelectMedicationEventDetail.onValueChanged(e)
-            //     }
-            // }
-
-            _createNewMedications(e) {
-                const medicationArray = e.detail.medications ? e.detail.medications : [e.detail.medication];
-                Promise.all(medicationArray.map(m => {
-                    if(m.options && (m.options.createMedication || !m.options.isPrescription)) {
+            _createMedications(e) {
+                const medications = (e.detail.medications || (e.detail.medication && [e.detail.medication]) || []);
+                const closedMedications = e.detail.closedMedications || [];
+                Promise.all([
+                    medications.filter(m => m.options && (m.options.createMedication || !m.options.isPrescription)).map(m => {
                         const newMedication = _.cloneDeep(_.omit(m.newMedication, ["id"]));
                         (this.api.contact().medicationValue(newMedication, this.language) || {endMoment: ""}).endMoment = null;
                         newMedication.tags = newMedication.tags && newMedication.tags.filter(tag => !(tag.type === "ICURE" && tag.code === "PRESC")) || [];
                         (newMedication.tags.find(tag => tag.type === "CD-ITEM") || (newMedication.tags[newMedication.tags.length] = {type: "CD-ITEM", version: "1"})).code = "medication";
                         newMedication.label = this.localize('medication', 'medication', this.language);
                         newMedication.id = this.api.crypto().randomUuid();
-                        return this.saveNewService(this.api.contact().service().newInstance(this.user, newMedication));
-                    }
-                    return null
-                }))
-                    .then((results) => results.find(r => r) && this.refreshPatient())
+                        return this._saveNewService(this.api.contact().service().newInstance(this.user, newMedication));
+                    }),
+                    closedMedications.filter(c => c.id).map(c => this._saveNewService(c))
+                ])
+                    .then(([m, c]) => (m.length || c.length) && this.saveCurrentContact().then(() => this.refreshPatient()));
             }
 
             _medicationDetailValueChanged(e) {
                 //In case we get here coming from the prescription dialog by checking the checkbox
                 if (this.currentMedicationDetailEventDetail && this.currentMedicationDetailEventDetail.onValueChanged) {
                     this.currentMedicationDetailEventDetail.onValueChanged(e)
-                    this._createNewMedications(e);
+                    this._createMedications(e);
                 } else {
                     //Standard behaviour: create from medication button in left panel
                     this.saveNewService(this.api.contact().service().newInstance(this.user, e.detail.medication.newMedication)).then(() => this.refreshPatient())
                 }
             }
-
-
-            // _displayMedicationDetails(e) {
-            //     if (this.currentSelectMedicationEventDetail && this.currentSelectMedicationEventDetail.onShowDetails) {
-            //         this.currentSelectMedicationEventDetail.onShowDetails(e)
-            //     } else {
-            //         const medicationService = e.detail.medication
-            //         this.$['medication-detail'].open(e.detail.medication, {
-            //             id: medicationService.id,
-            //             medicationValue: (this.api.contact().preferredContent(medicationService, this.language) || (medicationService.content[this.language] = {medicationValue: {regimen: []}})).medicationValue,
-            //             isNew: true,
-            //             isPrescription: e.detail.isPrescription
-            //         });
-            //     }
-            // }
 
             _healthElementsSelectorColumns() {
                 return [{ key: 'descr', title: 'Description' }, { key: 'plansOfActionDescr', title: 'Plans of action' }];

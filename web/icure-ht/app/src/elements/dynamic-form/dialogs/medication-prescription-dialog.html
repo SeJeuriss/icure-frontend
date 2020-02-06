@@ -388,6 +388,11 @@
                 color: var(--app-text-color-disabled);
             }
 
+            paper-icon-button.inverted-color {
+                background: var(--app-text-color-light);
+                color: var(--app-secondary-color);
+            }
+
             .quantity {
                 background: var(--app-secondary-color);
                 color: white;
@@ -944,7 +949,7 @@
 
                             <vaadin-grid-column width="40px" flex-grow="0">
                                 <template>
-                                    <paper-icon-button id="[[item.id]]" class="list-item-icon--add" icon="av:not-interested"
+                                    <paper-icon-button id="[[item.id]]" class="list-item-icon--add inverted-color" icon="vaadin:lock"
                                                        on-tap="_closeChronic"></paper-icon-button>
                                 </template>
                             </vaadin-grid-column>
@@ -1841,6 +1846,14 @@
                     refreshDescription: {
                         type: String,
                         value: ""
+                    },
+                    closedMedications: {
+                        type: Array,
+                        value: () => []
+                    },
+                    refreshTrigger: {
+                        type: Number,
+                        value: 0
                     }
                 }
             }
@@ -2062,6 +2075,7 @@
 
             open(medication, options = {}) {
                 // @todo: spinner
+                this.closedMedications = [];
                 this.api.helement().findBy(this.user.healthcarePartyId, this.patient)
                     .then(hes => {
                         const allergies = hes.filter(he => he.tags.some(tag => tag.type === "CD-ITEM" && (tag.code === "allergy" || tag.code === "adr")))
@@ -2717,7 +2731,7 @@
                     this._setSpinnerBusy();
                     const limit = endIndex || grid.pageSize;
                     const offset = params.index;
-                    this.api.dedup(() => search(latestSearchValue, this.language, null, 0, grid.pageSize, parentUuid, parentUuids, groupId), domain, `${this.latestSearchValue}|${this.language}|${grid.drugsCacheUpperSearchIndex}|${parentUuid}`, 5000)
+                    this.api.dedup(() => search(latestSearchValue, this.language, null, 0, grid.pageSize, parentUuid, parentUuids, groupId), domain, `${this.latestSearchValue}|${this.language}|${grid.drugsCacheUpperSearchIndex}|${parentUuid}|${this.refreshTrigger}`, 5000)
                         .then(packs => {
                             return {
                                 size: packs.length,
@@ -2741,6 +2755,7 @@
                                 grid.latestResults = results;
                                 const validResults = results && results.filter(result => result.id) || [];
                                 if (validResults.length) {
+                                    grid.drugsCacheUpperSearchIndex = (grid.drugsCacheUpperSearchIndex || 0) + 100;
                                     const toReplace = validResults.filter(result => !result.parentUuid) || [];
                                     if (toReplace.length) {
                                         (grid.drugsCache || (grid.drugsCache = []))[startIndex] = null;
@@ -2861,10 +2876,12 @@
                 const medicationValue = (this.api.contact().preferredContent(service, this.language) || (service.content[this.language] = {medicationValue: {}})).medicationValue;
                 if (!medicationValue) return;
                 medicationValue.endMoment = parseInt(this.api.moment(Date.now()).subtract(1, 'days').format("YYYYMMDD"));
-                this.dispatchEvent(new CustomEvent('update-services', {detail: {service: service}, bubbles: true, composed: true}));
+                this.closedMedications.push(service);
 
                 const index = this.medications.findIndex(t => t.id === service.id);
                 this.medications.splice(index, 1);
+                console.log('updating chronic list. Items left: ', this.medications.length);
+                this.refreshTrigger += 1;
                 this._clear("chronic-list");
             }
 
@@ -2984,7 +3001,10 @@
 
             saveMedications() {
                 this.dispatchEvent(new CustomEvent(this.isPrescription ? 'save-medications' : 'new-medications', {
-                    detail: {medications: this.medicationAccumulator},
+                    detail: {
+                        medications: this.medicationAccumulator,
+                        closedMedications: this.closedMedications
+                    },
                     bubbles: true,
                     composed: true
                 }))
@@ -3099,6 +3119,14 @@
                 this.set('medicationType', 'medicinalProduct')
                 // this.$['ingredient-list'].clearCache();
                 this._clearAll();
+                this.dispatchEvent(new CustomEvent(this.isPrescription ? 'save-medications' : 'new-medications', {
+                    detail: {
+                        medications: [],
+                        closedMedications: this.closedMedications
+                    },
+                    bubbles: true,
+                    composed: true
+                }));
             }
 
             close() {
