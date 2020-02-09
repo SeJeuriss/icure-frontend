@@ -2478,32 +2478,51 @@
             }
 
             _ingredientSearchSamV2(searchValue, language, type, first, count, parentUuid, parentUuids, groupId) {
-                /*
-                if (parentUuid) {
-                    this.api.besamv2().findPaginatedAmpsByGroupCode(parentUuid, null, null, 1)
+
+                if (parentUuid)
+                    return this.api.besamv2().findPaginatedAmpsByGroupCode(parentUuid, null, null, 1)
                         .then(results => (results && results.rows || []))
-                        .then(amps => {
-                            const id = vmpGroup.code;
-                            const amp = _.head(amps);
-                            const ampp = _.get(amp, "ampps", []).find(ampp => !ampp.to && ampp.atcs && ampp.atcs.length && ampp.dmpps && ampp.dmpps.length &&
-                                ampp.dmpps.some(dmpp => dmpp.deliveryEnvironment === 'P' && dmpp.codeType === 'CNK' && !dmpp.to));
-                            const atcCodes = ampp && ampp.atcs && ampp.atcs.map(atc => atc.code) || [];
-                            const allergies = this.allergies.filter(allergy => (allergy.cnk && (id === allergy.cnk)) || (atcCodes && atcCodes.some(atcCode => atcCode === allergy.atcCode) || ""));
-                            return Object.assign(vmpGroup, {
-                                id: id,
-                                uuid: id,
-                                //uuids: uuids,
-                                //parentUuid: parentUuid,
-                                hasChildren: true,
-                                intendedName: _.get(vmpGroup, "name[" + this.language + "]", ""),
-                                unit: _.get(amp, "components[0].pharmaceuticalForms[0].name[" + this.language + "]", ""),
-                                atcCodes: atcCodes,
-                                allergies: allergies
-                            });
+                        .then(rows => {
+                            //const level = parentUuid ? 1 : 0;
+                            const hierarchicalAmpps = rows.reduce((ampps, row) => {
+                                if (row.ampps && row.ampps.length) {
+                                    return ampps.concat(row.ampps.map(ampp => {
+                                        const now = moment().valueOf();
+                                        const publicDmpp = ampp.dmpps.find(dmpp => dmpp.deliveryEnvironment === "P");
+                                        const currentReimbursement = publicDmpp && publicDmpp.reimbursements && publicDmpp.reimbursements.length && publicDmpp.reimbursements.find(reimbursement => reimbursement.from < now && (!reimbursement.to || reimbursement.to > now));
+                                        const groupId = row.vmp && row.vmp.vmpGroup && row.vmp.vmpGroup.id || "";
+                                        //const hasChildren = (level === 0) && !!groupId;
+                                        const id = publicDmpp && publicDmpp.codeType === 'CNK' && publicDmpp.code;
+                                        const unit = _.get(row, "components[0].pharmaceuticalForms[0].name[" + this.language + "]", "");
+                                        const atcCodes = ampp.atcs && ampp.atcs.map(atc => atc.code) || [];
+                                        const allergies = this.allergies.filter(allergy => (allergy.cnk && (id === allergy.cnk)) || (atcCodes && atcCodes.some(atcCode => atcCode === allergy.atcCode) || ""));
+                                        const dividable = !(_.get(row, "components[0].dividable", "") === "X");
+                                        const samDate = publicDmpp && moment(publicDmpp.from).format("DD/MM/YYYY");
+
+                                        return Object.assign(ampp, {
+                                            id: id,
+                                            groupId: groupId,
+                                            //hasChildren: hasChildren,
+                                            hasChildren: false,
+                                            uuid: id,
+                                            parentUuid: parentUuid,
+                                            publicDmpp: publicDmpp,
+                                            currentReimbursement: currentReimbursement,
+                                            intendedName: (ampp.prescriptionName && ampp.prescriptionName[this.language]) || (publicDmpp && publicDmpp.prescriptionName && publicDmpp.prescriptionName[this.language]) || (ampp.abbreviatedName && ampp.abbreviatedName[this.language]) || '',
+                                            posologyNote: ampp.posologyNote && ampp.posologyNote[this.language] || "",
+                                            unit: unit,
+                                            atcCodes: atcCodes,
+                                            allergies: allergies,
+                                            dividable: dividable,
+                                            samDate: samDate,
+                                            amp: row
+                                        })
+                                    }));
+                                }
+                                return ampps;
+                            }, [])
+                            return hierarchicalAmpps;
                         })
-                    return;
-                }
-                */
 
                 if (!searchValue || searchValue.length < 2) return Promise.resolve([]);
 
