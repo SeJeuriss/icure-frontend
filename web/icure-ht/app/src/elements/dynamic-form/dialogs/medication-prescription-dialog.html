@@ -1420,7 +1420,10 @@
 
                             <vaadin-grid-column flex-grow="1">
                                 <template>
-                                    <div>[[item.intendedName]]</div>
+                                    <vaadin-grid-tree-toggle leaf="[[!item.hasChildren]]" expanded="{{expanded}}" level="[[level]]">
+                                        <div class$="[[_getNoEntryStyle(item.id)]]">[[item.intendedName]]</div>
+                                    </vaadin-grid-tree-toggle>
+                                    <!--<div>[[item.intendedName]]</div>-->
                                 </template>
                             </vaadin-grid-column>
 
@@ -2409,6 +2412,10 @@
                         return results;
                     }, [])
                         .filter(res => !res.id.includes(":") && (res.intendedName || res.compoundTitle))
+                        .filter(res =>
+                            (res.intendedName && this._match(res.intendedName, searchValue)) ||
+                            (res.compoundTitle && this._match(res.compoundTitle, searchValue))
+                        )
                         .sort((a, b) => sourceType === "history" ? b.beginMoment - a.beginMoment : a.intendedName.localeCompare(b.intendedName))
                     )
                 });
@@ -2470,11 +2477,39 @@
                 return this.api.bedrugs().getInnClusters(searchValue, language, type, first, count);
             }
 
-            _ingredientSearchSamV2(searchValue, language, type, first, count) {
+            _ingredientSearchSamV2(searchValue, language, type, first, count, parentUuid, parentUuids, groupId) {
+                /*
+                if (parentUuid) {
+                    this.api.besamv2().findPaginatedAmpsByGroupCode(parentUuid, null, null, 1)
+                        .then(results => (results && results.rows || []))
+                        .then(amps => {
+                            const id = vmpGroup.code;
+                            const amp = _.head(amps);
+                            const ampp = _.get(amp, "ampps", []).find(ampp => !ampp.to && ampp.atcs && ampp.atcs.length && ampp.dmpps && ampp.dmpps.length &&
+                                ampp.dmpps.some(dmpp => dmpp.deliveryEnvironment === 'P' && dmpp.codeType === 'CNK' && !dmpp.to));
+                            const atcCodes = ampp && ampp.atcs && ampp.atcs.map(atc => atc.code) || [];
+                            const allergies = this.allergies.filter(allergy => (allergy.cnk && (id === allergy.cnk)) || (atcCodes && atcCodes.some(atcCode => atcCode === allergy.atcCode) || ""));
+                            return Object.assign(vmpGroup, {
+                                id: id,
+                                uuid: id,
+                                //uuids: uuids,
+                                //parentUuid: parentUuid,
+                                hasChildren: true,
+                                intendedName: _.get(vmpGroup, "name[" + this.language + "]", ""),
+                                unit: _.get(amp, "components[0].pharmaceuticalForms[0].name[" + this.language + "]", ""),
+                                atcCodes: atcCodes,
+                                allergies: allergies
+                            });
+                        })
+                    return;
+                }
+                */
+
                 if (!searchValue || searchValue.length < 2) return Promise.resolve([]);
+
                 return this.api.besamv2().findPaginatedVmpGroupsByLabel(language, searchValue, null, null, count)
                     .then(results => (results && results.rows || []))
-                    .then (rows => {
+                    .then(rows => {
                         rows.map(row => console.log("vmpgroup - ", row));
                         return rows;
                     })
@@ -2490,6 +2525,10 @@
                                 const allergies = this.allergies.filter(allergy => (allergy.cnk && (id === allergy.cnk)) || (atcCodes && atcCodes.some(atcCode => atcCode === allergy.atcCode) || ""));
                                 return Object.assign(vmpGroup, {
                                         id: id,
+                                        uuid: id,
+                                        //uuids: uuids,
+                                        //parentUuid: parentUuid,
+                                        hasChildren: true,
                                         intendedName: _.get(vmpGroup, "name[" + this.language + "]", ""),
                                         unit: _.get(amp, "components[0].pharmaceuticalForms[0].name[" + this.language + "]", ""),
                                         atcCodes: atcCodes,
@@ -2498,7 +2537,7 @@
                             })
                         })
                     ))
-                    .then(rows => rows.filter(row => row.intendedName && row.id))
+                    .then(rows => rows.filter(row => row.intendedName && row.id).filter(row => this._match(row.intendedName, searchValue)))
             }
 
             _ingredientAdapterSamV2(results) {
@@ -2506,6 +2545,10 @@
                     return Promise.all(results.map(vmpGroup => {
                         const item = {
                             "id": vmpGroup.id,
+                            "uuid": vmpGroup.uuid,
+                            //"uuids": vmpGroup.uuids,
+                            //"parentUuid": vmpGroup.parentUuid,
+                            "hasChildren": vmpGroup.hasChildren,
                             "intendedName": vmpGroup.intendedName,
                             "atcCodes": vmpGroup.atcCodes,
                             "atcCat": _.get(vmpGroup, "atcCodes[0][0]", ""),
@@ -2521,6 +2564,11 @@
                 } else {
                     return Promise.resolve([]);
                 }
+            }
+
+            _match(name, searchValue) {
+                name.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                return name.match(new RegExp("^" + searchValue + ".*", 'i' ))
             }
 
             _medecinePackagesSearch(searchValue, language, type, first, count) {
@@ -2577,6 +2625,7 @@
                                 return ampps;
                             }, [])
                             .filter(e => e.amp.status === "AUTHORIZED" && e.publicDmpp && e.id && e.intendedName && (level === 0 || level === 1 && e.uuid !== parentUuid))
+                            .filter(e => e.intendedName && this._match(e.intendedName, searchValue))
                             .filter((e, i, a) => a.findIndex(x => x.id === e.id) === i);
 
                             let filteredAmpps = [];
@@ -2654,7 +2703,7 @@
             }
 
             _compoundPrescriptionsSearch(source, searchValue, language, type, first, count) {
-                if (!searchValue || searchValue.length < 2) return Promise.resolve([]);
+                //if (!searchValue || searchValue.length < 2) return Promise.resolve([]);
                 return this.api.entitytemplate().findAllEntityTemplates("org.taktik.icure.entities.embed.Medication", searchValue, true)
                     .then(results => Promise.all(results.map(result => {
                         return {
@@ -2665,7 +2714,12 @@
                             type: "compound"
                         }
                     })))
-                    .then(results => results.filter(result => result.id && (result.compoundTitle || result.intendedName)))
+                    .then(results => results
+                        .filter(result => result.id && (result.compoundTitle || result.intendedName))
+                        .filter(result => !searchValue || searchValue.length < 1 ||
+                            (result.compoundTitle && this._match(result.compoundTitle, searchValue)) ||
+                            (result.intendedName && this._match(result.intendedName, searchValue)))
+                    )
             }
 
             _compoundPrescriptionAdapter(results) {
