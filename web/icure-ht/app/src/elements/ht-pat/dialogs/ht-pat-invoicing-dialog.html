@@ -4561,12 +4561,13 @@
                     */
 
                     const mainRecipient = [{
-                        id: "72022102793",
+                        //id: "72022102793",
+                        id: "73120628585",
                         identifierType: { type: "SSIN" },
-                        quality: "DOCTOR",
+                        quality: "CITIZEN",
                         applicationId: "",
-                        lastName: "Jocqué",
-                        firstName: "Sam",
+                        //lastName: "Destrée",
+                        //firstName: "Louis",
                         organizationName: "",
                         personInOrganisation: ""
                     }];
@@ -4633,11 +4634,12 @@
                         publicationDateTime : parseInt(moment().format('YYYYMMDD')),
                         expirationDateTime : parseInt(moment().add(1,"years").format('YYYYMMDD')),
                         customMetas : customMetas,
-                        document : { title: messageSubject, textContent: "textContent", mimeType: 'text/plain', filename: messageSubject },
-                        freeText : "freeText",
+                        document : { title: messageSubject, textContent: "textContent", mimeType: 'text/plain', filename: messageSubject + '.txt'},
+                        freeText : "",
                         freeInformationTableTitle : null,
                         freeInformationTableRows : {},
                         patientInss : this.patient.inss,
+                        //patientInss : "73120628585",
                         annex : annexes,
                         copyMailTo : [],
                         documentTitle : messageSubject,
@@ -4664,7 +4666,7 @@
                         status: messageStatus
                     };
 
-                    this.api.fhc().Ehboxcontroller().sendMessageUsingPOST( this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, messageToBeSentWithEhbox, messageToBeSentWithEhbox.usePublicationReceipt, messageToBeSentWithEhbox.useReceivedReceipt, messageToBeSentWithEhbox.useReadReceipt )
+                    this.api.fhc().Ehboxvcontroller().sendMessage2EboxUsingPOST( this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, messageToBeSentWithEhbox, messageToBeSentWithEhbox.usePublicationReceipt, messageToBeSentWithEhbox.useReceivedReceipt, messageToBeSentWithEhbox.useReadReceipt )
                         .then(x=> {
                             sendMessageResponse=x
                             console.log(x)
