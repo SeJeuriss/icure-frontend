@@ -43,6 +43,20 @@
                 super.ready()
             }
 
+            migrateCurrentUserPricareAgendaToMikrono() {
+                let userlist = [this.user];
+
+                console.log("start createMikronoAgendaForEachUser", userlist)
+                return this.createMikronoAgendaForEachUser(userlist).then(() => {
+                    console.log("start migrateAllAppointmentTypesToMikrono");
+                    return this.migrateAllAppointmentTypesToMikrono().then(() => {
+                        console.log("start migrateAppointmentsForEachUser", userlist);
+                        return this.migrateAppointmentsForEachUser(userlist)
+                    })
+                })
+
+            }
+
             migrateAllPricareAgendasToMikrono() {
                 this.api.user().listUsers().then(users => {
                     const listOfUsers = users.rows

@@ -830,6 +830,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     <!-- <template is="dom-if" if="[[isAdmin]]"> -->
                                         <paper-item class="extra-menu-item" on-tap="migrateAllPricareAgendasToMikrono">[[localize('import_all_pricare_agenda','Import Pricare Agendas',language)]]</paper-item>
                                     <paper-item class="extra-menu-item" on-tap="migrateAllPricareAgendasToMikronoDEBUG">[[localize('import_all_pricare_agenda_debug','Import DEBUG Pricare Agendas',language)]]</paper-item>
+                                    <paper-item class="extra-menu-item" on-tap="migrateCurrentUserPricareAgendaToMikrono">[[localize('import_single_pricare_agenda_debug','Import Single Pricare Agenda',language)]]</paper-item>
+
                                     <!-- </template> -->
                                     <paper-item class="extra-menu-item" on-tap="_myProfile">
                                         <iron-icon icon="icons:account-circle"></iron-icon>
@@ -2539,6 +2541,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     }).catch((e)=>{this.busySpinner = false;})
                 }
 
+            }
+
+            migrateCurrentUserPricareAgendaToMikrono() {
+                this.$['htMigrationMikrono'].migrateCurrentUserPricareAgendaToMikrono()
             }
 
             migrateAllPricareAgendasToMikrono() {
