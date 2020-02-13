@@ -2409,7 +2409,7 @@ class HtPatDetail extends TkLocalizerMixin(PolymerElement) {
                                 <div class="new-ctc-btn-container"><paper-button class="add-btn" on-tap="newContact">[[localize('new_con','New Contact',language)]]</paper-button></div>
                             </template>
                         </div>
-                        <ht-pat-detail-ctc-detail-panel id="ctcDetailPanel" contacts="[[selectedContacts]]" all-contacts="[[contacts]]" health-elements="[[healthElements]]" main-health-elements="[[_concat(activeHealthElements, allergies, risks, inactiveHealthElements, familyrisks)]]" api="[[api]]" i18n="[[i18n]]" user="[[user]]" patient="[[patient]]" language="[[language]]" resources="[[resources]]" current-contact="[[currentContact]]" medications="[[medications]]" hidden-sub-contacts-id="[[hiddenSubContactsId]]" services-refresher="[[servicesRefresher]]" on-refresh-contacts="_refreshContacts" on-select-current-contact="_selectCurrentContact" on-plan-action="_planAction" on-close-contact="_closeContact" on-change="formsChanged" on-must-save-contact="_saveContact" on-medications-selection="_selectMultiMedication" on-medications-validation="_medicationDetailValueChanged" on-medication-selection="_selectMedication" on-medication-detail="_medicationDetail" on-medications-detail="_medicationsDetail" contact-type-list="[[contactTypeList]]" on-contact-saved="contactChanged" on-open-charts-dialog="_openChartsDialog" on-add-other="addOther" on-add-document="_openUploadDialog" on-prescribe="_prescribe" credentials="[[credentials]]" on-write-linking-letter="writeLinkingLetter" on-reset-patient="_resetPatient" linking-letter-dialog="[[linkingLetterDialog]]" on-forward-document="_forwardDocument" on-print-document="_printDocument" global-hcp="[[globalHcp]]" all-health-elements="[[allHealthElements]]" on-trigger-out-going-doc="_newReport_v2" on-trigger-export-sumehr="_exportSumehrDialog" on-open-care-path-list="_openCarePathList" on-send-sub-form-via-emediattest="_sendSubformViaEmediattest" on-upload-document="_hubUpload">
+                        <ht-pat-detail-ctc-detail-panel id="ctcDetailPanel" contacts="[[selectedContacts]]" all-contacts="[[contacts]]" health-elements="[[healthElements]]" main-health-elements="[[_concat(activeHealthElements, allergies, risks, inactiveHealthElements, familyrisks)]]" api="[[api]]" i18n="[[i18n]]" user="[[user]]" patient="[[patient]]" language="[[language]]" resources="[[resources]]" current-contact="[[currentContact]]" medications="[[medications]]" hidden-sub-contacts-id="[[hiddenSubContactsId]]" services-refresher="[[servicesRefresher]]" on-refresh-contacts="_refreshContacts" on-select-current-contact="_selectCurrentContact" on-plan-action="_planAction" on-plans-action="_plansAction" on-close-contact="_closeContact" on-change="formsChanged" on-must-save-contact="_saveContact" on-medications-selection="_selectMultiMedication" on-medications-validation="_medicationDetailValueChanged" on-medication-selection="_selectMedication" on-medication-detail="_medicationDetail" on-medications-detail="_medicationsDetail" contact-type-list="[[contactTypeList]]" on-contact-saved="contactChanged" on-open-charts-dialog="_openChartsDialog" on-add-other="addOther" on-add-document="_openUploadDialog" on-prescribe="_prescribe" credentials="[[credentials]]" on-write-linking-letter="writeLinkingLetter" on-reset-patient="_resetPatient" linking-letter-dialog="[[linkingLetterDialog]]" on-forward-document="_forwardDocument" on-print-document="_printDocument" global-hcp="[[globalHcp]]" all-health-elements="[[allHealthElements]]" on-trigger-out-going-doc="_newReport_v2" on-trigger-export-sumehr="_exportSumehrDialog" on-open-care-path-list="_openCarePathList" on-send-sub-form-via-emediattest="_sendSubformViaEmediattest" on-upload-document="_hubUpload">
                         </ht-pat-detail-ctc-detail-panel>
                 </template>
                 <template is="dom-if" if="[[isAdminSelected(selectedAdminOrCompleteFileIndex)]]">
@@ -3223,6 +3223,10 @@ class HtPatDetail extends TkLocalizerMixin(PolymerElement) {
           selectedCarePathInfo:{
               type: Object,
               value: () => {}
+          },
+          plansToAdd: {
+              type: Array,
+              value: ()=>[]
           }
 
       };
@@ -3842,6 +3846,13 @@ class HtPatDetail extends TkLocalizerMixin(PolymerElement) {
       this.$.planActionForm.open(svc)
   }
 
+    _plansAction(e){
+      this.set("plansToAdd",_.get(e,'detail.plans',[]).map(svc => _.omit(svc,["id"])))
+        const shifted = this.shift('plansToAdd')
+        this.set("caller",_.get(e,'detail.onValueChanged',(e)=> console.log(e)))
+        this.$["planActionForm"].open(shifted,false,false)
+    }
+
   _cloneService(detail) {
       const service = _.cloneDeep(detail.service);
       delete service.id;
@@ -3885,6 +3896,15 @@ class HtPatDetail extends TkLocalizerMixin(PolymerElement) {
           //this.api.contact().promoteServiceInContact(this.currentContact, this.user, allContacts, this.api.contact().service().newInstance(this.user, e.detail.service), null, {}, hes.map(he => he.id), e.detail.function || undefined)
           services.forEach(svc => this.api.contact().promoteServiceInContact(this.currentContact, this.user, allContacts, svc, null, {}, hes.map(he => he.id), e.detail.function || undefined))
       ).then(() => this.saveContact(this.currentContact))
+      .finally(()=>{
+          if(this.plansToAdd.length){
+              const shifted = this.shift('plansToAdd')
+              this.$["planActionForm"].open(shifted,false,false)
+          }
+          else{
+              this.caller(null);
+          }
+      })
   }
 
   _updateServices(e) {

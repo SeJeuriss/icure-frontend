@@ -10,6 +10,7 @@ import './dynamic-date-field.js';
 import './dynamic-sub-form.js';
 import './dynamic-checkbox.js';
 import './dynamic-medication-field.js';
+import './dynamic-plan-action.js';
 import './dynamic-subcontact-type-selector.js';
 import '../../styles/icpc-styles.js';
 import '../../styles/dialog-style.js';
@@ -456,6 +457,22 @@ class DynamicForm extends TkLocalizerMixin(PolymerElement) {
                                                                       disabled="[[disabled]]"
                                                                       create-treatment="[[_hasTreatmentCdItem(layoutItem.tags)]]"></dynamic-medication-field>
                                         </template>
+                                        <template is="dom-if" if="[[_isPlanOfAction(layoutItem)]]">
+                                            <dynamic-plan-action id="[[_sanitizeId(layoutItem.name)]]"
+                                                                      label="[[layoutItem.label]]" key="[[layoutItem.name]]"
+                                                                      api="[[api]]" was-modified="[[_wasModified(layoutItem)]]"
+                                                                      is-modified-after="[[_isModifiedAfter(layoutItem)]]"
+                                                                      i18n="[[i18n]]" language="[[language]]" user="[[user]]"
+                                                                      data-source="[[_planOfActionDataSource(layoutItem)]]"
+                                                                      resources="[[resources]]"
+                                                                      linkables="[[linkableHealthElements]]"
+                                                                      last-modified="[[_lastModified(layoutItem)]]"
+                                                                      value="[[_valueContainers(layoutItem,dataMap.*)]]"
+                                                                      width="[[layoutItem.editor.flow]]"
+                                                                      on-field-changed="_valueContainersChanged"
+                                                                      read-only="[[_isReadOnly(layoutItem,readOnly)]]"
+                                                                      disabled="[[disabled]]"></dynamic-plan-action>
+                                        </template>
                                         <template is="dom-if" if="[[_isSubForm(layoutItem)]]">
                                             <dynamic-sub-form id="sf_[[_sanitizeId(layoutItem.name)]]" label="[[layoutItem.label]]"
                                                               key="[[layoutItem.name]]" layout-item="[[layoutItem]]" api="[[api]]"
@@ -707,7 +724,7 @@ class DynamicForm extends TkLocalizerMixin(PolymerElement) {
     _shouldDisplay(layoutItem, readOnly, compact) {
         return this.dataProvider ?
             (this.dataProvider && (!readOnly && !compact || (this._isSubForm(layoutItem) && this.dataProvider.hasSubForms(layoutItem.name)) || (this._isMedicationField(layoutItem)|| this._isTokenField(layoutItem)) && this.dataProvider.getValueContainers(layoutItem.name).length || this._rawValue(layoutItem))) :
-            ( !readOnly && !compact || this._isSubForm(layoutItem) || this._isMedicationField(layoutItem) && this.dataProvider.getValueContainers(layoutItem.name).length || this._rawValue(layoutItem) )
+            ( !readOnly && !compact || this._isSubForm(layoutItem) || this._isMedicationField(layoutItem) && this.dataProvider.getValueContainers(layoutItem.name).length || this._isPlanOfAction(layoutItem) && this.dataProvider.getValueContainers(layoutItem.name).length || this._rawValue(layoutItem) )
     }
 
     _valueContainers(layoutItem) {
@@ -762,17 +779,18 @@ class DynamicForm extends TkLocalizerMixin(PolymerElement) {
     }
 
     _valueContainersChanged(event) {
-				if (!this.dataProvider) {
+        if (!this.dataProvider) {
             return;
-				}
-				const change = event.detail;
-				if (!this.layoutItemPerName || !event.target.id) {
+        }
+        const change = event.detail;
+        if (!this.layoutItemPerName || !event.target.id) {
             return;
-				}
-				const layoutItem = this.layoutItemPerName[event.target.id];
-				if (layoutItem) {
-            this._isTokenField(layoutItem) ? this.dataProvider.setValueContainers(layoutItem.name, change.value) : this._isMedicationField(layoutItem) ? this.dataProvider.setValueContainers(layoutItem.name, change.value) : null;
-				}
+        }
+        const layoutItem = this.layoutItemPerName[event.target.id];
+        if (layoutItem) {
+            this._isTokenField(layoutItem) ? this.dataProvider.setValueContainers(layoutItem.name, change.value) : this._isMedicationField(layoutItem) ? this.dataProvider.setValueContainers(layoutItem.name, change.value) :
+                this._isPlanOfAction(layoutItem) ? this.dataProvider.setValueContainers(layoutItem.name, change.value) :null;
+        }
     }
 
     _valueDateChanged(event) {
@@ -892,6 +910,10 @@ class DynamicForm extends TkLocalizerMixin(PolymerElement) {
         return layoutItem.editor.key === 'Label';
     }
 
+    _isPlanOfAction(layoutItem) {
+        return layoutItem.editor.key === 'PlanOfActionEditor';
+    }
+
     _isSubForm(layoutItem) {
 				return layoutItem.subForm === true;
     }
@@ -936,6 +958,10 @@ class DynamicForm extends TkLocalizerMixin(PolymerElement) {
         const ds = d.editor.dataSource || d.codeTypes && { source: "codes", types: d.codeTypes }
 				const uuid = this.api.crypto().randomUuid()
 				return d && (d.codeTypes && d.codeTypes.length || d.editor.dataSource) ? { filter: text => this.dataProvider && this.dataProvider.filter && this.dataProvider.filter(ds, text, uuid, null) || Promise.resolve([]), get: id => this.dataProvider && this.dataProvider.filter && this.dataProvider.filter(ds, null, uuid, id) || Promise.resolve(null), isProvided : ()=>true } : null;
+    }
+
+    _planOfActionDataSource(){
+        return { filter: (text, uuid) => this.dataProvider && this.dataProvider.filter && this.dataProvider.filter( {isAction:true, source: "codes", types: ["'BE-THESAURUS-PROCEDURES'"] }, text, uuid) || Promise.resolve([]) };
     }
 
     toggleReportsList() {

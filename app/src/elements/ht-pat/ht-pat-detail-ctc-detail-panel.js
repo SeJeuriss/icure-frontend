@@ -3251,6 +3251,7 @@ class HtPatDetailCtcDetailPanel extends TkLocalizerMixin(PolymerElement) {
                                 singleField.type==="TKHCParty" ? subFormDataProvider.getValue( _.trim(_.get(singleField, "name", "")) ) :
                                 singleField.type==="TKMedication" ? subFormDataProvider.getValueContainers( _.trim(_.get(singleField, "name", "")) ) :
                                 singleField.type==="TKMedicationTable" ? subFormDataProvider.getValueContainers( _.trim(_.get(singleField, "name", "")) ) :
+                                singleField.type==="TKPlanOfActionTable" ? subFormDataProvider.getValueContainers( _.trim(_.get(singleField, "name", "")) ) :
                                 ""
                         }
                     })
@@ -3316,6 +3317,7 @@ class HtPatDetailCtcDetailPanel extends TkLocalizerMixin(PolymerElement) {
                                                 subSubFormSingleField.type==="TKHCParty" ? subSubFormDataProvider.getValue( _.trim(_.get(subSubFormSingleField, "name", "")) ) :
                                                 subSubFormSingleField.type==="TKMedication" ? subSubFormDataProvider.getValueContainers( _.trim(_.get(subSubFormSingleField, "name", "")) ) :
                                                 subSubFormSingleField.type==="TKMedicationTable" ? subSubFormDataProvider.getValueContainers( _.trim(_.get(subSubFormSingleField, "name", "")) ) :
+                                                subSubFormSingleField.type==="TKPlanOfActionTable" ? subSubFormDataProvider.getValueContainers( _.trim(_.get(subSubFormSingleField, "name", "")) ) :
                                                 ""
                                         }
                                     })

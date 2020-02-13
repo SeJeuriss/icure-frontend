@@ -171,13 +171,13 @@ class DynamicTokenField extends TkLocalizerMixin(PolymerElement) {
           },
           linkables: {
               type: Array
-                  },
-                  dedupDataSource: {
-                      type: Object
-                  },
-                  uuid: {
-                      type: String,
-                      value: null
+          },
+          dedupDataSource: {
+              type: Object
+          },
+          uuid: {
+              type: String,
+              value: null
           }
       };
 	}

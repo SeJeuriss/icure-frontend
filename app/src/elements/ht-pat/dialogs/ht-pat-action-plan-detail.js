@@ -101,12 +101,6 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
 
         <template is="dom-if" if="[[!vaccineOnly]]">
             <div class="links">
-                <!--
-                <template is="dom-if" if="[[!readonly]]">
-                    <dynamic-link i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkables]]" represented-object="[[key]]" on-link-to-health-element="linkToHealthElement" api="[[api]]" no-status></dynamic-link>
-                </template>
-                <dynamic-link i18n="[[i18n]]" language="[[language]]" resources="[[resources]]" linkables="[[linkables]]" represented-object="[[key]]" on-link-to-health-element="_link" api="[[api]]" no-status></dynamic-link>
-                -->
                 <div class="pills">
                     <dynamic-pills health-elements="[[linkedHes]]" on-unlink-to-health-element="_unlink"></dynamic-pills>
                 </div>
@@ -169,31 +163,6 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
             </template>
             <vaadin-checkbox class="cs1" on-checked-changed="_isSurgical" checked="[[plannedAction.isSurgical]]" disabled="[[readonly]]">Chirurgical</vaadin-checkbox>
         </template>
-
-        <!--
-        <vaadin-form-layout>
-            <vaadin-date-picker id="date-picker" label="Date d'échéance*" value="{{plannedAction.Deadline}}" i18n="[[i18n]]" on-value-changed="_checkIsDeadline" can-be-fuzzy accuracy="{{accuracy}}"></vaadin-date-picker>
-            <vaadin-combo-box filtered-items="[[comboStatus]]" item-label-path="label" item-value-path="id" on-filter-changed="" label="Statut*" value="{{plannedAction.Status}}" on-value-changed="analyzeStatus" readonly="[[readonly]]"></vaadin-combo-box>
-            <vaadin-combo-box colspan="2" filtered-items="[[proceduresListItem]]" item-label-path="label.[[language]]" item-value-path="code" id="procedures-list" on-filter-changed="_proceduresFilterChanged" on-value-changed="procedureChanged" label="Procédure*" value="{{plannedAction.ProcedureId}}" readonly="[[readonly]]" disabled="[[vaccineOnly]]"></vaadin-combo-box>
-            <template is="dom-if" if="[[isVaccineProcedure]]">
-                <vaadin-combo-box colspan="2" id="vaccine" filtered-items="[[drugsListItem]]" item-label-path="name" item-value-path="id" on-filter-changed="_drugsFilterChanged" on-value-changed="_drugsChanged" selected-item="{{selectedVaccineItem}}" label="[[localize('commercial_name','Commercial name',language)]]" readonly="[[readonly]]"></vaadin-combo-box>
-                <paper-input colspan="2" label="Autre" value="{{plannedAction.VaccineName}}" disabled="[[!hasNoMedication(plannedAction.VaccineCommercialNameId)]]" always-float-label></paper-input>
-                <paper-input label="N° de la dose" value="{{plannedAction.DoseNumber}}" disabled="[[hasNoMedication(plannedAction.VaccineCommercialNameId)]]" readonly="[[readonly]]" always-float-label></paper-input>
-                <paper-input label="N° de lot" value="{{plannedAction.BatchNumber}}" disabled="[[hasNoMedication(plannedAction.VaccineCommercialNameId)]]" readonly="[[readonly]]" always-float-label></paper-input>
-            </template>
-            <vaadin-text-area colspan="2" class="textarea-style" id="cpa_description" label="Description" value="{{plannedAction.Description}}" readonly="[[readonly]]"></vaadin-text-area>
-            <template is="dom-if" if="[[!vaccineOnly]]">
-                <vaadin-combo-box colspan="2" filtered-items="[[hcpListItem]]" id="hcp-list" item-label-path="name" item-value-path="id" on-filter-changed="_hcpFilterChanged" selected-item="{{selectedHcpItem}}" label="Prestataire lié" readonly="[[readonly]]"></vaadin-combo-box>
-                <vaadin-combo-box colspan="2" filtered-items="[[hcpartyTypeListFiltered]]" item-label-path="label.[[language]]" item-value-path="id" on-filter-changed="" label="Profession liée" selected-item="{{selectedProfessionItem}}" readonly="[[readonly]]"></vaadin-combo-box>
-            </template>
-            <template is="dom-if" if="[[isStatusRefusal]]">
-                <vaadin-text-area colspan="2" id="cpa_description" label="Motif de refus" value="{{plannedAction.ReasonOfRef}}" readonly="[[readonly]]"></vaadin-text-area>
-            </template>
-            <template is="dom-if" if="[[isStatusComplete]]">
-                <vaadin-checkbox colspan="2" on-checked-changed="_isSurgical" checked="[[plannedAction.isSurgical]]" disabled="[[readonly]]">Chirurgical</vaadin-checkbox>
-            </template>
-        </vaadin-form-layout>
-        -->
 
 `;
   }
@@ -470,7 +439,7 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
   _proceduresDataProvider(){
       return {
           filter: function (proceduresFilterValue) {
-              return Promise.all([this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS-PROCEDURES', 'fr', proceduresFilterValue, null, null)]).then(results => {
+              return Promise.all([this.api.code().findPaginatedCodesByLabel('be', 'BE-THESAURUS-PROCEDURES', this.language || 'fr', proceduresFilterValue, null, null)]).then(results => {
                   const procedureList = results[0];
                   let filtered = procedureList.rows
                   filtered = _.flatten(filtered.map(procedure => ({
@@ -792,7 +761,7 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
       this.set("isLoading", true);
 
       this.set("linkedHes", []);
-      this.api.contact().getContactWithUser(this.user, service.contactId).then(contact => {
+      service.contactId && this.api.contact().getContactWithUser(this.user, service.contactId).then(contact => {
           this.set("currentContact", contact);
           const ids = _.compact(_.get(contact, 'subContacts', []).filter(sc => sc.services.some(s => s.serviceId === service.id)).map(s => s.healthElementId));
           const promises = ids.map(id => this.api.helement().getHealthElement(id));
@@ -822,100 +791,100 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
           _.get(service, 'tags', []).some(t => t.type == 'CD-ITEM-TASK')))
           this.convertMedispringPlan(service)
 
-      if (_.get(service, 'id', null)) {
-          this.set("isExistingSvc", true);
-          this.set("service", service);
 
-          const codeProcedure = this._find(service, "codes", "BE-THESAURUS-PROCEDURES");
-          const codeProfession = this._find(service, "codes", "CD-HCPARTY");
-          const codeVaccine = this._find(service, "tags", "CD-ITEM");
-          const codeStatus = this._find(service, "tags", "CD-LIFECYCLE");
-          const content = this.api.contact().preferredContent(service, this.language)
-          const codeMedication = this._find(content, 'medicationValue.medicinalProduct.intendedcds', "CD-DRUG-CNK") || {}
+      this.set("isExistingSvc", _.get(service, 'id', false));
+      this.set("service", service);
 
-          const codeExp = _.get(codeProcedure, 'code', null) ? _.get(codeProcedure, 'code', null).split(".") : null
-          const CISPType = codeExp ? codeExp[0].substr(1,3) : null
-          this.set("isVaccineProcedure", CISPType === "44")
+      const codeProcedure = this._find(service, "codes", "BE-THESAURUS-PROCEDURES");
+      const codeProfession = this._find(service, "codes", "CD-HCPARTY");
+      const codeVaccine = this._find(service, "tags", "CD-ITEM");
+      const codeStatus = this._find(service, "tags", "CD-LIFECYCLE");
+      const content = this.api.contact().preferredContent(service, this.language)
+      const codeMedication = this._find(content, 'medicationValue.medicinalProduct.intendedcds', "CD-DRUG-CNK") || {}
 
-          let critical = true;
+      const codeExp = _.get(codeProcedure, 'code', null) ? _.get(codeProcedure, 'code', null).split(".") : null
+      const CISPType = codeExp ? codeExp[0].substr(1,3) : null
+      this.set("isVaccineProcedure", CISPType === "44")
 
-          const procedureId = _.get(codeProcedure, 'id', this._getId(codeProcedure));
+      let critical = true;
 
-          Promise.all([
-              this.api.hcparty().getHealthcareParty(service.responsible),
-              procedureId ? this.api.code().getCode(procedureId) : Promise.resolve({}),
-              _.get(codeProfession, 'code', null) ? this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', 'fr', _.get(codeProfession, 'code', null), null, null, 10) : Promise.resolve({})
-              //codeVaccine && codeVaccine.id && codeMedication && codeMedication.code ? this.api.bedrugs().getMppInfos(codeMedication.code, this.language) : Promise.resolve({})
-          ]).then(([hcp, procedure, profession]) => {
-              this.push("hcpListItem", {id: hcp.id, name: hcp.lastName + ' ' + hcp.firstName});
+      const procedureId = _.get(codeProcedure, 'id', this._getId(codeProcedure));
 
-              parseInt(('' + _.padEnd(_.get(service, 'valueDate', null), 14, 0)).replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{6})/, '$3')) !== 0 ?  this.set("accuracy","day") :
-                  parseInt(('' + _.padEnd(_.get(service, 'valueDate', null), 14, 0)).replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{6})/, '$2')) !== 0 ? this.set("accuracy","month") :
-                      parseInt(('' + _.padEnd(_.get(service, 'valueDate', null), 14, 0)).replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{6})/, '$1')) !== 0 ? this.set("accuracy","year") : null
+      Promise.all([
+          this.api.hcparty().getHealthcareParty(_.get(service,"responsible",this.user.healthcarePartyId)),
+          procedureId ? this.api.code().getCode(procedureId) : Promise.resolve({}),
+          _.get(codeProfession, 'code', false) ? this.api.code().findPaginatedCodesByLabel('be', 'CD-HCPARTY', 'fr', _.get(codeProfession, 'code', null), null, null, 10) : Promise.resolve({})
+          //codeVaccine && codeVaccine.id && codeMedication && codeMedication.code ? this.api.bedrugs().getMppInfos(codeMedication.code, this.language) : Promise.resolve({})
+      ]).then(([hcp, procedure, profession]) => {
+          hcp && hcp.id && this.push("hcpListItem", {id: hcp.id, name: hcp.lastName + ' ' + hcp.firstName});
 
-              const date = this._getDate(service);
+          parseInt(('' + _.padEnd(_.get(service, 'valueDate', null), 14, 0)).replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{6})/, '$3')) !== 0 ?  this.set("accuracy","day") :
+              parseInt(('' + _.padEnd(_.get(service, 'valueDate', null), 14, 0)).replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{6})/, '$2')) !== 0 ? this.set("accuracy","month") :
+                  parseInt(('' + _.padEnd(_.get(service, 'valueDate', null), 14, 0)).replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{6})/, '$1')) !== 0 ? this.set("accuracy","year") : null
 
-              this.set("proceduresListItem", [procedure])
-              this.procedureChanged({detail: {value: (_.get(codeProcedure, 'code', null)) }})
+          const date = this._getDate(service);
 
-              this.professionId = this._getId(codeProfession);
-              const medicationValue = _.get(content, 'medicationValue', null)
-              const vaccineId = this.isVaccineProcedure && _.get(codeMedication, 'code', null)
-              const vaccineName = this.isVaccineProcedure && _.get(medicationValue, 'medicinalProduct.intendedname', null)
+          this.set("proceduresListItem", [procedure])
+          this.procedureChanged({detail: {value: (_.get(codeProcedure, 'code', null)) }})
 
-              this.set("plannedAction", {
-                  Status: _.get(codeStatus, 'code', null),
-                  Deadline: date,
-                  HcpId: _.get(service, 'responsible', null),
-                  ProcedureId: _.get(codeProcedure, 'code', null),
-                  ProfessionId: this.professionId,
-                  ReasonOfRef: _.get(codeStatus, 'code', null) === "refused" ? _.get(codeStatus, 'label', null) : "",
-                  isDeadline: (date ? true : false),
-                  isSurgical: this.api.contact().preferredContent(service, "isSurgical").booleanValue ? true : false,
-                  VaccineCommercialNameId: vaccineId,
-                  VaccineName : vaccineName,
-                  DoseNumber: this.isVaccineProcedure && _.get(medicationValue, 'options.doseNumber.stringValue', null),
-                  BatchNumber: this.isVaccineProcedure && _.get(medicationValue, 'batch', null),
-                  ProcedureInfo: procedure,
-                  Description: _.get(service, 'comment', null),
-                  ProfessionInfo: (profession && profession.rows && profession.rows[0]) || {},
-                  //VaccineInfo: (codeVaccine && codeVaccine.length ? resultVaccine : "")
+          this.professionId = this._getId(codeProfession);
+          const medicationValue = _.get(content, 'medicationValue', null)
+          const vaccineId = this.isVaccineProcedure && _.get(codeMedication, 'code', null)
+          const vaccineName = this.isVaccineProcedure && _.get(medicationValue, 'medicinalProduct.intendedname', null)
+
+          this.set("plannedAction", {
+              Status: _.get(codeStatus, 'code', null),
+              Deadline: date,
+              HcpId: _.get(service, 'responsible', null),
+              ProcedureId: _.get(codeProcedure, 'code', null),
+              ProfessionId: this.professionId,
+              ReasonOfRef: _.get(codeStatus, 'code', null) === "refused" ? _.get(codeStatus, 'label', null) : "",
+              isDeadline: (date ? true : false),
+              isSurgical: _.get(this.api.contact().preferredContent(service, "isSurgical"),'booleanValue',false) ? true : false,
+              VaccineCommercialNameId: vaccineId,
+              VaccineName : vaccineName,
+              DoseNumber: this.isVaccineProcedure && _.get(medicationValue, 'options.doseNumber.stringValue', null),
+              BatchNumber: this.isVaccineProcedure && _.get(medicationValue, 'batch', null),
+              ProcedureInfo: procedure,
+              Description: _.get(service, 'comment', null),
+              ProfessionInfo: (profession && profession.rows && profession.rows[0]) || {},
+              //VaccineInfo: (codeVaccine && codeVaccine.length ? resultVaccine : "")
+          })
+
+          //this.set('drugsListItem', [resultVaccine]);
+          this.set("selectedHcpItem", {
+              id: this.plannedAction.HcpId,
+              name: !hcp.name ? hcp.lastName + ' ' + hcp.firstName : hcp.name
+          })
+
+          this.set("selectedProfessionItem", this.hcpartyTypeList.find(type => type.id === this.plannedAction.ProfessionId))
+          this.set("isStatusComplete", _.get(codeStatus, 'code', null) === "completed");
+          this.set("isStatusRefusal", _.get(codeStatus, 'code', null) === "refused");
+          if (this.plannedAction.isSurgical)
+              this.set("hasSurgical", true)
+          critical = false;
+          return _.get(codeVaccine, 'id', null) && _.get(codeMedication, 'code', null) ? this.api.bedrugs().getMppInfos(_.get(codeMedication, 'code', null), this.language) : Promise.resolve({})
+      }).then((resultVaccine) => {
+          // console.log(resultVaccine)
+          this.plannedAction.VaccineInfo = resultVaccine
+      }).catch(err => {
+          if (critical)
+              this._setError(err)
+      }).finally(() => {
+          if (this.plannedAction.VaccineCommercialNameId) {
+              this.set("selectedVaccineItem", {
+                  id: this.plannedAction.VaccineCommercialNameId,
+                  name: this.plannedAction.VaccineName
               })
+              this.set("plannedAction.VaccineName", null);
+          }
+          this._footprint = this._getFootprint();
+          this._dispatchChangedEvent();
+          this.set("isLoading", false);
+      });
+      return;
 
-              //this.set('drugsListItem', [resultVaccine]);
-              this.set("selectedHcpItem", {
-                  id: this.plannedAction.HcpId,
-                  name: !hcp.name ? hcp.lastName + ' ' + hcp.firstName : hcp.name
-              })
-
-              this.set("selectedProfessionItem", this.hcpartyTypeList.find(type => type.id === this.plannedAction.ProfessionId))
-              this.set("isStatusComplete", _.get(codeStatus, 'code', null) === "completed");
-              this.set("isStatusRefusal", _.get(codeStatus, 'code', null) === "refused");
-              if (this.plannedAction.isSurgical)
-                  this.set("hasSurgical", true)
-              critical = false;
-              return _.get(codeVaccine, 'id', null) && _.get(codeMedication, 'code', null) ? this.api.bedrugs().getMppInfos(_.get(codeMedication, 'code', null), this.language) : Promise.resolve({})
-          }).then((resultVaccine) => {
-              // console.log(resultVaccine)
-              this.plannedAction.VaccineInfo = resultVaccine
-          }).catch(err => {
-              if (critical)
-                  this._setError(err)
-          }).finally(() => {
-              if (this.plannedAction.VaccineCommercialNameId) {
-                  this.set("selectedVaccineItem", {
-                      id: this.plannedAction.VaccineCommercialNameId,
-                      name: this.plannedAction.VaccineName
-                  })
-                  this.set("plannedAction.VaccineName", null);
-              }
-              this._footprint = this._getFootprint();
-              this._dispatchChangedEvent();
-              this.set("isLoading", false);
-          });
-          return;
-      }
-
+      /** @todo look if i don't destroy the code for not existing service
       this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
           if (hcp.type) {
               // do not set prestataire by default
@@ -930,7 +899,7 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
           this._footprint = this._getFootprint();
           this._dispatchChangedEvent();
           this.set("isLoading", false);
-      })
+      })*/
   }
 
   getPlannedAction(service) {
