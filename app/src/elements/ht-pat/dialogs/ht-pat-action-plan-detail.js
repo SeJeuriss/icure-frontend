@@ -822,7 +822,7 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
               parseInt(('' + _.padEnd(_.get(service, 'valueDate', null), 14, 0)).replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{6})/, '$2')) !== 0 ? this.set("accuracy","month") :
                   parseInt(('' + _.padEnd(_.get(service, 'valueDate', null), 14, 0)).replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{6})/, '$1')) !== 0 ? this.set("accuracy","year") : null
 
-          const date = this._getDate(service);
+          const date =_.get(service, 'valueDate', false) ? this._getDate(service) : moment().format('YYYY-MM-DD');
 
           this.set("proceduresListItem", [procedure])
           this.procedureChanged({detail: {value: (_.get(codeProcedure, 'code', null)) }})
@@ -833,9 +833,9 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
           const vaccineName = this.isVaccineProcedure && _.get(medicationValue, 'medicinalProduct.intendedname', null)
 
           this.set("plannedAction", {
-              Status: _.get(codeStatus, 'code', null),
+              Status: _.get(codeStatus, 'code', 'pending'),
               Deadline: date,
-              HcpId: _.get(service, 'responsible', null),
+              HcpId: _.get(service, 'responsible', this.user.healthcarePartyId),
               ProcedureId: _.get(codeProcedure, 'code', null),
               ProfessionId: this.professionId,
               ReasonOfRef: _.get(codeStatus, 'code', null) === "refused" ? _.get(codeStatus, 'label', null) : "",
@@ -883,23 +883,6 @@ class HtPatActionPlanDetail extends TkLocalizerMixin(mixinBehaviors([IronResizab
           this.set("isLoading", false);
       });
       return;
-
-      /** @todo look if i don't destroy the code for not existing service
-      this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
-          if (hcp.type) {
-              // do not set prestataire by default
-              //this.set("selectedHcpItem", hcp)
-              //this.set("plannedAction.HcpId",this.selectedHcpItem.id)
-              this.set("plannedAction.ProfessionId","CD-HCPARTY|"+hcp.type+"|1")
-              this.set("selectedProfessionItem", this.hcpartyTypeList.find(type => type.id === this.plannedAction.ProfessionId))
-          }
-      }).finally(() => {
-          this.set("plannedAction.Deadline", moment().format('YYYY-MM-DD'))
-          this.set("plannedAction.Status", "pending")
-          this._footprint = this._getFootprint();
-          this._dispatchChangedEvent();
-          this.set("isLoading", false);
-      })*/
   }
 
   getPlannedAction(service) {
