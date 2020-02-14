@@ -728,10 +728,10 @@ class DynamicForm extends TkLocalizerMixin(PolymerElement) {
     }
 
     _valueContainers(layoutItem) {
-				if (!this.dataProvider) {
+        if (!this.dataProvider) {
             return null;
-				}
-				return this.dataProvider.getValueContainers(layoutItem.name) || [];
+        }
+        return this.dataProvider.getValueContainers(layoutItem.name) || [];
     }
 
     _valueDate(layoutItem) {
