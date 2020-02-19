@@ -899,6 +899,11 @@
                         value: () => {
                         }
                     },
+                    contacts:{
+                      type: Array,
+                      noReset: true,
+                      value: () => []
+                    },
                     language: {
                         type: String,
                         noReset: true,
@@ -2267,7 +2272,18 @@
                         poaIdOpeningContact: _.trim(_.get(poa, "idOpeningContact", "")),
                         poaName: _.trim(_.get(poa, "name", "")),
                         poaNumberOfCares: _.trim(_.get(poa, "numberOfCares", "")),
-                        poaNumberOfCaresMade: "todo",
+                        poaNumberOfCaresMade: _.size(
+                            this.contacts.filter(ct =>
+                                (
+                                    _.get(ct, 'openingDate', null) &&
+                                    (
+                                        _.get(poa, "openingDate", null) && _.get(poa, "closingDate", null) ?
+                                        this.api.moment(_.get(ct, 'openingDate', null), 'YYYYMMDDHHmmss').isBetween(this.api.moment(_.get(poa, 'openingDate', null)).format('YYYY-MM-DD'), this.api.moment(_.get(poa, 'closingDate', null)).format('YYYY-MM-DD')) :
+                                        this.api.moment(_.get(ct, 'openingDate', null), 'YYYYMMDDHHiiss').isAfter(this.api.moment(_.get(poa, 'openingDate', null)).format('YYYY-MM-DD'))
+                                    )) &&
+                                    _.get(ct, 'subContacts', []).find(sbc => _.get(sbc, 'healthElementId', null) === _.get(he, 'heId', ""))
+                            )
+                        ),
                         poaOpeningDate: parseInt(_.get(poa, "openingDate")) || null,
                         poaPrescriberId: _.trim(_.get(poa, "prescriberId", "")),
                         poaStatus: parseInt(_.get(poa, "status", 0)),
