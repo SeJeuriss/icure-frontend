@@ -1573,7 +1573,6 @@
                     <paper-button class="button" on-tap="_closeDialog">[[localize('clo','close',language)]]</paper-button>
 
                     <template is="dom-if" if="[[!isInvoiceClosed]]">
-                        <vaadin-checkbox id="sendPDF" checked="[[sendPDF]]">Envoyer le PDF dans la eBox citoyen</vaadin-checkbox>
                         <template is="dom-if" if="[[hasInsurability]]"><paper-button class="button button--other" on-tap="_verifyTarification" disabled="[[_isETarButtonDisabled(selectedInvoice,isLoadingValidation,isTarificationMcnError,npi,selectedInvoice.sentMediumType)]]">[[localize('eTarif','Validation eTarif',language)]]</paper-button></template>
                         <template is="dom-if" if="[[!hasInsurability]]"><paper-button class="button button--other" on-tap="" disabled="true">[[localize('patient_has_no_insurance','Ce patient n\'est pas assuré',language)]]</paper-button></template>
                         <paper-button on-tap="_switchBetweenMethodForJustifAndCreation" class="button button--save" disabled="[[_isJustifButtonDisabled(selectedInvoice,isNmclVerified,isLoadingJustif,npi,selectedInvoice.sentMediumType)]]">[[localize('val_invoice','Justificatory + create invoice',language)]]</paper-button>
@@ -1586,8 +1585,8 @@
                             </template>
                         </template>
                         <paper-button on-tap="_switchBetweenMethodForJustif" class="button" disabled="[[isLoadingJustif]]">[[localize('val_justificatory','Justificatory',language)]]</paper-button>
+                        <paper-button on-tap="_sendMessage2eBox" class="button button--other" disabled="[[selectedInvoice.printedDate]]">[[localize('pri','Print',language)]]</paper-button>
                     </template>
-                    <paper-button on-tap="_sendPDF" class="button">Envoyer le PDF</paper-button>
                 </div>
         </paper-dialog>
 
@@ -3380,10 +3379,6 @@
                 }
             }
 
-            _sendPDF() {
-                this._sendMessage2EhBox()
-            }
-
             _confirmPayment() {
                 const total= Number(this.selectedInvoice.invoicingCodes.reduce((tot,c)=>tot + (_.get(this.selectedInvoice, 'sentMediumType', 'paper') !== "efact" ? (Number(c.reimbursement) || 0) : 0) + (Number(c.patientIntervention) || 0) + (Number(c.doctorSupplement) || 0), 0).toFixed(2)) || !this.paymentTypes.find(type => type.id==this.selectedInvoice.paymentType)
                 if(_.get(this.selectedInvoice, 'sentMediumType', 'paper') === "eattest" && this.selectedInvoice.paid<0){
@@ -4510,7 +4505,7 @@
                                 })
                                 .finally(() => {
                                     this.eattest(this.selectedInvoice)
-                                    this._sendMessage2EhBox();
+                                    //this._sendMessage2eBox();
                                 })
                         } else {
                             let errorMsg="";
@@ -4533,90 +4528,38 @@
                 return fileByteArray;
             }
 
-            _sendMessage2EhBox() {
-
-                // Error scenarios
-                //const errorScenarioDialog = (!_.get(this,"api.keystoreId",false) || !_.get(this,"api.tokenId",false) || !_.get(this,"api.credentials.ehpassword",false)) ? "notConnectedDialog" : ""
-                //if( !!_.trim(errorScenarioDialog) ) { this.set("_bodyOverlay", true); this.$[errorScenarioDialog].open(); return; }
+            _sendMessage2eBox() {
                 let currentHcp = this.hcp
 
                 let html = this._generateJustificatory();
-                this.api.pdfReport(html, {type :"doc-off-format",printer: 'regulations'})
+
+                this.set('isLoadingJustif', true );
+                this.api.pdfReport(html, {type :"doc-off-format", printer: 'regulations'})
                     .then(({pdf:data, printed:printed}) =>{
                     let sendMessageResponse = false
                     const publicationId = +new Date
-                    const messageSubject = "Justificatory";
-
-                    /*
-                    const mainRecipient = [{
-                        id: this.patient.ssin,
-                        identifierType: { type: "SSIN" },
-                        quality: "DOCTOR",
-                        applicationId: "",
-                        lastName: this.patient.lastName,
-                        firstName: this.patient.firstName,
-                        organizationName: "",
-                        personInOrganisation: ""
-                    }];
-                    */
+                    const messageSubject = this.selectedInvoice.invoiceReference;
 
                     const mainRecipient = [{
-                        //id: "72022102793",
-                        id: "73120628585",
+                        id: this.patient.inss,
                         identifierType: { type: "SSIN" },
                         quality: "CITIZEN",
                         applicationId: "",
-                        //lastName: "Destrée",
-                        //firstName: "Louis",
                         organizationName: "",
                         personInOrganisation: ""
                     }];
 
-                    const annexes = [{
-                        content: this._arrayBufferToByteArray(data),
-                        documentId: this.api.crypto().randomUuid(),
-                        filename: "justificatory.pdf",
-                        mimeType: "application/pdf",
-                        title: messageSubject,
-                        size: data.byteLength
-                    }];
+                    const annexes = [];
+                    // const annexes = [{
+                    //     content: this._arrayBufferToByteArray(data),
+                    //     documentId: this.api.crypto().randomUuid(),
+                    //     filename: "justificatory.pdf",
+                    //     mimeType: "application/pdf",
+                    //     title: messageSubject,
+                    //     size: data.byteLength
+                    // }];
 
-                    let customMetas = {
-                        "CM-AuthorID": _.trim(_.get(currentHcp, "nihii", _.get(currentHcp, "ssin", ""))),
-                        "CM-AuthorIDType": _.trim(_.get(currentHcp, "nihii", "")) ? "NIHII" : "SSIN",
-                        "CM-AuthorType": _.trim(_.get(currentHcp, "civility", "doctor")).toUpperCase(),
-                        "CM-AuthorLastName": _.trim(_.get(currentHcp, "lastName", "")).toUpperCase(),
-                        "CM-AuthorFirstName": _.trim(_.get(currentHcp, "firstName", "")),
-                        "CM-AuthorName": (!_.trim(_.get(currentHcp, "lastName", "")) && !_.trim(_.get(currentHcp, "firstName", ""))) ? _.trim(_.get(currentHcp, "name", _.get(currentHcp, "companyName", ""))) : "",
-
-                        "CM-RecipientID": _.trim(_.get(mainRecipient, "id", "")),
-                        "CM-RecipientIDType": _.trim(_.get(mainRecipient, "identifierType.type", "NIHII")),
-                        "CM-RecipientLastName": _.trim(_.get(mainRecipient, "lastName", "")).toUpperCase(),
-                        "CM-RecipientFirstName": _.trim(_.get(mainRecipient, "firstName", "")),
-                        "CM-RecipientName": (!_.trim(_.get(mainRecipient, "lastName", "")) && !_.trim(_.get(mainRecipient, "firstName", ""))) ? _.trim(_.get(mainRecipient, "name", _.get(mainRecipient, "companyName", ""))) : "",
-
-                        "CM-EhrMessage": false,
-                        "CM-EhrMessageType": "Functionnal",
-                        "CM-EtkApplicationID": _.trim(_.get(this, "api.tokenId", "")),
-                        "CM-Requestnumber": publicationId,
-                        "CM-SendDateTime": moment().format('YYYY-MM-DD HH:mm:ss'),
-                    }
-
-                    // Sender = author
-                    customMetas = _.merge({
-                        "CM-SenderID": _.get(customMetas, "CM-AuthorID",""),
-                        "CM-SenderIDType": _.get(customMetas, "CM-AuthorIDType",""),
-                        "CM-SenderType": _.get(customMetas, "CM-AuthorType",""),
-                        "CM-SenderLastName": _.get(customMetas, "CM-AuthorLastName",""),
-                        "CM-SenderFirstName": _.get(customMetas, "CM-AuthorFirstName",""),
-                        "CM-SenderName": _.get(customMetas, "CM-AuthorName",""),
-                    }, customMetas)
-
-                    // For medex
-                    //if(!!_.size(_.get(this,"medexData.customMetas",{}))) _.merge(customMetas, _.get(this,"medexData.customMetas",{}))
-
-                    // EhBox won't allow for empty values
-                    Object.keys(customMetas).forEach(k =>{ if(!_.trim(customMetas[k])) try { delete customMetas[k] } catch(e){} })
+                    let customMetas = { "project": "multemediatt" }
 
                     // Unread by default, then eval important, cyrpted & has annexes statuses
                     const isImportant = false
@@ -4627,19 +4570,24 @@
                     messageStatus = isEncrypted ? messageStatus|1<<3 : messageStatus
                     messageStatus = !!_.size(annexes) ? messageStatus|1<<4 : messageStatus
 
-                    // The envelope itself
                     const messageToBeSentWithEhbox = {
                         id : this.api.crypto().randomUuid(),
                         publicationId : publicationId,
                         publicationDateTime : parseInt(moment().format('YYYYMMDD')),
-                        expirationDateTime : parseInt(moment().add(1,"years").format('YYYYMMDD')),
+                        expirationDateTime : parseInt(moment().add(1,"days").format('YYYYMMDD')),
                         customMetas : customMetas,
-                        document : { title: messageSubject, textContent: "textContent", mimeType: 'text/plain', filename: messageSubject + '.txt'},
+                        //document : { title: messageSubject, textContent: "textContent", mimeType: 'text/plain', filename: messageSubject + '.txt'},
+                        document : {
+                            title: messageSubject,
+                            content: this._arrayBufferToByteArray(data),
+                            mimeType: 'application/pdf',
+                            filename: messageSubject + '.pdf',
+                            size: data.byteLength
+                        },
                         freeText : "",
                         freeInformationTableTitle : null,
                         freeInformationTableRows : {},
                         patientInss : this.patient.inss,
-                        //patientInss : "73120628585",
                         annex : annexes,
                         copyMailTo : [],
                         documentTitle : messageSubject,
@@ -4652,16 +4600,6 @@
                         important : isImportant,
                         encrypted : isEncrypted,
                         destinations : mainRecipient,
-                        sender : {
-                            identifierType: "NIHII",
-                            id: _.trim(_.get(currentHcp, "nihii", "")),
-                            quality: _.trim(_.get(currentHcp,"quality","doctor")).toUpperCase(),
-                            applicationId: "",
-                            lastName: _.trim(_.get(currentHcp,"lastName","")),
-                            firstName: _.trim(_.get(currentHcp,"firstName","")),
-                            organizationName: (!_.trim(_.get(currentHcp,"lastName","")) && !_.trim(_.get(currentHcp,"firstName",""))) ? _.trim(_.get(currentHcp, "name", _.get(currentHcp, "companyName", ""))) : "",
-                            personInOrganisation: ""
-                        },
                         fromHealthcarePartyId: _.get(currentHcp,"id",""),
                         status: messageStatus
                     };
@@ -4669,24 +4607,22 @@
                     this.api.fhc().Ehboxvcontroller().sendMessage2EboxUsingPOST( this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword, messageToBeSentWithEhbox, messageToBeSentWithEhbox.usePublicationReceipt, messageToBeSentWithEhbox.useReceivedReceipt, messageToBeSentWithEhbox.useReadReceipt )
                         .then(x=> {
                             sendMessageResponse=x
-                            console.log(x)
+                            this.set('selectedInvoice.printedDate', moment().format("YYYYMMDD"))
+                            this.api.invoice().modifyInvoice(this.selectedInvoice)
+                                .then(invoice => this.api.register(invoice,'invoice'))
+                                .then(invoice => {
+                                    this.updateGui(invoice, true)
+                                })
                         })
                         .catch(x=>sendMessageResponse=x)
                         .finally(()=>{
-                            //this._resetLoadingMessage();
-                            //this.set('_isLoading', false );
-
-                            // [Either] went well
-                            // [OR] couldn't find ETK (missing recipient public key) - when crypting message
-                            // [OR] (hardcoded) -> "successfull" (labellisation)
+                            this.set('isLoadingJustif', false );
                             return sendMessageResponse===true ? this._confirmMessageSuccessfullySent() : _.trim(_.get(sendMessageResponse,"message","")) === "api-error403" ? this._etkNotRetrieved() : this._confirmMessageSuccessfullySent()
-
                         })
 
                 })
                 .catch(e=>{
-                    //this._resetLoadingMessage();
-                    //this.set('_isLoading', false );
+                    this.set('isLoadingJustif', false );
                     console.log("ERROR with _sendMessage2EhBox: ", e);
                 })
 
