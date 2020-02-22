@@ -131,6 +131,27 @@
                 display: block;
             }
 
+            .nmcl-line{
+                display: flex;
+                width: 98%;
+                height: 20px;
+                padding: 1%;
+            }
+
+            .nmcl-line-nmcl{
+                width: 90%;
+            }
+
+            .nmcl-line-icon{
+                width: 10%;
+                text-align: right;
+            }
+
+            .icon-delete{
+                height: 14px;
+                width: 14px;
+            }
+
         </style>
 
 
@@ -143,7 +164,10 @@
                     </div>
                     <div class="pnl-submenu-container">
                         <template is="dom-repeat" items="[[nmclListToAdd]]" as="item">
-                            [[item]]
+                            <div class="nmcl-line">
+                                <div class="nmcl-line-nmcl">[[item]]</div>
+                                <div class="nmcl-line-icon"><iron-icon icon="vaadin:trash" class="icon-delete" on-tap="_deleteNmcl" id="[[item]]"></iron-icon></div>
+                            </div>
                         </template>
                     </div>
                 </div>
@@ -158,23 +182,25 @@
                             <div class="table">
                                 <div class="tr th">
                                     <div class="td ellipsis"></div>
-                                    <div class="td ellipsis">[[localize('pnl-nrml-session', 'Nrml session', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-first-session', 'First session and folder creation', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-code-1-9', 'Code 1 to 9', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-home-allowance', 'Home allowance', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-session-after-lg', 'Session after lg numb', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-session-60', 'Session + 60 min', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-short-session', 'Short session', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-second-session', 'Second session', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-adv-exa', 'Advisory examination', language)]]</div>
-                                    <div class="td ellipsis">[[localize('pnl-exa-rep', 'Examination and report ', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-nrml-session', 'Nrml session', language)]]">[[localize('pnl-nrml-session', 'Nrml session', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-first-session', 'First session and folder creation', language)]]">[[localize('pnl-first-session', 'First session and folder creation', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-code-1-9', 'Code 1 to 9', language)]]">[[localize('pnl-code-1-9', 'Code 1 to 9', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-home-allowance', 'Home allowance', language)]]">[[localize('pnl-home-allowance', 'Home allowance', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-session-after-lg', 'Session after lg numb', language)]]">[[localize('pnl-session-after-lg', 'Session after lg numb', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-session-60', 'Session + 60 min', language)]]">[[localize('pnl-session-60', 'Session + 60 min', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-short-session', 'Short session', language)]]">[[localize('pnl-short-session', 'Short session', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-second-session', 'Second session', language)]]">[[localize('pnl-second-session', 'Second session', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-adv-exa', 'Advisory examination', language)]]">[[localize('pnl-adv-exa', 'Advisory examination', language)]]</div>
+                                    <div class="td ellipsis" title="[[localize('pnl-exa-rep', 'Examination and report ', language)]]">[[localize('pnl-exa-rep', 'Examination and report ', language)]]</div>
                                 </div>
                                 <div class="separator"><span class="separator-title">[[localize('pnl-ordinary-session', 'Ordinary session', language)]]</span></div>
                                 <template is="dom-if" if="[[isConsultation]]">
                                     <div class="tr">
                                         <div class="td fl ellipsis">[[localize('pnl-consult', 'Consultation', language)]]</div>
-                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560210">560210</paper-button></div>
-                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639855">639855</paper-button></div>
+                                        <!--<div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560210">560210</paper-button></div>-->
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="101032">101032</paper-button></div>
+                                        <!--<div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="639855">639855</paper-button></div>-->
+                                        <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="101076">101076</paper-button></div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="562671">562671</paper-button></div>
                                         <div class="td"></div>
                                         <div class="td"><paper-button class="nmclButton" on-tap="_addNmcl" id="560254">560254 (>18)</paper-button></div>
@@ -489,18 +515,32 @@
 
             _addNmcl(e){
                 if(_.get(e, 'target.id', null)){
-                    //const code = 'INAMI-RIZIV'+_.get(e, 'target.id', null)+'|1'
-                    //this.api.tarification().getTarification(code).then(info => {
-                        //this.push('nmclListToAdd', info)
-                    //})
-
-                    this.push('nmclListToAdd', _.get(e, 'target.id', null))
+                    _.size(_.get(this, 'nmclListToAdd', []).find(nmcl => nmcl === _.get(e, 'target.id', null))) === 0 ? this.push('nmclListToAdd', _.get(e, 'target.id', null)) : null
                 }
             }
 
 
-            _validNmcl(){
+            _validNmcl(e){
+                let prom = Promise.resolve()
+                let sprom = Promise.resolve()
 
+                _.get(this, 'nmclListToAdd', []).map(nmcl => {
+                    const code = 'INAMI-RIZIV|'+nmcl+'|1.0'
+                    prom = prom.then(nmclList => this.api.tarification().getTarification(code).then(info => _.concat(nmclList, info)))
+                })
+
+                prom = prom.then(nmclList => {
+                    _.compact(nmclList).map(nmcl => {
+                        sprom = sprom.then(() => this.dispatchEvent(new CustomEvent('add-nmcl', {detail: {item: nmcl}, bubbles: true, composed: true})))
+                    })
+                })
+
+            }
+
+            _deleteNmcl(e){
+                if(_.get(e, 'target.id', null)){
+                    this.splice('nmclListToAdd', this.nmclListToAdd.indexOf(_.get(e, 'target.id', null)), 1)
+                }
             }
 
         }

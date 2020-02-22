@@ -2996,6 +2996,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                    user="[[user]]"
                                    patient="[[patient]]"
                                    current-contact="[[currentContact]]"
+                                   on-add-nmcl="_addPhysiotherapistNmclToInvoice"
         ></physiotherapist-nmcl-list>
 
         <paper-dialog id="dynamic-description-dialog">
@@ -7322,6 +7323,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             _closeDynamicDescriptionDialog(){
                 this.$['dynamic-description-dialog'].close()
+            }
+
+            _addPhysiotherapistNmclToInvoice(e){
+                if(_.get(e, 'detail.item', null)){
+                    this.shadowRoot.querySelector('ht-pat-detail-ctc-detail-panel').shadowRoot.querySelector('ht-pat-invoicing-dialog')._addNmcl({
+                        target: {
+                            dataset: {
+                                item: _.get(e, 'detail.item', null)
+                            }
+                        }
+                    })
+                }
             }
 
         }
