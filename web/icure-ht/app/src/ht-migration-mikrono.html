@@ -57,6 +57,24 @@
 
             }
 
+            migrateCurrentUserToMikrono() {
+                let userlist = [this.user];
+
+                console.log("start migrateCurrentUserToMikrono", userlist)
+                return this.createMikronoAgendaForEachUser(userlist).then(() => {
+                   console.log("user after creation", this.user);
+                    this.api.user().getUser(this.user.id).then(user => console.log("user after load", user));
+                })
+            }
+
+            migrateAppointmentTypesToMikrono() {
+
+            }
+
+            migrateCurrentUserAppointmentsToMikrono() {
+
+            }
+
             migrateAllPricareAgendasToMikrono() {
                 this.api.user().listUsers().then(users => {
                     const listOfUsers = users.rows
@@ -118,10 +136,12 @@
                             const workEmail = telecoms && telecoms.find(tel => tel.telecomType === "email") || null
 
                             if (workMobile && workMobile.telecomNumber !== "" && workEmail && workEmail.telecomNumber !== "") {
-                                return this.api.bemikrono().register(user.id, {}).then(userRes => {
-                                    if (userRes === true) {
-                                        this.api.user().getUser(user.id).then(user => this.api.register(user, 'user')).then(u => {
+                                return this.api.bemikrono().register(user.id, {}).then(user => this.api.register(user, 'user')).then(userRes => {
+                                    //if (userRes === true) {
+                                    if (userRes) {
+                                        this.api.user().getUser(user.id).then(u => {
                                             this.set('user', u)
+                                            const applicationTokens = u.applicationTokens
                                             const mikronoUrl = u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url").typedValue.stringValue || null
                                             const mikronoUser = u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user").typedValue.stringValue || null
                                             const mikronoPassword = u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password").typedValue.stringValue || null
