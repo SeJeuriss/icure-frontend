@@ -832,6 +832,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                     <paper-item class="extra-menu-item" on-tap="migrateAllPricareAgendasToMikronoDEBUG">[[localize('import_all_pricare_agenda_debug','Import DEBUG Pricare Agendas',language)]]</paper-item>
                                     <paper-item class="extra-menu-item" on-tap="migrateCurrentUserPricareAgendaToMikrono">[[localize('import_single_pricare_agenda_debug','Import Single Pricare Agenda',language)]]</paper-item>
 
+                                    <paper-item class="extra-menu-item" on-tap="migrateCurrentUserToMikrono">[[localize('import_single_pricare_agenda_debug','create user',language)]]</paper-item>
+                                    <paper-item class="extra-menu-item" on-tap="migrateAppointmentTypesToMikrono">[[localize('import_single_pricare_agenda_debug','create types',language)]]</paper-item>
+                                    <paper-item class="extra-menu-item" on-tap="migrateCurrentUserAppointmentsToMikrono">[[localize('import_single_pricare_agenda_debug','create appointments',language)]]</paper-item>
+
                                     <!-- </template> -->
                                     <paper-item class="extra-menu-item" on-tap="_myProfile">
                                         <iron-icon icon="icons:account-circle"></iron-icon>
@@ -2407,7 +2411,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                             const workEmail = telecoms && telecoms.find(tel => tel.telecomType === "email") || null
 
                             if(workMobile && workMobile.telecomNumber !== "" && workEmail && workEmail.telecomNumber !== ""){
-                                this.api.onlinebemikrono().register(this.user.id, {}).then(user => {
+                                this.api.bemikrono().register(this.user.id, {}).then(user => {
                                     if(user === true){
                                         this.api.user().getUser(this.user.id).then(u => {
                                             this.set('user', u)
@@ -2545,6 +2549,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             migrateCurrentUserPricareAgendaToMikrono() {
                 this.$['htMigrationMikrono'].migrateCurrentUserPricareAgendaToMikrono()
+            }
+
+            migrateCurrentUserToMikrono() {
+                this.$['htMigrationMikrono'].migrateCurrentUserToMikrono()
+            }
+
+            migrateAppointmentTypesToMikrono() {
+                this.$['htMigrationMikrono'].migrateAppointmentTypesToMikrono()
+            }
+
+            migrateCurrentUserAppointmentsToMikrono() {
+                this.$['htMigrationMikrono'].migrateCurrentUserAppointmentsToMikrono()
             }
 
             migrateAllPricareAgendasToMikrono() {
