@@ -68,7 +68,9 @@
             }
 
             migrateAppointmentTypesToMikrono() {
-
+                console.log("start migrateAllAppointmentTypesToMikrono");
+                    return this.migrateAllAppointmentTypesToMikrono().catch(err => console.log(err)).then(() => {
+                })
             }
 
             migrateCurrentUserAppointmentsToMikrono() {
@@ -197,92 +199,6 @@
                 }))
             }
 
-            createMikronoAgendaForEachUser_OLD(userlist) {
-                let promiseChain = Promise.resolve()
-
-                console.log("userlist: ", userlist)
-                userlist.forEach(user => {
-                    promiseChain = promiseChain.then(() => {
-                        console.log("start creating mikrono agenda for user", user)
-
-                        return this.api.hcparty().getHealthcareParty(user.healthcarePartyId).then(hcp => {
-
-                            const applicationTokens = user.applicationTokens
-                            const mikronoUrl = user && user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url").typedValue.stringValue || null
-                            const mikronoUser = user && user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user").typedValue.stringValue || null
-                            const mikronoPassword = user && user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password").typedValue.stringValue || null
-
-
-                            if (mikronoUrl && mikronoUser && mikronoPassword && applicationTokens && applicationTokens.MIKRONO) {
-                                console.log("Agenda already exists", user, hcp)
-                                return true
-                            } else {
-                                const addresses = hcp && hcp.addresses || null
-                                const workAddresses = addresses.find(adr => adr.addressType === "work") || null
-                                const telecoms = workAddresses && workAddresses.telecoms
-                                const workMobile = telecoms && telecoms.find(tel => tel.telecomType === "mobile" || tel.telecomType === "phone") || null
-                                const workEmail = telecoms && telecoms.find(tel => tel.telecomType === "email") || null
-
-                                if (workMobile && workMobile.telecomNumber !== "" && workEmail && workEmail.telecomNumber !== "") {
-                                    return this.api.bemikrono().register(user.id, {}).then(userRes => {
-                                        if (userRes === true) {
-                                            this.api.user().getUser(user.id).then(u => {
-                                                this.set('user', u)
-                                                const mikronoUrl = u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url").typedValue.stringValue || null
-                                                const mikronoUser = u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user").typedValue.stringValue || null
-                                                const mikronoPassword = u && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && u.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password").typedValue.stringValue || null
-
-                                                if (mikronoUrl && mikronoUser && mikronoPassword && applicationTokens && applicationTokens.MIKRONO) {
-                                                    console.log("Agenda created successfully", u, hcp)
-                                                } else {
-                                                    console.log("mikronoError", {
-                                                        user: u,
-                                                        errorMsg: "no token found despite having registered user",
-                                                        addresses: false,
-                                                        workAddresses: false,
-                                                        workMobile: false,
-                                                        workEmail: false,
-                                                        token: applicationTokens.MIKRONO ? true : false,
-                                                        error: true
-                                                    })
-                                                    return Promise.reject()
-                                                }
-                                            })
-                                        } else {
-                                            console.log("mikronoError", {
-                                                user: user,
-                                                errorMsg: "error when registering user",
-                                                addresses: addresses ? true : false,
-                                                workAddresses: workAddresses ? true : false,
-                                                workMobile: workMobile ? true : false,
-                                                workEmail: workEmail ? true : false,
-                                                token: applicationTokens.MIKRONO ? true : false,
-                                                error: true
-                                            })
-                                            return Promise.reject()
-                                        }
-
-                                    })
-                                } else {
-                                    console.log("mikronoError", {
-                                        user: user,
-                                        errorMsg: "no telecom",
-                                        addresses: addresses ? true : false,
-                                        workAddresses: workAddresses ? true : false,
-                                        workMobile: workMobile ? true : false,
-                                        workEmail: workEmail ? true : false,
-                                        token: applicationTokens.MIKRONO ? true : false,
-                                        error: true
-                                    })
-                                }
-                            }
-
-                        })
-                    })
-                })
-                return promiseChain
-            }
-
             migrateAllAppointmentTypesToMikrono() {
 
                 const applicationTokens = _.get(this.user, "applicationTokens", "" )
@@ -319,18 +235,19 @@
                             _.chunk(apps, 100).forEach(chunkOfAppointments => {
                                 console.log("send chunk of appointmentTypes: ", chunkOfAppointments);
                                 prom = prom.then(prevResults => this.api.bemikrono().createAppointmentTypes(chunkOfAppointments).then(appsResult => {
-
                                     console.log("received appointmentTypes from mikrono: ", appsResult);
-                                    _.forEach( chunkOfAppointments, (i=>{
-                                        let oobj = _.get(i, "originalObject")
-                                        oobj.mikronoId = i.mikronoId
+                                    return appsResult.map(res => {
+                                        const appTyp = chunkOfAppointments.find(app => app.externalRef === res.externalRef);
+                                        let oobj = _.get(appTyp, "originalObject")
+                                        oobj.mikronoId = res.mikronoId;
                                         console.log("modifying CalendarItemType:", oobj)
-                                        this.api.calendaritemtype().modifyCalendarItemType( oobj )
-                                            .then(() => {
+                                        return this.api.calendaritemtype().modifyCalendarItemType( oobj )
+                                            .then(itemType => {
+                                                console.log("migrated itemType", itemType)
                                                 /*this.push("migrationItems", { status: "", item: "Migration terminée"})*/
+                                                return itemType;
                                             })
-                                    }))
-
+                                    })
                                 }).then(res => {
                                     console.log("creatd 100 AppointmentTypes", res)
                                     return prevResults.concat(res)
