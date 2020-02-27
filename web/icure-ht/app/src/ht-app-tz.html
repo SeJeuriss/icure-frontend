@@ -2399,105 +2399,111 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             checkAndLoadMikrono(){
                 if(this.user){
-                    this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
+                    this.api.user().getUser(this.user.id).then(user => {
+                        this.set('user', user);
+                        this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => {
 
-                        const applicationTokens = this.user.applicationTokens
-                        const mikronoUrl = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url").typedValue.stringValue || null
-                        const mikronoUser = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user").typedValue.stringValue || null
-                        const mikronoPassword = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password").typedValue.stringValue || null
-
-
-                        if(mikronoUrl && mikronoUser && mikronoPassword && applicationTokens && applicationTokens.MIKRONO){
-                            this.api.isElectronAvailable().then(electron =>{
-                                if(electron === false){
-                                    console.log("mikrono open agenda url", "https://"+mikronoUser+":"+mikronoPassword+"@"+mikronoUrl.replace("https://", "")+"/iCureShortcut.jsp?id="+this.user.id, '_blank')
-                                    window.open("https://"+mikronoUser+":"+mikronoPassword+"@"+mikronoUrl.replace("https://", "")+"/iCureShortcut.jsp?id="+this.user.id, '_blank')
-                                }else{
-                                    fetch(this._getDefaultElectronUrl() + "/mc", {
-                                        method: "POST",
-                                        headers: {"Content-Type": "application/json"},
-                                        body: JSON.stringify({username:mikronoUser, password:mikronoPassword})
-                                    }).then(response => response.json()).then(rep => {
-                                        if(rep.ok){
-                                            this.set('routeData.page', "diary")
-                                            setTimeout(() => this.shadowRoot.querySelector("#htDiary").loadMikronoIframe(this.mikronoProxy), 100)
-                                        }
-                                    })
-                                }
-                            })
-
-                        }else{
-                            const addresses = hcp && hcp.addresses || null
-                            const workAddresses = addresses.find(adr => adr.addressType === "work") || null
-                            const telecoms = workAddresses && workAddresses.telecoms
-                            const workMobile = telecoms && telecoms.find(tel => tel.telecomType === "mobile" || tel.telecomType === "phone") || null
-                            const workEmail = telecoms && telecoms.find(tel => tel.telecomType === "email") || null
-
-                            if(_.get(workMobile, 'telecomNumber', null) && _.get(workEmail, 'telecomNumber', null) && this.api._isValidMail(_.get(workEmail, 'telecomNumber', null))){
-                                this.api.bemikrono().register(this.user.id, {}).then(user => {
-                                    if(user === true){
-                                        this.api.user().getUser(this.user.id).then(u => {
-                                            this.set('user', u)
-                                            const mikronoUrl = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url").typedValue.stringValue || null
-                                            const mikronoUser = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user").typedValue.stringValue || null
-                                            const mikronoPassword = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password").typedValue.stringValue || null
-
-                                            if(mikronoUrl && mikronoUser && mikronoPassword && applicationTokens && applicationTokens.MIKRONO){
-                                                this.api.isElectronAvailable().then(electron =>{
-                                                    if(electron === false){
-                                                        window.open("https://"+mikronoUser+":"+mikronoPassword+"@"+mikronoUrl.replace("https://", "")+"/iCureShortcut.jsp?id="+this.user.id, '_blank')
-                                                    }else{
-                                                        fetch(this._getDefaultElectronUrl() + "/mc", {
-                                                            method: "POST",
-                                                            headers: {"Content-Type": "application/json"},
-                                                            body: JSON.stringify({username:mikronoUser, password:mikronoPassword})
-                                                        }).then(response => response.json()).then(rep => {
-                                                            if(rep.ok){
-                                                                this.set('routeData.page', "diary")
-                                                                setTimeout(() => this.shadowRoot.querySelector("#htDiary").loadMikronoIframe(this.mikronoProxy), 100)
-                                                            }
-                                                        })
+                            const applicationTokens = this.user.applicationTokens
+                            const mikronoUrl = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url").typedValue.stringValue || null
+                            const mikronoUser = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user").typedValue.stringValue || null
+                            const mikronoPassword = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password").typedValue.stringValue || null
 
 
-                                                    }
-                                                })
-                                            }else{
-                                                this.set("mikronoError", {
-                                                    addresses: false,
-                                                    workAddresses : false,
-                                                    workMobile: false,
-                                                    workEmail : false,
-                                                    token: !!_.get(applicationTokens, 'MIKRONO', null),
-                                                    error: true
-                                                })
+                            if (mikronoUrl && mikronoUser && mikronoPassword && applicationTokens && applicationTokens.MIKRONO) {
+                                this.api.isElectronAvailable().then(electron => {
+                                    if (electron === false) {
+                                        console.log("mikrono open agenda url", "https://" + mikronoUser + ":" + mikronoPassword + "@" + mikronoUrl.replace("https://", "") + "/iCureShortcut.jsp?id=" + this.user.id, '_blank')
+                                        window.open("https://" + mikronoUser + ":" + mikronoPassword + "@" + mikronoUrl.replace("https://", "") + "/iCureShortcut.jsp?id=" + this.user.id, '_blank')
+                                    } else {
+                                        fetch(this._getDefaultElectronUrl() + "/mc", {
+                                            method: "POST",
+                                            headers: {"Content-Type": "application/json"},
+                                            body: JSON.stringify({username: mikronoUser, password: mikronoPassword})
+                                        }).then(response => response.json()).then(rep => {
+                                            if (rep.ok) {
+                                                this.set('routeData.page', "diary")
+                                                setTimeout(() => this.shadowRoot.querySelector("#htDiary").loadMikronoIframe(this.mikronoProxy), 100)
                                             }
                                         })
-                                    }else{
-                                        this.set("mikronoError", {
-                                            addresses: !!addresses,
-                                            workAddresses : !!_.trim(_.get(workAddresses, 'street', null)) && _.trim(_.get(workAddresses, 'houseNumber', null)) && _.trim(_.get(workAddresses, 'postalCode', null)) && _.trim(_.get(workAddresses, 'city', null)),
-                                            workMobile: !!_.get(workMobile, 'telecomNumber', null),
-                                            workEmail : this.api._isValidMail(_.get(workEmail, 'telecomNumber', null)),
-                                            token: !!_.get(applicationTokens, 'MIKRONO', null),
-                                            error: true
-                                        })
                                     }
-
-                                })
-                            }else{
-                                this.set("mikronoError", {
-                                    addresses: !!addresses,
-                                    workAddresses : !!_.trim(_.get(workAddresses, 'street', null)) && _.trim(_.get(workAddresses, 'houseNumber', null)) && _.trim(_.get(workAddresses, 'postalCode', null)) && _.trim(_.get(workAddresses, 'city', null)),
-                                    workMobile: !!_.get(workMobile, 'telecomNumber', null),
-                                    workEmail : this.api._isValidMail(_.get(workEmail, 'telecomNumber', null)),
-                                    token: !!_.get(applicationTokens, 'MIKRONO', null),
-                                    error: false
                                 })
 
-                                this.$['mikronoErrorDialog'].open()
+                            } else {
+                                const addresses = hcp && hcp.addresses || null
+                                const workAddresses = addresses.find(adr => adr.addressType === "work") || null
+                                const telecoms = workAddresses && workAddresses.telecoms
+                                const workMobile = telecoms && telecoms.find(tel => tel.telecomType === "mobile" || tel.telecomType === "phone") || null
+                                const workEmail = telecoms && telecoms.find(tel => tel.telecomType === "email") || null
+
+                                if (_.get(workMobile, 'telecomNumber', null) && _.get(workEmail, 'telecomNumber', null) && this.api._isValidMail(_.get(workEmail, 'telecomNumber', null))) {
+                                    this.api.bemikrono().register(this.user.id, {}).then(user => {
+                                        if (user === true) {
+                                            this.api.user().getUser(this.user.id).then(u => {
+                                                this.set('user', u)
+                                                const mikronoUrl = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.url").typedValue.stringValue || null
+                                                const mikronoUser = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.user").typedValue.stringValue || null
+                                                const mikronoPassword = this.user && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password") && this.user.properties.find(p => p.type.identifier === "org.taktik.icure.be.plugins.mikrono.password").typedValue.stringValue || null
+
+                                                if (mikronoUrl && mikronoUser && mikronoPassword && applicationTokens && applicationTokens.MIKRONO) {
+                                                    this.api.isElectronAvailable().then(electron => {
+                                                        if (electron === false) {
+                                                            window.open("https://" + mikronoUser + ":" + mikronoPassword + "@" + mikronoUrl.replace("https://", "") + "/iCureShortcut.jsp?id=" + this.user.id, '_blank')
+                                                        } else {
+                                                            fetch(this._getDefaultElectronUrl() + "/mc", {
+                                                                method: "POST",
+                                                                headers: {"Content-Type": "application/json"},
+                                                                body: JSON.stringify({
+                                                                    username: mikronoUser,
+                                                                    password: mikronoPassword
+                                                                })
+                                                            }).then(response => response.json()).then(rep => {
+                                                                if (rep.ok) {
+                                                                    this.set('routeData.page', "diary")
+                                                                    setTimeout(() => this.shadowRoot.querySelector("#htDiary").loadMikronoIframe(this.mikronoProxy), 100)
+                                                                }
+                                                            })
+
+
+                                                        }
+                                                    })
+                                                } else {
+                                                    this.set("mikronoError", {
+                                                        addresses: false,
+                                                        workAddresses: false,
+                                                        workMobile: false,
+                                                        workEmail: false,
+                                                        token: !!_.get(applicationTokens, 'MIKRONO', null),
+                                                        error: true
+                                                    })
+                                                }
+                                            })
+                                        } else {
+                                            this.set("mikronoError", {
+                                                addresses: !!addresses,
+                                                workAddresses: !!_.trim(_.get(workAddresses, 'street', null)) && _.trim(_.get(workAddresses, 'houseNumber', null)) && _.trim(_.get(workAddresses, 'postalCode', null)) && _.trim(_.get(workAddresses, 'city', null)),
+                                                workMobile: !!_.get(workMobile, 'telecomNumber', null),
+                                                workEmail: this.api._isValidMail(_.get(workEmail, 'telecomNumber', null)),
+                                                token: !!_.get(applicationTokens, 'MIKRONO', null),
+                                                error: true
+                                            })
+                                        }
+
+                                    })
+                                } else {
+                                    this.set("mikronoError", {
+                                        addresses: !!addresses,
+                                        workAddresses: !!_.trim(_.get(workAddresses, 'street', null)) && _.trim(_.get(workAddresses, 'houseNumber', null)) && _.trim(_.get(workAddresses, 'postalCode', null)) && _.trim(_.get(workAddresses, 'city', null)),
+                                        workMobile: !!_.get(workMobile, 'telecomNumber', null),
+                                        workEmail: this.api._isValidMail(_.get(workEmail, 'telecomNumber', null)),
+                                        token: !!_.get(applicationTokens, 'MIKRONO', null),
+                                        error: false
+                                    })
+
+                                    this.$['mikronoErrorDialog'].open()
+                                }
                             }
-                        }
 
+                        })
                     })
                 }
             }
