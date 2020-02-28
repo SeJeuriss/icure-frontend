@@ -238,7 +238,7 @@
 
                         if(apps && apps.length !== 0){
                             let prom = Promise.resolve([])
-                            apps = [apps[0]] //TODO remove
+                            //apps = [apps[0]] //TODO remove
                             _.chunk(apps, 100).forEach(chunkOfAppointments => {
                                 console.log("send chunk of appointmentTypes: ", chunkOfAppointments);
                                 prom = prom.then(prevResults => this.api.bemikrono().createAppointmentTypes(chunkOfAppointments).then(appsResult => {
