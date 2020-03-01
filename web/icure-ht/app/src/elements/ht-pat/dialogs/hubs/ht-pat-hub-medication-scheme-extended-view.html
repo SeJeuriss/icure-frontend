@@ -393,6 +393,25 @@
                 border-bottom: 1px solid #d0d0d0;
             }
 
+            .mergeButtons {
+                max-width: 50px;
+                justify-content: left;
+            }
+
+            .mergeLabel {
+                font-weight: bold;
+                justify-content: left;
+            }
+
+            .mergeValue {
+                justify-content: left;
+            }
+
+            .mergeScore {
+                max-width: 50px;
+                justify-content: left;
+            }
+
             .reimbursed{
                 width: 24px;
                 max-width: 24px;
@@ -788,6 +807,12 @@
                 overflow: auto;
             }
 
+            .medicationMergeDialogContent{
+                height: 400px;
+                width: auto;
+                overflow: auto;
+            }
+
             .medication-detail-line{
                 display: flex;
             }
@@ -985,8 +1010,8 @@
                     <!-- END HEADER -->
                     <!-- START BODY -->
 
-                    <template is="dom-repeat" items="[[_getMedElems(currentMedicationScheme, currentMedicationScheme.*, currentMedicationScheme.msElems.synchronizationInfo.*)]]" as="medicationsWithPosology">
-                        <div class$="tr [[_medicationClass(medicationsWithPosology)]] pointer" data-medication$=[[medicationsWithPosology]] on-tap="_showMedication">
+                    <template is="dom-repeat" id="medicationScheme" items="[[_getMedElems(currentMedicationScheme, currentMedicationScheme.*, currentMedicationScheme.msElems.synchronizationInfo.*, refresher)]]" as="medicationsWithPosology">
+                        <div class$="tr [[_medicationClass(medicationsWithPosology)]] pointer" data-uid$="[[medicationsWithPosology.uniqId]]" data-medication$=[[medicationsWithPosology]] on-tap="_showMedication">
                             <div class="td reimbursed">
                                 <template is="dom-if" if="[[_isChronic(medicationsWithPosology)]]">
                                     <iron-icon class="chronicIcon" icon="icons:alarm-on"></iron-icon>
@@ -1063,7 +1088,6 @@
                                     <vaadin-checkbox data-item="[[medicationsWithPosology]]" on-tap="_synchronizeItemToLocal"></vaadin-checkbox>
                                 </div>
                             </template>
-
 
                             <template is="dom-if" if="[[medicationsWithPosology.synchronizationInfo.availableOnHub]]">
                                 <div class="td td-input di-aft" on-tap="_stopPropagation">
@@ -1244,12 +1268,75 @@
                         </div>
                     </template>
 
+                    <div class="table">
+                        <template is="dom-repeat" items="[[candidates]]" as="candidate">
+                            <div class="tr">
+                                <div class="td mergeButtons"><paper-icon-button data-uid$="[[candidate.medication.uniqId]]" on-tap="_compare" icon="icons:compare-arrows"></paper-icon-button></div>
+                                <div class="td mergeScore">[[candidate.score]]</div>
+                                <div class="td mergeValue">[[_getMedicationName(candidate.medication)]]</div>
+                            </div>
+                        </template>
+                    </div>
+
                 </div>
                 <div class="buttons">
                     <paper-button class="button button--other" on-tap="_closeMedicationDetailDialog">[[localize('clo','Close',language)]]</paper-button>
                 </div>
             </div>
         </paper-dialog>
+
+        <paper-dialog id="medicationMergeDialog" on-iron-overlay-closed="_closeMedicationMergeDialog">
+            <h2 class="modal-title">
+                [[_getMedicationName(source)]]
+                <template is="dom-if" if="[[_isChronic(source)]]">
+                    <div>
+                        <iron-icon class="legend-chronicIcon" icon="icons:alarm-on"></iron-icon> [[localize('hub-chron-med', 'Chronic medication', language)]]
+                    </div>
+                </template>
+                <template is="dom-if" if="[[_isOneShot(source)]]">
+                    <div>
+                        <iron-icon class="oneShotIcon" icon="vaadin:thumbs-up-o"></iron-icon> [[localize('hub-one-shot', 'One shot', language)]]
+                    </div>
+                </template>
+                <template is="dom-if" if="[[_isSuspensions(source)]]">
+                    <div>
+                        <iron-icon class="legend-suspensionIcon" icon="icons:warning"></iron-icon> [[localize('hub-sus-med', 'Suspended medication', language)]]
+                    </div>
+                </template>
+                <template is="dom-if" if="[[_isCompoundPrescription(source.compoundprescription)]]">
+                    <div>
+                        <iron-icon class="legend-compoundIcon" icon="vaadin:flask"></iron-icon> [[localize('hub-med-mag', 'Compound prescription', language)]]
+                    </div>
+                </template>
+                <template is="dom-if" if="[[_isSubstancePrescription(source.substanceproduct)]]">
+                    <div>
+                        <iron-icon class="legend-substanceIcon" icon="vaadin:pill"></iron-icon> [[localize('hub-med-dci', 'DCI prescription', language)]]
+                    </div>
+                </template>
+            </h2>
+            <div class="content">
+                <div class="table">
+                    <template id="fields" is="dom-repeat" items="[[fields]]" as="field">
+                        <template is="dom-if" if="[[!field.hidden]]">
+                            <div class="tr"><div class="td mergeLabel">[[field.label]]</div></div>
+                            <div class="tr">
+                                <div class="td mergeButtons"><vaadin-checkbox id="{{field.name}}" checked="[[_isChecked(field, refresher)]]" on-tap="_check"></vaadin-checkbox></div>
+                                <div class="td mergeValue">[[_getValue(field.source, refresher)]]</div>
+                            </div>
+                            <div class="tr">
+                                <div class="td mergeButtons"><vaadin-checkbox id="{{field.name}}" checked="[[!_isChecked(field, refresher)]]" on-tap="_uncheck"></vaadin-checkbox></div>
+                                <div class="td mergeValue">[[_getValue(field.target, refresher)]]</div>
+                            </div>
+                        </template>
+                    </template>
+                </div>
+            </div>
+            <div class="buttons">
+                <paper-button class="button button--other" on-tap="_merge">[[localize('Merge','Merge',language)]]</paper-button>
+                <paper-button class="button button--other" on-tap="_closeMedicationMergeDialog">[[localize('clo','Close',language)]]</paper-button>
+            </div>
+        </paper-dialog>
+
         <ht-pat-hub-utils id="htPatHubUtils" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-utils>
     </template>
     <script>
@@ -1258,6 +1345,43 @@
         import hu from "../../../../../bower_components/moment/src/locale/hu";
         const md5 = require('md5');
 
+        const all_fields = [
+            { label: 'medicationName', getter: '_getMedicationName', score: 82, hidden: true },
+            { label: 'beginmoment', name: 'beginmoment', score: 1 },
+            { label: 'endmoment', name: 'endmoment', score: 1 },
+            { label: 'temporality', name: 'temporality', score: 1 },
+            { label: 'frequency', name: 'frequency', score: 1, format: '_formatFrequency' },
+            { label: 'posology', name: 'posology', score: 1, format: '_formatPosology' },
+            { label: 'ms_morning', name: 'regimen.0', score: 1, filter: '_filterRegimen', argument: 0, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_beforebreakfast', name: 'regimen.0', score: 1, filter: '_filterRegimen', argument: 1, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_duringbreakfast', name: 'regimen.0', score: 1, filter: '_filterRegimen', argument: 2, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_afterbreakfast', name: 'regimen.0', score: 1, filter: '_filterRegimen', argument: 3, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_betweenbreakfastandlunch', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 4, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_beforelunch', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 5, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_duringlunch', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 6, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_afterlunch', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 7, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_betweenlunchanddinner', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 8, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_beforedinner', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 9, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_duringdinner', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 10, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_afterdinner', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 11, path: 'quantity', defaultValue: 0 },
+            { label: 'ms_evening', name: 'regimen.0', score: 1,  filter: '_filterRegimen', argument: 12, path: 'quantity', defaultValue: 0 },
+        ]
+
+        const all_periods = [
+            { id: 0, keywords: ['morning'] },
+            { id: 1, keywords: ['beforebreakfast'] },
+            { id: 2, keywords: ['duringbreakfast'] },
+            { id: 3, keywords: ['afterbreakfast'] },
+            { id: 4, keywords: ['betweenbreakfastandlunch'] },
+            { id: 5, keywords: ['beforelunch'] },
+            { id: 6, keywords: ['duringlunch'] },
+            { id: 7, keywords: ['afterlunch'] },
+            { id: 8, keywords: ['betweenlunchanddinner'] },
+            { id: 9, keywords: ['beforedinner'] },
+            { id: 10, keywords: ['duringdinner'] },
+            { id: 11, keywords: ['afterdinner'] },
+            { id: 12, keywords: ['evening', 'night', 'thehourofsleep'] },
+        ]
 
         class HtPatHubMedicationSchemeExtendedView extends Polymer.TkLocalizerMixin(Polymer.Element) {
             static get is() {
@@ -1287,6 +1411,26 @@
                     currentMedicationScheme:{
                         type: Object,
                         value: () => {}
+                    },
+                    candidates:{
+                        type: Array,
+                        value: () => []
+                    },
+                    refresher: {
+                        type: Number,
+                        value: 0
+                    },
+                    source: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    target: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    fields:{
+                        type: Object,
+                        value: () => []
                     },
                     periodicity:{
                         type: Object,
@@ -1553,24 +1697,194 @@
                 return  time && time.toString().length >= 14 ? time.toString().substr(8,2) + ":" + time.toString().substr(10,2) : "";
             }
 
+            _getValue(value) {
+                return value ? value : "<empty>"
+            }
 
-            _showMedication(e){
+            _filterRegimen(regimen, id) {
+                let period = all_periods.find(p => p.id == id)
+                return period && period.keywords.some(k => k == _.toLower(regimen.dayTime))
+            }
+
+            _formatPosology(posology) {
+                return posology ? posology.text.value : '<empty>'
+            }
+
+            _formatFrequency(frequency) {
+                let code = _.get(frequency, 'periodicity.cd.value', '')
+                let periodicity = this.periodicity.find(p => p.code == code)
+                return periodicity ? periodicity.label.fr : '<empty>'
+            }
+
+            _format(medication, field) {
+                let value = this._getField(medication, field)
+                return field.format ? this[field.format](value) : value
+            }
+
+            _getField(medication, field) {
+                let defaultValue = field.defaultValue ? field.defaultValue : ''
+                if (field.getter) {
+                    if (field.name)
+                        return this[field.getter](medication[field.name])
+                    return this[field.getter](medication)
+                }
+                if (field.filter) {
+                    let items = _.get(medication, field.name, [])
+                    let item = items.find(item => this[field.filter](item, field.argument))
+                    if (field.path)
+                        return _.get(item, field.path, defaultValue)
+                    return item
+                }
+                return _.get(medication, field.name, defaultValue)
+            }
+
+            _setField(medication, field, value) {
+                if (field.filter) {
+                    let items = _.get(medication, field.name, [])
+                    let item = items.find(item => this[field.filter](item, field.argument))
+                    if (field.path)
+                        _.set(item, field.path, value)
+                    else
+                        items[items.indexOf(item)] = value
+                    return;
+                }
+                _.set(medication, field.name, value)
+            }
+
+            _getScore(source, target) {
+                let score = 0
+                let total = 0
+                all_fields.forEach(field => {
+                    let source_value = this._getField(source, field, '')
+                    let target_value = this._getField(target, field, '')
+                    if (source_value == target_value)
+                        score += field.score
+                    total += field.score
+                })
+                return score
+            }
+
+            _getCandidates(medication, flag) {
+                let candidates = this.currentMedicationScheme.msElems
+                    .filter(med => med.uniqId != medication.uniqId && !med.synchronizationInfo[flag]).map(med => {
+                        return {
+                            medication: med,
+                            score: this._getScore(medication, med)
+                        }
+                    })
+                return candidates
+            }
+
+            _showMedication(e) {
                 this.set('selectedMedication', {})
-                if(e.currentTarget.dataset.medication){
-                    this.set('selectedMedication', JSON.parse(e.currentTarget.dataset.medication))
+
+                //if(e.currentTarget.dataset.medication){
+                //    this.set('selectedMedication', JSON.parse(e.currentTarget.dataset.medication))
+
+                const uid = e.currentTarget.dataset.uid
+                let medication = this.currentMedicationScheme.msElems.find(m => m.uniqId == uid);
+                if (medication) {
+                    this.set('selectedMedication', medication)
+                    let si = this.selectedMedication.synchronizationInfo
+                    let flag = si.availableOnHub ? 'availableOnHub' : 'availableOnLocal';
+                    this.set('candidates', this._getCandidates(this.selectedMedication, flag))
                     this.$['medicationDetailDialog'].open()
                 }
             }
 
-            _closeMedicationDetailDialog(){
+            _closeMedicationDetailDialog() {
                 this.set('selectedMedication', {})
                 this.$['medicationDetailDialog'].close()
+            }
+
+            _closeMedicationMergeDialog() {
+                this.set('selectedMedication', {})
+                this.$['medicationMergeDialog'].close()
+            }
+
+            _compare(e) {
+                const uid = e.target.dataset.uid
+                let source = this.selectedMedication
+                let target = this.candidates.find(candidate => candidate.medication.uniqId == uid).medication
+                let fields = []
+                all_fields.forEach(field => {
+                    let source_value = this._getField(source, field)
+                    let target_value = this._getField(target, field)
+                    if (source_value != target_value) {
+                        fields.push({
+                            name: field.name,
+                            label: field.label,
+                            source: this._format(source, field),
+                            target: this._format(target, field),
+                            hidden: field.hidden,
+                            checked: true
+                        })
+                    }
+                })
+                this.set('source', source)
+                this.set('target', target)
+                this.set('fields', fields)
+                this.$['medicationDetailDialog'].close()
+                this.$['medicationMergeDialog'].open()
+                this.shadowRoot.querySelector('#fields').render()
+                this.set('refresher', this.refresher + 1)
+            }
+
+            _merge(e) {
+                this.fields.forEach(field => {
+                    if (!field.checked) {
+                        if (field.sibling) {
+                            let _field = all_fields.find(f => f.name == field.sibling)
+                            if (_field) {
+                                field = {
+                                    name: _field.name,
+                                    label: _field.label,
+                                    source: this._format(this.source, _field),
+                                    target: this._format(this.target, _field),
+                                    hidden: field.hidden,
+                                    checked: true
+                                }
+                                let value = this._getField(this.target, field)
+                                this._setField(this.source, field, value)
+                            }
+                        }
+                        else {
+                            let value = this._getField(this.target, field)
+                            this._setField(this.source, field, value)
+                        }
+                    }
+                })
+                let medications = this.currentMedicationScheme.msElems
+                Object.assign(medications.find(m => m.uniqId == this.source.uniqId), this.source)
+                this.currentMedicationScheme.msElems = medications.filter(m => m.uniqId != this.target.uniqId)
+                this.$['medicationMergeDialog'].close()
+                this.shadowRoot.querySelector('#medicationScheme').render()
+                this.set('refresher', this.refresher + 1)
+            }
+
+            _isChecked(field) {
+                return field.checked
+            }
+
+            _setChecked(name, checked) {
+                let field = this.fields.find(field => field.name == name)
+                field.checked = checked
+                this.set('refresher', this.refresher + 1)
+            }
+
+            _check(e) {
+                e.target.checked = true
+                this._setChecked(e.target.id, true)
+            }
+
+            _uncheck(e) {
+                e.target.checked = true
+                this._setChecked(e.target.id, false)
             }
 
             _medicationClass(m) {
                 return (m.idKmehr%2 == 0) ? 'even' : 'odd'
             }
-
 
             transformMedicationAndPrescription(){
                 console.log(this.medications)
