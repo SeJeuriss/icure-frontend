@@ -82,7 +82,7 @@
                     <ht-spinner active="[[isLoading]]"></ht-spinner>
                 </div>
                 <div class="ms-content">
-                    <ht-pat-hub-medication-scheme-extended-view class="p4" id="htPatHubMedicationSchemeExtendedView" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" resources="[[resources]]" medication-scheme="[[medicationScheme]]" medications="[[medications]]" prescriptions="[[prescriptions]]" contacts="[[contacts]]" on-update-ms="_getMedicationSchema"></ht-pat-hub-medication-scheme-extended-view>
+                    <ht-pat-hub-medication-scheme-extended-view class="p4" id="htPatHubMedicationSchemeExtendedView" api="[[api]]" user="[[user]]" hcp="[[hcp]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" resources="[[resources]]" medication-scheme-transactions="[[medicationSchemeTransactions]]" medications="[[medications]]" prescriptions="[[prescriptions]]" contacts="[[contacts]]" on-update-ms="_getMsTransactions"></ht-pat-hub-medication-scheme-extended-view>
                 </div>
                   </div>
             <div class="buttons">
@@ -152,7 +152,7 @@
                         type: Object,
                         value: () => {}
                     },
-                    medicationScheme:{
+                    medicationSchemeTransactions:{
                         type: Array,
                         value: () => []
                     },
@@ -167,6 +167,11 @@
                     contacts: {
                         type: Array,
                         value: () => []
+                    },
+                    hcpMap: {
+                        type: Object,
+                        notify: false,
+                        value: () => new Map()
                     }
                 };
             }
@@ -182,20 +187,33 @@
             _open(){
                 this.$['hubMedicationSchemaDetailDialog'].open()
                 this.set('isLoading', true)
-                this._getMedicationSchema().then(transaction => {
-                    this.set('medicationScheme', transaction)
-                    console.log(transaction)
+                this._getMsTransactions().then(msTransactions => {
+                    this.set('medicationSchemeTransactions', msTransactions)
+                    console.log(msTransactions)
                 }).finally(() => {
                     this.set('isLoading', false)
                 })
             }
 
             _closeDialogs(){
-                this.set('medicationScheme', [])
+                this.set('medicationSchemeTransactions', {})
                 this.$['hubMedicationSchemaDetailDialog'].close()
             }
 
-            _getMedicationSchema(){
+            _getCachedHcpId(ssin) {
+                let p = this.hcpMap.get(ssin);
+                if (p === undefined) {
+                    p = this.api.hcparty().findBySsinOrNihii(ssin, null, null, 1)
+                        .then(hcp => {
+                            return hcp.rows[0].id;
+                        });
+                    this.hcpMap.set(ssin, p);
+                }
+                return p;
+            }
+
+
+            _getMsTransactions(){
                 if (this.patient.ssin && this.api.tokenId) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                         .then(hcp => {
@@ -221,9 +239,28 @@
                                 this.hubPackageId, this.breakTheGlassReason
                             ) : Promise.resolve({})
                         })
-                        .then(transaction => {
-                            console.log(transaction)
-                            return transaction
+                        .then(transactionSet => {
+                            console.log(transactionSet);
+                            return _.get(_.head(_.get(transactionSet, 'folders', {})), 'transactions', []);
+                        })
+                        .then(subTransactions => Promise.all(subTransactions.map(subTransaction => {
+                            const hcParty = _.get(subTransaction, "author.hcparties", []).find(hcParty => hcParty.ids.some(id => id.s === "INSS"));
+                            if (hcParty) {
+                                return this._getCachedHcpId(hcParty.ids.find(id => id.s === "INSS").value)
+                                    .then(id => {
+                                        hcParty.localId = id;
+                                        return subTransaction;
+                                    });
+                            } else {
+                                return Promise.resolve(subTransaction);
+                            }
+                        })))
+                        .then(subTransactions => {
+                            return {
+                                medicationScheme: subTransactions.find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationscheme")),
+                                medicationSchemeElements: subTransactions.filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationschemeelement")),
+                                treatmentSuspensions: subTransactions.filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "treatmentsuspension"))
+                            };
                         })
                 } else {
                     return Promise.resolve({})
