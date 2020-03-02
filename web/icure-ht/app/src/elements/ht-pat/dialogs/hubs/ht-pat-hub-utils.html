@@ -62,6 +62,10 @@
                     isLoading:{
                         type: Boolean,
                         value: false
+                    },
+                    hcpCache: {
+                        type: Object,
+                        notify: false
                     }
                 };
             }
@@ -113,6 +117,20 @@
                 super.attached();
                 this.async(this.notifyResize, 1);
             }
+
+            _getHcp() {
+                let p = this.hcpCache && this.hcpCache.id === this.user.healthcarePartyId ? this.hcpCache.promise : null;
+                if (!p) {
+                    p = this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                        .then(hcp => {
+                            hcp.zip = ((hcp.addresses || []).find(address => !!address.postalCode) || {postalCode: "1000"}).postalCode;
+                            return hcp;
+                        });
+                    this.hcpCache = {id: this.user.healthcarePartyId, promise: p};
+                }
+                return p;
+            }
+
 
             getHubConfig(hub, environment){
                 const hubConfig = {};
@@ -283,39 +301,52 @@
 
             generateMedicationScheme(services, serviceAuthors, version){
                 let enc = new TextDecoder("utf-8");
-                return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp =>
-                    this.api.patient().getPatientWithUser(this.user,this.patient.id)
-                        .then(patientDto => this.api.bekmehr().generateMedicationSchemeExport(patientDto.id, this.language, this.hubConfig.name, version, {
-                                recipient: hcp,
-                                services : services,
-                                serviceAuthors : serviceAuthors,
-                                comment: "medicationscheme",
-                                recipientSafe: this.hubConfig.name,
-                                version: version
-                            }).then(output => {
-                                return Promise.resolve(enc.decode(output));
-                            }).catch(error=> {
-                                return Promise.reject(error);
-                            })
-                        ))
+                return this._getHcp()
+                    .then(hcp => this.api.patient().getPatientWithUser(this.user,this.patient.id)
+                    .then(patientDto => this.api.bekmehr().generateMedicationSchemeExport(patientDto.id, this.language, this.hubConfig.name, version, {
+                            recipient: hcp,
+                            services : services,
+                            serviceAuthors : serviceAuthors,
+                            comment: "medicationscheme",
+                            recipientSafe: this.hubConfig.name,
+                            version: version
+                        }).then(output => {
+                            return Promise.resolve(enc.decode(output));
+                        }).catch(error=> {
+                            return Promise.reject(error);
+                        })
+                    ))
             }
 
             putTransactionSet(tsXML, isTest){
                 const myblob = new Blob([tsXML]);
-                return isTest ? Promise.resolve({message: "test: not sent", acknowledge: {isComplete:false}, error: ""}) : this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId).then(hcp => this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
+                if (isTest) return Promise.resolve({message: "test: not sent", acknowledge: {isComplete: false}, error: ""});
+                return this._getHcp()
                     .then(hcp => this.api.fhc().Hubcontroller().putTransactionSetUsingPOST(this.hubConfig.hubEndPoint,
                         this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
-                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, "1000",
+                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin,
+                        ((hcp.addresses || []).find(address => !!address.postalCode) || {postalCode: "1000"}).postalCode,
                         this.hubConfig.hubId,
                         this.patient.ssin,
                         myblob,
-                        this.hubConfig.hubPackageId, this.hubConfig.hubApplication
-                        )
-                    )
+                        this.hubConfig.hubPackageId, this.hubConfig.hubApplication))
                     .catch(error => {
                         return Promise.reject(error);
                     })
-                )
+            }
+
+            getTransactionSet(tsSv, tsSl, tsId) {
+                return this._getHcp()
+                    .then(hcp => this.api.fhc().Hubcontroller().getTransactionSetMessageUsingGET(this.hubConfig.hubEndPoint,
+                        this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
+                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin,
+                        ((hcp.addresses || []).find(address => !!address.postalCode) || {postalCode: "1000"}).postalCode,
+                        this.patient.ssin,
+                        tsSv, tsSl, tsId,
+                        this.hubConfig.hubPackageId, ""))
+                    .catch(error => {
+                        return Promise.reject(error);
+                    })
             }
 
             handleResponse(response, services){
@@ -342,23 +373,24 @@
             // private Boolean medicationChanged;
             // private Boolean posologyChanged;
 
+
+            // @todo idKmehr wrong
             mergeResponse(putResponse, services){
                 //1. get transactionset id
                 //2. get transactionset from hub
                 //3. updated the servicesreject
                 const tsInfo = putResponse.transactions && putResponse.transactions.length > 0 ? putResponse.transactions[0].ids.find(id => id.s==="LOCAL") : null;
-                const tsSv = tsInfo.sv;
-                const tsSl = tsInfo.sl;
-                const tsId = tsInfo.value;
-                return this.getTransactionSet(tsSv, tsSl, tsId).then(tsResp => {
+                if (!tsInfo) return Promise.reject("No local transaction found");
+                return this.getTransactionSet(tsInfo.sv, tsInfo.sl, tsInfo.value).then(tsResp => {
                     putResponse.transactions.forEach(trInfo  => {
-                        const idKmehr = trInfo.ids.find(id => id.s === "ID-KMEHR").value;
-                        const trOnHub = tsResp.folders[0].transactions.find(tr => tr.ids.find(id => id.s === "ID-KMEHR" && id.value === idKmehr)); //TODO: verify other id's (LOCAL)
-                        const idLocalSv = trInfo.ids.find(id => id.s === "LOCAL").sv;
+                        const idKmehr = trInfo.ids.find(id => id.s === "ID_KMEHR").value;
+                        const trOnHub = tsResp.folders[0].transactions.find(tr => tr.ids.find(id => id.s === "ID_KMEHR" && id.value === idKmehr)); //TODO: verify other id's (LOCAL)
+                        // const idLocalSv = trInfo.ids.find(id => id.s === "LOCAL").sv;
                         const idLocalSl = trInfo.ids.find(id => id.s === "LOCAL").sl;
                         const idLocalValue = trInfo.ids.find(id => id.s === "LOCAL").value;
-                        const trTimeStamp = this.transactionDateTime(trOnHub);
-                        if(idKmehr === 1){ //set the medicationscheme ids to all services
+                        // const trTimeStamp = this.transactionDateTime(trOnHub);
+                        const idKmehrIndex = (parseInt(idKmehr, 10) || 1) - 1;
+                        if(idKmehrIndex === 0){ //set the medicationscheme ids to all services
                             services.forEach(svc => {
                                 const med = this.api.contact().preferredContent(svc, this.language);
                                 med.medicationSchemeIdOnSafe = idLocalValue;
@@ -367,7 +399,7 @@
                             })
                         } else {//set te medicationschemeElement ids to the corresponding service
                             const svcId = this.iCureServiceId(trOnHub);
-                            const svc = svcId ? services.find(svc => svc.id === svcId) : services[idKmehr - 1];
+                            const svc = svcId ? services.find(svc => svc.id === svcId) : services[idKmehrIndex];
                             const med = this.api.contact().preferredContent(svc, this.language);
                             med.idOnSafes = idLocalValue;
                             med.timestampOnSafe = this.transactionDateTime(trOnHub);
@@ -376,19 +408,7 @@
                     console.log("updated services", services);
                     return services;
                 })
-            }
-
-            getTransactionSet(tsSv, tsSl, tsId){
-                return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
-                    .then(hcp => this.api.fhc().Hubcontroller().getTransactionSetUsingGET(this.hubConfig.hubEndPoint, this.api.keystoreId,
-                        this.api.tokenId, this.api.credentials.ehpassword,
-                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, this.hcpZip,
-                        this.patient.ssin,
-                        tsSv, tsSl, tsId,
-                        this.hubConfig.hubPackageId, ""))
-                    .catch(error => {
-                        return Promise.reject(error);
-                    })
+                .catch(error => Promise.reject(error));
             }
 
             transactionDateTime(tr){
@@ -397,8 +417,8 @@
             }
 
             iCureServiceId(tr){
-                const itm = tr.item.find(it => it.ids.find(id => id.sl === "iCure-Service"));
-                const svcId = itm.ids.find(id => id.sl === "iCure-Service") ? itm.ids.find(id => id.sl === "iCure-Service").value : null
+                const item = tr.item.find(it => it.ids.find(id => id.sl === "iCure-Service"));
+                const svcId = (item && item.ids.find(id => id.sl === "iCure-Service") || {value: null}).value;
                 return svcId;
             }
         }

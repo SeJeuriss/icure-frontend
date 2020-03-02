@@ -231,7 +231,7 @@
                 this.$['hubMedicationSchemaDetailDialog'].close()
             }
 
-            _getCachedHcpId(ssin) {
+            _getCachedHcpIdBySsin(ssin) {
                 let p = this.hcpMap.get(ssin);
                 if (p === undefined) {
                     p = this.api.hcparty().findBySsinOrNihii(ssin, null, null, 1)
@@ -260,15 +260,14 @@
                 if (this.patient.ssin && this.api.tokenId) {
                     return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
                         .then(hcp => {
-                            this.set('hcp', hcp)
-                            return this.api.fhc().Hubcontroller().getTransactionsListUsingGET(
-                                this.hubEndPoint,
-                                _.get(this.api, 'keystoreId', null), _.get(this.api, 'tokenId', null), _.get(this.api, 'credentials.ehpassword', null),
-                                _.get(hcp, 'lastName', null), _.get(hcp, 'firstName', null), _.get(hcp, 'nihii', null), _.get(hcp, 'ssin', null), _.get(this, 'hcpZip', null),
-                                _.get(this.patient, 'ssin', null),
+                            hcp.zip = ((hcp.addresses || []).find(address => !!address.postalCode) || {postalCode: "1000"}).postalCode;
+                            this.set('hcp', hcp);
+                            return this.api.fhc().Hubcontroller().getTransactionsListUsingGET(this.hubEndPoint,
+                                this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
+                                hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, hcp.zip,
+                                this.patient.ssin,
                                 this.hubPackageId,
-                                null, null,
-                                null, null,
+                                null, null, null, null,
                                 true, this.breakTheGlassReason
                             )
                         })
@@ -276,9 +275,9 @@
                             const medicationSchemeTransaction = transactions.find(transaction => _.get(transaction, 'cds', []).find(cd => _.get(cd, 's', null) === "CD-TRANSACTION" && _.get(cd, 'value', null) === "medicationscheme"))
                             return !_.isEmpty(medicationSchemeTransaction) ? this.api.fhc().Hubcontroller().getTransactionSetMessageUsingGET(this.hubEndPoint, this.api.keystoreId,
                                 this.api.tokenId, this.api.credentials.ehpassword,
-                                _.get(this.hcp, 'lastName', null), _.get(this.hcp, 'firstName', null), _.get(this.hcp,'nihii', null), _.get(this.hcp, 'ssin', null), this.hcpZip,
+                                this.hcp.lastName, this.hcp.firstName, this.hcp.nihii, this.hcp.ssin, this.hcp.zip,
                                 this.patient.ssin,
-                                medicationSchemeTransaction.ids.find(id => id.s==='LOCAL').sv, medicationSchemeTransaction.ids.find(id => id.s==='LOCAL').sl, medicationSchemeTransaction.ids.find(id => id.s==='LOCAL').value,
+                                medicationSchemeTransaction.ids.find(id => id.s ==='LOCAL').sv, medicationSchemeTransaction.ids.find(id => id.s ==='LOCAL').sl, medicationSchemeTransaction.ids.find(id => id.s==='LOCAL').value,
                                 this.hubPackageId, this.breakTheGlassReason
                             ) : Promise.resolve({})
                         })
@@ -289,7 +288,7 @@
                         .then(subTransactions => Promise.all(subTransactions.map(subTransaction => {
                             const hcParty = _.get(subTransaction, "author.hcparties", []).find(hcParty => hcParty.ids.some(id => id.s === "INSS"));
                             if (hcParty) {
-                                return this._getCachedHcpId(hcParty.ids.find(id => id.s === "INSS").value)
+                                return this._getCachedHcpIdBySsin(hcParty.ids.find(id => id.s === "INSS").value)
                                     .then(id => {
                                         hcParty.localId = id;
                                         return subTransaction;
