@@ -567,7 +567,7 @@
         </paper-dialog>
         <ht-pat-hub-diary-note id="htPatHubDiaryNote" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-diary-note>
         <ht-pat-hub-sumehr-preview id="htPatHubSumehrPreview" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-sumehr-preview>
-        <ht-pat-hub-medication-scheme-preview id="htPatHubMedicationSchemePreview" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-medication-scheme-preview>
+        <ht-pat-hub-medication-scheme-preview id="htPatHubMedicationSchemePreview" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay" on-error="_showErrorMessage"></ht-pat-hub-medication-scheme-preview>
         <ht-pat-hub-history-viewer id="htPatHubHistoryViewer" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-history-viewer>
         <ht-pat-hub-utils id="htPatHubUtils" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" current-contact="[[currentContact]]" i18n="[[i18n]]" resources="[[resources]]" on-hub-download="_hubDownload" on-close-hub-dialog="_closeOverlay"></ht-pat-hub-utils>
     </template>
@@ -1981,6 +1981,20 @@
 
             _getLabel(label){
                 return _.get(label, this.language, label.en)
+            }
+
+            _showErrorMessage(e) {
+                // @todo: implement
+                return;
+                if (e.detail && e.detail.title && e.detail.message) {
+                    return setTimeout(() => {
+                        console.log(e.detail.error);
+                        this.set('errorTitle', e.detail.title);
+                        this.set('errorMessage', this.localize(e.detail.message, e.detail.message));
+                        e.detail.detail && this.set('errorDetail', e.detail.detail);
+                        this.$["error-message-box"].open();
+                    }, 200);
+                }
             }
 
         }

@@ -73,6 +73,33 @@
 
             }
 
+            .modalDialog {
+                display: flex;
+                flex-direction: column;
+                min-height: 300px;
+                height: 200px;
+                min-width: 400px;
+                width: 600px;
+            }
+
+            .modalDialogContent {
+                height: 250px;
+                width: auto;
+                margin: auto;
+            }
+
+            .modal-title {
+                justify-content: flex-start;
+            }
+
+            .content {
+                text-align: center;
+            }
+
+            .modal-title iron-icon {
+                margin-right: 8px;
+            }
+
         </style>
 
         <paper-dialog id="hubMedicationSchemaDetailDialog">
@@ -82,12 +109,22 @@
                     <ht-spinner active="[[isLoading]]"></ht-spinner>
                 </div>
                 <div class="ms-content">
-                    <ht-pat-hub-medication-scheme-extended-view class="p4" id="htPatHubMedicationSchemeExtendedView" api="[[api]]" user="[[user]]" hcp="[[hcp]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" resources="[[resources]]" medication-scheme-transactions="[[medicationSchemeTransactions]]" medications="[[medications]]" prescriptions="[[prescriptions]]" contacts="[[contacts]]" on-update-ms="_getMsTransactions"></ht-pat-hub-medication-scheme-extended-view>
+                    <ht-pat-hub-medication-scheme-extended-view class="p4" id="htPatHubMedicationSchemeExtendedView" api="[[api]]" user="[[user]]" hcp="[[hcp]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" resources="[[resources]]" medication-scheme-transactions="[[medicationSchemeTransactions]]" medications="[[medications]]" prescriptions="[[prescriptions]]" contacts="[[contacts]]" on-error="_showErrorMessage" on-update-ms="updateMedicationScheme"></ht-pat-hub-medication-scheme-extended-view>
                 </div>
                   </div>
             <div class="buttons">
                 <paper-button class="button button--other" on-tap="_closeDialogs"><iron-icon icon="icons:close"></iron-icon> [[localize('clo','Close',language)]]</paper-button>
                 <paper-button class="button button--save" on-tap="_synchronizeScheme">[[localize('','Synchroniser le schéma',language)]]</paper-button>
+            </div>
+        </paper-dialog>
+        <paper-dialog id="error-message-box" class="modalDialog" no-cancel-on-outside-click no-cancel-on-esc-key always-on-top>
+            <h2 class="modal-title"><iron-icon icon="icons:warning"></iron-icon> [[localize('warning','Warning',language)]]</h2>
+            <div class="content">
+                <h3>[[errorTitle]]</h3>
+                <p>[[errorMessage]]: [[errorDetail]]</p>
+            </div>
+            <div class="buttons">
+                <paper-button class="button button--other" role="button" dialog-dismiss><iron-icon icon="icons:close"></iron-icon>[[localize('clo','Close',language)]]</paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -185,14 +222,8 @@
             }
 
             _open(){
-                this.$['hubMedicationSchemaDetailDialog'].open()
-                this.set('isLoading', true)
-                this._getMsTransactions().then(msTransactions => {
-                    this.set('medicationSchemeTransactions', msTransactions)
-                    console.log(msTransactions)
-                }).finally(() => {
-                    this.set('isLoading', false)
-                })
+                this.$['hubMedicationSchemaDetailDialog'].open();
+                this.updateMedicationScheme();
             }
 
             _closeDialogs(){
@@ -212,6 +243,18 @@
                 return p;
             }
 
+            updateMedicationScheme() {
+                this.set('isLoading', true)
+                this._getMsTransactions()
+                    .then(msTransactions => {
+                        this.set('medicationSchemeTransactions', msTransactions)
+                        console.log(msTransactions)
+                    })
+                    .catch(error => this._showErrorMessage({detail: {title: this.localize("cd-transaction-medicationscheme", "Schéma de médication"), message: "Erreur à la récupération du schéma", detail: error}}))
+                    .finally(() => {
+                        this.set('isLoading', false)
+                    })
+            }
 
             _getMsTransactions(){
                 if (this.patient.ssin && this.api.tokenId) {
@@ -263,7 +306,7 @@
                             };
                         })
                 } else {
-                    return Promise.resolve({})
+                    return Promise.reject(this.localize("lt-patientInss-ko", "Niss du patient est manquant"));
                 }
             }
 
@@ -271,7 +314,17 @@
                 this.$['htPatHubMedicationSchemeExtendedView']._synchronizeScheme()
             }
 
-
+            _showErrorMessage(e) {
+                if (e.detail && e.detail.title && e.detail.message) {
+                    return setTimeout(() => {
+                        console.log(e.detail.error);
+                        this.set('errorTitle', e.detail.title);
+                        this.set('errorMessage', this.localize(e.detail.message, e.detail.message));
+                        e.detail.detail && this.set('errorDetail', e.detail.detail);
+                        this.$["error-message-box"].open();
+                    }, 200);
+                }
+            }
         }
         customElements.define(htPatHubMedicationSchemeDialog.is, htPatHubMedicationSchemeDialog);
     </script>

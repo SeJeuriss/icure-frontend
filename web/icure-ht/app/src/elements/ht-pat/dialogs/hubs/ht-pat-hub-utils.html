@@ -215,23 +215,19 @@
                     })
             }
 
-            validateDate(date) {
-                if (!date) return false;
-                if (typeof date !== "string") return false;
-                const numericDate = parseInt(date, 10);
-                if (!numericDate) return false;
-                return (numericDate >= 19700101 && numericDate <= parseInt(moment().add(1, 'y').format("YYYYMMDD"), 10));
+            fixDate(date, defaultDate) {
+                if (!date) return defaultDate;
+                if (typeof date !== "number") date = parseInt(date, 10);
+                if (!date) return defaultDate;
+                if (date < 19700101 || date > parseInt(this.api.moment(Date.now()).add(1, 'y').format("YYYYMMDD"), 10)) return defaultDate;
+                return date;
             }
 
             normalizeMedications(medications) {
                 return medications.map(medication => {
                     const medicationValue = this.api.contact().medicationValue(medication, this.language);
-                    if (!this.validateDate(medicationValue.beginMoment)) {
-                        medicationValue.beginMoment = parseInt(this.api.moment().format("YYYYMMDD"), 10);
-                    }
-                    if (medicationValue.endMoment && !this.validateDate(medicationValue.endMoment)) {
-                        delete medicationValue.endMoment;
-                    }
+                    medicationValue.beginMoment = this.fixDate(medicationValue.beginMoment, parseInt(this.api.moment(Date.now()).format("YYYYMMDD"), 10));
+                    medicationValue.endMoment = this.fixDate(medicationValue.endMoment);
                     delete medicationValue.stringValue;
                     if (medicationValue.regimen && medicationValue.regimen.length) {
                         medicationValue.knownUsage = false;
@@ -299,7 +295,7 @@
                             }).then(output => {
                                 return Promise.resolve(enc.decode(output));
                             }).catch(error=> {
-                                return Promise.resolve({message: "error on generate", error: error});
+                                return Promise.reject(error);
                             })
                         ))
             }
@@ -316,11 +312,14 @@
                         this.hubConfig.hubPackageId, this.hubConfig.hubApplication
                         )
                     )
+                    .catch(error => {
+                        return Promise.reject(error);
+                    })
                 )
             }
 
-            handleResponse(putResponse, services){
-                return this.hasError(putResponse) ? Promise.resolve({error:"has an error", response:putResponse}): Promise.resolve(this.mergeResponse(putResponse, services));
+            handleResponse(response, services){
+                return this.hasError(response) ? Promise.reject(response): Promise.resolve(this.mergeResponse(response, services));
             }
 
             hasError(putResponse){
@@ -346,12 +345,12 @@
             mergeResponse(putResponse, services){
                 //1. get transactionset id
                 //2. get transactionset from hub
-                //3. updated the services
+                //3. updated the servicesreject
                 const tsInfo = putResponse.transactions && putResponse.transactions.length > 0 ? putResponse.transactions[0].ids.find(id => id.s==="LOCAL") : null;
                 const tsSv = tsInfo.sv;
                 const tsSl = tsInfo.sl;
                 const tsId = tsInfo.value;
-                this.getTransactionSet(tsSv, tsSl, tsId).then(tsResp => {
+                return this.getTransactionSet(tsSv, tsSl, tsId).then(tsResp => {
                     putResponse.transactions.forEach(trInfo  => {
                         const idKmehr = trInfo.ids.find(id => id.s === "ID-KMEHR").value;
                         const trOnHub = tsResp.folders[0].transactions.find(tr => tr.ids.find(id => id.s === "ID-KMEHR" && id.value === idKmehr)); //TODO: verify other id's (LOCAL)
@@ -387,6 +386,9 @@
                         this.patient.ssin,
                         tsSv, tsSl, tsId,
                         this.hubConfig.hubPackageId, ""))
+                    .catch(error => {
+                        return Promise.reject(error);
+                    })
             }
 
             transactionDateTime(tr){
