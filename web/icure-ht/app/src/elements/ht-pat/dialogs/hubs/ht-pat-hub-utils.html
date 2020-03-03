@@ -59,13 +59,14 @@
                         type:  Number,
                         value: 0
                     },
-                    isLoading:{
-                        type: Boolean,
-                        value: false
-                    },
                     hcpCache: {
                         type: Object,
                         notify: false
+                    },
+                    hcpMap: {
+                        type: Object,
+                        notify: false,
+                        value: () => new Map()
                     }
                 };
             }
@@ -213,6 +214,66 @@
                 return this.hubConfig;
             }
 
+            _getCachedHcpIdBySsin(ssin) {
+                let p = this.hcpMap.get(ssin);
+                if (p === undefined) {
+                    p = this.api.hcparty().findBySsinOrNihii(ssin, null, null, 1)
+                        .then(hcp => {
+                            return hcp.rows[0].id;
+                        });
+                    this.hcpMap.set(ssin, p);
+                }
+                return p;
+            }
+
+            getMedicationScheme() {
+                this.initHubConfig();
+                if (this.patient.ssin && this.api.tokenId) {
+                    return this._getHcp()
+                        .then(hcp => {
+                            return this.api.fhc().Hubcontroller().getTransactionsListUsingGET(this.hubConfig.hubEndPoint,
+                                this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
+                                hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, hcp.zip,
+                                this.patient.ssin,
+                                this.hubConfig.hubPackageId,
+                                null, null, null, null,
+                                true, this.hubConfig.supportBreakTheGlass
+                            )
+                        })
+                        .then(transactions => {
+                            const transaction = transactions.find(transaction => _.get(transaction, 'cds', []).find(cd => _.get(cd, 's', null) === "CD-TRANSACTION" && _.get(cd, 'value', null) === "medicationscheme"))
+                            const tsInfo = transaction.ids.find(id => id.s ==='LOCAL');
+                            if (!tsInfo) return Promise.reject("No local transaction found");
+                            return !_.isEmpty(transaction) ? this.getTransactionSet(tsInfo.sv, tsInfo.sl, tsInfo.value) : Promise.resolve({})
+                        })
+                        .then(transactionSet => {
+                            console.log(transactionSet);
+                            return _.get(_.head(_.get(transactionSet, 'folders', {})), 'transactions', []);
+                        })
+                        .then(subTransactions => Promise.all(subTransactions.map(subTransaction => {
+                            const hcParty = _.get(subTransaction, "author.hcparties", []).find(hcParty => hcParty.ids.some(id => id.s === "INSS"));
+                            if (hcParty) {
+                                return this._getCachedHcpIdBySsin(hcParty.ids.find(id => id.s === "INSS").value)
+                                    .then(id => {
+                                        hcParty.localId = id;
+                                        return subTransaction;
+                                    });
+                            } else {
+                                return Promise.resolve(subTransaction);
+                            }
+                        })))
+                        .then(subTransactions => {
+                            return {
+                                medicationScheme: subTransactions.find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationscheme")),
+                                medicationSchemeElements: subTransactions.filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationschemeelement")),
+                                treatmentSuspensions: subTransactions.filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "treatmentsuspension"))
+                            };
+                        })
+                } else {
+                    return Promise.reject(this.localize("lt-patientInss-ko", "Niss du patient est manquant"));
+                }
+            }
+
             putMedicationScheme(services, serviceAuthors, version, isTest) {
 
                 //0. Check Data (optional) (frontend)
@@ -228,9 +289,9 @@
                 return this.generateMedicationScheme(normalized, serviceAuthors, version)
                     .then(msMessage => this.putTransactionSet(msMessage, isTest))
                     .then(putResponse => this.handleResponse(putResponse, services))
-                    .finally(() => {
-                        this.dispatchEvent(new CustomEvent('update-ms', {detail: {}, bubbles: true, composed: true}))
-                    })
+                    // .finally(() => {
+                    //     this.dispatchEvent(new CustomEvent('update-ms', {detail: {}, bubbles: true, composed: true}))
+                    // })
             }
 
             fixDate(date, defaultDate) {
@@ -324,8 +385,7 @@
                 return this._getHcp()
                     .then(hcp => this.api.fhc().Hubcontroller().putTransactionSetUsingPOST(this.hubConfig.hubEndPoint,
                         this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
-                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin,
-                        ((hcp.addresses || []).find(address => !!address.postalCode) || {postalCode: "1000"}).postalCode,
+                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, hcp.zip,
                         this.hubConfig.hubId,
                         this.patient.ssin,
                         myblob,
@@ -339,8 +399,7 @@
                 return this._getHcp()
                     .then(hcp => this.api.fhc().Hubcontroller().getTransactionSetMessageUsingGET(this.hubConfig.hubEndPoint,
                         this.api.keystoreId, this.api.tokenId, this.api.credentials.ehpassword,
-                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin,
-                        ((hcp.addresses || []).find(address => !!address.postalCode) || {postalCode: "1000"}).postalCode,
+                        hcp.lastName, hcp.firstName, hcp.nihii, hcp.ssin, hcp.zip,
                         this.patient.ssin,
                         tsSv, tsSl, tsId,
                         this.hubConfig.hubPackageId, ""))
