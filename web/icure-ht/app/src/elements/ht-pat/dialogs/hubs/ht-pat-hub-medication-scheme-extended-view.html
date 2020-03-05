@@ -1318,7 +1318,7 @@
                 <div class="table">
                     <template id="fields" is="dom-repeat" items="[[fields]]" as="field">
                         <template is="dom-if" if="[[!field.hidden]]">
-                            <div class="tr"><div class="td mergeLabel">[[field.label]]</div></div>
+                            <div class="tr"><div class="td mergeLabel">[[localize(field.label,field.label,language)]]</div></div>
                             <div class="tr">
                                 <div class="td mergeButtons"><vaadin-checkbox id="{{field.name}}" checked="[[_isChecked(field, refresher)]]" on-tap="_check"></vaadin-checkbox></div>
                                 <div class="td mergeValue">[[_getValue(field.source, refresher)]]</div>
@@ -1347,11 +1347,11 @@
 
         const all_fields = [
             { label: 'medicationName', getter: '_getMedicationName', score: 82, hidden: true },
-            { label: 'beginmoment', name: 'beginmoment', score: 1 },
-            { label: 'endmoment', name: 'endmoment', score: 1 },
-            { label: 'temporality', name: 'temporality', score: 1 },
-            { label: 'frequency', name: 'frequency', score: 1, format: '_formatFrequency' },
-            { label: 'posology', name: 'posology', score: 1, format: '_formatPosology' },
+            { label: 'begin', name: 'beginmoment', score: 1 },
+            { label: 'end', name: 'endmoment', score: 1 },
+            { label: 'temp', name: 'temporality', score: 1 },
+            { label: 'freq', name: 'frequency', score: 1, format: '_formatFrequency' },
+            { label: 'pos', name: 'posology', score: 1, format: '_formatPosology' },
             { label: 'ms_morning', name: 'regimen.0', score: 1, filter: '_filterRegimen', argument: 0, path: 'quantity', defaultValue: 0 },
             { label: 'ms_beforebreakfast', name: 'regimen.0', score: 1, filter: '_filterRegimen', argument: 1, path: 'quantity', defaultValue: 0 },
             { label: 'ms_duringbreakfast', name: 'regimen.0', score: 1, filter: '_filterRegimen', argument: 2, path: 'quantity', defaultValue: 0 },
