@@ -755,8 +755,9 @@
                 this._setHub();
             }
 
-            _setHub(){
-                const hubConfig = this.$["htPatHubUtils"].getHubConfig(this.curHub, this.curEnv);
+            _setHub() {
+                this.hubConfig = this.$["htPatHubUtils"].initHubConfig(this.curHub, this.curEnv);
+                // const hubConfig = this.$["htPatHubUtils"].getHubConfig(this.curHub, this.curEnv);
                 //this.set('isLoading',true);
                 this.set('hcpHubConsent', null);
                 this.set('patientHubConsent', null);
@@ -765,13 +766,13 @@
                 this.set('patientHubInfo', null);
                 this.set('breakTheGlassReason', null);
 
-                this.hubConfig = hubConfig ;
-                this.hubId = hubConfig.hubId;
-                this.hubEndPoint = hubConfig.hubEndPoint;
-                this.set("hubSupportsConsent", hubConfig.hubSupportsConsent);
-                this.hubPackageId = hubConfig.hubPackageId;
-                this.hubApplication = hubConfig.hubApplication;
-                this.set("supportBreakTheGlass", hubConfig.supportBreakTheGlass);
+                // this.hubConfig = hubConfig ;
+                this.hubId = this.hubConfig.hubId;
+                this.hubEndPoint = this.hubConfig.hubEndPoint;
+                this.set("hubSupportsConsent", this.hubConfig.hubSupportsConsent);
+                this.hubPackageId = this.hubConfig.hubPackageId;
+                this.hubApplication = this.hubConfig.hubApplication;
+                this.set("supportBreakTheGlass", this.hubConfig.supportBreakTheGlass);
 
                 //this.set('isLoading', false);
             }
@@ -1051,7 +1052,11 @@
                 //TODO: get the services
                 if (this.patient) {
                     //this.hubConfig
-                    this._getMedicationServices().then(services => this.$["htPatHubUtils"].putMedicationScheme(this.hubConfig, services, version)).then(svcs => console.log("services after processing", svcs));
+                    // this.$["htPatHubUtils"].initHubConfig(this.hubConfig);
+                    this._getMedicationServices()
+                        .then(services => this.$["htPatHubUtils"].putMedicationScheme(services, version))
+                        .then(svcs => console.log("services after processing", svcs))
+                        .catch(error => this.dispatchEvent(new CustomEvent("error", {detail: {title: this.localize("cd-transaction-medicationscheme", "Schéma de médication"), message:"Erreur  à l'émission du schéma", detail: error}, bubbles: true, composed: true})))
                 }
             }
 

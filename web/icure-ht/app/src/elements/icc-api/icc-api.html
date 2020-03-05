@@ -1058,7 +1058,7 @@
                     }.bind(this);
                 })
             })
-            */
+              */
          }
 
         _addNewCurrentLog(info,mainLog,tmpLogging,chargedPatients){
@@ -1148,6 +1148,10 @@
 
         setPreventLogging(status=true){
             this.set("preventLogging",status)
+        }
+
+        _isValidMail(email){
+            return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,20})+$/.test(email))
         }
     }
 

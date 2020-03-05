@@ -73,21 +73,58 @@
 
             }
 
+            .modalDialog {
+                display: flex;
+                flex-direction: column;
+                min-height: 300px;
+                height: 200px;
+                min-width: 400px;
+                width: 600px;
+            }
+
+            .modalDialogContent {
+                height: 250px;
+                width: auto;
+                margin: auto;
+            }
+
+            .modal-title {
+                justify-content: flex-start;
+            }
+
+            .content {
+                text-align: center;
+            }
+
+            .modal-title iron-icon {
+                margin-right: 8px;
+            }
+
         </style>
 
         <paper-dialog id="hubMedicationSchemaDetailDialog">
             <div class="content hubMedicationSchemaDetailDialog">
                 <div id="titleInfo">
                     [[localize('ms-title', 'Schéma de médication', language)]]
-                    <ht-spinner active="[[isLoading]]"></ht-spinner>
                 </div>
                 <div class="ms-content">
-                    <ht-pat-hub-medication-scheme-extended-view class="p4" id="htPatHubMedicationSchemeExtendedView" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" resources="[[resources]]" medication-scheme="[[medicationScheme]]" medications="[[medications]]" prescriptions="[[prescriptions]]" contacts="[[contacts]]" on-update-ms="_getMedicationSchema"></ht-pat-hub-medication-scheme-extended-view>
+                    <ht-pat-hub-medication-scheme-extended-view class="p4" id="htPatHubMedicationSchemeExtendedView" api="[[api]]" user="[[user]]" hcp="[[hcp]]" language="[[language]]" patient="[[patient]]" i18n="[[i18n]]" resources="[[resources]]" medications="[[medications]]" prescriptions="[[prescriptions]]" contacts="[[contacts]]" on-error="_showErrorMessage" on-spinner-busy="_setSpinnerBusy" on-spinner-idle="_setSpinnerIdle"></ht-pat-hub-medication-scheme-extended-view>
                 </div>
                   </div>
             <div class="buttons">
                 <paper-button class="button button--other" on-tap="_closeDialogs"><iron-icon icon="icons:close"></iron-icon> [[localize('clo','Close',language)]]</paper-button>
                 <paper-button class="button button--save" on-tap="_synchronizeScheme">[[localize('','Synchroniser le schéma',language)]]</paper-button>
+            </div>
+            <ht-spinner active="[[busySpinner]]"></ht-spinner>
+        </paper-dialog>
+        <paper-dialog id="error-message-box" class="modalDialog" no-cancel-on-outside-click no-cancel-on-esc-key always-on-top>
+            <h2 class="modal-title"><iron-icon icon="icons:warning"></iron-icon> [[localize('warning','Warning',language)]]</h2>
+            <div class="content">
+                <h3>[[errorTitle]]</h3>
+                <p>[[errorMessage]]: [[errorDetail]]</p>
+            </div>
+            <div class="buttons">
+                <paper-button class="button button--other" role="button" dialog-dismiss><iron-icon icon="icons:close"></iron-icon>[[localize('clo','Close',language)]]</paper-button>
             </div>
         </paper-dialog>
     </template>
@@ -124,37 +161,17 @@
                         type: Object,
                         value: () => {}
                     },
-                    isLoading:{
+                    busySpinner: {
                         type: Boolean,
                         value: false
                     },
-                    hubId:{
+                    busySpinnerCounter: {
                         type: Number,
-                        value : 0
-                    },
-                    hubEndPoint:{
-                        type: String,
-                        value: null
-                    },
-                    hubPackageId:{
-                        type: String,
-                        value: null
-                    },
-                    breakTheGlassReason:{
-                        type: String,
-                        value: null
-                    },
-                    hcpZip:{
-                        type:String,
-                        value:'1000'
+                        value: 0
                     },
                     hcp: {
                         type: Object,
                         value: () => {}
-                    },
-                    medicationScheme:{
-                        type: Array,
-                        value: () => []
                     },
                     medications:{
                         type: Array,
@@ -180,60 +197,52 @@
             }
 
             _open(){
-                this.$['hubMedicationSchemaDetailDialog'].open()
-                this.set('isLoading', true)
-                this._getMedicationSchema().then(transaction => {
-                    this.set('medicationScheme', transaction)
-                    console.log(transaction)
-                }).finally(() => {
-                    this.set('isLoading', false)
-                })
+                this.$['hubMedicationSchemaDetailDialog'].open();
+                this._updateMedicationScheme();
             }
 
             _closeDialogs(){
-                this.set('medicationScheme', [])
+                // @todo cleanup
+                // this.set('medicationSchemeTransactions', {})
                 this.$['hubMedicationSchemaDetailDialog'].close()
             }
 
-            _getMedicationSchema(){
-                if (this.patient.ssin && this.api.tokenId) {
-                    return this.api.hcparty().getHealthcareParty(this.user.healthcarePartyId)
-                        .then(hcp => {
-                            this.set('hcp', hcp)
-                            return this.api.fhc().Hubcontroller().getTransactionsListUsingGET(
-                                this.hubEndPoint,
-                                _.get(this.api, 'keystoreId', null), _.get(this.api, 'tokenId', null), _.get(this.api, 'credentials.ehpassword', null),
-                                _.get(hcp, 'lastName', null), _.get(hcp, 'firstName', null), _.get(hcp, 'nihii', null), _.get(hcp, 'ssin', null), _.get(this, 'hcpZip', null),
-                                _.get(this.patient, 'ssin', null),
-                                this.hubPackageId,
-                                null, null,
-                                null, null,
-                                true, this.breakTheGlassReason
-                            )
-                        })
-                        .then(transactions => {
-                            const medicationSchemeTransaction = transactions.find(transaction => _.get(transaction, 'cds', []).find(cd => _.get(cd, 's', null) === "CD-TRANSACTION" && _.get(cd, 'value', null) === "medicationscheme"))
-                            return !_.isEmpty(medicationSchemeTransaction) ? this.api.fhc().Hubcontroller().getTransactionSetMessageUsingGET(this.hubEndPoint, this.api.keystoreId,
-                                this.api.tokenId, this.api.credentials.ehpassword,
-                                _.get(this.hcp, 'lastName', null), _.get(this.hcp, 'firstName', null), _.get(this.hcp,'nihii', null), _.get(this.hcp, 'ssin', null), this.hcpZip,
-                                this.patient.ssin,
-                                medicationSchemeTransaction.ids.find(id => id.s==='LOCAL').sv, medicationSchemeTransaction.ids.find(id => id.s==='LOCAL').sl, medicationSchemeTransaction.ids.find(id => id.s==='LOCAL').value,
-                                this.hubPackageId, this.breakTheGlassReason
-                            ) : Promise.resolve({})
-                        })
-                        .then(transaction => {
-                            console.log(transaction)
-                            return transaction
-                        })
-                } else {
-                    return Promise.resolve({})
-                }
+            _updateMedicationScheme() {
+                this.$['htPatHubMedicationSchemeExtendedView'].updateMedicationScheme();
             }
 
             _synchronizeScheme(){
                 this.$['htPatHubMedicationSchemeExtendedView']._synchronizeScheme()
             }
 
+            _showErrorMessage(e) {
+                if (e.detail && e.detail.title && e.detail.message) {
+                    return setTimeout(() => {
+                        console.log(e.detail.error);
+                        this.set('errorTitle', e.detail.title);
+                        this.set('errorMessage', this.localize(e.detail.message, e.detail.message));
+                        e.detail.detail && this.set('errorDetail', e.detail.detail);
+                        this.$["error-message-box"].open();
+                    }, 200);
+                }
+            }
+
+            _setSpinnerBusy() {
+                this.busySpinnerCounter ++;
+                if (this.busySpinnerCounter > 0) {
+                    this.set("busySpinner", true);
+                }
+                console.log("increasing spinner counter: ", this.busySpinnerCounter);
+            }
+
+            _setSpinnerIdle() {
+                this.busySpinnerCounter --;
+                if (this.busySpinnerCounter < 1) {
+                    this.set("busySpinner", false);
+                    this.busySpinnerCounter = 0;
+                }
+                console.log("decreasing spinner counter: ", this.busySpinnerCounter);
+            }
 
         }
         customElements.define(htPatHubMedicationSchemeDialog.is, htPatHubMedicationSchemeDialog);

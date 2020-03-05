@@ -1559,12 +1559,24 @@
                     contacts: {
                         type: Array,
                         value: () => []
+                    },
+                    hcp: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    hcPartiesCache: {
+                        type: Array,
+                        value: () => []
+                    },
+                    medicationSchemeTransactions:{
+                        type: Array,
+                        value: () => []
                     }
                 }
             }
 
             static get observers() {
-                return ['dataProvider(medicationScheme.*)'];
+                return ['dataProvider(medicationSchemeTransactions.*)'];
             }
 
             ready() {
@@ -1572,17 +1584,17 @@
             }
 
             dataProvider(){
-                console.log(this.medicationScheme)
-                const medicScheme = this._getMedicationSchemeFromTransactionSet(this.medicationScheme)
+                console.log(this.medicationSchemeTransactions)
+                const ms = this._getMedicationSchemeFromTransactionSet();
                 this.set('currentMedicationScheme', {
-                    idKmehr: _.get(medicScheme, 'idKmehr', null),
-                    hubId: _.get(medicScheme, 'hubId', null),
-                    date: _.get(medicScheme, 'date', null),
-                    authors: _.get(medicScheme, 'authors', []),
-                    version: _.get(medicScheme, 'version', null),
-                    msElems: _.concat(_.get(medicScheme, 'msElems', []), this.transformMedicationAndPrescription()),
-                    msSusps: _.get(medicScheme, 'msSusps', []),
-                    times:  _.get(medicScheme, 'times', [])
+                    idKmehr: _.get(ms, 'idKmehr', null),
+                    hubId: _.get(ms, 'hubId', null),
+                    date: _.get(ms, 'date', null),
+                    authors: _.get(ms, 'authors', []),
+                    version: _.get(ms, 'version', null),
+                    msElems: _.concat(_.get(ms, 'msElems', []), this._getElementsFromMedications()),
+                    msSusps: _.get(ms, 'msSusps', []),
+                    times:  _.get(ms, 'times', [])
                 })
             }
 
@@ -1886,31 +1898,34 @@
                 return (m.idKmehr%2 == 0) ? 'even' : 'odd'
             }
 
-            transformMedicationAndPrescription(){
-                console.log(this.medications)
-                console.log(this.prescriptions)
+
+            _getElementsFromMedications(){
+                console.log(this.medications);
+                console.log(this.prescriptions);
+
                 return _.concat(_.get(this, 'medications', []), _.get(this, 'prescriptions', [])).map(med => {
-                    const beginMoment = _.get(med, "content."+this.language+".medicationValue.beginMoment", null);
-                    const endMoment = _.get(med, "content."+this.language+".medicationValue.endMoment", null);
+                    const medicationValue = this.api.contact().medicationValue(med, this.language) || {};
+                    const beginMoment = _.get(medicationValue, "beginMoment", null);
+                    const endMoment = _.get(medicationValue, "endMoment", null);
                     return {
                         idKmehr: null,
                         medicationHubId: null,
                         adaptationflag: null,
                         adaptationtype: null,
-                        compoundprescription: _.get(med, "content."+this.language+".medicationValue.compoundprescription", null),
-                        medicinalproduct: _.get(med, "content."+this.language+".medicationValue.medicinalProduct", null),
-                        substanceproduct: _.get(med, "content."+this.language+".medicationValue.substanceproduct", null),
+                        compoundprescription: _.get(medicationValue, "compoundprescription", null),
+                        medicinalproduct: _.get(medicationValue, "medicinalProduct", null),
+                        substanceproduct: _.get(medicationValue, "substanceproduct", null),
                         beginmoment: beginMoment ? moment(beginMoment, "YYYYMMDD").format('DD/MM/YYYY'): null,
                         endmoment: endMoment ? moment(endMoment, "YYYYMMDD").format('DD/MM/YYYY'): null,
                         temporality: null,
                         frequency: null,
-                        regimen: [this._composeRegimen(_.get(med, "content."+this.language+".medicationValue.regimen", []))],
+                        regimen: [this._composeRegimen(_.get(medicationValue, "regimen", []))],
                         regimenDayNumber: null,
                         regimenWeekDay: null,
                         regimenWeekNumber: null,
                         posology: {
                             text: {
-                                value: _.get(med, "content."+this.language+".medicationValue.instructionForPatient", null)
+                                value: _.get(medicationValue, "instructionForPatient", null)
                             }
                         },
                         suspensions: null,
@@ -1949,42 +1964,40 @@
             }
 
             //create easy medicationscheme object
-            _getMedicationSchemeFromTransactionSet(tr){
-                const infoTr = _.get(_.head(_.get(tr, 'folders', {})), 'transactions', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationscheme"))
-
+            _getMedicationSchemeFromTransactionSet(){
+                if (!(_.has(this.medicationSchemeTransactions, "medicationScheme") && _.has(this.medicationSchemeTransactions, "medicationSchemeElements") && _.has(this.medicationSchemeTransactions, "treatmentSuspensions")))
+                    return [];
                 //loop trough medicationschemeElements tr[1..n]
-                const msElemTrs =  _.get(_.head(_.get(tr, 'folders', {})), 'transactions', []).filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationschemeelement"))
-
                 // loop trough items
                 //  medicationchemeelement:
                 //  item[0]: meta info (adaptation, ...)
                 //  item[1]: medication info (medication, dates, posology, regimen, frequency, ...)
                 //  item[2]: medication use /optional (?)
-                const elems = msElemTrs.map(elTr => {
-                    const dateFromHub = this._getDateFromHub(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null));
+                const elems = this.medicationSchemeTransactions.medicationSchemeElements.map(msElement => {
+                    const dateFromHub = this._getDateFromHub(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null));
                     let el = {
-                        idKmehr: _.get(_.get(elTr, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
-                        medicationHubId: _.get(_.get(elTr, 'ids', []).find(id => _.get(id, 's', null) === "LOCAL"), 'value', null),
-                        adaptationflag: !!_.size(_.get(_.get(elTr, 'item', []).filter(itm=> _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 's', null) ==="CD_MS_ADAPTATION"))), 'contents', []).filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "adaptationflag"))) > 0,
-                        adaptationtype: !!_.get(_.get(_.get(_.get(elTr, 'item', []).filter(itm=> _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 's', null) ==="CD_MS_ADAPTATION"))), 'contents', []).find(it => it.cds.find(cd => cd.s==="CD_MS_ADAPTATION")), 'cds', []).find(cd => cd.s==="CD_MS_ADAPTATION"), 'value', null),
-                        compoundprescription: _.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'compoundprescription', null),
-                        medicinalproduct: _.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'medicinalproduct', null),
-                        substanceproduct: _.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'substanceproduct', null),
-                        beginmoment: this._getDateFromHub(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null)),
-                        endmoment: this._getDateFromHub(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'endmoment', null)),
-                        temporality: _.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'temporality', null),
-                        frequency: _.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'frequency', null),
-                        regimen: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'dayNumber', null) || 'other')),
-                        regimenDayNumber: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'dayNumber', null) || 'other')),
-                        regimenWeekDay: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'weekDay', null) || 'other')),
-                        regimenWeekNumber: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'weekNumber', null) || 'other')),
-                        posology: _.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'posology', null),
+                        idKmehr: _.get(_.get(msElement, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
+                        medicationHubId: _.get(_.get(msElement, 'ids', []).find(id => _.get(id, 's', null) === "LOCAL"), 'value', null),
+                        adaptationflag: !!_.size(_.get(_.get(msElement, 'item', []).filter(itm=> _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 's', null) ==="CD_MS_ADAPTATION"))), 'contents', []).filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "adaptationflag"))) > 0,
+                        adaptationtype: !!_.get(_.get(_.get(_.get(msElement, 'item', []).filter(itm=> _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 's', null) ==="CD_MS_ADAPTATION"))), 'contents', []).find(it => it.cds.find(cd => cd.s==="CD_MS_ADAPTATION")), 'cds', []).find(cd => cd.s==="CD_MS_ADAPTATION"), 'value', null),
+                        compoundprescription: _.get(_.head(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'compoundprescription', null),
+                        medicinalproduct: _.get(_.head(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'medicinalproduct', null),
+                        substanceproduct: _.get(_.head(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'substanceproduct', null),
+                        beginmoment: this._getDateFromHub(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null)),
+                        endmoment: this._getDateFromHub(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'endmoment', null)),
+                        temporality: _.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'temporality', null),
+                        frequency: _.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'frequency', null),
+                        regimen: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'dayNumber', null) || 'other')),
+                        regimenDayNumber: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'dayNumber', null) || 'other')),
+                        regimenWeekDay: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'weekDay', null) || 'other')),
+                        regimenWeekNumber: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'weekNumber', null) || 'other')),
+                        posology: _.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'posology', null),
                         suspensions: [],
-                        usePresent: !!_.get(_.get(elTr, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0),
-                        useTexts: _.get(_.get(_.get(elTr, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0), 'texts', []),
+                        usePresent: !!_.get(_.get(msElement, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0),
+                        useTexts: _.get(_.get(_.get(msElement, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0), 'texts', []),
                         date: null,
                         beginTimeStamp: dateFromHub ? moment(dateFromHub, 'DD/MM/YYYY').format('YYYYMMDD') : null,
-                        authors: _.get(elTr, 'author.hcparties', []),
+                        authors: _.get(msElement, 'author.hcparties', []),
                         uniqId: this.api.crypto().randomUuid(),
                         synchronizationInfo: {
                             availableOnHub: true,
@@ -1992,7 +2005,7 @@
                             localToHub: false,
                             hubToLocal: false
                         }
-                    }
+                    };
 
                     if(_.size(_.get(el, 'regimenDayNumber', [])) > _.size(_.get(el, 'regimenWeekDay', []))){
                         if(_.size(_.get(el, 'regimenWeekNumber', [])) > _.size(_.get(el, 'regimenDayNumber', []))){
@@ -2009,32 +2022,20 @@
                     }
 
                     return el
-                })
-
-                let ms = {
-                    idKmehr: _.get(_.get(infoTr, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
-                    hubId: _.get(_.get(infoTr, 'ids', []).find(id => _.get(id, 's', null) === "LOCAL"), 'sl', null) + "." + _.get(_.get(infoTr, 'ids', []).find(id => id.s === "LOCAL"), 'value', null),
-                    date: null,
-                    authors: _.get(infoTr, 'author.hcparties', null),
-                    version: _.get(infoTr, 'version', null),
-                    msElems: _.orderBy(elems, ['beginTimeStamp'], ['desc'])
-                }
+                });
 
                 //loop trough treatmentsuspensions tr[1..n]
-                const msSuspTrs = _.get(_.head(_.get(tr, 'folders', {})), 'transactions', []).filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "treatmentsuspension"))
-
-                //suspended medication
-                const susps = msSuspTrs.map(elTr => {
+                const susps = this.medicationSchemeTransactions.treatmentSuspensions.map(msSuspension => {
                     let el = {
-                        idKmehr: _.get(_.get(elTr, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
-                        compoundprescription: _.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'compoundprescription', null),
-                        medicinalproduct: _.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'medicinalproduct', null),
-                        substanceproduct: _.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'substanceproduct', null),
-                        beginmoment: this._getDateFromHub(_.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'beginmoment', null)),
-                        endmoment: this._getDateFromHub(_.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'endmoment', null)),
-                        lifecycle: _.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'lifecycle', null),
-                        lnks: _.get(_.head(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'lnks', null),
-                        reasonTexts: _.get(_.get(_.get(elTr, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "transactionreason")), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0), 'texts', [])
+                        idKmehr: _.get(_.get(msSuspension, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
+                        compoundprescription: _.get(_.head(_.get(_.get(msSuspension, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'compoundprescription', null),
+                        medicinalproduct: _.get(_.head(_.get(_.get(msSuspension, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'medicinalproduct', null),
+                        substanceproduct: _.get(_.head(_.get(_.get(msSuspension, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'substanceproduct', null),
+                        beginmoment: this._getDateFromHub(_.get(_.head(_.get(_.get(msSuspension, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'beginmoment', null)),
+                        endmoment: this._getDateFromHub(_.get(_.head(_.get(_.get(msSuspension, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'endmoment', null)),
+                        lifecycle: _.get(_.head(_.get(_.get(msSuspension, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'lifecycle', null),
+                        lnks: _.get(_.head(_.get(_.get(msSuspension, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'lnks', null),
+                        reasonTexts: _.get(_.get(_.get(msSuspension, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "transactionreason")), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0), 'texts', [])
                     }
 
                     //link to msElem by idKmehr
@@ -2050,9 +2051,19 @@
                         }
                     }
                     return el;
-                })
+                });
 
-                ms.msSusps = susps;
+                const msInfo = this.medicationSchemeTransactions.medicationScheme;
+                let ms = {
+                    idKmehr: _.get(_.get(msInfo, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
+                    hubId: _.get(_.get(msInfo, 'ids', []).find(id => _.get(id, 's', null) === "LOCAL"), 'sl', null) + "." + _.get(_.get(msInfo, 'ids', []).find(id => id.s === "LOCAL"), 'value', null),
+                    date: null,
+                    authors: _.get(msInfo, 'author.hcparties', null),
+                    version: _.get(msInfo, 'version', null),
+                    msElems: _.orderBy(elems, ['beginTimeStamp'], ['desc']),
+                    msSusps: susps
+                };
+
                 ms.times = this._getTimes(ms);
                 return ms;
             }
@@ -2087,44 +2098,41 @@
                 return _.uniq(_.flatMap(_.get(simplifiedMs, 'msElems', []), msElem =>_.flatMap( _.get(msElem, 'regimen', []), reg=>_.flatMap(reg, ritm => _.get(ritm, 'dayTime', null)))).filter(it => !isNaN(it))).sort()
             }
 
-            _createAuthor(data){
-                const auth = data.authors[0];
-                if(auth) {
-                    const id = this.api.crypto().randomUuid();
-                    const lastName = auth.familyname;
-                    const firstName = auth.firstname;
-                    const nihii = _.get(auth.ids.find(id => id.s === "ID_HCPARTY"), 'value', '');
-                    const ssin = _.get(auth.ids.find(id => id.s === "INSS"), 'value', '');
-                    const aut = {
-                        id: id,
-                        name: lastName + " " + firstName,
-                        lastName: lastName,
-                        firstName: firstName,
-                        nihii: nihii,
-                        ssin: ssin,
-                        addresses: []
-                    };
-                    //TODO: address
-                    //TODO: telecoms
-                    // --> merge address and telecom by type
-                    auth.addresses.forEach(adr => {
-                       const ad = {
-                           addressType: _.get(adr.cds.find(cd => cd.s === "CD_ADDRESS"), 'value', 'work'),
-                           street: _.get(adr, 'street', ''),
-                           houseNumber: _.get(adr, 'housenumber', ''),
-                           postboxNumber: _.get(adr, 'postboxnumber', ''),
-                           postalCode: _.get(adr, 'zip', ''),
-                           city: _.get(adr, 'city', ''),
-                           country: !!_.trim(_.get(adr, 'country.cd.value')) ? _.get(adr, 'country.cd.value') : 'be',
-                           telecoms: []
-                       };
-                       aut.addresses.push(ad);
-                    });
-                    return aut;
-                }
-                else
-                {
-                    return {};
+            _createAuthor(data) {
+                if (data.authors && data.authors.length) {
+                    const author = data.authors.find(author => author.cds.some(cd => cd.value === "persphysician"));
+                    if (author) {
+                        return {
+                            id: author.localId,
+                            name: `${author.familyname} ${author.firstname}`,
+                            lastName: author.familyname,
+                            firstName: author.firstname,
+                            nihii: _.get(author.ids.find(id => id.s === "ID_HCPARTY"), 'value', ''),
+                            ssin: _.get(author.ids.find(id => id.s === "INSS"), 'value', ''),
+                            addresses: author.addresses.map(address => {
+                                return {
+                                    addressType: _.get(address.cds.find(cd => cd.s === "CD_ADDRESS"), 'value', 'work'),
+                                    street: _.get(address, 'street', ''),
+                                    houseNumber: _.get(address, 'housenumber', ''),
+                                    postboxNumber: _.get(address, 'postboxnumber', ''),
+                                    postalCode: _.get(address, 'zip', ''),
+                                    city: _.get(address, 'city', ''),
+                                    country: !!_.trim(_.get(address, 'country.cd.value')) ? _.get(address, 'country.cd.value') : 'be',
+                                    telecoms: author.telecoms.map(telecom => {
+                                        return {
+                                            telecomType: _.get(telecom.cds.find(cd => cd.s === "CD_TELECOM"), "value", "phone"),
+                                            telecomNumber: _.get(telecom, "telecomnumber", "")
+                                        };
+                                    })
+                                };
+                            })
+                        };
+                    } else {
+                        // @todo: special case
+                        return this.hcp;
+                    }
+                } else {
+                    return this.hcp;
                 }
             }
 
@@ -2176,15 +2184,18 @@
                     Object.assign(medicationValue, data.medicinalproduct ? {medicinalProduct: product} : {substanceProduct: product});
                     Object.assign(medicationValue, {
                         posology: _.get(data, "posology.text.value", ""),
-                        beginMoment: data.beginmoment ? moment(data.beginmoment, 'DD/MM/YYYY', true).format('YYYYMMDD') : null
+                        beginMoment: data.beginmoment ? parseInt(moment(data.beginmoment, 'DD/MM/YYYY', true).format('YYYYMMDD'), 10) : null
                     });
                     if (data.endmoment) {
-                        Object.assign(medicationContent.medicationValue, {endMoment: moment(data.endmoment, 'DD/MM/YYYY', true).format('YYYYMMDD')});
+                        Object.assign(medicationContent.medicationValue, {
+                            endMoment: parseInt(moment(data.endmoment, 'DD/MM/YYYY', true).format('YYYYMMDD'))
+                        });
                     }
                 }
 
                 medication.label = data.endmoment ? "Prescription" : "Medication";
                 medication.id = this.api.crypto().randomUuid();
+                medication.author = this.user.id;
                 return this.api.contact().service().newInstance(this.user, medication);
             }
 
@@ -2295,53 +2306,67 @@
                 return _.get(currentMedicationScheme, 'msElems', [])
             }
 
+            updateMedicationScheme() {
+                this._setSpinnerBusy();
+                this.$["htPatHubUtils"].getMedicationScheme()
+                    .then(msTransactions => {
+                        this.set('medicationSchemeTransactions', msTransactions)
+                        console.log(msTransactions)
+                    })
+                    .catch(error => this.dispatchEvent(new CustomEvent("error", {detail: {title: this.localize("cd-transaction-medicationscheme", "Schéma de médication"), message:"Erreur à la récupération du schéma", detail: error}, bubbles: true, composed: true})))
+                    .finally(() => this._setSpinnerIdle())
+            }
+
+
             _synchronizeScheme(){
                 console.log("currentMedicationScheme", JSON.stringify(this.currentMedicationScheme));
                 const servicesToUpload = [];
                 const serviceAuthors = [];
                 _.get(this.currentMedicationScheme, "msElems", []).map(item => {
-                    if(_.get(item, 'synchronizationInfo.localToHub', false) || _.get(item, 'synchronizationInfo.availableOnHub', false)){
+                    if(_.get(item, 'synchronizationInfo.localToHub', false) || _.get(item, 'synchronizationInfo.availableOnHub', false)) {
                         const hcp = this._createAuthor(item);
                         const med = this._createMedication(item);
-                        //TODO: set the author id of the medication service to hcp.id
-                        if (hcp.id && med) med.author = hcp.id;
-                        if (med){
+                        med.author = this.user.id;
+                        // med.author = hcp.id;
+                        if (med) {
                             servicesToUpload.push(med)
                         } else{
                             console.log("_createMedication Failed for ", item)
-                        };
+                        }
                         serviceAuthors.push(hcp);
-                    }else if(_.get(item, 'synchronizationInfo.hubToLocal', false)){
+                    } else if(_.get(item, 'synchronizationInfo.hubToLocal', false)) {
                         const drugType = !_.isEmpty(_.get(item, 'medicinalproduct', {})) ? "CD-DRUG-CNK" : !_.isEmpty(_.get(item, 'substanceproduct', {})) ? "CD-VMPGROUP" : "compoundPrescription"
                         //these are to be stored local
                     }
-                })
+                });
                 console.log("servicesToUpload", JSON.stringify(servicesToUpload));
 
-                const propHub = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.preferredhub') ||
-                    (this.user.properties[this.user.properties.length] = {
-                        type: {identifier: 'org.taktik.icure.user.preferredhub'},
-                        typedValue: {type: 'STRING', stringValue: 'rsw'}
-                    })
-
-                const propEnv = this.user.properties.find(p => p.type && p.type.identifier === 'org.taktik.icure.user.eHealthEnv') ||
-                    (this.user.properties[this.user.properties.length] = {
-                        type: {identifier: 'org.taktik.icure.user.eHealthEnv'},
-                        typedValue: {type: 'STRING', stringValue: 'prd'}
-                    })
-                this.set("curHub", propHub.typedValue.stringValue);
-                this.set("curEnv", propEnv.typedValue.stringValue);
-
-                const hubConfig = this.$["htPatHubUtils"].getHubConfig(this.curHub, this.curEnv);
-                //this.set('isLoading',tru0
-                this.hubConfig = hubConfig ;
-
-                this.$["htPatHubUtils"].putMedicationScheme(this.hubConfig, servicesToUpload, serviceAuthors, this.currentMedicationScheme.version, false).then(svcs => console.log("services after processing", svcs));
+                this._setSpinnerBusy();
+                // this.$["htPatHubUtils"].initHubConfig();
+                this.$["htPatHubUtils"].putMedicationScheme(servicesToUpload, serviceAuthors, this.currentMedicationScheme.version, false)
+                    .then(() => this.updateMedicationScheme())
+                    // .then(svcs => console.log("services after processing", svcs))
+                    .catch(error => this.dispatchEvent(new CustomEvent("error", {detail: {title: this.localize("cd-transaction-medicationscheme", "Schéma de médication"), message:"Erreur  à l'émission du schéma", detail: error}, bubbles: true, composed: true})))
+                    .finally(() => this._setSpinnerIdle())
             }
 
             _getResponsibleHcp(authors){
                 return !_.isEmpty(authors.find(aut => _.get(aut, "cds", []).find(cd => _.get(cd, "value", null) === "persphysician"))) ? _.get(authors.find(aut => _.get(aut, "cds", []).find(cd => _.get(cd, "value", null) === "persphysician")), 'firstname', null)+" "+_.get(authors.find(aut => _.get(aut, "cds", []).find(cd => _.get(cd, "value", null) === "persphysician")), 'familyname', null) : _.get(_.last(authors), 'firstname', null)+" "+_.get(_.last(authors), 'familyname', null) || _.get(_.last(authors), 'name', null)
             }
+
+            _setSpinnerBusy() {
+                this.dispatchEvent(new CustomEvent('spinner-busy', {
+                    detail: {}, bubbles: true, composed: true
+                }));
+            }
+
+            _setSpinnerIdle() {
+                this.dispatchEvent(new CustomEvent('spinner-idle', {
+                    detail: {}, bubbles: true, composed: true
+                }));
+            }
+
+
 
         }
         customElements.define(HtPatHubMedicationSchemeExtendedView.is, HtPatHubMedicationSchemeExtendedView);
