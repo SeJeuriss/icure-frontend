@@ -2336,6 +2336,7 @@
                         serviceAuthors.push(hcp);
                     } else if(_.get(item, 'synchronizationInfo.hubToLocal', false)) {
                         const drugType = !_.isEmpty(_.get(item, 'medicinalproduct', {})) ? "CD-DRUG-CNK" : !_.isEmpty(_.get(item, 'substanceproduct', {})) ? "CD-VMPGROUP" : "compoundPrescription"
+
                         //these are to be stored local
                     }
                 });

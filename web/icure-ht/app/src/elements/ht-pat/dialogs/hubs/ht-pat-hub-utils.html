@@ -305,9 +305,11 @@
             normalizeMedications(medications) {
                 return medications.map(medication => {
                     const medicationValue = this.api.contact().medicationValue(medication, this.language);
+                    const content = this.api.contact().preferredContent(medication, this.language);
                     medicationValue.beginMoment = this.fixDate(medicationValue.beginMoment, parseInt(this.api.moment(Date.now()).format("YYYYMMDD"), 10));
                     medicationValue.endMoment = this.fixDate(medicationValue.endMoment);
-                    delete medicationValue.stringValue;
+                    if (!content.stringValue)
+                        content.stringValue = `icure-service:${this.api.crypto().randomUuid()}`;
                     if (medicationValue.regimen && medicationValue.regimen.length) {
                         medicationValue.knownUsage = false;
                         const customReg = medicationValue.regimen.filter(r => r.dayPeriod && ["midday", "afterwakingup"].includes(r.dayPeriod.code));
@@ -440,13 +442,15 @@
                 //3. updated the servicesreject
                 const tsInfo = putResponse.transactions && putResponse.transactions.length > 0 ? putResponse.transactions[0].ids.find(id => id.s==="LOCAL") : null;
                 if (!tsInfo) return Promise.reject("No local transaction found");
-                return this.getTransactionSet(tsInfo.sv, tsInfo.sl, tsInfo.value).then(tsResp => {
-                    putResponse.transactions.forEach(trInfo  => {
-                        const idKmehr = trInfo.ids.find(id => id.s === "ID_KMEHR").value;
-                        const trOnHub = tsResp.folders[0].transactions.find(tr => tr.ids.find(id => id.s === "ID_KMEHR" && id.value === idKmehr)); //TODO: verify other id's (LOCAL)
+                return this.getTransactionSet(tsInfo.sv, tsInfo.sl, tsInfo.value).then(getTransaction => {
+                    putResponse.transactions.forEach(putTransaction  => {
+                        const idKmehr = putTransaction.ids.find(id => id.s === "ID_KMEHR").value;
+                        const trOnHub = getTransaction.folders[0].transactions.find(tr => tr.ids.find(id => id.s === "ID_KMEHR" && id.value === idKmehr)); //TODO: verify other id's (LOCAL)
                         // const idLocalSv = trInfo.ids.find(id => id.s === "LOCAL").sv;
-                        const idLocalSl = trInfo.ids.find(id => id.s === "LOCAL").sl;
-                        const idLocalValue = trInfo.ids.find(id => id.s === "LOCAL").value;
+                        const idLocalSl = putTransaction.ids.find(id => id.s === "LOCAL").sl;
+                        const idLocalValue = putTransaction.ids.find(id => id.s === "LOCAL").value;
+
+                        const crossId = ((trOnHub.item.find(it => it.contents[0].texts.some(text => text && text.value && text.value.startsWith("icure-service"))) || {contents: [{texts: []}]}).contents[0].texts.find(text => text && text.value && text.value.startsWith("icure-service")) || {value: ''}).value;
                         // const trTimeStamp = this.transactionDateTime(trOnHub);
                         const idKmehrIndex = (parseInt(idKmehr, 10) || 1) - 1;
                         if(idKmehrIndex === 0){ //set the medicationscheme ids to all services
@@ -457,7 +461,7 @@
                                 med.medicationSchemeTimeStampOnSafe = this.transactionDateTime(trOnHub);
                             })
                         } else {//set te medicationschemeElement ids to the corresponding service
-                            const svcId = this.iCureServiceId(trOnHub);
+                            const svcId = this.getServiceId(trOnHub);
                             const svc = svcId ? services.find(svc => svc.id === svcId) : services[idKmehrIndex];
                             const med = this.api.contact().preferredContent(svc, this.language);
                             med.idOnSafes = idLocalValue;
@@ -475,7 +479,7 @@
                 return millis;
             }
 
-            iCureServiceId(tr){
+            getServiceId(tr){
                 const item = tr.item.find(it => it.ids.find(id => id.sl === "iCure-Service"));
                 const svcId = (item && item.ids.find(id => id.sl === "iCure-Service") || {value: null}).value;
                 return svcId;
