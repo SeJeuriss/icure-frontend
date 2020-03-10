@@ -440,6 +440,7 @@
                 //1. get transactionset id
                 //2. get transactionset from hub
                 //3. updated the servicesreject
+                const serviceContents = services.map(service => this.api.contact().preferredContent(service, this.language));
                 const tsInfo = putResponse.transactions && putResponse.transactions.length > 0 ? putResponse.transactions[0].ids.find(id => id.s==="LOCAL") : null;
                 if (!tsInfo) return Promise.reject("No local transaction found");
                 return this.getTransactionSet(tsInfo.sv, tsInfo.sl, tsInfo.value).then(getTransaction => {
@@ -449,11 +450,8 @@
                         // const idLocalSv = trInfo.ids.find(id => id.s === "LOCAL").sv;
                         const idLocalSl = putTransaction.ids.find(id => id.s === "LOCAL").sl;
                         const idLocalValue = putTransaction.ids.find(id => id.s === "LOCAL").value;
-
-                        const crossId = ((trOnHub.item.find(it => it.contents[0].texts.some(text => text && text.value && text.value.startsWith("icure-service"))) || {contents: [{texts: []}]}).contents[0].texts.find(text => text && text.value && text.value.startsWith("icure-service")) || {value: ''}).value;
                         // const trTimeStamp = this.transactionDateTime(trOnHub);
-                        const idKmehrIndex = (parseInt(idKmehr, 10) || 1) - 1;
-                        if(idKmehrIndex === 0){ //set the medicationscheme ids to all services
+                        if(idKmehr === "1") { //set the medicationscheme ids to all services
                             services.forEach(svc => {
                                 const med = this.api.contact().preferredContent(svc, this.language);
                                 med.medicationSchemeIdOnSafe = idLocalValue;
@@ -461,11 +459,26 @@
                                 med.medicationSchemeTimeStampOnSafe = this.transactionDateTime(trOnHub);
                             })
                         } else {//set te medicationschemeElement ids to the corresponding service
-                            const svcId = this.getServiceId(trOnHub);
-                            const svc = svcId ? services.find(svc => svc.id === svcId) : services[idKmehrIndex];
-                            const med = this.api.contact().preferredContent(svc, this.language);
-                            med.idOnSafes = idLocalValue;
-                            med.timestampOnSafe = this.transactionDateTime(trOnHub);
+                            const stringValues = trOnHub.item.reduce((acc, it) => {
+                                if (it.contents && it.contents.length)
+                                    return acc.concat(it.contents.filter(content => content.texts && content.texts.length).map(content => content.texts).reduce((subAcc, texts) => {
+                                        if (texts.some(text => text.value))
+                                            return subAcc.concat(texts.filter(text => text.value).map(text => text.value));
+                                        else
+                                            return subAcc;
+                                    }, []));
+                                else
+                                    return acc;
+                            }, []).filter((e, i, a) => a.findIndex(x => x === e) === i);
+                            const stringValue = stringValues.length && stringValues[0] || '';
+                            const content = serviceContents.find(content => content.stringValue && content.stringValue === stringValue);
+                            // const svcId = this.getServiceId(trOnHub);
+                            // const svc = svcId ? services.find(svc => svc.id === svcId) : services[idKmehrIndex];
+                            if (content && content.medicationValue) {
+                                const med = content.medicationValue;
+                                med.idOnSafes = idLocalValue;
+                                med.timestampOnSafe = this.transactionDateTime(trOnHub);
+                            }
                         }
                     });
                     console.log("updated services", services);
