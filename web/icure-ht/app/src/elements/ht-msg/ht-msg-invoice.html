@@ -17,6 +17,7 @@
 <link rel="import" href="../dynamic-form/ckmeans-grouping.html">
 <link rel="import" href="../../styles/vaadin-icure-theme.html">
 <link rel="import" href="../../styles/spinner-style.html">
+<link rel="import" href="../../styles/buttons-style.html">
 <link rel="import" href="../ht-spinner/ht-spinner.html">
 
 <link rel="import" href="../ht-pat/dialogs/ht-pat-invoicing-dialog.html">
@@ -24,7 +25,7 @@
 <dom-module id="ht-msg-invoice">
     <template>
         <custom-style>
-            <style include="shared-styles vaadin-icure-theme spinner-style">
+            <style include="shared-styles vaadin-icure-theme spinner-style buttons-style">
 
                 :host {
                     display: block;
@@ -1008,14 +1009,11 @@
                     </div>
                 </div>
                 <div class="buttons">
-                    <ht-spinner class="center" active="[[isReceiving]]"></ht-spinner>
                     <ht-spinner class="center" active="[[isSending]]"></ht-spinner>
                     <template is="dom-if" if="[[api.tokenId]]">
-                        <paper-button on-tap="receiveInvoices" class="button button--other" disabled="[[cannotGet]]">[[localize('inv_get','Get',language)]]</paper-button>
                         <paper-button on-tap="_checkBeforeSend" class="button button--save" disabled="[[cannotSend]]">[[localize('inv_send','Send',language)]]</paper-button>
                     </template>
                     <template is="dom-if" if="[[!api.tokenId]]">
-                        <paper-button on-tap="" class="button button--error" disabled title="Pas de connexion ehealth active">[[localize('inv_get','Get',language)]]</paper-button>
                         <paper-button on-tap="" class="button button--error" disabled title="Pas de connexion ehealth active">[[localize('inv_send','Send',language)]]</paper-button>
                     </template>
 
@@ -1102,6 +1100,16 @@
                                                 </vaadin-grid-column>
                                             </vaadin-grid>
                                         </div>
+                                    </div>
+                                    <div class="buttons">
+                                        <ht-spinner class="center" active="[[isReceiving]]"></ht-spinner>
+                                        <template is="dom-if" if="[[api.tokenId]]">
+                                            <paper-button on-tap="receiveInvoices" class="button button--save" disabled="[[cannotGet]]">[[localize('inv_get','Get',language)]]</paper-button>
+                                        </template>
+                                        <template is="dom-if" if="[[!api.tokenId]]">
+                                            <paper-button on-tap="" class="button button--error" disabled title="Pas de connexion ehealth active">[[localize('inv_get','Get',language)]]</paper-button>
+                                        </template>
+
                                     </div>
                                 </template>
                                 <template is="dom-if" if="[[isProcess(invoicesStatus.*)]]">
@@ -1554,60 +1562,64 @@
             <ht-pat-invoicing-dialog id="invoicingForm" api="[[api]]" user="[[user]]" language="[[language]]" patient="[[patientFromSelectedInvoice]]" i18n="[[i18n]]" resources="[[resources]]"></ht-pat-invoicing-dialog>
 
         <paper-dialog id="pendingDetailDialog">
-                <div>
-                    Détail de l'envoi n° [[activeGridItem.invoice.invoiceReference]]
-                    <paper-input label="Patient" value="[[activeGridItem.patient.firstName]] [[activeGridItem.patient.lastName]]"readonly></paper-input>
-                    <paper-input label="Mutuelle" value="[[activeGridItem.insuranceCode]]"readonly></paper-input>
-                </div>
-                    <vaadin-grid id="pendingGridDetail" items="[[activeGridItem.invoice.invoicingCodes]]">
-                        <vaadin-grid-column width="7%" class="recipient-col">
-                            <template class="header">Date</template>
-                            <template>[[formatDate(item.dateCode,"date")]]</template>
+            <div class="modal-title">
+                [[localize('inv-detail', 'Invoice detail', language)]] <b>[[activeGridItem.invoice.invoiceReference]]</b> de <b>[[activeGridItem.patient.firstName]] [[activeGridItem.patient.lastName]]</b> [[localize('inv-mut-for', 'for mutuality', language)]] <b>[[activeGridItem.insuranceCode]]</b>
+            </div>
+            <div class="pendingContent">
+                <vaadin-grid id="pendingGridDetail" items="[[activeGridItem.invoice.invoicingCodes]]">
+                    <vaadin-grid-column width="7%" class="recipient-col">
+                        <template class="header">Date</template>
+                        <template>[[formatDate(item.dateCode,"date")]]</template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column width="7%" class="recipient-col">
+                        <template class="header">Code</template>
+                        <template>[[item.code]]</template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column width="25%" class="recipient-col">
+                        <template class="header">Libellé</template>
+                        <template>[[item.label]]</template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column width="7%" class="recipient-col">
+                        <template class="header">PR</template>
+                        <template>[[item.relatedCode]]</template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column width="4%" class="recipient-col">
+                        <template class="header">Tp</template>
+                        <template>[[item.insuranceJustification]]</template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column width="13%" class="recipient-col">
+                        <template class="header">N° engagement</template>
+                        <template>[[item.contract]]</template>
+                    </vaadin-grid-column>
+                    <vaadin-grid-column-group class="hasBorder">
+                        <template class="header">Montants</template>
+                        <vaadin-grid-column width="9%" class="recipient-col">
+                            <template class="header">OA</template>
+                            <template><span class$="[[_getTxtStatusColor(item.messageInfo.invoiceStatus,item.reimbursement)]]">[[_formatAmount(item.reimbursement)]]</span></template>
+                            <template class="footer">[[sumReimb]] €</template>
                         </vaadin-grid-column>
-                        <vaadin-grid-column width="7%" class="recipient-col">
-                            <template class="header">Code</template>
-                            <template>[[item.code]]</template>
+                        <vaadin-grid-column width="9%" class="recipient-col">
+                            <template class="header">Patient</template>
+                            <template><span class$="[[_getTxtStatusColor(item.messageInfo.invoiceStatus,item.patientIntervention)]]">[[_formatAmount(item.patientIntervention)]]</span></template>
+                            <template class="footer">[[sumPatInter]] €</template>
                         </vaadin-grid-column>
-                        <vaadin-grid-column width="25%" class="recipient-col">
-                            <template class="header">Libellé</template>
-                            <template>[[item.label]]</template>
+                        <vaadin-grid-column width="9%" class="recipient-col">
+                            <template class="header">Supplément</template>
+                            <template><span class$="[[_getTxtStatusColor(item.messageInfo.invoiceStatus,item.doctorSupplement)]]">[[_formatAmount(item.doctorSupplement)]]</span></template>
+                            <template class="footer">[[sumDoctorSup]] €</template>
                         </vaadin-grid-column>
-                        <vaadin-grid-column width="7%" class="recipient-col">
-                            <template class="header">PR</template>
-                            <template>[[item.relatedCode]]</template>
+                        <vaadin-grid-column width="9%" class="recipient-col">
+                            <template class="header">Total</template>
+                            <template><span class$="[[_getTxtStatusColor(item.messageInfo.invoiceStatus,item.totalAmount)]]">[[_formatAmount(item.totalAmount)]]</span></template>
+                            <template class="footer">[[sumTot]] €</template>
                         </vaadin-grid-column>
-                        <vaadin-grid-column width="4%" class="recipient-col">
-                            <template class="header">Tp</template>
-                            <template>[[item.insuranceJustification]]</template>
-                        </vaadin-grid-column>
-                        <vaadin-grid-column width="13%" class="recipient-col">
-                            <template class="header">N° engagement</template>
-                            <template>[[item.contract]]</template>
-                        </vaadin-grid-column>
-                        <vaadin-grid-column-group class="hasBorder">
-                            <template class="header">Montants</template>
-                            <vaadin-grid-column width="9%" class="recipient-col">
-                                <template class="header">OA</template>
-                                <template><span class$="[[_getTxtStatusColor(item.messageInfo.invoiceStatus,item.reimbursement)]]">[[_formatAmount(item.reimbursement)]]</span></template>
-                                <template class="footer">[[sumReimb]] €</template>
-                            </vaadin-grid-column>
-                            <vaadin-grid-column width="9%" class="recipient-col">
-                                <template class="header">Patient</template>
-                                <template><span class$="[[_getTxtStatusColor(item.messageInfo.invoiceStatus,item.patientIntervention)]]">[[_formatAmount(item.patientIntervention)]]</span></template>
-                                <template class="footer">[[sumPatInter]] €</template>
-                            </vaadin-grid-column>
-                            <vaadin-grid-column width="9%" class="recipient-col">
-                                <template class="header">Supplément</template>
-                                <template><span class$="[[_getTxtStatusColor(item.messageInfo.invoiceStatus,item.doctorSupplement)]]">[[_formatAmount(item.doctorSupplement)]]</span></template>
-                                <template class="footer">[[sumDoctorSup]] €</template>
-                            </vaadin-grid-column>
-                            <vaadin-grid-column width="9%" class="recipient-col">
-                                <template class="header">Total</template>
-                                <template><span class$="[[_getTxtStatusColor(item.messageInfo.invoiceStatus,item.totalAmount)]]">[[_formatAmount(item.totalAmount)]]</span></template>
-                                <template class="footer">[[sumTot]] €</template>
-                            </vaadin-grid-column>
-                        </vaadin-grid-column-group>
-                    </vaadin-grid>
+                    </vaadin-grid-column-group>
+                </vaadin-grid>
+            </div>
+            <div class="buttons">
+                <paper-button class="button button--other" data-item$="[[activeGridItem]]" on-tap="_cancelInvoice">[[localize('cancel_invoice','Cancel invoice',language)]]</paper-button>
+                <paper-button class="button button--save" dialog-dismiss>[[localize('clo','Close',language)]]</paper-button>
+            </div>
             </paper-dialog>
         </div>
 
@@ -3460,6 +3472,20 @@
             _closeDialogs() {
                 this.set("_bodyOverlay", false);
                 _.map( this.shadowRoot.querySelectorAll('.modalDialog'), i=> i && typeof i.close === "function" && i.close() )
+            }
+
+            _cancelInvoice(e){
+                if(_.get(e, 'target.dataset.item', null)){
+                    console.log(_.get(e, 'target.dataset.item', null))
+                    const jsonData = JSON.parse(_.get(e, 'target.dataset.item', {}))
+
+                    this.api.invoice().getInvoice(_.get(jsonData, 'invoiceId', null)).then(invoice => this.api.invoice().modifyInvoice(_.omit(invoice, ['printedDate'])))
+                        .then(invoice => this.api.register(invoice,'invoice'))
+                    .finally(() => {
+                        this.$['pendingDetailDialog'].close()
+                        this.fetchMessageToBeSendOrToBeCorrected()
+                    })
+                }
             }
 
         }
