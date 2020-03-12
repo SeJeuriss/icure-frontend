@@ -1356,8 +1356,9 @@
                     return;
                 }
                 this.set('isLoading',true)
-
-                const contact = _.find(this.contacts, ctc => _.some(_.get(ctc,"services",[]), svc => _.trim(_.get(svc,"content."+ this.language +".documentId")) === _.trim(_.get(this,"documentId",""))));
+//this.api.contact().preferredContent
+                const contact = _.find(this.contacts, ctc => _.some(_.get(ctc,"services",[]), svc => _.trim(this.api.contact().preferredContent(svc, this.language ).documentId) === _.trim(_.get(this,"documentId",""))));
+                const contac1 = _.find(this.contacts, ctc => _.some(_.get(ctc,"services",[]), svc => _.trim(_.get(svc, "content."+ this.language +".documentId")) === _.trim(_.get(this,"documentId",""))));
                 this.set("contact", contact);
                 this.set("contactId", _.trim(_.get(this.contact,"id","")));
 
