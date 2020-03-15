@@ -1956,6 +1956,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                             <paper-tooltip position="top" for="hubStatus">Hub</paper-tooltip>
                                             <paper-fab id="sumehrStatus" mini icon="editor:format-list-bulleted" on-tap="_openHubDialogDirectToUpload"></paper-fab>
                                             <paper-tooltip position="top" for="sumehrStatus">[[sumehrStatusDesc]]</paper-tooltip>
+                                            <paper-fab id="medicationSchemaStatus" mini icon="vaadin:pills" on-tap="_openMedicationSchemaDialog"></paper-fab>
+                                            <paper-tooltip position="top" for="medicationSchemaStatus">[[localize('cd-transaction-medicationscheme', 'Medication schema', language)]]</paper-tooltip>
                                         </template>
                                         <template is="dom-if" if="[[_isAvailableForHcp(hcpType, 'edmg')]]">
                                             <paper-fab id="edmgStatus" mini icon="vaadin:clipboard-pulse" on-tap="_openEdmgDialog"></paper-fab>
@@ -1971,8 +1973,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                                                 </template>
                                             </paper-tooltip>
                                         </template>
-                                        <paper-fab id="medicationSchemaStatus" mini icon="vaadin:pills" on-tap="_openMedicationSchemaDialog"></paper-fab>
-                                        <paper-tooltip position="top" for="medicationSchemaStatus">[[localize('cd-transaction-medicationscheme', 'Medication schema', language)]]</paper-tooltip>
                                         <paper-fab id="ebmPracticeNet" mini on-tap="_linkToEbPracticeNet" src="[[_ebmPicture()]]"></paper-fab>
                                         <paper-tooltip position="top" for="ebmPracticeNet">[[localize('adm_ebm','ebmPracticeNet',language)]]</paper-tooltip>
                                         <paper-fab id="cbipLink" mini on-tap="_linkToCBIP" src="[[_cbipPicture()]]"></paper-fab>
