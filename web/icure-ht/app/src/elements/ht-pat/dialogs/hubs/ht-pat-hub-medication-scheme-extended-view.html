@@ -1592,10 +1592,24 @@
                     date: _.get(ms, 'date', null),
                     authors: _.get(ms, 'authors', []),
                     version: _.get(ms, 'version', null),
-                    msElems: _.concat(_.get(ms, 'msElems', []), this._getElementsFromMedications()),
+                    // msElems: _.concat(_.get(ms, 'msElems', []), this._getElementsFromMedications()),
                     msSusps: _.get(ms, 'msSusps', []),
                     times:  _.get(ms, 'times', [])
                 })
+                const currentMsElems = this.get('currentMedicationScheme.msElems');
+                const updatedMsElems = _.concat(_.get(ms, 'msElems', []), this._getElementsFromMedications());
+                if (!currentMsElems) {
+                    this.set('currentMedicationScheme.msElems', updatedMsElems);
+                } else if (currentMsElems.length) {
+                    if (updatedMsElems.length) {
+                        this.splice('currentMedicationScheme.msElems', 0, currentMsElems.length, ...updatedMsElems);
+                    } else {
+                        this.splice('currentMedicationScheme.msElems', 0, currentMsElems.length);
+                    }
+                } else if (updatedMsElems.length) {
+                    this.push('currentMedicationScheme.msElems', ...updatedMsElems);
+                    console.log(this.currentMedicationScheme);
+                }
             }
 
             _getMedicationName(medication){
@@ -2139,7 +2153,7 @@
             _createMedication(data) {
                 const medicationContent = {
                     medicationValue: {regimen: [], substitutionAllowed: true},
-                    stringValue: data.medicationHubId
+                    // stringValue: data.medicationHubId
                 };
                 const medication = {
                     content: _.fromPairs([[this.language, medicationContent]]),

@@ -270,7 +270,8 @@
                             };
                         })
                 } else {
-                    return Promise.reject(this.localize("lt-patientInss-ko", "Niss du patient est manquant"));
+                    const messageId = this.patient.ssin ? "youAreNotConnectedToehBox" : "niss-absent";
+                    return Promise.reject(this.localize(messageId, messageId));
                 }
             }
 
@@ -302,19 +303,22 @@
                 return date;
             }
 
+            _isCustomReg(r) {
+                return r.dayPeriod && ["midday", "afterwakingup"].includes(r.dayPeriod.code);
+            }
+
             normalizeMedications(medications) {
                 return medications.map(medication => {
                     const medicationValue = this.api.contact().medicationValue(medication, this.language);
                     const content = this.api.contact().preferredContent(medication, this.language);
+                    delete content.stringValue;
                     medicationValue.beginMoment = this.fixDate(medicationValue.beginMoment, parseInt(this.api.moment(Date.now()).format("YYYYMMDD"), 10));
                     medicationValue.endMoment = this.fixDate(medicationValue.endMoment);
-                    if (!content.stringValue)
-                        content.stringValue = `icure-service:${this.api.crypto().randomUuid()}`;
                     if (medicationValue.regimen && medicationValue.regimen.length) {
                         medicationValue.knownUsage = false;
-                        const customReg = medicationValue.regimen.filter(r => r.dayPeriod && ["midday", "afterwakingup"].includes(r.dayPeriod.code));
+                        const customReg = medicationValue.regimen.filter(r => this._isCustomReg(r));
                         if (customReg && customReg.length) {
-                            medicationValue.regimen = medicationValue.regimen.filter(r => !r.dayPeriod || !["midday", "afterwakingup"].includes(r.dayPeriod.code));
+                            medicationValue.regimen = medicationValue.regimen.filter(r => !this._isCustomReg(r));
                             customReg.forEach(r => {
                                 if (r.dayPeriod.code === "midday") {
                                     medicationValue.regimen.push({timeOfDay: "120000", administratedQuantity: r.administratedQuantity});
@@ -459,26 +463,17 @@
                                 med.medicationSchemeTimeStampOnSafe = this.transactionDateTime(trOnHub);
                             })
                         } else {//set te medicationschemeElement ids to the corresponding service
-                            const stringValues = trOnHub.item.reduce((acc, it) => {
-                                if (it.contents && it.contents.length)
-                                    return acc.concat(it.contents.filter(content => content.texts && content.texts.length).map(content => content.texts).reduce((subAcc, texts) => {
-                                        if (texts.some(text => text.value))
-                                            return subAcc.concat(texts.filter(text => text.value).map(text => text.value));
-                                        else
-                                            return subAcc;
-                                    }, []));
-                                else
-                                    return acc;
-                            }, []).filter((e, i, a) => a.findIndex(x => x === e) === i);
-                            const stringValue = stringValues.length && stringValues[0] || '';
-                            const content = serviceContents.find(content => content.stringValue && content.stringValue === stringValue);
+                            const idKmehrIndex = (parseInt(idKmehr, 10) || 0) - 2;
+                            if (idKmehrIndex > -1 && idKmehrIndex < services.length) {
+                                const content = this.api.contact().preferredContent(services[idKmehrIndex]);
+                                if (content && content.medicationValue) {
+                                    const med = content.medicationValue;
+                                    med.idOnSafes = idLocalValue;
+                                    med.timestampOnSafe = this.transactionDateTime(trOnHub);
+                                }
+                            }
                             // const svcId = this.getServiceId(trOnHub);
                             // const svc = svcId ? services.find(svc => svc.id === svcId) : services[idKmehrIndex];
-                            if (content && content.medicationValue) {
-                                const med = content.medicationValue;
-                                med.idOnSafes = idLocalValue;
-                                med.timestampOnSafe = this.transactionDateTime(trOnHub);
-                            }
                         }
                     });
                     console.log("updated services", services);
