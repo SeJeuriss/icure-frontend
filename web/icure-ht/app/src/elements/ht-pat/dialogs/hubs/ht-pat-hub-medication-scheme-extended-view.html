@@ -1571,6 +1571,16 @@
                     medicationSchemeTransactions:{
                         type: Array,
                         value: () => []
+                    },
+                    TimePeriod: {
+                        type: Array,
+                        value: () => [
+                            {time: "16:00:00", period: "afternoon"},
+                            {time: "19:00:00", period: "evening"},
+                            {time: "22:00:00", period: "night"},
+                            {time: "12:00:00", period: "midday"},
+                            {time: "06:30:00", period: "afterwakingup"}
+                        ]
                     }
                 }
             }
@@ -1988,27 +1998,31 @@
                 //  item[1]: medication info (medication, dates, posology, regimen, frequency, ...)
                 //  item[2]: medication use /optional (?)
                 const elems = this.medicationSchemeTransactions.medicationSchemeElements.map(msElement => {
-                    const dateFromHub = this._getDateFromHub(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null));
+                    const med = _.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication"));
+                    const hce = _.get(msElement, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement"));
+                    const dateFromHub = this._getDateFromHub(_.get(med, 'beginmoment', null));
+                    const reg = this._decomposedRegimen(_.get(med, 'regimen', null));
                     let el = {
                         idKmehr: _.get(_.get(msElement, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
                         medicationHubId: _.get(_.get(msElement, 'ids', []).find(id => _.get(id, 's', null) === "LOCAL"), 'value', null),
-                        adaptationflag: !!_.size(_.get(_.get(msElement, 'item', []).filter(itm=> _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 's', null) ==="CD_MS_ADAPTATION"))), 'contents', []).filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "adaptationflag"))) > 0,
-                        adaptationtype: !!_.get(_.get(_.get(_.get(msElement, 'item', []).filter(itm=> _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 's', null) ==="CD_MS_ADAPTATION"))), 'contents', []).find(it => it.cds.find(cd => cd.s==="CD_MS_ADAPTATION")), 'cds', []).find(cd => cd.s==="CD_MS_ADAPTATION"), 'value', null),
-                        compoundprescription: _.get(_.head(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'compoundprescription', null),
-                        medicinalproduct: _.get(_.head(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'medicinalproduct', null),
-                        substanceproduct: _.get(_.head(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'contents', [])), 'substanceproduct', null),
-                        beginmoment: this._getDateFromHub(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'beginmoment', null)),
-                        endmoment: this._getDateFromHub(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'endmoment', null)),
-                        temporality: _.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'temporality', null),
-                        frequency: _.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'frequency', null),
-                        regimen: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'dayNumber', null) || 'other')),
-                        regimenDayNumber: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'dayNumber', null) || 'other')),
-                        regimenWeekDay: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'weekDay', null) || 'other')),
-                        regimenWeekNumber: _.values(_.groupBy(this._decomposedRegimen(_.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'regimen', null)), item => _.get(item, 'weekNumber', null) || 'other')),
-                        posology: _.get(_.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication")), 'posology', null),
+                        adaptationflag: !!_.size(_.get(hce.find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 's', null) ==="CD_MS_ADAPTATION"))), 'contents', []).filter(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "adaptationflag"))) > 0,
+                        adaptationtype: !!_.get(_.get(_.get(hce.find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 's', null) ==="CD_MS_ADAPTATION"))), 'contents', []).find(it => it.cds.find(cd => cd.s==="CD_MS_ADAPTATION")), 'cds', []).find(cd => cd.s==="CD_MS_ADAPTATION"), 'value', null),
+                        compoundprescription: _.get(_.head(_.get(med, 'contents', [])), 'compoundprescription', null),
+                        medicinalproduct: _.get(_.head(_.get(med, 'contents', [])), 'medicinalproduct', null),
+                        substanceproduct: _.get(_.head(_.get(med, 'contents', [])), 'substanceproduct', null),
+                        beginmoment: this._getDateFromHub(_.get(med, 'beginmoment', null)),
+                        endmoment: this._getDateFromHub(_.get(med, 'endmoment', null)),
+                        temporality: _.get(med, 'temporality', null),
+                        frequency: _.get(med, 'frequency', null),
+                        regimen: reg,
+                        // regimen: _.values(_.groupBy(reg, item => _.get(item, 'dayNumber', null) || 'other')),
+                        regimenDayNumber: _.values(_.groupBy(reg, item => _.get(item, 'dayNumber', null) || 'other')),
+                        regimenWeekDay: _.values(_.groupBy(reg, item => _.get(item, 'weekDay', null) || 'other')),
+                        regimenWeekNumber: _.values(_.groupBy(reg, item => _.get(item, 'weekNumber', null) || 'other')),
+                        posology: _.get(med, 'posology', null),
                         suspensions: [],
-                        usePresent: !!_.get(_.get(msElement, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0),
-                        useTexts: _.get(_.get(_.get(msElement, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement")).find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0), 'texts', []),
+                        usePresent: !!_.get(hce.find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0),
+                        useTexts: _.get(_.get(hce.find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0), 'texts', []),
                         date: null,
                         beginTimeStamp: dateFromHub ? moment(dateFromHub, 'DD/MM/YYYY').format('YYYYMMDD') : null,
                         authors: _.get(msElement, 'author.hcparties', []),
@@ -2082,31 +2096,48 @@
                 return ms;
             }
 
-            _decomposedRegimen(regimen){
-
-                let decomposedRegimen = []
-                const subRegimen = _.get(regimen, 'daynumbersAndQuantitiesAndDates', null) ? _.chunk(_.get(regimen, 'daynumbersAndQuantitiesAndDates', []), (_.indexOf(_.get(regimen, 'daynumbersAndQuantitiesAndDates', []), _.get(regimen, 'daynumbersAndQuantitiesAndDates', []).find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}quantity")) + 1)) : []
-                subRegimen.map(sr => decomposedRegimen.push(this._getRegimenInfo(sr)))
-                return decomposedRegimen
+            _decomposedRegimen(regimen) {
+                const flatData = _.get(regimen, 'daynumbersAndQuantitiesAndDates', []);
+                const chunkSize = _.indexOf(flatData, flatData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}quantity")) + 1;
+                const groupedData = flatData.length ? _.chunk(flatData, chunkSize) : [];
+                return groupedData.map(gd => this._getRegimenInfo(gd));
             }
 
-            _getRegimenInfo(regimen){
+            _getDayPeriod(dayTime) {
+                const period = _.get(dayTime, 'value.dayperiod.cd.value', null);
+                if (period) return period;
+                else {
+                    const time = _.get(dayTime, 'value.time', null);
+                    if (time) return this.TimePeriod.find(tp => tp.time === time) || null;
+                    else return null;
+                }
+            }
 
-                const dayNumber = regimen && regimen.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}daynumber") || null
-                const dayTime = regimen && regimen.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}daytime") || null
-                const quantity = regimen && regimen.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}quantity") || null
-                const weekDay = regimen && regimen.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}weekday") || null
+            _getDayTime(dayTime) {
+                if (_.get(dayTime, 'value.dayperiod.cd.value', null)) return null;
+                else {
+                    const time = _.get(dayTime, 'value.time', null);
+                    if (time && this.TimePeriod.find(tp => tp.time === time)) return null;
+                    else return time;
+                }
+            }
+
+            _getRegimenInfo(regData){
+                const dayNumber = regData && regData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}daynumber") || null;
+                const dayTime = regData && regData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}daytime") || null;
+                const quantity = regData && regData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}quantity") || null;
+                const weekDay = regData && regData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}weekday") || null;
 
                 return {
                     dayNumber: _.get(dayNumber, 'value', null),
-                    dayTime: _.get(dayTime, 'value.dayperiod.cd.value', null) || _.get(dayTime, 'value.time', null),
+                    dayTime: this._getDayTime(dayTime),
+                    dayPeriod: this._getDayPeriod(dayTime),
                     quantity:  _.get(quantity, 'value.decimal', null),
                     administrationUnit: _.get(quantity, 'value.unit.cd.value', null),
                     weekDay: _.toLower(_.get(weekDay, 'value.cd.value', null)),
                     weekNumber: _.get(weekDay, 'value.weeknumber', null)
                 }
             }
-
 
             _getTimes(simplifiedMs){
                 return _.uniq(_.flatMap(_.get(simplifiedMs, 'msElems', []), msElem =>_.flatMap( _.get(msElem, 'regimen', []), reg=>_.flatMap(reg, ritm => _.get(ritm, 'dayTime', null)))).filter(it => !isNaN(it))).sort()

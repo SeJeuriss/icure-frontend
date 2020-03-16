@@ -312,6 +312,7 @@
                     const medicationValue = this.api.contact().medicationValue(medication, this.language);
                     const content = this.api.contact().preferredContent(medication, this.language);
                     delete content.stringValue;
+                    delete medication.valueDate;
                     medicationValue.beginMoment = this.fixDate(medicationValue.beginMoment, parseInt(this.api.moment(Date.now()).format("YYYYMMDD"), 10));
                     medicationValue.endMoment = this.fixDate(medicationValue.endMoment);
                     if (medicationValue.regimen && medicationValue.regimen.length) {
