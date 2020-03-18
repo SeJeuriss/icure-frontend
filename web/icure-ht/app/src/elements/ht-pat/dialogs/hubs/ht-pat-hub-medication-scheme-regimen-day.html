@@ -1,0 +1,190 @@
+<link rel="import" href="../../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../styles/shared-styles.html">
+<link rel="import" href="../../../../styles/buttons-style.html">
+
+<dom-module id="ht-pat-hub-medication-scheme-regimen-day">
+    <template>
+        <style include="buttons-style dropdown-style dialog-style">
+            .grid-container * {
+                position: relative;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .grid-container *:after {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+
+            .grid-container {
+                width: 800px;
+                font-size: var(--font-size-normal);
+                background: var(--app-secondary-color);
+                color: white;
+                border-collapse: collapse;
+                border-spacing: 0;
+                box-sizing: border-box;
+                padding: 8px 0;
+                flex-grow: 1;
+                margin-right: 8px;
+                grid-gap: 1px;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+                grid-template-rows: 16px 16px;
+                grid-template-areas: "a_a a_bcd a_bcd a_bcd a_e a_fgh a_fgh a_fgh a_i a_jkl a_jkl a_jkl a_m ab_n" ". b_b b_c b_d . b_f b_g b_h . b_j b_k b_l . ab_n";
+            }
+
+            .a_a { grid-area: a_a; }
+            .a_bcd { grid-area: a_bcd; }
+            .a_e { grid-area: a_e; }
+            .a_fgh { grid-area: a_fgh; }
+            .a_i { grid-area: a_i; }
+            .a_jkl { grid-area: a_jkl; }
+            .a_m { grid-area: a_m; }
+            .ab_n { grid-area: ab_n; }
+            .b_b { grid-area: b_b; }
+            .b_c { grid-area: b_c; }
+            .b_d { grid-area: b_d; }
+            .b_f { grid-area: b_f; }
+            .b_g { grid-area: b_g; }
+            .b_h { grid-area: b_h; }
+            .b_j { grid-area: b_j; }
+            .b_k { grid-area: b_k; }
+            .b_l { grid-area: b_l; }
+
+            .hasQuantity {
+                background: var(--app-background-color-dark);
+            }
+
+        </style>
+        <div class="grid-container">
+            <div class$="a_a [[getColor(quantities.afterwakingup)]]">[[quantities.afterwakingup]]</div>
+            <div class$="a_bcd [[getColor(quantities.morning)]]">[[quantities.morning]]</div>
+            <div class$="a_e [[getColor(quantities.betweenbreakfastandlunch)]]">[[quantities.betweenbreakfastandlunch]]</div>
+            <div class$="a_fgh [[getColor(quantities.midday)]]">[[quantities.midday]]</div>
+            <div class$="a_i [[getColor(quantities.betweenlunchanddinner)]]">[[quantities.betweenlunchanddinner]]</div>
+            <div class$="a_jkl [[getColor(quantities.evening)]]">[[quantities.evening]]</div>
+            <div class$="a_m [[getColor(quantities.thehourofsleep)]]">[[quantities.thehourofsleep]]</div>
+            <div class$="ab_n [[getColor(quantities.other)]]">[[quantities.other]]</div>
+            <div class$="b_b [[getColor(quantities.beforebreakfast)]]">[[quantities.beforebreakfast]]</div>
+            <div class$="b_c [[getColor(quantities.duringbreakfast)]]">[[quantities.duringbreakfast]]</div>
+            <div class$="b_d [[getColor(quantities.afterbreakfast)]]">[[quantities.afterbreakfast]]</div>
+            <div class$="b_f [[getColor(quantities.beforelunch)]]">[[quantities.beforelunch]]</div>
+            <div class$="b_g [[getColor(quantities.duringlunch)]]">[[quantities.duringlunch]]</div>
+            <div class$="b_h [[getColor(quantities.afterlunch)]]">[[quantities.afterlunch]]</div>
+            <div class$="b_j [[getColor(quantities.beforedinner)]]">[[quantities.beforedinner]]</div>
+            <div class$="b_k [[getColor(quantities.duringdinner)]]">[[quantities.duringdinner]]</div>
+            <div class$="b_l [[getColor(quantities.afterdinner)]]">[[quantities.afterdinner]]</div>
+        </div>
+   </template>
+    <script>
+        import _ from 'lodash/lodash'
+
+        class HtPatHubMedicationSchemeRegimenDay extends Polymer.TkLocalizerMixin(Polymer.Element) {
+            static get is() {
+                return 'ht-pat-hub-medication-scheme-regimen-day';
+            }
+            static get properties() {
+                return {
+                    api: {
+                        type: Object
+                    },
+                    regimen: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    quantities: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    TimePeriod: {
+                        type: Array,
+                        value: () => [
+                            {time: "16:00:00", period: "afternoon"},
+                            {time: "19:00:00", period: "evening"},
+                            {time: "22:00:00", period: "night"},
+                            {time: "12:00:00", period: "midday"},
+                            {time: "06:30:00", period: "afterwakingup"}
+                        ]
+                    }
+                }
+            }
+            static get observers() {
+                return [
+                    "_init(regimen.*)"
+                ];
+            }
+
+            constructor() {
+                super();
+            }
+
+            ready() {
+                super.ready();
+            }
+
+            getColor(period) {
+                return period && period > 0 ? "hasQuantity" : "";
+            }
+
+            _init() {
+                const converted = this._convertRegimen();
+                this.set("quantities", converted.reduce((quantities, reg) => {
+                    const dayPeriod = this._getDayPeriod(reg.dayTime);
+                    if (dayPeriod) {
+                        quantities[dayPeriod] = reg.quantity;
+                    }
+                    const dayTime = this._getDayTime(reg.dayTime);
+                    if (dayTime) {
+                        quantities.other += reg.quantity;
+                    }
+                    return quantities;
+                }, {}));
+            }
+
+            _convertRegimen() {
+                if (!this.regimen) return [];
+                const flatData = _.get(this.regimen, 'daynumbersAndQuantitiesAndDates', []);
+                const chunkSize = _.indexOf(flatData, flatData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}quantity")) + 1;
+                const groupedData = flatData.length ? _.chunk(flatData, chunkSize) : [];
+                return groupedData.map(gd => this._getRegimenInfo(gd));
+            }
+
+            _getDayPeriod(dayTime) {
+                const period = _.get(dayTime, 'value.dayperiod.cd.value', null);
+                if (period) return period;
+                else {
+                    const time = _.get(dayTime, 'value.time', null);
+                    if (time) return this.TimePeriod.find(tp => tp.time === time) || null;
+                    else return null;
+                }
+            }
+
+            _getDayTime(dayTime) {
+                if (_.get(dayTime, 'value.dayperiod.cd.value', null)) return null;
+                else {
+                    const time = _.get(dayTime, 'value.time', null);
+                    if (time && this.TimePeriod.find(tp => tp.time === time)) return null;
+                    else return time;
+                }
+            }
+
+            _getRegimenInfo(regData){
+                const dayTime = regData && regData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}daytime") || null;
+                const quantity = regData && regData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}quantity") || null;
+
+                return {
+                    dayTime: this._getDayTime(dayTime),
+                    dayPeriod: this._getDayPeriod(dayTime),
+                    quantity:  _.get(quantity, 'value.decimal', null),
+                    administrationUnit: _.get(quantity, 'value.unit.cd.value', null),
+                }
+            }
+        }
+
+        customElements.define(HtPatHubMedicationSchemeRegimenDay.is, HtPatHubMedicationSchemeRegimenDay);
+    </script>
+</dom-module>
