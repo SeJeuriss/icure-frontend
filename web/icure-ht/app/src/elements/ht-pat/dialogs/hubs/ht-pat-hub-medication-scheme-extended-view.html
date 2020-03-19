@@ -18,6 +18,7 @@
 <link rel="import" href="../../../../styles/dialog-style.html">
 <link rel="import" href="../../../../styles/scrollbar-style.html">
 <link rel="import" href="ht-pat-hub-utils.html">
+<link rel="import" href="ht-pat-hub-medication-scheme-regimen-day.html">
 
 <dom-module id="ht-pat-hub-medication-scheme-extended-view">
     <template>
@@ -249,7 +250,7 @@
                 flex-flow: row nowrap;
                 color: var(--app-text-color);
                 z-index: 1;
-                height: 24px;
+                height: 28px;
             }
 
             .tr:not(.th):not(.category)::after {
@@ -1036,39 +1037,44 @@
                                 </span>
                             </div>
                             <div class="td span-3" style="flex-grow: 3;" title="[[_getPosology(medicationsWithPosology)]] [[_getDayInfo(medicationsWithPosology.regimen.0)]]"><span>[[_getPosology(medicationsWithPosology)]] [[_getDayInfo(medicationsWithPosology.regimen.0)]]</span></div>
-                            <template is="dom-repeat" items="" as="regimen">
-                                <div class="td td-input bf-bef">
-                                    <span></span>
-                                </div>
-                            </template>
-                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 0)]]</div>
-                            <div class="td td-input bf-bef">[[_getRegimen(medicationsWithPosology.regimen.0, 1)]]</div>
-                            <div class="td td-input bf-dur">[[_getRegimen(medicationsWithPosology.regimen.0, 2)]]</div>
-                            <div class="td td-input bf-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 3)]]</div>
-                            <template is="dom-repeat" items="" as="regimen">
-                                <div class="td td-input bf-bef">
-                                    <span></span>
-                                </div>
-                            </template>
-                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 4)]]</div>
-                            <div class="td td-input lu-bef">[[_getRegimen(medicationsWithPosology.regimen.0, 5)]]</div>
-                            <div class="td td-input lu-dur">[[_getRegimen(medicationsWithPosology.regimen.0, 6)]]</div>
-                            <div class="td td-input lu-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 7)]]</div>
-                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 8)]]</div>
-                            <template is="dom-repeat" items="" as="regimen">
-                                <div class="td td-input bf-bef">
-                                    <span></span>
-                                </div>
-                            </template>
-                            <div class="td td-input di-bef">[[_getRegimen(medicationsWithPosology.regimen.0, 9)]]</div>
-                            <div class="td td-input di-dur">[[_getRegimen(medicationsWithPosology.regimen.0, 10)]]</div>
-                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 11)]]</div>
-                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 12)]]</div>
-                            <template is="dom-repeat" items="" as="regimen">
-                                <div class="td td-input bf-bef">
-                                    <span></span>
-                                </div>
-                            </template>
+
+                            <ht-pat-hub-medication-scheme-regimen-day style="flex-grow: 12;" api="[[api]]" regimen="[[medicationsWithPosology.regimen]]"></ht-pat-hub-medication-scheme-regimen-day>
+
+<!--                            <template is="dom-repeat" items="" as="regimen">-->
+<!--                                <div class="td td-input bf-bef">-->
+<!--                                    <span></span>-->
+<!--                                </div>-->
+<!--                            </template>-->
+<!--                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 0)]]</div>-->
+<!--                            <div class="td td-input bf-bef">[[_getRegimen(medicationsWithPosology.regimen.0, 1)]]</div>-->
+<!--                            <div class="td td-input bf-dur">[[_getRegimen(medicationsWithPosology.regimen.0, 2)]]</div>-->
+<!--                            <div class="td td-input bf-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 3)]]</div>-->
+<!--                            <template is="dom-repeat" items="" as="regimen">-->
+<!--                                <div class="td td-input bf-bef">-->
+<!--                                    <span></span>-->
+<!--                                </div>-->
+<!--                            </template>-->
+<!--                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 4)]]</div>-->
+<!--                            <div class="td td-input lu-bef">[[_getRegimen(medicationsWithPosology.regimen.0, 5)]]</div>-->
+<!--                            <div class="td td-input lu-dur">[[_getRegimen(medicationsWithPosology.regimen.0, 6)]]</div>-->
+<!--                            <div class="td td-input lu-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 7)]]</div>-->
+<!--                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 8)]]</div>-->
+<!--                            <template is="dom-repeat" items="" as="regimen">-->
+<!--                                <div class="td td-input bf-bef">-->
+<!--                                    <span></span>-->
+<!--                                </div>-->
+<!--                            </template>-->
+<!--                            <div class="td td-input di-bef">[[_getRegimen(medicationsWithPosology.regimen.0, 9)]]</div>-->
+<!--                            <div class="td td-input di-dur">[[_getRegimen(medicationsWithPosology.regimen.0, 10)]]</div>-->
+<!--                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 11)]]</div>-->
+<!--                            <div class="td td-input di-aft">[[_getRegimen(medicationsWithPosology.regimen.0, 12)]]</div>-->
+<!--                            <template is="dom-repeat" items="" as="regimen">-->
+<!--                                <div class="td td-input bf-bef">-->
+<!--                                    <span></span>-->
+<!--                                </div>-->
+<!--                            </template>-->
+
+
                             <template is="dom-repeat" items="[[currentMedicationScheme.times]]" as="timeSlot">
                                 <div class="td td-input">
                                     <span>[[_getRegimen(medicationsWithPosology.regimen.0, timeSlot)]]</span>
@@ -1654,6 +1660,10 @@
                 return medication && medication.temporality && medication.temporality.cd && medication.temporality.cd.value === "ONESHOT" ? true : false
             }
 
+            _getRegimenQuantity(regimen, period) {
+
+            }
+
             _getRegimen(regimen, period){
 
                 const concernPeriod = period === 0 ? "morning" :
@@ -1943,7 +1953,7 @@
                         endmoment: endMoment ? moment(endMoment, "YYYYMMDD").format('DD/MM/YYYY'): null,
                         temporality: null,
                         frequency: null,
-                        regimen: [this._composeRegimen(_.get(medicationValue, "regimen", []))],
+                        regimen: this._composeRegimen(_.get(medicationValue, "regimen", [])),
                         regimenDayNumber: null,
                         regimenWeekDay: null,
                         regimenWeekNumber: null,
@@ -1970,21 +1980,18 @@
             }
 
             _composeRegimen(regimen){
-                let formatedRegimen = []
-                regimen.map(reg => {
+                return regimen.map(reg => {
                     const administrationUnit = _.get(reg, 'administratedQuantity.unit', null);
-                    formatedRegimen.push({
-                        dayTime: _.get(reg, 'dayPeriod.code', null),
+                    return {
+                        dayPeriod: _.get(reg, 'dayPeriod.code', null),
+                        dayTime: _.get(reg, 'timeOfDay', null),
                         dayNumber : null,
                         quantity: _.get(reg, 'administratedQuantity.quantity', null),
                         administrationUnit: administrationUnit && administrationUnit.match(/[0-9]+|cm|dropsperminute|gm|internationalunits|mck\/h|mck\/kg\/minute|measure|mg\/h|ml\/h|tbl|tsp|unt\/h|mg|mg\/ml/) ? administrationUnit : '00006',
                         weekDay: null,
                         weekNumber: null
-                    })
-
-                })
-
-                return formatedRegimen
+                    };
+                });
             }
 
             //create easy medicationscheme object
@@ -2001,7 +2008,6 @@
                     const med = _.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication"));
                     const hce = _.get(msElement, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement"));
                     const dateFromHub = this._getDateFromHub(_.get(med, 'beginmoment', null));
-                    const reg = this._decomposedRegimen(_.get(med, 'regimen', null));
                     let el = {
                         idKmehr: _.get(_.get(msElement, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
                         medicationHubId: _.get(_.get(msElement, 'ids', []).find(id => _.get(id, 's', null) === "LOCAL"), 'value', null),
@@ -2014,11 +2020,14 @@
                         endmoment: this._getDateFromHub(_.get(med, 'endmoment', null)),
                         temporality: _.get(med, 'temporality', null),
                         frequency: _.get(med, 'frequency', null),
-                        regimen: reg,
+                        regimen: this._decomposedRegimen(_.get(med, 'regimen', null)),
                         // regimen: _.values(_.groupBy(reg, item => _.get(item, 'dayNumber', null) || 'other')),
-                        regimenDayNumber: _.values(_.groupBy(reg, item => _.get(item, 'dayNumber', null) || 'other')),
-                        regimenWeekDay: _.values(_.groupBy(reg, item => _.get(item, 'weekDay', null) || 'other')),
-                        regimenWeekNumber: _.values(_.groupBy(reg, item => _.get(item, 'weekNumber', null) || 'other')),
+                        // regimenDayNumber: _.values(_.groupBy(regimen, item => _.get(item, 'dayNumber', null) || 'other')),
+                        // regimenWeekDay: _.values(_.groupBy(regimen, item => _.get(item, 'weekDay', null) || 'other')),
+                        // regimenWeekNumber: _.values(_.groupBy(regimen, item => _.get(item, 'weekNumber', null) || 'other')),
+                        regimenDayNumber: null,
+                        regimenWeekDay: null,
+                        regimenWeekNumber: null,
                         posology: _.get(med, 'posology', null),
                         suspensions: [],
                         usePresent: !!_.get(hce.find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0),
@@ -2100,15 +2109,24 @@
                 const flatData = _.get(regimen, 'daynumbersAndQuantitiesAndDates', []);
                 const chunkSize = _.indexOf(flatData, flatData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}quantity")) + 1;
                 const groupedData = flatData.length ? _.chunk(flatData, chunkSize) : [];
-                return groupedData.map(gd => this._getRegimenInfo(gd));
+                const dec = groupedData.map(gd => this._getRegimenInfo(gd));
+                return dec;
+            }
+
+            _zeroPad(num, places) {
+                return String(num).padStart(places, '0');
+            }
+
+            _formatTime(dayTime) {
+                return `${this._zeroPad(_.get(dayTime, 'hourOfDay', 0), 2)}:${this._zeroPad(_.get(dayTime, 'minuteOfHour', 0), 2)}:${this._zeroPad(_.get(dayTime, 'secondOfMinute', 0), 2)}`;
             }
 
             _getDayPeriod(dayTime) {
                 const period = _.get(dayTime, 'value.dayperiod.cd.value', null);
-                if (period) return period;
+                if (period) return period.toLowerCase();
                 else {
                     const time = _.get(dayTime, 'value.time', null);
-                    if (time) return this.TimePeriod.find(tp => tp.time === time) || null;
+                    if (time) return (this.TimePeriod.find(tp => tp.time === this._formatTime(time)) || {period: null}).period;
                     else return null;
                 }
             }
@@ -2117,8 +2135,13 @@
                 if (_.get(dayTime, 'value.dayperiod.cd.value', null)) return null;
                 else {
                     const time = _.get(dayTime, 'value.time', null);
-                    if (time && this.TimePeriod.find(tp => tp.time === time)) return null;
-                    else return time;
+                    if (time) {
+                        const formatted = this._formatTime(time);
+                        if (this.TimePeriod.find(tp => tp.time === formatted)) return null;
+                        else return formatted;
+                    } else {
+                        return null;
+                    }
                 }
             }
 
