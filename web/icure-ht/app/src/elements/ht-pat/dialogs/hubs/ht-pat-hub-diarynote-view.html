@@ -1008,7 +1008,7 @@
                         parent: itemParent,
                         temporality: item && item.temporality && item.temporality.cd && item.temporality.cd.value || null,
                         posology: this._getPosology(item),
-                        regimen: item && item.regimen ? this._decomposedRegimen(item.regimen) : null
+                        regimen: item && item.regimen ? this._decomposeRegimen(item.regimen) : null
                     }))
                 }
 

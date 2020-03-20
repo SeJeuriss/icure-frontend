@@ -198,17 +198,13 @@
 
             _open(){
                 this.$['hubMedicationSchemaDetailDialog'].open();
-                this._updateMedicationScheme();
+                this.$['htPatHubMedicationSchemeExtendedView'].init();
             }
 
             _closeDialogs(){
                 // @todo cleanup
                 // this.set('medicationSchemeTransactions', {})
                 this.$['hubMedicationSchemaDetailDialog'].close()
-            }
-
-            _updateMedicationScheme() {
-                this.$['htPatHubMedicationSchemeExtendedView'].updateMedicationScheme();
             }
 
             _synchronizeScheme(){

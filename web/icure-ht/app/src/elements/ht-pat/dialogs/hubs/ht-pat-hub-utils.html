@@ -67,6 +67,34 @@
                         type: Object,
                         notify: false,
                         value: () => new Map()
+                    },
+                    weekdayKeys: {
+                        type: Array,
+                        value: () => ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+                    },
+                    weekdayCodes: {
+                        type: Array,
+                        value: () => []
+                    },
+                    dayPeriodCodes: {
+                        type: Array,
+                        value: () => []
+                    },
+                    reimbursementReason: {
+                        type: Object,
+                        value: () => {}
+                    },
+                    timeUnits:{
+                        type: Array,
+                        value: () => []
+                    },
+                    reimbursementCodeRecipe: {
+                        type: Array,
+                        value: () => []
+                    },
+                    administrationUnits: {
+                        type: Array,
+                        value: () => []
                     }
                 };
             }
@@ -130,6 +158,46 @@
                     this.hcpCache = {id: this.user.healthcarePartyId, promise: p};
                 }
                 return p;
+            }
+
+            init() {
+                return new Promise(resolve => {
+                    if (this.dayPeriodCodes && this.dayPeriodCodes.length) return resolve();
+                    else return this.api.code().findCodes("be", "CD-DAYPERIOD")
+                        .then(codes => this.api.code().findCodes("be", "care.topaz.customDayPeriod")
+                            .then(customCodes => this.push("dayPeriodCodes", ...codes.concat(customCodes))))
+                        .then(() => resolve())
+                })
+                    .then(() => {
+                        if (this.weekdayCodes && this.weekdayCodes.length) return Promise.resolve();
+                        else return this.api.code().findCodes("be", "CD-WEEKDAY")
+                            .then(codes => this.push("weekdayCodes", ...codes.map(code => {
+                                    const day = code.label[this.language] || "";
+                                    const number = this.weekdayKeys.indexOf(code.code) || -1;
+                                    return Object.assign(
+                                        code,
+                                        {
+                                            "weekday": day,
+                                            "weekNumber": (number > -1) && number || 0
+                                        });
+                                })
+                            ))
+                    })
+                    .then (() => {
+                        if (this.reimbursementCodeRecipe && this.reimbursementCodeRecipe.length) return Promise.resolve();
+                        return this.api.code().findCodes("be", "CD-REIMBURSEMENT-RECIPE")
+                            .then(reimb => this.push("reimbursementCodeRecipe", "", ..._.orderBy(reimb, ['label.fr'], ['asc'])))
+                    })
+                    .then(() => {
+                        if (this.timeUnits && this.timeUnits.length) return Promise.resolve();
+                        return this.api.code().findCodes("be", "CD-TIMEUNIT")
+                            .then(timeUnits => this.push("timeUnits", ..._.orderBy(_.filter(timeUnits, i => ["ns", "us", "ms", "s", "min"].indexOf(_.trim(_.get(i, "code"))) === -1), ['label.fr'], 'asc')))
+                    })
+                    .then(() => {
+                        if (this.administrationUnits && this.administrationUnits.length) return Promise.resolve();
+                        return this.api.code().findCodes("be", "CD-ADMINISTRATIONUNIT")
+                            .then(administrationUnits => this.push("administrationUnits", ...administrationUnits.filter(a => a.version === "1.3")))
+                    });
             }
 
 
@@ -492,6 +560,23 @@
                 const item = tr.item.find(it => it.ids.find(id => id.sl === "iCure-Service"));
                 const svcId = (item && item.ids.find(id => id.sl === "iCure-Service") || {value: null}).value;
                 return svcId;
+            }
+
+            regimenToPosology(regimen) {
+                const iCureRegimen = regimen.reduce((iCureRegimen, reg) => {
+                    const unit = (this.administrationUnits.find(adminUnit => adminUnit.code === reg.administrationUnit) || this.administrationUnits.find(adminUnit => adminUnit === "00006")).label[this.language];
+                    const administratedQuantity = {quantity: reg.quantity, unit: unit};
+                    if (reg.dayPeriod) {
+                        const dayPeriod = this.dayPeriodCodes.find(dayPeriodCode => dayPeriodCode.code === reg.dayPeriod);
+                        if (dayPeriod) {
+                            iCureRegimen.push({dayPeriod: dayPeriod, administratedQuantity: administratedQuantity});
+                        }
+                    } else if (reg.dayTime) {
+                        iCureRegimen.push({timeOfDay: reg.dayTime, administratedQuantity: administratedQuantity});
+                    }
+                    return iCureRegimen;
+                }, []);
+                return this.api.contact().medication().posologyToString({regimen: iCureRegimen}, this.language);
             }
         }
         customElements.define(HtPatHubUtils.is, HtPatHubUtils);

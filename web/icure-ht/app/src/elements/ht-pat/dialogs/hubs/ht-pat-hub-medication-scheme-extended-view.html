@@ -250,7 +250,7 @@
                 flex-flow: row nowrap;
                 color: var(--app-text-color);
                 z-index: 1;
-                height: 28px;
+                height: 36px;
             }
 
             .tr:not(.th):not(.category)::after {
@@ -388,6 +388,10 @@
 
             .span-5 {
                 padding: 6px 31px; /* 31px because we had the padding of the missings .td padding + their borders */
+            }
+
+            .span-13 {
+                padding: 6px 96px; /* 31px because we had the padding of the missings .td padding + their borders */
             }
 
             .table .category {
@@ -1038,7 +1042,7 @@
                             </div>
                             <div class="td span-3" style="flex-grow: 3;" title="[[_getPosology(medicationsWithPosology)]] [[_getDayInfo(medicationsWithPosology.regimen.0)]]"><span>[[_getPosology(medicationsWithPosology)]] [[_getDayInfo(medicationsWithPosology.regimen.0)]]</span></div>
 
-                            <ht-pat-hub-medication-scheme-regimen-day style="flex-grow: 12;" api="[[api]]" regimen="[[medicationsWithPosology.regimen]]"></ht-pat-hub-medication-scheme-regimen-day>
+                            <ht-pat-hub-medication-scheme-regimen-day class="span-13" style="flex-grow: 13;" api="[[api]]" regimen="[[medicationsWithPosology.regimen]]"></ht-pat-hub-medication-scheme-regimen-day>
 
 <!--                            <template is="dom-repeat" items="" as="regimen">-->
 <!--                                <div class="td td-input bf-bef">-->
@@ -1581,11 +1585,11 @@
                     TimePeriod: {
                         type: Array,
                         value: () => [
-                            {time: "16:00:00", period: "afternoon"},
-                            {time: "19:00:00", period: "evening"},
-                            {time: "22:00:00", period: "night"},
-                            {time: "12:00:00", period: "midday"},
-                            {time: "06:30:00", period: "afterwakingup"}
+                            {time: 160000, period: "afternoon"},
+                            {time: 190000, period: "evening"},
+                            {time: 220000, period: "night"},
+                            {time: 120000, period: "midday"},
+                            {time: 63000, period: "afterwakingup"}
                         ]
                     }
                 }
@@ -2007,6 +2011,8 @@
                 const elems = this.medicationSchemeTransactions.medicationSchemeElements.map(msElement => {
                     const med = _.get(msElement, 'item', []).find(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "medication"));
                     const hce = _.get(msElement, 'item', []).filter(itm => _.get(itm, 'cds', []).find(cd => _.get(cd, 'value', null) === "healthcareelement"));
+                    const reg = this._decomposeRegimen(_.get(med, 'regimen', null));
+                    const posology = this.$["htPatHubUtils"].regimenToPosology(reg);
                     const dateFromHub = this._getDateFromHub(_.get(med, 'beginmoment', null));
                     let el = {
                         idKmehr: _.get(_.get(msElement, 'ids', []).find(id => _.get(id, 's', null) === "ID_KMEHR"), 'value', null),
@@ -2020,7 +2026,7 @@
                         endmoment: this._getDateFromHub(_.get(med, 'endmoment', null)),
                         temporality: _.get(med, 'temporality', null),
                         frequency: _.get(med, 'frequency', null),
-                        regimen: this._decomposedRegimen(_.get(med, 'regimen', null)),
+                        regimen: reg,
                         // regimen: _.values(_.groupBy(reg, item => _.get(item, 'dayNumber', null) || 'other')),
                         // regimenDayNumber: _.values(_.groupBy(regimen, item => _.get(item, 'dayNumber', null) || 'other')),
                         // regimenWeekDay: _.values(_.groupBy(regimen, item => _.get(item, 'weekDay', null) || 'other')),
@@ -2028,7 +2034,7 @@
                         regimenDayNumber: null,
                         regimenWeekDay: null,
                         regimenWeekNumber: null,
-                        posology: _.get(med, 'posology', null),
+                        posology: {text: {value: posology}},
                         suspensions: [],
                         usePresent: !!_.get(hce.find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0),
                         useTexts: _.get(_.get(hce.find(itm => _.get(itm, 'contents', []).find(it => _.get(it, 'cds', []).find(cd => _.get(cd, 'value', null) === "medicationuse"))), 'contents', []).find(it => _.size(_.get(it, 'cds', [])) === 0), 'texts', []),
@@ -2044,19 +2050,19 @@
                         }
                     };
 
-                    if(_.size(_.get(el, 'regimenDayNumber', [])) > _.size(_.get(el, 'regimenWeekDay', []))){
-                        if(_.size(_.get(el, 'regimenWeekNumber', [])) > _.size(_.get(el, 'regimenDayNumber', []))){
-                            el.regimen = _.get(el, 'regimenWeekNumber', null)
-                        } else {
-                            el.regimen = _.get(el, 'regimenDayNumber', null)
-                        }
-                    } else {
-                        if(_.size(_.get(el, 'regimenWeekNumber', [])) > _.size(_.get(el, 'regimenWeekDay', []))){
-                            el.regimen = _.get(el, 'regimenWeekNumber', null)
-                        } else {
-                            el.regimen = _.get(el, 'regimenWeekDay', null)
-                        }
-                    }
+                    // if(_.size(_.get(el, 'regimenDayNumber', [])) > _.size(_.get(el, 'regimenWeekDay', []))){
+                    //     if(_.size(_.get(el, 'regimenWeekNumber', [])) > _.size(_.get(el, 'regimenDayNumber', []))){
+                    //         el.regimen = _.get(el, 'regimenWeekNumber', null)
+                    //     } else {
+                    //         el.regimen = _.get(el, 'regimenDayNumber', null)
+                    //     }
+                    // } else {
+                    //     if(_.size(_.get(el, 'regimenWeekNumber', [])) > _.size(_.get(el, 'regimenWeekDay', []))){
+                    //         el.regimen = _.get(el, 'regimenWeekNumber', null)
+                    //     } else {
+                    //         el.regimen = _.get(el, 'regimenWeekDay', null)
+                    //     }
+                    // }
 
                     return el
                 });
@@ -2105,12 +2111,11 @@
                 return ms;
             }
 
-            _decomposedRegimen(regimen) {
+            _decomposeRegimen(regimen) {
                 const flatData = _.get(regimen, 'daynumbersAndQuantitiesAndDates', []);
                 const chunkSize = _.indexOf(flatData, flatData.find(r => r.name === "{http://www.ehealth.fgov.be/standards/kmehr/schema/v1}quantity")) + 1;
                 const groupedData = flatData.length ? _.chunk(flatData, chunkSize) : [];
-                const dec = groupedData.map(gd => this._getRegimenInfo(gd));
-                return dec;
+                return groupedData.map(gd => this._getRegimenInfo(gd));
             }
 
             _zeroPad(num, places) {
@@ -2118,7 +2123,7 @@
             }
 
             _formatTime(dayTime) {
-                return `${this._zeroPad(_.get(dayTime, 'hourOfDay', 0), 2)}:${this._zeroPad(_.get(dayTime, 'minuteOfHour', 0), 2)}:${this._zeroPad(_.get(dayTime, 'secondOfMinute', 0), 2)}`;
+                return _.get(dayTime, 'hourOfDay', 0) * 10000 + _.get(dayTime, 'minuteOfHour', 0) * 100 + _.get(dayTime, 'secondOfMinute', 0);
             }
 
             _getDayPeriod(dayTime) {
@@ -2372,6 +2377,10 @@
 
             _getMedElems(currentMedicationScheme){
                 return _.get(currentMedicationScheme, 'msElems', [])
+            }
+
+            init() {
+                this.$["htPatHubUtils"].init().then(() => this.updateMedicationScheme());
             }
 
             updateMedicationScheme() {
